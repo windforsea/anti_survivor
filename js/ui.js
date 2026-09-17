@@ -187,19 +187,19 @@ class UIManager {
   renderWeaponSlots(weapons) {
     this.weaponSlots.innerHTML = '';
     const keys = Object.keys(weapons);
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const slot = document.createElement('div');
       if (i < keys.length) {
         const key = keys[i];
         const w = weapons[key];
-        const isEvolved = key === 'spinningAxe' || key === 'bladeWhip' || key === 'holyShotgun' || key === 'arcaneSanctuary' || key === 'plasmaTempest';
+        const isEvolved = ['heavenlySanctuary', 'morningstarTempest', 'apocalypseComet', 'slayerBladeStorm', 'teslaShotgun', 'spinningAxe', 'bladeWhip', 'holyShotgun', 'arcaneSanctuary', 'plasmaTempest'].includes(key);
         slot.className = `inv-icon inv-weapon ${isEvolved ? 'inv-evolution' : ''}`;
         
         let iconKey = 'icon_atk';
         if (key === 'sword') iconKey = 'icon_sword';
         else if (key === 'axe' || key === 'spinningAxe') iconKey = 'icon_axe';
         else if (key === 'whip' || key === 'bladeWhip') iconKey = 'icon_whip';
-        else if (key === 'throwingDagger') iconKey = 'icon_dagger';
+        else if (key === 'shuriken' || key === 'throwingDagger') iconKey = 'icon_shuriken';
         else if (key === 'magicMissile') iconKey = 'icon_missile';
         else if (key === 'shotgun') iconKey = 'icon_shotgun';
         else if (key === 'holyShotgun') iconKey = 'icon_holyshotgun';
@@ -207,12 +207,17 @@ class UIManager {
         else if (key === 'sanctuary') iconKey = 'icon_sanctuary';
         else if (key === 'lightningRing') iconKey = 'icon_lightning';
         else if (key === 'fireWand') iconKey = 'icon_firewand';
+        else if (key === 'heavenlySanctuary') iconKey = 'icon_heavenlysanctuary';
+        else if (key === 'morningstarTempest') iconKey = 'icon_morningstartempest';
+        else if (key === 'apocalypseComet') iconKey = 'icon_apocalypsecomet';
+        else if (key === 'slayerBladeStorm') iconKey = 'icon_slayerbladestorm';
+        else if (key === 'teslaShotgun') iconKey = 'icon_teslashotgun';
         else if (key === 'arcaneSanctuary') iconKey = 'icon_arcanesanctuary';
         else if (key === 'plasmaTempest') iconKey = 'icon_plasmatempest';
 
         const imgSrc = assets.manifest[iconKey];
         const iconHtml = imgSrc ? `<img src="${imgSrc}" class="inv-img" alt="${w.name}">` : `<span>${w.icon}</span>`;
-        const totalUpgrades = (w.speedLevel || 0) + (w.countLevel || 0) + (w.areaLevel || 0) + (w.speedProjLevel || 0);
+        const totalUpgrades = (w.speedLevel || 0) + (w.countLevel || 0) + (w.areaLevel || 0) + (w.damageLevel || 0);
         const totalLv = isEvolved ? 'EVO' : (totalUpgrades >= 6 ? 'MAX' : totalUpgrades + 1);
         slot.innerHTML = `
           ${iconHtml}
@@ -221,7 +226,7 @@ class UIManager {
         slot.title = `${w.name} ${isEvolved ? '(진화 무기)' : `(총 강화 ${totalUpgrades}/6)`}`;
       } else {
         slot.className = 'inv-icon inv-empty';
-        slot.title = '빈 무기 슬롯 (최대 5개)';
+        slot.title = '빈 무기 슬롯 (최대 6개)';
       }
       this.weaponSlots.appendChild(slot);
     }
@@ -230,7 +235,7 @@ class UIManager {
   renderPassiveSlots(passives) {
     this.passiveSlots.innerHTML = '';
     const keys = Object.keys(passives);
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const slot = document.createElement('div');
       if (i < keys.length) {
         const id = keys[i];
@@ -246,7 +251,7 @@ class UIManager {
         slot.title = `${p.title} (Lv.${p.level}/${p.maxLevel})`;
       } else {
         slot.className = 'inv-icon inv-empty';
-        slot.title = '빈 패시브 슬롯 (최대 5개)';
+        slot.title = '빈 패시브 슬롯 (최대 6개)';
       }
       this.passiveSlots.appendChild(slot);
     }

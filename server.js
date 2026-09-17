@@ -131,7 +131,7 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
   const localIps = getLocalIpAddresses();
   console.log('====================================================');
-  console.log('⚔️  Vampire Survivors 웹 게임 서버가 실행되었습니다! ⚔️');
+  console.log('⚔️  Anti Survivors (안티 서바이버즈) 웹 게임 서버가 실행되었습니다! ⚔️');
   console.log('----------------------------------------------------');
   console.log(`💻 로컬 접속:   http://localhost:${PORT}`);
   if (localIps.length > 0) {

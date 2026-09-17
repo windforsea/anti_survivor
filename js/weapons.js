@@ -385,7 +385,7 @@ class WeaponManager {
   }
 
   getDamage(w) {
-    const dmgBonus = 1 + (w.damageLevel || 0) * 0.25; // 레벨당 데미지 25% 증가
+    const dmgBonus = 1 + (w.damageLevel || 0) * 0.30; // 레벨당 데미지 30% 증가
     return Math.round(w.baseDamage * dmgBonus * this.player.atkPowerMult);
   }
 

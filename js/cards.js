@@ -1,6 +1,6 @@
 // 레벨업 카드 시스템: 무기 강화, 신규 무기 해금, 진화 무기 합성, 캐릭터 패시브 강화
-// 1. 캐릭터 패시브 스탯은 최대 5종만 인벤토리에 장착 가능 (각 5강 제한, 범위 3강, 투사체 2강)
-// 2. 무기 슬롯 최대 5개 제한 (각 무기 총 5레벨 MAX 제한)
+// 1. 캐릭터 패시브 스탯은 최대 6종만 인벤토리에 장착 가능 (각 5강 제한, 범위 3강, 투사체 2강)
+// 2. 무기 슬롯 최대 6개 제한 (각 무기 총 5레벨 MAX 제한)
 // 3. 5대 정통 진화 무기 체계:
 //    - 천상의 성역 (heavenlySanctuary) = 성역 (sanctuary 5렙) + 성수 (holyWater 5렙)
 //    - 모닝스타 선풍 (morningstarTempest) = 모닝스타 채찍 (whip 5렙) + 표창 (shuriken 5렙)
@@ -125,7 +125,7 @@ class CardManager {
       };
     };
 
-    // 1. 미보유 무기 해금 카드 (최대 5개 무기 슬롯 제한)
+    // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
     const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand'];
 
@@ -177,7 +177,7 @@ class CardManager {
       teslaShotgun: { name: '테슬라 뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '고전압 뇌전 산탄 일제 사격 및 체인 라이트닝·낙뢰 폭격' }
     };
 
-    if (ownedWeaponsCount < 5) {
+    if (ownedWeaponsCount < 6) {
       unownedWeapons.forEach(key => {
         const meta = weaponMeta[key];
         const evoHint = getEvolutionHint(key);
@@ -445,7 +445,7 @@ class CardManager {
         icon: '💥',
         iconKey: meta.iconKey,
         desc: `공격력을 대폭 증가시킵니다. (Lv.${nextLv}/5)`,
-        effectText: '공격력 +25%',
+        effectText: '공격력 +30%',
         badge: `Lv.${nextLv}/5`,
         stars: formatStars(nextLv, 5),
         evolutionHint: evoHint,
@@ -540,9 +540,9 @@ class CardManager {
       }
     }
 
-    // 4. 캐릭터 패시브 스탯 카드 (총 10종 중 최대 5종 슬롯 제한)
+    // 4. 캐릭터 패시브 스탯 카드 (총 10종 중 최대 6종 슬롯 제한)
     const ownedPassiveKeys = Object.keys(this.player.ownedPassives);
-    const canAcquireNewPassive = ownedPassiveKeys.length < 5;
+    const canAcquireNewPassive = ownedPassiveKeys.length < 6;
 
     const passiveDefinitions = [
       {
@@ -571,9 +571,9 @@ class CardManager {
         icon: '🩸',
         iconKey: 'icon_atk',
         desc: '공격력을 증가시킵니다.',
-        effectText: '공격력 +25%',
+        effectText: '공격력 +15%',
         maxLevel: 5,
-        apply: () => { this.player.atkPowerMult += 0.25; }
+        apply: () => { this.player.atkPowerMult += 0.15; }
       },
       {
         id: 'stat_regen',
@@ -614,9 +614,12 @@ class CardManager {
         icon: '🧲',
         iconKey: 'item_magnet',
         desc: '경험치 보석을 흡수하는 자석 반경을 확장합니다.',
-        effectText: '자석 반경 +60px',
+        effectText: '자석 반경 +30%',
         maxLevel: 5,
-        apply: () => { this.player.magnetRadius += 60; }
+        apply: () => {
+          const bonus = Math.round((this.player.baseMagnetRadius || 130) * 0.30);
+          this.player.magnetRadius += bonus;
+        }
       },
       {
         id: 'stat_area',
@@ -671,10 +674,10 @@ class CardManager {
         icon: '👑',
         iconKey: 'icon_crown',
         desc: '몬스터 처치 및 보석 획득 시 얻는 경험치 획득량이 증가합니다.',
-        effectText: '경험치 획득량 +15%',
+        effectText: '경험치 획득량 +20%',
         maxLevel: 5,
         apply: () => {
-          this.player.expMult = (this.player.expMult || 1.0) + 0.15;
+          this.player.expMult = (this.player.expMult || 1.0) + 0.20;
         }
       }
     ];

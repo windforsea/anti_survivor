@@ -14,7 +14,8 @@ class Player {
     this.atkPowerMult = 1.0;            // 공격력 %
     this.hpRegen = 0.0;                 // 초당 체력 재생
     this.globalCooldownMult = 1.0;      // 전체 무기 쿨다운 단축 (공격속도 증가)
-    this.magnetRadius = 130;            // 기본 자석 흡수 반경
+    this.baseMagnetRadius = 130;        // 기본 자석 흡수 반경 베이스
+    this.magnetRadius = 130;            // 현재 자석 흡수 반경
     this.bonusProjectiles = 0;          // 캐릭터 투사체 개수 증가 (최대 3회 제한)
     this.bonusProjSpeedMult = 1.0;      // 캐릭터 원거리 투사체 속도 배율
     this.bonusAreaMult = 1.0;           // 캐릭터 전체 무기 공격 범위 배율
