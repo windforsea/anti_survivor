@@ -356,6 +356,86 @@ const SPRITES = {
     "...KKK....KKK..."
   ],
 
+  // 11. 타락한 마도사 (Dark Mage) 16x16
+  darkMage: [
+    ".....KKKKK......",
+    "....KPPVPK......",
+    "...KPVVVPKK.....",
+    "...KPYKKYKK.....",
+    "...KPVVVPKK.....",
+    "....KPPPK.......",
+    "Y..KPVVVVPK...Y.",
+    "YK.KPVCCVPK..KY.",
+    "YYKKPVCCVPK.KYY.",
+    ".YKKPVVVVPKKYY..",
+    "...KPVVVVPKK....",
+    "...KPVVVVPK.....",
+    "...KPVKKVPK.....",
+    "...KPPK.KPPK....",
+    "...KPK...KPK....",
+    "....KK...KK....."
+  ],
+
+  // 12. 핏빛 사냥개 (Blood Hound) 16x16
+  bloodHound: [
+    "........KKKK....",
+    ".......KRRRRK...",
+    "......KRCYYCK...",
+    "....KKKRRRRCK...",
+    "...KCCCCRRRRK...",
+    "..KCRRRRRRRRKK..",
+    "..KRRRRRRRRRRRK.",
+    ".KRRRRRRRRRRRRRK",
+    ".KRRRRRRRRRRRRK.",
+    ".KRRRRRRRRRRRK..",
+    "..KRRKKKRRRRK...",
+    "..KRK...KRRK....",
+    "..KRK...KRK.....",
+    ".KKKK..KKKK.....",
+    "................",
+    "................"
+  ],
+
+  // 13. 망령 군단 (Wraith Swarm) 16x16
+  wraithSwarm: [
+    ".....KKKKK......",
+    "....KTTTTTK.....",
+    "...KTTVVVTTK....",
+    "...KTYKKTYTK....",
+    "...KTTVVVTTK....",
+    "....KTTTTTK.....",
+    "...KTTVVVTTK....",
+    "..KTTVWWVTTK....",
+    ".KTTVWWWWVTTK...",
+    ".KTTVWWWWVTTK...",
+    "..KTTVVVTTK.....",
+    "...KTTTTTK......",
+    "....KTKTTK......",
+    ".....K.K........",
+    "................",
+    "................"
+  ],
+
+  // 14. 심연의 거인 (Abyss Titan) 16x16
+  abyssTitan: [
+    "...KKKKKKKKKK...",
+    "..KDDDDDDDDDDDK..",
+    ".KDDKYYDDYYKDDK.",
+    ".KDDDDDDDDDDDDK.",
+    ".KDDMMDDDDMMDDK.",
+    "KKDDMMDDDDMMDDKK",
+    "KDDDDDDDDDDDDDDK",
+    "KDDDDDDDDDDDDDDK",
+    "KDDDDMMMMMMDDDDK",
+    ".KDDMMKKKKMMDDK.",
+    ".KDDDDK..KDDDDK.",
+    "..KDDDK..KDDDK..",
+    "..KDDDK..KDDDK..",
+    "..KMMDK..KDMMK..",
+    "..KKKKK..KKKKK..",
+    "................"
+  ],
+
   // 5종 보스 (각각 16x16 또는 대형 렌더링)
   boss_boar: [
     ".......KKKKKK...",
@@ -450,6 +530,46 @@ const SPRITES = {
     "..KRRRKKKKRRRK..",
     "..KRRKK..KKRRK..",
     "...KK......KK..."
+  ],
+
+  // 12스테이지 보스: 심연의 리치 (Abyss Lich) 16x16
+  boss_lich: [
+    "....KGGYYGGK....",
+    "...KGGYYYYGGK...",
+    "...KWWKWWKWWK...",
+    "...KWCKWCKWWK...",
+    "...KWWKWWKWWK...",
+    "....KWWWWWWK....",
+    "Y..KPVVVVVVPK..Y",
+    "YK.KPVVCCVVPK.KY",
+    "YYKKPVCCCCVPKKYY",
+    ".YKKPVCCCCVPKKYY",
+    "..KPVVVVVVVPK...",
+    "..KPVVVVVVVPK...",
+    "..KPVKKKKVVPK...",
+    "..KPPK..KPPK....",
+    "..KPK....KPK....",
+    "...KK....KK....."
+  ],
+
+  // 15스테이지 최종 진 보스: 죽음의 사신 (Grim Reaper) 16x16
+  boss_reaper: [
+    "..KKLLMMDDDKK...",
+    ".KLLMMDDDKK..KK.",
+    "KLLMMDDDKK.KKDDK",
+    "KLMDDDKK..KDDDDD",
+    ".KMDDK...KDDWWDD",
+    "..KKK...KDDWYYWD",
+    "...K....KDDWWWD.",
+    "..KKK...KDDDDDD.",
+    ".KDKDK...KDDDD..",
+    "KDK.KDK.KDDDD...",
+    "KK...KK.KDDDD...",
+    "........KDDDD...",
+    "........KDDDD...",
+    "........KDDDD...",
+    ".........KDD....",
+    "..........KK...."
   ],
 
   // 고딕 석판 던전 바닥 타일 16x16
@@ -1081,6 +1201,139 @@ const SPRITES = {
     "................",
     "................",
     "................",
+    "................"
+  ],
+
+  icon_lightning: [
+    ".......KK.......",
+    "......KYYK......",
+    ".....KYYYYK.....",
+    "....KYYYYYK.....",
+    "...KYYYYYYK.....",
+    "..KYYYYYYYYK....",
+    "...KKKKYYYYK....",
+    "......KYYYYK....",
+    ".....KYYYYK.....",
+    "....KYYYYK......",
+    "...KYYYYK.......",
+    "..KYYYYK........",
+    ".KYYYYK.........",
+    "..KYYK..........",
+    "...KK...........",
+    "................"
+  ],
+
+  icon_firewand: [
+    ".......KK.......",
+    "......KYYK......",
+    ".....KYCCYK.....",
+    "....KYCCCCYK....",
+    "....KCCCCCCK....",
+    ".....KCRRCK.....",
+    "......KGGK......",
+    ".....KOGGK......",
+    "....KOOOGK......",
+    "...KOOOGK.......",
+    "..KOOOGK........",
+    ".KOOOGK.........",
+    "KOOOGK..........",
+    "KOGGK...........",
+    ".KKK............",
+    "................"
+  ],
+
+  icon_arcanesanctuary: [
+    "......KWWK......",
+    "....KKTTTTKK....",
+    "...KTTBBBBTTK...",
+    "..KTBBWWWWBBTK..",
+    ".KTBWWTTTTWWBTK.",
+    ".KTBWTTKKTTWBTK.",
+    "KTBWTTK..KTTWBTK",
+    "KTBWTTK..KTTWBTK",
+    "KTBWTTK..KTTWBTK",
+    ".KTBWTTKKTTWBTK.",
+    ".KTBWWTTTTWWBTK.",
+    "..KTBBWWWWBBTK..",
+    "...KTTBBBBTTK...",
+    "....KKTTTTKK....",
+    "......KWWK......",
+    "................"
+  ],
+
+  icon_plasmatempest: [
+    "......KYYK......",
+    "....KKYYYYKK....",
+    "...KYYVVVVYYK...",
+    "..KYVVRRRRVVYK..",
+    ".KYVRRCCCCRRVYK.",
+    ".KYVRCCCCCCRVYK.",
+    "KYVRCCWWWWCCRVYK",
+    "KYVRCCWWWWCCRVYK",
+    "KYVRCCWWWWCCRVYK",
+    ".KYVRCCCCCCRVYK.",
+    ".KYVRRCCCCRRVYK.",
+    "..KYVVRRRRVVYK..",
+    "...KYYVVVVYYK...",
+    "....KKYYYYKK....",
+    "......KYYK......",
+    "................"
+  ],
+
+  icon_clover: [
+    "....KK....KK....",
+    "...KAAK..KAAK...",
+    "..KAAAAKKAAGAK..",
+    "..KAAASSSAAGAK..",
+    "...KASSSSSSAK...",
+    ".KKKASSSSSSAKKK.",
+    "KAASSSSSSSSSSAAK",
+    "KAGASSSSSSSSAGAK",
+    "KAGASSSSSSSSAGAK",
+    "KAASSSSSSSSSSAAK",
+    ".KKKASSSSSSAKKK.",
+    "...KASSSSSSAK...",
+    "..KAAASSSAAGAK..",
+    "..KAAAAKKAAGAK..",
+    "...KAAK.KKAAK...",
+    "....KK...KOK...."
+  ],
+
+  icon_crown: [
+    "................",
+    "................",
+    "..KYK..KYK..KYK.",
+    "..KYYKKYYYYKKYYK",
+    ".KYYYYYYYYYYYYYK",
+    ".KYYCYYYBYYYCYYK",
+    ".KYYYYYYYYYYYYYK",
+    ".KGGGGGGGGGGGGGK",
+    "..KGGGGGGGGGGGK.",
+    "...KKKKKKKKKKK..",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+
+  miniSlime: [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    ".....KKKKK......",
+    "...KKAAAAAKK....",
+    "..KAAAAAAAAAAK..",
+    ".KAAAWAAAWAAAAK.",
+    ".KAAYKAAYKAAAAK.",
+    ".KAAYKAAYKAAAAK.",
+    ".KAAAAAAAAAAAAK.",
+    ".KASSSSSSSSSSAK.",
+    "..KKKKKKKKKKKK..",
     "................"
   ]
 };
