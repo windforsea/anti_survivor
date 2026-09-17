@@ -52,6 +52,7 @@ class AssetManager {
       icon_proj_count: 'assets/sprites/icon_proj_count.png',
 
       // 신규 무기 및 패시브 아이콘 & 아기 슬라임
+      icon_sanctuary: 'assets/sprites/icon_sanctuary.png',
       icon_lightning: 'assets/sprites/icon_lightning.png',
       icon_firewand: 'assets/sprites/icon_firewand.png',
       icon_arcanesanctuary: 'assets/sprites/icon_arcanesanctuary.png',

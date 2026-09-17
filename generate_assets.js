@@ -1335,6 +1335,25 @@ const SPRITES = {
     ".KASSSSSSSSSSAK.",
     "..KKKKKKKKKKKK..",
     "................"
+  ],
+
+  icon_sanctuary: [
+    "......KKKK......",
+    ".....KYYYYK.....",
+    "....KYWWWWYK....",
+    "...KYWKKKKWYK...",
+    "..KYWK.KK.KWYK..",
+    "..KYWKKWWKKWYK..",
+    ".KYWWKKWWKKWWYK.",
+    ".KYYWWWWWWWWYYK.",
+    ".KYYWWWWWWWWYYK.",
+    ".KYWWKKWWKKWWYK.",
+    "..KYWKKWWKKWYK..",
+    "..KYWK.KK.KWYK..",
+    "...KYWKKKKWYK...",
+    "....KYWWWWYK....",
+    ".....KYYYYK.....",
+    "......KKKK......"
   ]
 };
 
