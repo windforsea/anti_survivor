@@ -120,7 +120,7 @@ class UIManager {
   renderWeaponSlots(weapons) {
     this.weaponSlots.innerHTML = '';
     const keys = Object.keys(weapons);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const slot = document.createElement('div');
       if (i < keys.length) {
         const key = keys[i];
@@ -149,7 +149,7 @@ class UIManager {
         slot.title = `${w.name} ${isEvolved ? '(진화 무기)' : `(총 강화 ${totalUpgrades}/6)`}`;
       } else {
         slot.className = 'inv-icon inv-empty';
-        slot.title = '빈 무기 슬롯 (최대 4개)';
+        slot.title = '빈 무기 슬롯 (최대 5개)';
       }
       this.weaponSlots.appendChild(slot);
     }
@@ -158,7 +158,7 @@ class UIManager {
   renderPassiveSlots(passives) {
     this.passiveSlots.innerHTML = '';
     const keys = Object.keys(passives);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const slot = document.createElement('div');
       if (i < keys.length) {
         const id = keys[i];
@@ -174,7 +174,7 @@ class UIManager {
         slot.title = `${p.title} (Lv.${p.level}/${p.maxLevel})`;
       } else {
         slot.className = 'inv-icon inv-empty';
-        slot.title = '빈 패시브 슬롯 (최대 4개)';
+        slot.title = '빈 패시브 슬롯 (최대 5개)';
       }
       this.passiveSlots.appendChild(slot);
     }

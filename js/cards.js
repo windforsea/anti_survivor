@@ -1,6 +1,6 @@
 // 레벨업 카드 시스템: 무기 강화, 신규 무기 해금, 진화 무기 합성, 캐릭터 패시브 강화
-// 1. 캐릭터 패시브 스탯은 최대 4종만 인벤토리에 장착 가능 (각 6강 제한, 투사체 3강)
-// 2. 무기 슬롯 최대 4개 제한 (각 무기 총 6강 제한)
+// 1. 캐릭터 패시브 스탯은 최대 5종만 인벤토리에 장착 가능 (각 6강 제한, 투사체 3강)
+// 2. 무기 슬롯 최대 5개 제한 (각 무기 총 6강 제한)
 // 3. 진화 무기 3대 체계:
 //    - 회전 도끼 (spinningAxe) = 일반 검 (sword 6강) + 도끼 (axe 6강)
 //    - 칼날 채찍 (bladeWhip) = 채찍 (whip 6강) + 던지는 단검 (throwingDagger 6강)
@@ -21,7 +21,7 @@ class CardManager {
   generateCards() {
     const cardPool = [];
 
-    // 1. 미보유 무기 해금 카드 (최대 4개 무기 슬롯 제한)
+    // 1. 미보유 무기 해금 카드 (최대 5개 무기 슬롯 제한)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
     const allWeaponKeys = ['axe', 'whip', 'throwingDagger', 'magicMissile', 'shotgun', 'holyWater'];
     const unownedWeapons = allWeaponKeys.filter(k => !this.weaponManager.weapons[k]);
@@ -37,7 +37,7 @@ class CardManager {
       acidPool: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' }
     };
 
-    if (ownedWeaponsCount < 4) {
+    if (ownedWeaponsCount < 5) {
       unownedWeapons.forEach(key => {
         const meta = weaponMeta[key];
         cardPool.push({
@@ -277,9 +277,9 @@ class CardManager {
       }
     }
 
-    // 4. 캐릭터 패시브 스탯 카드 (총 8종 중 최대 4종 슬롯 제한)
+    // 4. 캐릭터 패시브 스탯 카드 (총 8종 중 최대 5종 슬롯 제한)
     const ownedPassiveKeys = Object.keys(this.player.ownedPassives);
-    const canAcquireNewPassive = ownedPassiveKeys.length < 4;
+    const canAcquireNewPassive = ownedPassiveKeys.length < 5;
 
     const passiveDefinitions = [
       {
