@@ -93,19 +93,18 @@ class ExpGem {
   }
 }
 
-// 필드 특수 드랍 아이템 (자석, 폭탄, 얼음)
+// 필드 특수 드랍 아이템 (자석, 폭탄, 얼음, 회복 포션) - 영구 보존
 class PickupItem {
   constructor(type, x, y) {
-    this.type = type; // 'magnet', 'bomb', 'freeze'
+    this.type = type; // 'heal', 'magnet', 'bomb', 'freeze'
     this.x = x;
     this.y = y;
     this.radius = 14;
-    this.life = 35.0; // 35초 유지
+    this.life = Infinity; // 영구 보존 (시간 경과로 소멸되지 않음)
     this.bobTimer = Math.random() * 10;
   }
 
   update(dt, player) {
-    this.life -= dt;
     this.bobTimer += dt * 4;
 
     const dist = Math.hypot(player.x - this.x, player.y - this.y);
@@ -232,6 +231,7 @@ class Enemy {
 
     this.hitFlashTimer = 0;
     this.animTimer = Math.random() * 10;
+    this.offscreenTimer = 0;
   }
 
   takeDamage(amount, knockbackDir, knockbackForce) {
@@ -301,9 +301,42 @@ class Enemy {
     this.x += this.vx * dt;
     this.y += this.vy * dt;
 
+    // 플레이어 카메라 시야 이탈 검사 및 180도 반대편(진행방향 앞) 리스폰
+    this.checkOffscreenRespawn(dt, player);
+
     // 플레이어 충돌 공격 판정
     if (dist < player.radius + this.radius) {
       player.takeDamage(this.damage);
+    }
+  }
+
+  // 플레이어 카메라 시야 밖으로 멀어질 경우 180도 반대편(플레이어 진행방향 정면)으로 재배치
+  checkOffscreenRespawn(dt, player) {
+    const dist = Math.hypot(this.x - player.x, this.y - player.y);
+    const viewDist = 820; // 화면 절반(대략 600~700px)보다 넉넉한 화면 밖 거리
+
+    if (dist > viewDist) {
+      this.offscreenTimer = (this.offscreenTimer || 0) + dt;
+      // 화면 밖에서 2.5초 이상 방치되거나 1150px 이상 멀어지면 플레이어 기준 180도 반대편으로 재배치
+      if (this.offscreenTimer >= 2.5 || dist > 1150) {
+        const angle = Math.atan2(this.y - player.y, this.x - player.x);
+        // 플레이어 기준 180도 반대편(±20도 분산)
+        const respawnAngle = angle + Math.PI + (Math.random() - 0.5) * 0.45;
+        const respawnDist = 760 + Math.random() * 80;
+
+        let newX = player.x + Math.cos(respawnAngle) * respawnDist;
+        let newY = player.y + Math.sin(respawnAngle) * respawnDist;
+
+        // 전장 경계 내부(-1560 ~ 1560)로 안전하게 클램프
+        newX = Math.max(-1560, Math.min(1560, newX));
+        newY = Math.max(-1560, Math.min(1560, newY));
+
+        this.x = newX;
+        this.y = newY;
+        this.offscreenTimer = 0;
+      }
+    } else {
+      this.offscreenTimer = 0;
     }
   }
 
@@ -606,6 +639,9 @@ class BossEnemy extends Enemy {
 
     this.x += this.vx * dt;
     this.y += this.vy * dt;
+
+    // 보스 역시 화면 밖으로 멀어질 경우 플레이어 앞길(180도 반대편)로 재배치
+    this.checkOffscreenRespawn(dt, player);
 
     // 플레이어 충돌 공격 판정
     if (dist < player.radius + this.radius) {

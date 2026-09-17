@@ -226,6 +226,13 @@ class Game {
     // 1. 플레이어 업데이트
     this.player.update(dt, this.input);
     this.obstacleManager.resolveCollisions(this.player);
+
+    // 전장 외곽 경계 충돌 (플레이어가 맵 끝에 걸려 밖으로 나가지 못하게 차단)
+    const boundW = 1580;
+    const boundH = 1580;
+    this.player.x = Math.max(-boundW, Math.min(boundW, this.player.x));
+    this.player.y = Math.max(-boundH, Math.min(boundH, this.player.y));
+
     if (this.player.isDead) {
       this.triggerGameOver();
       return;
@@ -262,7 +269,7 @@ class Game {
         // 경험치 보석 드랍 (뒤 5종 마물은 대량 경험치 보석)
         this.expGems.push(new ExpGem(enemy.x, enemy.y, enemy.exp));
 
-        // 특수 아이템 드랍 (일반몹 약 1.67%로 2/3 하향 조정, 보스는 100% 확정 드랍)
+        // 특수 아이템 드랍 (일반몹 약 1.67%, 보스는 100% 확정 드랍)
         const dropChance = enemy.isBoss ? 1.0 : 0.0167;
         if (Math.random() < dropChance) {
           const types = ['magnet', 'bomb', 'freeze'];
@@ -273,6 +280,7 @@ class Game {
         // 사망 파티클
         this.addParticles(enemy.x, enemy.y, enemy.color, enemy.isBoss ? 24 : 8);
         this.player.totalKills += 1;
+        sounds.playKill();
         this.enemies.splice(i, 1);
       }
     }
@@ -288,14 +296,10 @@ class Game {
       }
     }
 
-    // 6. 특수 드랍 아이템(자석, 폭탄, 얼음) 업데이트 및 습득 판정
+    // 6. 특수 드랍 아이템(자석, 폭탄, 얼음, 회복) 업데이트 및 습득 판정 (영구 보존)
     for (let i = this.pickupItems.length - 1; i >= 0; i--) {
       const item = this.pickupItems[i];
       const collected = item.update(dt, this.player);
-      if (item.life <= 0) {
-        this.pickupItems.splice(i, 1);
-        continue;
-      }
       if (collected) {
         this.applyPickupItem(item.type);
         this.pickupItems.splice(i, 1);
@@ -352,6 +356,9 @@ class Game {
 
     // 무한 격자 타일 던전 바닥 렌더링
     this.renderFloorGrid(ctx);
+
+    // 전장 외곽 마법 결계 테두리선 렌더링
+    this.drawWorldBoundary(ctx);
 
     // 필드 장애물 (돌기둥, 나무 상자)
     this.obstacleManager.draw(ctx, this.camera, width, height);
@@ -458,6 +465,46 @@ class Game {
       }
       ctx.stroke();
     }
+  }
+
+  drawWorldBoundary(ctx) {
+    const bound = 1600;
+    const time = Date.now() * 0.003;
+    const pulse = 0.55 + Math.sin(time) * 0.25;
+
+    ctx.save();
+    // 1. 외곽 마법 결계 발광 사각 라인
+    ctx.strokeStyle = `rgba(168, 85, 247, ${pulse})`;
+    ctx.lineWidth = 6;
+    ctx.shadowColor = '#c084fc';
+    ctx.shadowBlur = 20;
+    ctx.strokeRect(-bound, -bound, bound * 2, bound * 2);
+
+    // 2. 내부 룬 보조 라인
+    ctx.strokeStyle = `rgba(56, 189, 248, ${pulse * 0.75})`;
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 8;
+    ctx.strokeRect(-bound + 12, -bound + 12, (bound - 12) * 2, (bound - 12) * 2);
+
+    // 3. 4개 모서리 룬 마법 표식
+    const corners = [
+      [-bound, -bound],
+      [bound, -bound],
+      [bound, bound],
+      [-bound, bound]
+    ];
+    for (const [cx, cy] of corners) {
+      ctx.fillStyle = '#c084fc';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
   }
 }
 

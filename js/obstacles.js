@@ -146,12 +146,15 @@ class ObstacleManager {
   }
 
   update(dt, playerX, playerY) {
-    // 플레이어 주변 3x3 청크 확인 및 생성
+    // 플레이어 주변 넓은 청크 확인 및 사전 생성 (전장 1600px 내부)
     const currentChunkX = Math.floor(playerX / this.chunkSize);
     const currentChunkY = Math.floor(playerY / this.chunkSize);
 
-    for (let cx = currentChunkX - 2; cx <= currentChunkX + 2; cx++) {
-      for (let cy = currentChunkY - 2; cy <= currentChunkY + 2; cy++) {
+    for (let cx = currentChunkX - 4; cx <= currentChunkX + 4; cx++) {
+      for (let cy = currentChunkY - 4; cy <= currentChunkY + 4; cy++) {
+        // 전장 경계(-1600 ~ 1600) 내부 및 인접 청크만 생성
+        if (Math.abs(cx * this.chunkSize) > 1750 || Math.abs(cy * this.chunkSize) > 1750) continue;
+
         const key = `${cx},${cy}`;
         if (!this.generatedChunks.has(key)) {
           this.generatedChunks.add(key);
@@ -228,11 +231,12 @@ class ObstacleManager {
   }
 
   draw(ctx, camera, viewWidth, viewHeight) {
-    const halfW = viewWidth / 2 + 100;
-    const halfH = viewHeight / 2 + 100;
+    // 렌더링 거리를 500px 확장하여 화면 진입 시 깜빡임 없이 원거리까지 사전 렌더링
+    const halfW = viewWidth / 2 + 500;
+    const halfH = viewHeight / 2 + 500;
 
     for (const obs of this.obstacles) {
-      // 화면 밖 컬링 (성능 최적화)
+      // 화면 밖 컬링 (원거리 버퍼 적용)
       if (Math.abs(obs.x - camera.x) > halfW || Math.abs(obs.y - camera.y) > halfH) {
         continue;
       }
