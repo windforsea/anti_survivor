@@ -23,6 +23,8 @@ class Game {
     this.damageNumbers = [];
     this.bossProjectiles = [];
     this.particles = [];
+    this.cosmicStars = [];
+    this.initCosmicStars();
 
     // 필드 상태 효과 (얼음 빙결, TNT 폭탄 플래시)
     this.freezeTimer = 0;
@@ -41,6 +43,22 @@ class Game {
     this.initCanvasResize();
     this.initInputListeners();
     this.start();
+    this.presentStartingWeaponSelection();
+  }
+
+  initCosmicStars() {
+    this.cosmicStars = [];
+    for (let i = 0; i < 320; i++) {
+      this.cosmicStars.push({
+        x: (Math.random() - 0.5) * 6000,
+        y: (Math.random() - 0.5) * 6000,
+        size: Math.random() < 0.2 ? (Math.random() * 2.2 + 1.2) : (Math.random() * 1.5 + 0.5),
+        baseAlpha: 0.3 + Math.random() * 0.7,
+        twinkleSpeed: 1.2 + Math.random() * 3.5,
+        phase: Math.random() * Math.PI * 2,
+        color: Math.random() < 0.25 ? '#38bdf8' : (Math.random() < 0.4 ? '#c084fc' : (Math.random() < 0.55 ? '#fef08a' : '#ffffff'))
+      });
+    }
   }
 
   initCanvasResize() {
@@ -101,6 +119,7 @@ class Game {
     this.damageNumbers = [];
     this.bossProjectiles = [];
     this.particles = [];
+    this.initCosmicStars();
     this.freezeTimer = 0;
     this.bombFlashTimer = 0;
 
@@ -110,25 +129,78 @@ class Game {
     this.cardManager = new CardManager(this.player, this.weaponManager);
     this.waveManager.reset();
     this.ui.hidePauseModal();
+    this.presentStartingWeaponSelection();
+  }
+
+  // 게임 시작 시 3종의 기본 무기 중 1종 선택
+  presentStartingWeaponSelection() {
+    this.gameState = 'LEVEL_UP';
+    const render = () => {
+      const cards = this.cardManager.generateStartingWeaponCards();
+      this.ui.showCardSelection(
+        cards,
+        // onSelect
+        (selectedCard) => {
+          selectedCard.apply();
+          this.gameState = 'PLAYING';
+          this.lastTime = performance.now();
+        },
+        // onReroll
+        () => {
+          if (this.player.rerollCount > 0) {
+            this.player.rerollCount -= 1;
+            render();
+          }
+        },
+        // onSkip (시작 무기는 반드시 선택해야 하므로 null)
+        null,
+        false, // isBossReward
+        true   // isStarting
+      );
+    };
+    render();
+  }
+
+  presentCardSelection(isBossReward = false) {
+    this.gameState = 'LEVEL_UP';
+    const render = () => {
+      const cards = this.cardManager.generateCards();
+      this.ui.showCardSelection(
+        cards,
+        // onSelect
+        (selectedCard) => {
+          selectedCard.apply();
+          this.gameState = 'PLAYING';
+        },
+        // onReroll
+        () => {
+          if (this.player.rerollCount > 0) {
+            this.player.rerollCount -= 1;
+            render();
+          }
+        },
+        // onSkip
+        () => {
+          // 스킵 시 체력 20 즉시 회복
+          const healAmt = 20;
+          this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmt);
+          this.damageNumbers.push(new DamageNumber(this.player.x, this.player.y - 14, `+${healAmt}`, false, '#22c55e'));
+          this.addParticles(this.player.x, this.player.y, '#22c55e', 14);
+          this.gameState = 'PLAYING';
+        },
+        isBossReward
+      );
+    };
+    render();
   }
 
   onPlayerLevelUp(newLevel) {
-    this.gameState = 'LEVEL_UP';
-    const cards = this.cardManager.generateCards();
-    this.ui.showCardSelection(cards, (selectedCard) => {
-      selectedCard.apply();
-      this.gameState = 'PLAYING';
-    });
+    this.presentCardSelection(false);
   }
 
   // 보스 격파 즉시 1회 무료 업그레이드 보상
   triggerBossRewardCard() {
-    this.gameState = 'LEVEL_UP';
-    const cards = this.cardManager.generateCards();
-    this.ui.showCardSelection(cards, (selectedCard) => {
-      selectedCard.apply();
-      this.gameState = 'PLAYING';
-    }, true);
+    this.presentCardSelection(true);
   }
 
   // 필드 특수 드랍 아이템 발동
@@ -257,23 +329,40 @@ class Game {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const enemy = this.enemies[i];
       if (!isFrozen) {
-        if (enemy.isBoss) {
-          enemy.update(dt, this.player, this.enemies, this.bossProjectiles);
-        } else {
-          enemy.update(dt, this.player, this.enemies);
-        }
+        enemy.update(dt, this.player, this.enemies, this.bossProjectiles);
         this.obstacleManager.resolveCollisions(enemy);
       }
 
+      // 그라운드 몬스터는 부유섬 밖 우주로 나가지 못하도록 경계 제한 [-1580, 1580]
+      if (!enemy.isFlying && !enemy.isBoss) {
+        enemy.x = Math.max(-1580, Math.min(1580, enemy.x));
+        enemy.y = Math.max(-1580, Math.min(1580, enemy.y));
+      }
+
       if (enemy.isDead) {
+        // 해골 몬스터 부활 대기 중일 때는 사망 제거 및 드랍 유예
+        if (enemy.reviveState === 1) {
+          continue;
+        }
+
+        // 슬라임 분열 기믹: 일반 슬라임 사망 시 2마리의 미니 슬라임으로 분열 생성
+        if (enemy.typeKey === 'slime' && !enemy.isMini) {
+          for (let s = -1; s <= 1; s += 2) {
+            const mini = new Enemy('miniSlime', enemy.x + s * 16, enemy.y + (Math.random() - 0.5) * 12, enemy.hpScale * 0.7);
+            mini.isMini = true;
+            this.enemies.push(mini);
+          }
+        }
+
         // 장애물 내부 겹침 방지 안전 스폰 위치 계산
         const safePos = this.obstacleManager ? this.obstacleManager.getUnblockedPosition(enemy.x, enemy.y, 14) : { x: enemy.x, y: enemy.y };
 
         // 경험치 보석 드랍 (뒤 5종 마물은 대량 경험치 보석)
         this.expGems.push(new ExpGem(safePos.x, safePos.y, enemy.exp));
 
-        // 특수 아이템 드랍 (일반몹 약 1.67%, 보스는 100% 확정 드랍)
-        const dropChance = enemy.isBoss ? 1.0 : 0.0167;
+        // 특수 아이템 드랍 (일반몹 약 1.67%, 보스는 100% 확정 드랍, 행운의 클로버 보너스 적용)
+        const dropBonus = 1 + (this.player.dropRateBonus || 0);
+        const dropChance = enemy.isBoss ? 1.0 : (0.0167 * dropBonus);
         if (Math.random() < dropChance) {
           const types = ['magnet', 'bomb', 'freeze'];
           const picked = types[Math.floor(Math.random() * types.length)];
@@ -349,18 +438,21 @@ class Game {
     const width = this.canvas.width;
     const height = this.canvas.height;
 
-    // 배경 클리어
-    ctx.fillStyle = '#0c0f1d';
+    // 배경 클리어 (심연 우주 암흑)
+    ctx.fillStyle = '#030308';
     ctx.fillRect(0, 0, width, height);
 
     ctx.save();
     // 카메라 좌표계 변환 (플레이어가 항상 중앙)
     ctx.translate(Math.round(width / 2 - this.camera.x), Math.round(height / 2 - this.camera.y));
 
-    // 무한 격자 타일 던전 바닥 렌더링
+    // 0. 부유섬 외곽 광활한 우주 공간 및 성운 별빛 렌더링
+    this.renderCosmicSpace(ctx);
+
+    // 1. 부유섬 [-1600, 1600] 영역 격자 타일 지면 렌더링
     this.renderFloorGrid(ctx);
 
-    // 전장 외곽 마법 결계 테두리선 렌더링
+    // 2. 부유섬 외곽 절벽 및 고대 룬 결계 테두리선 렌더링
     this.drawWorldBoundary(ctx);
 
     // 필드 장애물 (돌기둥, 나무 상자)
@@ -436,8 +528,45 @@ class Game {
     }
   }
 
+  // 부유섬 바깥 광활한 우주 성운 및 반짝이는 별빛 렌더링
+  renderCosmicSpace(ctx) {
+    const time = Date.now() * 0.001;
+    ctx.save();
+
+    // 성운 (Nebula) 은은한 배경 발광 3곳
+    const nebulas = [
+      { x: -1200, y: -1100, r: 650, color: 'rgba(79, 70, 229, 0.08)' },
+      { x: 1300, y: -900, r: 750, color: 'rgba(192, 132, 252, 0.07)' },
+      { x: 0, y: 1400, r: 850, color: 'rgba(6, 182, 212, 0.06)' }
+    ];
+    for (const neb of nebulas) {
+      const grad = ctx.createRadialGradient(neb.x, neb.y, 0, neb.x, neb.y, neb.r);
+      grad.addColorStop(0, neb.color);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(neb.x, neb.y, neb.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 별빛 렌더링
+    if (this.cosmicStars) {
+      for (const s of this.cosmicStars) {
+        const alpha = s.baseAlpha * (0.6 + Math.sin(time * s.twinkleSpeed + s.phase) * 0.4);
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = Math.max(0.1, Math.min(1.0, alpha));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1.0;
+    ctx.restore();
+  }
+
   renderFloorGrid(ctx) {
     const tileSize = 64;
+    const islandBound = 1600;
     const halfW = this.canvas.width / 2;
     const halfH = this.canvas.height / 2;
     const startX = Math.floor((this.camera.x - halfW) / tileSize) * tileSize;
@@ -445,26 +574,40 @@ class Game {
     const startY = Math.floor((this.camera.y - halfH) / tileSize) * tileSize;
     const endY = this.camera.y + halfH + tileSize;
 
+    // 부유섬 지면 [-islandBound, islandBound] 영역에만 타일 배치
+    const renderStartX = Math.max(-islandBound, startX);
+    const renderEndX = Math.min(islandBound, endX);
+    const renderStartY = Math.max(-islandBound, startY);
+    const renderEndY = Math.min(islandBound, endY);
+
+    if (renderStartX >= renderEndX || renderStartY >= renderEndY) return;
+
     const floorTile = assets.images['tile_floor'];
+
+    // 부유섬 밑바탕 짙은 석조 바닥
+    ctx.fillStyle = '#0f1423';
+    ctx.fillRect(renderStartX, renderStartY, renderEndX - renderStartX, renderEndY - renderStartY);
 
     if (floorTile && floorTile.complete && floorTile.naturalWidth > 0) {
       ctx.imageSmoothingEnabled = false;
-      for (let x = startX; x <= endX; x += tileSize) {
-        for (let y = startY; y <= endY; y += tileSize) {
-          ctx.drawImage(floorTile, x, y, tileSize, tileSize);
+      for (let x = renderStartX; x < renderEndX; x += tileSize) {
+        for (let y = renderStartY; y < renderEndY; y += tileSize) {
+          const w = Math.min(tileSize, renderEndX - x);
+          const h = Math.min(tileSize, renderEndY - y);
+          ctx.drawImage(floorTile, 0, 0, w, h, x, y, w, h);
         }
       }
     } else {
-      ctx.strokeStyle = '#1a1f36';
+      ctx.strokeStyle = '#1e2540';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      for (let x = startX; x <= endX; x += tileSize) {
-        ctx.moveTo(x, startY);
-        ctx.lineTo(x, endY);
+      for (let x = renderStartX; x <= renderEndX; x += tileSize) {
+        ctx.moveTo(x, renderStartY);
+        ctx.lineTo(x, renderEndY);
       }
-      for (let y = startY; y <= endY; y += tileSize) {
-        ctx.moveTo(startX, y);
-        ctx.lineTo(endX, y);
+      for (let y = renderStartY; y <= renderEndY; y += tileSize) {
+        ctx.moveTo(renderStartX, y);
+        ctx.lineTo(renderEndX, y);
       }
       ctx.stroke();
     }
@@ -476,28 +619,39 @@ class Game {
     const pulse = 0.55 + Math.sin(time) * 0.25;
 
     ctx.save();
-    // 1. 외곽 마법 결계 발광 사각 라인
+    // 1. 부유섬 절벽 외곽 심연 그림자
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
+    ctx.lineWidth = 18;
+    ctx.strokeRect(-bound - 9, -bound - 9, (bound + 9) * 2, (bound + 9) * 2);
+
+    // 2. 외곽 고대 우주 룬 결계 발광 라인
     ctx.strokeStyle = `rgba(168, 85, 247, ${pulse})`;
     ctx.lineWidth = 6;
     ctx.shadowColor = '#c084fc';
     ctx.shadowBlur = 20;
     ctx.strokeRect(-bound, -bound, bound * 2, bound * 2);
 
-    // 2. 내부 룬 보조 라인
+    // 3. 내부 청록빛 룬 보조 라인
     ctx.strokeStyle = `rgba(56, 189, 248, ${pulse * 0.75})`;
     ctx.lineWidth = 2;
     ctx.shadowBlur = 8;
     ctx.strokeRect(-bound + 12, -bound + 12, (bound - 12) * 2, (bound - 12) * 2);
 
-    // 3. 4개 모서리 룬 마법 표식
-    const corners = [
+    // 4. 4개 모서리 및 사방 중앙 결계석
+    const monoliths = [
       [-bound, -bound],
       [bound, -bound],
       [bound, bound],
-      [-bound, bound]
+      [-bound, bound],
+      [0, -bound],
+      [bound, 0],
+      [0, bound],
+      [-bound, 0]
     ];
-    for (const [cx, cy] of corners) {
+    for (const [cx, cy] of monoliths) {
       ctx.fillStyle = '#c084fc';
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 12;
       ctx.beginPath();
       ctx.arc(cx, cy, 14, 0, Math.PI * 2);
       ctx.fill();

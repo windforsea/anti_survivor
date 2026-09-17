@@ -18,11 +18,17 @@ class AssetManager {
       cultist: 'assets/sprites/cultist.png',
       assassin: 'assets/sprites/assassin.png',
       golem: 'assets/sprites/golem.png',
+      darkMage: 'assets/sprites/darkMage.png',
+      bloodHound: 'assets/sprites/bloodHound.png',
+      wraithSwarm: 'assets/sprites/wraithSwarm.png',
+      abyssTitan: 'assets/sprites/abyssTitan.png',
       boss_boar: 'assets/sprites/boss_boar.png',
       boss_void: 'assets/sprites/boss_void.png',
       boss_eye: 'assets/sprites/boss_eye.png',
       boss_colossus: 'assets/sprites/boss_colossus.png',
       boss_doom: 'assets/sprites/boss_doom.png',
+      boss_lich: 'assets/sprites/boss_lich.png',
+      boss_reaper: 'assets/sprites/boss_reaper.png',
       tile_floor: 'assets/sprites/tile_floor.png',
 
       // 카드 아이콘
@@ -44,6 +50,15 @@ class AssetManager {
       icon_global_speed: 'assets/sprites/icon_global_speed.png',
       icon_proj_speed: 'assets/sprites/icon_proj_speed.png',
       icon_proj_count: 'assets/sprites/icon_proj_count.png',
+
+      // 신규 무기 및 패시브 아이콘 & 아기 슬라임
+      icon_lightning: 'assets/sprites/icon_lightning.png',
+      icon_firewand: 'assets/sprites/icon_firewand.png',
+      icon_arcanesanctuary: 'assets/sprites/icon_arcanesanctuary.png',
+      icon_plasmatempest: 'assets/sprites/icon_plasmatempest.png',
+      icon_clover: 'assets/sprites/icon_clover.png',
+      icon_crown: 'assets/sprites/icon_crown.png',
+      miniSlime: 'assets/sprites/miniSlime.png',
 
       // 특수 드랍 아이템
       item_magnet: 'assets/sprites/item_magnet.png',

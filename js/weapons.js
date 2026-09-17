@@ -15,9 +15,12 @@ class WeaponManager {
     this.player = player;
     this.game = game;
     this.weapons = {};
+    this.consumedWeapons = new Set(); // 진화 합성에 소모되어 영구 소멸된 무기 추적
     this.projectiles = [];
     this.slashes = [];
     this.damagePools = [];
+    this.lightningStrikes = [];
+    this.plasmaStrikes = [];
 
     // 콤보 큐
     this.swordComboQueue = 0;
@@ -29,21 +32,20 @@ class WeaponManager {
     this.bladeWhipStrikesQueue = [];
     this.bladeWhipStrikeTimer = 0;
 
-    // 기본 지급 무기: 일반 검 (근접 속도형)
-    this.unlockWeapon('sword');
+    // 시작 무기는 게임 시작 시 카드 선택을 통해 장착 (기본 지급 제거)
   }
 
   unlockWeapon(type) {
-    if (this.weapons[type]) return;
+    if (this.weapons[type] || (this.consumedWeapons && this.consumedWeapons.has(type))) return;
 
     const baseConfigs = {
       sword: {
         id: 'sword',
         name: '일반 검 (근접 속도)',
         icon: '🗡️',
-        desc: '바라보는 방향으로 날렵하게 검을 휘둘러 벱니다.',
-        baseCooldown: 0.40,
-        baseDamage: 32,
+        desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.',
+        baseCooldown: 0.50, // 0.5초 쿨다운 적용
+        baseDamage: 16,     // 슬라임 2타, 좀비 3타 처치 밸런스 유지
         baseCount: 1,
         baseArea: 1.0,
         speedLevel: 0,
@@ -100,7 +102,7 @@ class WeaponManager {
         icon: '🔮',
         desc: '가장 가까운 적을 조준하여 빠른 속도로 유도 마법탄을 발사합니다.',
         baseCooldown: 0.70,
-        baseDamage: 15,
+        baseDamage: 20, // 데미지 상향 (15 -> 20, 초반 유도 안정성 확보)
         baseCount: 1,
         baseArea: 1.0,
         speedLevel: 0,
@@ -168,54 +170,122 @@ class WeaponManager {
         areaLevel: 0,
         cooldownTimer: 0
       },
-      // 진화 무기 1: 회전 도끼 (검 6강 + 도끼 6강)
+      // 진화 무기 1: 회전 도끼 (검 6강 + 도끼 3강 이상)
       spinningAxe: {
         id: 'spinningAxe',
         name: '회전 도끼 (진화 무기)',
         icon: '🪓',
         desc: '거대한 도끼들이 플레이어 주위를 초고속 회전하며 적을 갈아냅니다.',
         baseCooldown: 9999, // 상시 회전 유지
-        baseDamage: 68,
-        baseCount: 4,      // 기본 4개 회전 도끼
-        baseArea: 1.0,     // 회전 반경 연동
-        speedLevel: 6,
-        countLevel: 3,
-        areaLevel: 6,
-        speedProjLevel: 6, // 회전 속도 연동
+        baseDamage: 42,     // 밸런스 조정: 68 -> 42
+        baseCount: 3,       // 기본 3개 도끼
+        baseArea: 1.0,      // 회전 반경 연동
+        speedLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
         orbitAngle: 0,
         hitTimers: new Map(),
         cooldownTimer: 9999
       },
-      // 진화 무기 2: 칼날 채찍 (채찍 6강 + 던지는 단검 6강)
+      // 진화 무기 2: 칼날 채찍 (채찍 6강 + 던지는 단검 3강 이상)
       bladeWhip: {
         id: 'bladeWhip',
         name: '칼날 채찍 (진화 무기)',
         icon: '⛓️',
-        desc: '채찍 끝에 날카로운 단검들이 결합되어 초장거리 광역 부채꼴로 전후방을 휩쓸어버립니다.',
-        baseCooldown: 0.85,
-        baseDamage: 76,
-        baseCount: 3,
-        baseArea: 1.25,
-        speedLevel: 6,
-        countLevel: 3,
-        areaLevel: 6,
-        speedProjLevel: 6,
+        desc: '채찍 끝에 날카로운 단검들이 결합되어 전후방을 휩쓸어버립니다.',
+        baseCooldown: 1.05, // 밸런스 조정: 0.85s -> 1.05s
+        baseDamage: 46,     // 밸런스 조정: 76 -> 46
+        baseCount: 2,       // 기본 2연타
+        baseArea: 1.0,
+        speedLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
         cooldownTimer: 0
       },
-      // 진화 무기 3: 홀리 산탄총 (산탄총 6강 + 성수 6강)
+      // 진화 무기 3: 홀리 산탄총 (산탄총 6강 + 성수 3강 이상)
       holyShotgun: {
         id: 'holyShotgun',
         name: '홀리 산탄총 (진화 무기)',
         icon: '✨',
-        desc: '바라보는 방향으로 성스러운 산탄들을 일제히 발사하며, 적중 시 좁은 범위의 성스러운 폭발을 일으킵니다.',
-        baseCooldown: 1.25,
-        baseDamage: 56, // 산탄총 상향 연동: 28 -> 56 (2배 상향)
-        baseCount: 6,      // 6발 산탄
+        desc: '바라보는 방향으로 성스러운 산탄들을 일제히 발사하며, 적중 시 성스러운 폭발을 일으킵니다.',
+        baseCooldown: 1.35, // 밸런스 조정: 1.25s -> 1.35s
+        baseDamage: 36,     // 밸런스 조정: 56 -> 36
+        baseCount: 5,       // 기본 5발
         baseArea: 1.0,
-        speedLevel: 6,
-        countLevel: 3,
-        areaLevel: 6,
-        speedProjLevel: 6,
+        speedLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
+        cooldownTimer: 0
+      },
+      // 신규 기본 무기: 번개 반지 (lightningRing)
+      lightningRing: {
+        id: 'lightningRing',
+        name: '번개 반지 (하늘 낙뢰)',
+        icon: '⚡',
+        iconSprite: 'icon_lightning',
+        desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂아 반경 범위 피해를 입힙니다.',
+        baseCooldown: 1.25,
+        baseDamage: 38,
+        baseCount: 1,
+        baseArea: 1.0,
+        speedLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+      // 신규 기본 무기: 화염 지팡이 (fireWand)
+      fireWand: {
+        id: 'fireWand',
+        name: '화염 지팡이 (폭발 화염구)',
+        icon: '🔥',
+        iconSprite: 'icon_firewand',
+        desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 주변 적들에게 화염 피해를 입힙니다.',
+        baseCooldown: 1.15,
+        baseDamage: 32,
+        baseCount: 1,
+        baseArea: 1.0,
+        speedLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
+        cooldownTimer: 0
+      },
+      // 진화 무기 4: 비전 성역 (마법 화살 6강 + 성역 3강 이상)
+      arcaneSanctuary: {
+        id: 'arcaneSanctuary',
+        name: '비전 성역 (진화 무기)',
+        icon: '🔯',
+        iconSprite: 'icon_arcanesanctuary',
+        desc: '성역 결계가 거대해지며, 결계 룬에서 전방위 비전 유도탄이 끊임없이 뿜어져 나옵니다.',
+        baseCooldown: 0.70,
+        baseDamage: 36,
+        baseCount: 4,
+        baseArea: 1.35,
+        speedLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
+        auraTimer: 0,
+        cooldownTimer: 0
+      },
+      // 진화 무기 5: 플라즈마 폭풍 (번개 반지 6강 + 화염 지팡이 3강 이상)
+      plasmaTempest: {
+        id: 'plasmaTempest',
+        name: '플라즈마 폭풍 (진화 무기)',
+        icon: '⚡🔥',
+        iconSprite: 'icon_plasmatempest',
+        desc: '초고열 플라즈마 번개구가 하늘에서 융단 폭격되어 지면에 거대한 플라즈마 폭발 지대를 생성합니다.',
+        baseCooldown: 1.40,
+        baseDamage: 54,
+        baseCount: 3,
+        baseArea: 1.25,
+        speedLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
         cooldownTimer: 0
       }
     };
@@ -270,7 +340,7 @@ class WeaponManager {
     return w.baseArea * areaBonus * (this.player.bonusAreaMult || 1.0);
   }
 
-  // 1. 일반 검 (sword): 바라보는 방향 날렵한 근접 베기 (판정 슬림화, 원형선 제거)
+  // 1. 일반 검 (sword): 가장 가까운 적을 향해 날렵한 근접 베기 (360도 자동 조준)
   executeSwordSlash(w, enemies) {
     sounds.playSlash();
     const dmg = this.getDamage(w);
@@ -288,11 +358,11 @@ class WeaponManager {
       x: this.player.x,
       y: this.player.y,
       angle: angle,
-      arc: 0.68,          // 슬림한 부채꼴 각도
-      range: 80 * area,   // 날렵한 사거리
+      arc: 0.72,          // 날렵한 부채꼴 각도
+      range: 80 * area,   // 사거리
       damage: dmg,
       knockbackDir: { x: Math.cos(angle), y: Math.sin(angle) },
-      knockbackForce: 140,
+      knockbackForce: 100, // 균형 잡힌 넉백
       life: 0.10,
       maxLife: 0.10,
       hitEnemies: new Set(),
@@ -369,7 +439,7 @@ class WeaponManager {
     const angle = isBack ? (baseAngle + Math.PI) : baseAngle;
 
     const arc = 2.35; // 약 135도의 초대형 광역 부채꼴 호
-    const range = 310 * area; // 화면 끝까지 휩쓰는 초장거리 사거리
+    const range = 240 * area; // 사거리 밸런스 조정 (310 -> 240px)
     this.player.triggerAttackAnim('bladewhip', angle, 0.24, { arc, range, area });
 
     this.slashes.push({
@@ -397,10 +467,10 @@ class WeaponManager {
   }
 
   // [신규 무기] 성역 (sanctuary): 플레이어 중심 360도 원형 결계 도트 틱 (검 사거리 80px 기준, 공속 영향 X)
-  executeSanctuaryTick(w, enemies) {
-    const dmg = this.getDamage(w);
+  executeSanctuaryTick(w, enemies, isArcane = false) {
+    const dmg = isArcane ? Math.round(this.getDamage(w) * 0.75) : this.getDamage(w);
     const area = this.getArea(w);
-    const radius = 80 * area;
+    const radius = (isArcane ? 110 : 80) * area;
     const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : [];
 
     let hitCount = 0;
@@ -413,7 +483,7 @@ class WeaponManager {
           x: (enemy.x - this.player.x) / (dist || 1),
           y: (enemy.y - this.player.y) / (dist || 1)
         };
-        enemy.takeDamage(dmg, kbDir, 50);
+        enemy.takeDamage(dmg, kbDir, isArcane ? 90 : 50);
         hitCount++;
       }
     }
@@ -433,8 +503,258 @@ class WeaponManager {
     }
   }
 
+  // [신규 무기] 번개 반지: 하늘에서 무작위 적에게 벼락을 내리꽂음
+  executeLightningStrike(w, enemies) {
+    const count = this.getCount(w);
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const radius = 48 * area;
+    const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : [];
+
+    // 타겟 선정: 최대 count마리
+    const aliveEnemies = enemies.filter(e => !e.isDead && Math.hypot(e.x - this.player.x, e.y - this.player.y) <= 650);
+    
+    for (let i = 0; i < count; i++) {
+      let tx, ty;
+      if (aliveEnemies.length > 0) {
+        const target = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+        tx = target.x + (Math.random() - 0.5) * 16;
+        ty = target.y + (Math.random() - 0.5) * 16;
+      } else {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 60 + Math.random() * 160;
+        tx = this.player.x + Math.cos(angle) * dist;
+        ty = this.player.y + Math.sin(angle) * dist;
+      }
+
+      // 번개 세그먼트 생성 (하늘 y-450에서 tx, ty로 지그재그 하강)
+      const segments = [{ x: tx, y: ty - 450 }];
+      const steps = 7;
+      for (let s = 1; s < steps; s++) {
+        const frac = s / steps;
+        segments.push({
+          x: tx + (Math.random() - 0.5) * 45,
+          y: (ty - 450) + 450 * frac
+        });
+      }
+      segments.push({ x: tx, y: ty });
+
+      this.lightningStrikes.push({
+        x: tx,
+        y: ty,
+        segments: segments,
+        radius: radius,
+        life: 0.18,
+        maxLife: 0.18
+      });
+
+      // 반경 피해 적용
+      for (const e of enemies) {
+        if (e.isDead) continue;
+        const d = Math.hypot(e.x - tx, e.y - ty);
+        if (d <= radius + e.radius) {
+          const kbDir = {
+            x: (e.x - tx) / (d || 1),
+            y: (e.y - ty) / (d || 1)
+          };
+          e.takeDamage(dmg, kbDir, 160);
+        }
+      }
+
+      for (const obs of obstacles) {
+        if (obs.isDead || !obs.isDestructible) continue;
+        const d = Math.hypot(obs.x - tx, obs.y - ty);
+        if (d <= radius + obs.radius) {
+          obs.takeDamage(dmg, this.game);
+        }
+      }
+
+      if (this.game) {
+        this.game.addParticles(tx, ty, '#38bdf8', 8);
+        this.game.addParticles(tx, ty, '#fef08a', 8);
+      }
+    }
+
+    sounds.playLightning();
+  }
+
+  // [신규 무기] 화염 지팡이: 화염구 발사 및 착탄 시 폭발
+  executeFireWand(w, enemies) {
+    const count = this.getCount(w);
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 460 * projSpeedBonus;
+
+    sounds.playShoot();
+    const closestEnemy = this.getClosestEnemy(enemies);
+    let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+    if (closestEnemy) {
+      baseAngle = Math.atan2(closestEnemy.y - this.player.y, closestEnemy.x - this.player.x);
+    }
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.18 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'fireball',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 7 * area,
+        area: area,
+        damage: dmg,
+        pierce: 1,
+        splashRadius: 55 * area,
+        splashDamage: Math.round(dmg * 0.85),
+        knockbackForce: 170,
+        life: 0.82, // 사거리 약 380px
+        homing: false,
+        color: '#f97316',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // [진화 무기 4] 비전 성역: 결계 룬에서 전방위 비전 유도탄 일제 방출
+  executeArcaneSanctuary(w, enemies) {
+    const count = this.getCount(w);
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const radius = 110 * area;
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 480 * projSpeedBonus;
+
+    sounds.playMagic();
+    for (let i = 0; i < count; i++) {
+      const angle = (Date.now() * 0.003) + (i * Math.PI * 2) / count;
+      const sx = this.player.x + Math.cos(angle) * (radius * 0.85);
+      const sy = this.player.y + Math.sin(angle) * (radius * 0.85);
+
+      this.projectiles.push({
+        type: 'arcaneMissile',
+        x: sx,
+        y: sy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 7 * area,
+        area: area,
+        damage: dmg,
+        pierce: 2, // 2체 관통
+        knockbackForce: 110,
+        life: 1.6,
+        homing: true,
+        color: '#c084fc',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // [진화 무기 5] 플라즈마 폭풍: 초고열 플라즈마 번개구가 지면에 융단 폭격
+  executePlasmaTempest(w, enemies) {
+    const count = this.getCount(w);
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const radius = 85 * area;
+    const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : [];
+
+    const aliveEnemies = enemies.filter(e => !e.isDead && Math.hypot(e.x - this.player.x, e.y - this.player.y) <= 650);
+
+    for (let i = 0; i < count; i++) {
+      let tx, ty;
+      if (aliveEnemies.length > 0) {
+        const target = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+        tx = target.x + (Math.random() - 0.5) * 35;
+        ty = target.y + (Math.random() - 0.5) * 35;
+      } else {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 70 + Math.random() * 220;
+        tx = this.player.x + Math.cos(angle) * dist;
+        ty = this.player.y + Math.sin(angle) * dist;
+      }
+
+      this.plasmaStrikes.push({
+        x: tx,
+        y: ty,
+        radius: radius,
+        life: 0.32,
+        maxLife: 0.32,
+        damage: dmg
+      });
+
+      // 반경 즉발 피해
+      for (const e of enemies) {
+        if (e.isDead) continue;
+        const d = Math.hypot(e.x - tx, e.y - ty);
+        if (d <= radius + e.radius) {
+          const kbDir = {
+            x: (e.x - tx) / (d || 1),
+            y: (e.y - ty) / (d || 1)
+          };
+          e.takeDamage(dmg, kbDir, 240);
+        }
+      }
+
+      for (const obs of obstacles) {
+        if (obs.isDead || !obs.isDestructible) continue;
+        const d = Math.hypot(obs.x - tx, obs.y - ty);
+        if (d <= radius + obs.radius) {
+          obs.takeDamage(dmg, this.game);
+        }
+      }
+
+      // 플라즈마 지속 감전 장판 생성 (1.6초)
+      this.damagePools.push({
+        x: tx,
+        y: ty,
+        radius: radius * 0.75,
+        damage: Math.round(dmg * 0.45),
+        life: 1.6,
+        tickTimer: 0,
+        color: '#38bdf8',
+        isPlasma: true
+      });
+
+      if (this.game) {
+        this.game.addParticles(tx, ty, '#38bdf8', 16);
+        this.game.addParticles(tx, ty, '#f97316', 12);
+        this.game.addParticles(tx, ty, '#fef08a', 8);
+      }
+    }
+
+    sounds.playLightning();
+    sounds.playExplosion();
+  }
+
   update(dt, enemies) {
     const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : [];
+
+    // 번개 및 플라즈마 이펙트 수명 업데이트
+    for (let i = this.lightningStrikes.length - 1; i >= 0; i--) {
+      this.lightningStrikes[i].life -= dt;
+      if (this.lightningStrikes[i].life <= 0) {
+        this.lightningStrikes.splice(i, 1);
+      }
+    }
+    for (let i = this.plasmaStrikes.length - 1; i >= 0; i--) {
+      this.plasmaStrikes[i].life -= dt;
+      if (this.plasmaStrikes[i].life <= 0) {
+        this.plasmaStrikes.splice(i, 1);
+      }
+    }
+
+    // [진화 무기 4] 비전 성역 (arcaneSanctuary) 도트 결계 유지
+    const arcaneSanctuary = this.weapons['arcaneSanctuary'];
+    if (arcaneSanctuary) {
+      arcaneSanctuary.auraTimer = (arcaneSanctuary.auraTimer || 0) - dt;
+      if (arcaneSanctuary.auraTimer <= 0) {
+        this.executeSanctuaryTick(arcaneSanctuary, enemies, true);
+        arcaneSanctuary.auraTimer = 0.5;
+      }
+    }
 
     // 일반 검 연속 베기 콤보
     if (this.swordComboQueue > 0) {
@@ -487,7 +807,7 @@ class WeaponManager {
       const orbitSpeed = 4.2 * projSpeedMult;
       spinAxe.orbitAngle = (spinAxe.orbitAngle || 0) + orbitSpeed * dt;
 
-      const orbitRadius = 82 * this.getArea(spinAxe);
+      const orbitRadius = 75 * this.getArea(spinAxe);
       const count = this.getCount(spinAxe);
       const dmg = this.getDamage(spinAxe);
 
@@ -512,12 +832,12 @@ class WeaponManager {
           if (enemy.isDead || spinAxe.hitTimers.has(enemy)) continue;
           const dist = Math.hypot(enemy.x - bx, enemy.y - by);
           if (dist <= bladeRadius + enemy.radius) {
-            spinAxe.hitTimers.set(enemy, 0.20);
+            spinAxe.hitTimers.set(enemy, 0.35); // 피격 쿨다운 0.20s -> 0.35s 조정
             const kbDir = {
               x: (enemy.x - this.player.x) / (Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y) || 1),
               y: (enemy.y - this.player.y) / (Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y) || 1)
             };
-            enemy.takeDamage(dmg, kbDir, 180);
+            enemy.takeDamage(dmg, kbDir, 160);
             sounds.playSlash();
           }
         }
@@ -624,14 +944,18 @@ class WeaponManager {
       const p = this.projectiles[i];
       p.life -= dt;
       if (p.life <= 0) {
+        if (p.type === 'fireball' && p.splashRadius > 0 && !p.exploded) {
+          p.exploded = true;
+          this.triggerFireSplash(p, enemies, obstacles);
+        }
         this.projectiles.splice(i, 1);
         continue;
       }
 
-      // 유도 로직 (마법 화살)
+      // 유도 로직 (마법 화살 & 비전 미사일)
       if (p.homing && enemies.length > 0) {
         let closest = null;
-        let minDist = 450;
+        let minDist = 500;
         for (const e of enemies) {
           if (e.isDead) continue;
           const d = Math.hypot(e.x - p.x, e.y - p.y);
@@ -668,7 +992,12 @@ class WeaponManager {
           sounds.playHit();
 
           if (p.splashRadius > 0) {
-            this.triggerHolySplash(p, enemies, obstacles);
+            if (p.type === 'fireball') {
+              p.exploded = true;
+              this.triggerFireSplash(p, enemies, obstacles);
+            } else {
+              this.triggerHolySplash(p, enemies, obstacles);
+            }
           }
 
           p.pierce -= 1;
@@ -689,7 +1018,12 @@ class WeaponManager {
             obs.takeDamage(p.damage, this.game);
 
             if (p.splashRadius > 0) {
-              this.triggerHolySplash(p, enemies, obstacles);
+              if (p.type === 'fireball') {
+                p.exploded = true;
+                this.triggerFireSplash(p, enemies, obstacles);
+              } else {
+                this.triggerHolySplash(p, enemies, obstacles);
+              }
             }
 
             p.pierce -= 1;
@@ -764,6 +1098,39 @@ class WeaponManager {
     }
   }
 
+  triggerFireSplash(p, enemies, obstacles) {
+    if (this.game) {
+      this.game.addParticles(p.x, p.y, '#f97316', 14);
+      this.game.addParticles(p.x, p.y, '#ef4444', 10);
+      this.game.addParticles(p.x, p.y, '#fef08a', 8);
+    }
+    sounds.playExplosion();
+    const splashR = p.splashRadius;
+    const splashDmg = p.splashDamage;
+
+    for (const enemy of enemies) {
+      if (enemy.isDead || p.hitEnemies.has(enemy)) continue;
+      const d = Math.hypot(enemy.x - p.x, enemy.y - p.y);
+      if (d <= splashR + enemy.radius) {
+        p.hitEnemies.add(enemy);
+        const kbDir = {
+          x: (enemy.x - p.x) / (d || 1),
+          y: (enemy.y - p.y) / (d || 1)
+        };
+        enemy.takeDamage(splashDmg, kbDir, 160);
+      }
+    }
+
+    for (const obs of obstacles) {
+      if (obs.isDead || !obs.isDestructible || p.hitObstacles.has(obs)) continue;
+      const d = Math.hypot(obs.x - p.x, obs.y - p.y);
+      if (d <= splashR + obs.radius) {
+        p.hitObstacles.add(obs);
+        obs.takeDamage(splashDmg, this.game);
+      }
+    }
+  }
+
   fireWeapon(w, enemies) {
     const count = this.getCount(w);
     const dmg = this.getDamage(w);
@@ -803,11 +1170,11 @@ class WeaponManager {
       }
 
       case 'bladeWhip': {
-        // 칼날 채찍: 6회 전후방 폭풍 채찍질
-        const pattern = [false, true, false, true, false, true];
+        // 칼날 채찍: 4회 전후방 교차 폭풍 채찍질 (앞, 뒤, 앞, 뒤)
+        const pattern = [false, true, false, true];
         this.executeBladeWhipStrike(w, pattern[0]);
         this.bladeWhipStrikesQueue = pattern.slice(1);
-        this.bladeWhipStrikeTimer = 0.09;
+        this.bladeWhipStrikeTimer = 0.12;
         break;
       }
 
@@ -924,8 +1291,8 @@ class WeaponManager {
         const totalPellets = count;
         const spreadTotal = 0.68;
         const speed = 560 * projSpeedBonus;
-        const splashRadius = 35 * area;
-        const splashDmg = Math.round(35 * this.player.atkPowerMult); // 스플래시 피해도 상향
+        const splashRadius = 28 * area;
+        const splashDmg = Math.round(20 * this.player.atkPowerMult); // 스플래시 피해 밸런스 조정 (35 -> 20)
 
         for (let i = 0; i < totalPellets; i++) {
           const angleOffset = (Math.random() - 0.5) * spreadTotal;
@@ -985,6 +1352,26 @@ class WeaponManager {
         }
         break;
       }
+
+      case 'lightningRing': {
+        this.executeLightningStrike(w, enemies);
+        break;
+      }
+
+      case 'fireWand': {
+        this.executeFireWand(w, enemies);
+        break;
+      }
+
+      case 'arcaneSanctuary': {
+        this.executeArcaneSanctuary(w, enemies);
+        break;
+      }
+
+      case 'plasmaTempest': {
+        this.executePlasmaTempest(w, enemies);
+        break;
+      }
     }
   }
 
@@ -1025,17 +1412,73 @@ class WeaponManager {
       ctx.restore();
     }
 
+    // 0.1 비전 성역 (arcaneSanctuary) 거대 비전 결계 및 룬 회전 렌더링
+    const arcaneSanctuary = this.weapons['arcaneSanctuary'];
+    if (arcaneSanctuary) {
+      const area = this.getArea(arcaneSanctuary);
+      const radius = 110 * area;
+      const time = Date.now() * 0.0025;
+      const pulse = 0.22 + Math.sin(time * 4) * 0.08;
+
+      ctx.save();
+      // 신비로운 보랏빛/청록빛 비전 결계
+      ctx.fillStyle = `rgba(168, 85, 247, ${pulse})`;
+      ctx.beginPath();
+      ctx.arc(this.player.x, this.player.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 내부 회전 보조 링
+      ctx.strokeStyle = `rgba(56, 189, 248, ${pulse + 0.25})`;
+      ctx.lineWidth = Math.max(1.5, Math.round(2 * Math.sqrt(area)));
+      ctx.beginPath();
+      ctx.arc(this.player.x, this.player.y, radius * 0.65, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 결계 외곽 테두리선
+      ctx.strokeStyle = `rgba(216, 180, 254, ${pulse + 0.45})`;
+      ctx.lineWidth = Math.max(2.5, Math.round(4 * Math.sqrt(area)));
+      ctx.shadowColor = '#c084fc';
+      ctx.shadowBlur = 16;
+      ctx.stroke();
+
+      // 회전하는 12개 비전 룬 마커
+      const runes = 12;
+      for (let r = 0; r < runes; r++) {
+        const rAngle = time + (r * Math.PI * 2) / runes;
+        const rx = this.player.x + Math.cos(rAngle) * radius;
+        const ry = this.player.y + Math.sin(rAngle) * radius;
+        ctx.fillStyle = r % 2 === 0 ? '#38bdf8' : '#e9d5ff';
+        ctx.beginPath();
+        ctx.arc(rx, ry, 4.5 * Math.sqrt(area), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
     // 1. 도트 장판 바닥 렌더링
     for (const pool of this.damagePools) {
       const alpha = Math.min(0.5, pool.life * 0.3);
       const isHoly = pool.isHoly || false;
+      const isPlasma = pool.isPlasma || false;
       ctx.save();
-      ctx.fillStyle = isHoly ? `rgba(56, 189, 248, ${alpha})` : `rgba(34, 197, 94, ${alpha})`;
+      if (isPlasma) {
+        ctx.fillStyle = `rgba(56, 189, 248, ${alpha * 0.9})`;
+      } else if (isHoly) {
+        ctx.fillStyle = `rgba(56, 189, 248, ${alpha})`;
+      } else {
+        ctx.fillStyle = `rgba(34, 197, 94, ${alpha})`;
+      }
       ctx.beginPath();
       ctx.arc(pool.x, pool.y, pool.radius, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.strokeStyle = isHoly ? `rgba(186, 230, 253, ${alpha + 0.25})` : `rgba(134, 239, 172, ${alpha + 0.2})`;
+      if (isPlasma) {
+        ctx.strokeStyle = `rgba(250, 204, 21, ${alpha + 0.35})`;
+      } else if (isHoly) {
+        ctx.strokeStyle = `rgba(186, 230, 253, ${alpha + 0.25})`;
+      } else {
+        ctx.strokeStyle = `rgba(134, 239, 172, ${alpha + 0.2})`;
+      }
       ctx.lineWidth = 2;
       ctx.stroke();
 
@@ -1043,11 +1486,68 @@ class WeaponManager {
       for (let b = 0; b < 3; b++) {
         const bx = pool.x + Math.sin(bubbleTime + b * 2) * (pool.radius * 0.6);
         const by = pool.y + Math.cos(bubbleTime + b * 2) * (pool.radius * 0.6);
-        ctx.fillStyle = isHoly ? `rgba(224, 242, 254, ${alpha + 0.35})` : `rgba(187, 247, 208, ${alpha + 0.3})`;
+        ctx.fillStyle = isPlasma ? `rgba(254, 240, 138, ${alpha + 0.4})` : (isHoly ? `rgba(224, 242, 254, ${alpha + 0.35})` : `rgba(187, 247, 208, ${alpha + 0.3})`);
         ctx.beginPath();
         ctx.arc(bx, by, 3, 0, Math.PI * 2);
         ctx.fill();
       }
+      ctx.restore();
+    }
+
+    // 1.5 번개 낙뢰 이펙트 렌더링
+    for (const ls of this.lightningStrikes) {
+      const alpha = Math.min(1.0, ls.life / (ls.maxLife * 0.7));
+      ctx.save();
+      ctx.strokeStyle = `rgba(186, 230, 253, ${alpha})`;
+      ctx.lineWidth = 4;
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 16;
+      ctx.beginPath();
+      if (ls.segments && ls.segments.length > 0) {
+        ctx.moveTo(ls.segments[0].x, ls.segments[0].y);
+        for (let i = 1; i < ls.segments.length; i++) {
+          ctx.lineTo(ls.segments[i].x, ls.segments[i].y);
+        }
+      }
+      ctx.stroke();
+
+      // 밝은 코어 번개선
+      ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // 지면 타격 충격 지점
+      ctx.fillStyle = `rgba(254, 240, 138, ${alpha * 0.6})`;
+      ctx.beginPath();
+      ctx.arc(ls.x, ls.y, ls.radius * (1 - ls.life / ls.maxLife), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 1.6 플라즈마 폭풍 이펙트 렌더링
+    for (const ps of this.plasmaStrikes) {
+      const prog = 1 - (ps.life / ps.maxLife);
+      const alpha = Math.min(1.0, ps.life / (ps.maxLife * 0.6));
+      ctx.save();
+      // 확장되는 플라즈마 충격파
+      ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+      ctx.lineWidth = 5 * (1 - prog);
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 20;
+      ctx.beginPath();
+      ctx.arc(ps.x, ps.y, ps.radius * prog, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 중심 초고열 플라즈마 구
+      ctx.fillStyle = `rgba(250, 204, 21, ${alpha * 0.7})`;
+      ctx.beginPath();
+      ctx.arc(ps.x, ps.y, ps.radius * 0.35 * (1 - prog * 0.5), 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.9})`;
+      ctx.beginPath();
+      ctx.arc(ps.x, ps.y, ps.radius * 0.18 * (1 - prog * 0.5), 0, Math.PI * 2);
+      ctx.fill();
       ctx.restore();
     }
 
@@ -1093,6 +1593,34 @@ class WeaponManager {
           ctx.arc(p.x, p.y, p.radius * 0.5, 0, Math.PI * 2);
           ctx.fill();
         }
+      } else if (p.type === 'fireball') {
+        // 화염 지팡이 폭발 화염구 렌더링
+        const radius = p.radius;
+        ctx.fillStyle = '#ef4444';
+        ctx.shadowColor = '#f97316';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'arcaneMissile') {
+        // 비전 성역 유도탄 렌더링
+        const radius = p.radius;
+        ctx.fillStyle = '#c084fc';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.5, 0, Math.PI * 2);
+        ctx.fill();
       } else {
         // 일반 투사체 (마법 화살, 산탄)
         ctx.fillStyle = p.color;

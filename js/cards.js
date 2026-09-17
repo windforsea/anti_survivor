@@ -18,39 +18,137 @@ class CardManager {
     this.weaponManager = weaponManager;
   }
 
+  // 게임 시작 시 3종의 기본 무기 중 1개를 선택 (패시브 제외)
+  generateStartingWeaponCards() {
+    const starterKeys = ['sword', 'axe', 'whip', 'throwingDagger', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand'];
+    const weaponMeta = {
+      sword: { name: '일반 검', icon: '🗡️', iconKey: 'icon_sword', desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다. (자동 조준)' },
+      axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냅니다.' },
+      whip: { name: '채찍', icon: '🪢', iconKey: 'icon_whip', desc: '사거리가 길며 전방과 후방을 번갈아 교차 연타합니다.' },
+      throwingDagger: { name: '던지는 단검', icon: '🔪', iconKey: 'icon_dagger', desc: '가장 가까운 몬스터를 향해 관통하는 단검을 던집니다.' },
+      magicMissile: { name: '마법 화살', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환을 발사합니다.' },
+      shotgun: { name: '산탄 총포', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄을 일제 사격합니다.' },
+      holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.' },
+      sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_holywater', desc: '플레이어를 감싸는 원형 결계로 적들에게 매초 도트 피해를 입힙니다.' },
+      lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂아 반경 범위 피해를 입힙니다.' },
+      fireWand: { name: '화염 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 광역 피해를 입힙니다.' }
+    };
+
+    const shuffled = [...starterKeys].sort(() => 0.5 - Math.random());
+    const picked = shuffled.slice(0, 3);
+
+    return picked.map(key => {
+      const meta = weaponMeta[key];
+      return {
+        id: `start_${key}`,
+        type: 'weapon_new',
+        category: 'weapon',
+        title: `${meta.name} 해금`,
+        icon: meta.icon,
+        iconKey: meta.iconKey,
+        desc: meta.desc,
+        effectText: '시작 무기 장착',
+        badge: 'START WEAPON',
+        stars: '',
+        evolutionHint: null,
+        apply: () => {
+          this.weaponManager.unlockWeapon(key);
+        }
+      };
+    });
+  }
+
   generateCards() {
     const cardPool = [];
 
-    // 진화 링크 파트너 6강 달성 여부 검사 헬퍼
+    // 진화 링크 힌트 헬퍼: 진화 가능 무기가 1개라도 있거나 조합 트리 안내용
     const getEvolutionHint = (weaponKey) => {
       const evoPairs = {
-        axe: { partner: 'sword', evoName: '회전 도끼', evoIcon: '🪓' },
-        sword: { partner: 'axe', evoName: '회전 도끼', evoIcon: '🪓' },
-        throwingDagger: { partner: 'whip', evoName: '칼날 채찍', evoIcon: '⛓️' },
-        whip: { partner: 'throwingDagger', evoName: '칼날 채찍', evoIcon: '⛓️' },
-        holyWater: { partner: 'shotgun', evoName: '홀리 산탄총', evoIcon: '✨' },
-        acidPool: { partner: 'shotgun', evoName: '홀리 산탄총', evoIcon: '✨' },
-        shotgun: { partner: 'holyWater', evoName: '홀리 산탄총', evoIcon: '✨' }
+        axe: { partner: 'sword', partnerKor: '일반 검', evoId: 'spinningAxe', evoName: '회전 도끼', evoIcon: '🪓' },
+        sword: { partner: 'axe', partnerKor: '도끼', evoId: 'spinningAxe', evoName: '회전 도끼', evoIcon: '🪓' },
+        throwingDagger: { partner: 'whip', partnerKor: '채찍', evoId: 'bladeWhip', evoName: '칼날 채찍', evoIcon: '⛓️' },
+        whip: { partner: 'throwingDagger', partnerKor: '단검', evoId: 'bladeWhip', evoName: '칼날 채찍', evoIcon: '⛓️' },
+        holyWater: { partner: 'shotgun', partnerKor: '산탄총', evoId: 'holyShotgun', evoName: '홀리 산탄총', evoIcon: '✨' },
+        acidPool: { partner: 'shotgun', partnerKor: '산탄총', evoId: 'holyShotgun', evoName: '홀리 산탄총', evoIcon: '✨' },
+        shotgun: { partner: 'holyWater', partnerKor: '성수', evoId: 'holyShotgun', evoName: '홀리 산탄총', evoIcon: '✨' },
+        magicMissile: { partner: 'sanctuary', partnerKor: '성역', evoId: 'arcaneSanctuary', evoName: '비전 성역', evoIcon: '🔯' },
+        sanctuary: { partner: 'magicMissile', partnerKor: '마법 화살', evoId: 'arcaneSanctuary', evoName: '비전 성역', evoIcon: '🔯' },
+        lightningRing: { partner: 'fireWand', partnerKor: '화염 지팡이', evoId: 'plasmaTempest', evoName: '플라즈마 폭풍', evoIcon: '⚡🔥' },
+        fireWand: { partner: 'lightningRing', partnerKor: '번개 반지', evoId: 'plasmaTempest', evoName: '플라즈마 폭풍', evoIcon: '⚡🔥' }
       };
 
       const pair = evoPairs[weaponKey];
       if (!pair) return null;
 
+      // 이미 해당 진화 무기를 보유하고 있다면 힌트 표시 불필요
+      if (this.weaponManager.weapons[pair.evoId]) return null;
+
+      const currentWeapon = this.weaponManager.weapons[weaponKey];
       const partnerWeapon = this.weaponManager.weapons[pair.partner];
-      if (partnerWeapon && this.weaponManager.getTotalUpgrades(partnerWeapon) >= 6) {
+      const partnerName = partnerWeapon ? partnerWeapon.name.split(' ')[0] : pair.partnerKor;
+      const currentUpgrades = currentWeapon ? this.weaponManager.getTotalUpgrades(currentWeapon) : 0;
+      const partnerUpgrades = partnerWeapon ? this.weaponManager.getTotalUpgrades(partnerWeapon) : 0;
+
+      // 1) 조건 충족 (주 6강 + 부 3강 이상 또는 파트너 6강 + 본인 3강 이상)
+      const isReady = (currentUpgrades >= 6 && partnerUpgrades >= 3) || (partnerUpgrades >= 6 && currentUpgrades >= 3);
+      if (isReady) {
         return {
-          partnerName: partnerWeapon.name.split(' ')[0], // 간단한 명칭
+          status: 'ready',
+          partnerName,
           evoName: pair.evoName,
-          evoIcon: pair.evoIcon
+          evoIcon: pair.evoIcon,
+          text: `✨ [진화 준비 완료!] ➔ ${pair.evoName} 합성 가능`
         };
       }
-      return null;
+
+      // 2) 파트너 무기를 1개라도 보유 중일 때 (레벨 무관)
+      if (partnerWeapon) {
+        return {
+          status: 'linked',
+          partnerName,
+          partnerLevel: partnerUpgrades + 1,
+          evoName: pair.evoName,
+          evoIcon: pair.evoIcon,
+          text: `🔗 [진화 조합] ${pair.evoName} (파트너: ${partnerName} Lv.${partnerUpgrades + 1} 보유 중 ➔ 3강 이상 필요)`
+        };
+      }
+
+      // 3) 파트너 무기 미보유 시 진화 트리 안내
+      return {
+        status: 'hint',
+        partnerName,
+        evoName: pair.evoName,
+        evoIcon: pair.evoIcon,
+        text: `💡 [진화 트리] ${pair.partnerKor}와 조합 시 '${pair.evoName}'으로 진화 가능`
+      };
     };
 
     // 1. 미보유 무기 해금 카드 (최대 5개 무기 슬롯 제한)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
-    const allWeaponKeys = ['axe', 'whip', 'throwingDagger', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary'];
-    const unownedWeapons = allWeaponKeys.filter(k => !this.weaponManager.weapons[k]);
+    const allWeaponKeys = ['sword', 'axe', 'whip', 'throwingDagger', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand'];
+
+    // 이미 진화에 소모되었거나 현재 보유 중인 진화 무기의 재료 무기는 카드 풀에서 영구 제외
+    const evolvedMaterialPairs = {
+      spinningAxe: ['sword', 'axe'],
+      bladeWhip: ['whip', 'throwingDagger'],
+      holyShotgun: ['shotgun', 'holyWater', 'acidPool'],
+      arcaneSanctuary: ['magicMissile', 'sanctuary'],
+      plasmaTempest: ['lightningRing', 'fireWand']
+    };
+
+    const isConsumedWeapon = (key) => {
+      if (this.weaponManager.consumedWeapons && this.weaponManager.consumedWeapons.has(key)) {
+        return true;
+      }
+      for (const evoKey in evolvedMaterialPairs) {
+        if (this.weaponManager.weapons[evoKey] && evolvedMaterialPairs[evoKey].includes(key)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const unownedWeapons = allWeaponKeys.filter(k => !this.weaponManager.weapons[k] && !isConsumedWeapon(k));
 
     const weaponMeta = {
       sword: { name: '일반 검', icon: '🗡️', iconKey: 'icon_sword', desc: '바라보는 방향으로 날렵하게 검을 휘둘러 베기' },
@@ -61,7 +159,9 @@ class CardManager {
       shotgun: { name: '산탄 총포', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄 일제 사격 (데미지 2배 상향)' },
       holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
       sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_holywater', desc: '플레이어를 감싸는 360도 원형 결계로 적들에게 매초 도트 피해 부여 (공속 영향 없음)' },
-      acidPool: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' }
+      acidPool: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
+      lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂음' },
+      fireWand: { name: '화염 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 폭발 화염구를 발사' }
     };
 
     if (ownedWeaponsCount < 5) {
@@ -99,7 +199,8 @@ class CardManager {
       const swordUpgrades = this.weaponManager.getTotalUpgrades(wSword);
       const axeUpgrades = this.weaponManager.getTotalUpgrades(wAxe);
 
-      if (swordUpgrades >= 6 && axeUpgrades >= 6) {
+      // [완화된 진화 조건: 주 6강 + 파트너 3강 이상]
+      if ((swordUpgrades >= 6 && axeUpgrades >= 3) || (axeUpgrades >= 6 && swordUpgrades >= 3)) {
         evolutionCards.push({
           id: 'evolve_spinning_axe',
           type: 'weapon_evolution',
@@ -112,6 +213,10 @@ class CardManager {
           badge: 'EVOLUTION',
           stars: '★★★★★★',
           apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('sword');
+              this.weaponManager.consumedWeapons.add('axe');
+            }
             delete this.weaponManager.weapons['sword'];
             delete this.weaponManager.weapons['axe'];
             this.weaponManager.unlockWeapon('spinningAxe');
@@ -134,7 +239,8 @@ class CardManager {
       const whipUpgrades = this.weaponManager.getTotalUpgrades(wWhip);
       const daggerUpgrades = this.weaponManager.getTotalUpgrades(wThrowingDagger);
 
-      if (whipUpgrades >= 6 && daggerUpgrades >= 6) {
+      // [완화된 진화 조건: 주 6강 + 파트너 3강 이상]
+      if ((whipUpgrades >= 6 && daggerUpgrades >= 3) || (daggerUpgrades >= 6 && whipUpgrades >= 3)) {
         evolutionCards.push({
           id: 'evolve_blade_whip',
           type: 'weapon_evolution',
@@ -147,6 +253,10 @@ class CardManager {
           badge: 'EVOLUTION',
           stars: '★★★★★★',
           apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('whip');
+              this.weaponManager.consumedWeapons.add('throwingDagger');
+            }
             delete this.weaponManager.weapons['whip'];
             delete this.weaponManager.weapons['throwingDagger'];
             this.weaponManager.unlockWeapon('bladeWhip');
@@ -169,7 +279,8 @@ class CardManager {
       const shotgunUpgrades = this.weaponManager.getTotalUpgrades(wShotgun);
       const holyWaterUpgrades = this.weaponManager.getTotalUpgrades(wHolyWater);
 
-      if (shotgunUpgrades >= 6 && holyWaterUpgrades >= 6) {
+      // [완화된 진화 조건: 주 6강 + 파트너 3강 이상]
+      if ((shotgunUpgrades >= 6 && holyWaterUpgrades >= 3) || (holyWaterUpgrades >= 6 && shotgunUpgrades >= 3)) {
         evolutionCards.push({
           id: 'evolve_holy_shotgun',
           type: 'weapon_evolution',
@@ -182,6 +293,11 @@ class CardManager {
           badge: 'EVOLUTION',
           stars: '★★★★★★',
           apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('shotgun');
+              this.weaponManager.consumedWeapons.add('holyWater');
+              this.weaponManager.consumedWeapons.add('acidPool');
+            }
             delete this.weaponManager.weapons['shotgun'];
             delete this.weaponManager.weapons['holyWater'];
             delete this.weaponManager.weapons['acidPool'];
@@ -196,9 +312,87 @@ class CardManager {
       }
     }
 
+    // [진화 4] 비전 성역 = 마법 화살(6강) + 성역(6강)
+    const wMissile = this.weaponManager.weapons['magicMissile'];
+    const wSanctuary = this.weaponManager.weapons['sanctuary'];
+    const hasArcaneSanctuary = !!this.weaponManager.weapons['arcaneSanctuary'];
+
+    if (wMissile && wSanctuary && !hasArcaneSanctuary) {
+      const missileUpgrades = this.weaponManager.getTotalUpgrades(wMissile);
+      const sanctuaryUpgrades = this.weaponManager.getTotalUpgrades(wSanctuary);
+
+      if ((missileUpgrades >= 6 && sanctuaryUpgrades >= 3) || (sanctuaryUpgrades >= 6 && missileUpgrades >= 3)) {
+        evolutionCards.push({
+          id: 'evolve_arcane_sanctuary',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 비전 성역',
+          icon: '🔯',
+          iconKey: 'icon_arcanesanctuary',
+          desc: '마법 화살과 성역을 합성 진화합니다! 성역 결계가 거대해지며, 결계 룬에서 전방위 비전 유도탄이 끊임없이 뿜어져 나옵니다. (무기 슬롯 1칸 반환)',
+          effectText: '두 무기 합성 -> [진화 무기: 비전 성역]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('magicMissile');
+              this.weaponManager.consumedWeapons.add('sanctuary');
+            }
+            delete this.weaponManager.weapons['magicMissile'];
+            delete this.weaponManager.weapons['sanctuary'];
+            this.weaponManager.unlockWeapon('arcaneSanctuary');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#c084fc', 40);
+              window.game.addParticles(this.player.x, this.player.y, '#38bdf8', 40);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 5] 플라즈마 폭풍 = 번개 반지(6강) + 화염 지팡이(6강)
+    const wLightning = this.weaponManager.weapons['lightningRing'];
+    const wFire = this.weaponManager.weapons['fireWand'];
+    const hasPlasmaTempest = !!this.weaponManager.weapons['plasmaTempest'];
+
+    if (wLightning && wFire && !hasPlasmaTempest) {
+      const lightningUpgrades = this.weaponManager.getTotalUpgrades(wLightning);
+      const fireUpgrades = this.weaponManager.getTotalUpgrades(wFire);
+
+      if ((lightningUpgrades >= 6 && fireUpgrades >= 3) || (fireUpgrades >= 6 && lightningUpgrades >= 3)) {
+        evolutionCards.push({
+          id: 'evolve_plasma_tempest',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 플라즈마 폭풍',
+          icon: '⚡🔥',
+          iconKey: 'icon_plasmatempest',
+          desc: '번개 반지와 화염 지팡이를 합성 진화합니다! 초고열 플라즈마 번개구가 하늘에서 융단 폭격되어 지면에 거대한 폭발 지대를 생성합니다. (무기 슬롯 1칸 반환)',
+          effectText: '두 무기 합성 -> [진화 무기: 플라즈마 폭풍]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('lightningRing');
+              this.weaponManager.consumedWeapons.add('fireWand');
+            }
+            delete this.weaponManager.weapons['lightningRing'];
+            delete this.weaponManager.weapons['fireWand'];
+            this.weaponManager.unlockWeapon('plasmaTempest');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#38bdf8', 40);
+              window.game.addParticles(this.player.x, this.player.y, '#f97316', 40);
+            }
+          }
+        });
+      }
+    }
+
     // 3. 보유 중인 무기별 강화 카드 (무기당 총합 6회 제한)
     for (const key in this.weaponManager.weapons) {
-      if (key === 'spinningAxe' || key === 'bladeWhip' || key === 'holyShotgun') continue;
+      if (key === 'spinningAxe' || key === 'bladeWhip' || key === 'holyShotgun' || key === 'arcaneSanctuary' || key === 'plasmaTempest') continue;
       const w = this.weaponManager.weapons[key];
       const totalUpgrades = this.weaponManager.getTotalUpgrades(w);
 
@@ -264,10 +458,14 @@ class CardManager {
           countTitle = `${w.name} 연속휘두르기`;
           countDesc = `도끼를 연속으로 크게 회전시키는 콤보 횟수를 추가합니다.`;
           countEffect = '연속 회전 베기 +1회';
-        } else if (key === 'throwingDagger' || key === 'shotgun' || key === 'magicMissile') {
+        } else if (key === 'throwingDagger' || key === 'shotgun' || key === 'magicMissile' || key === 'fireWand') {
           countTitle = `${w.name} 투사체 수`;
           countDesc = `동시에 투척/발사하는 투사체 개수를 늘립니다.`;
           countEffect = '투사체 개수 +1개';
+        } else if (key === 'lightningRing') {
+          countTitle = `${w.name} 낙뢰 수`;
+          countDesc = `동시에 내리꽂는 벼락 개수를 늘립니다.`;
+          countEffect = '낙뢰 개수 +1개';
         } else if (key === 'holyWater' || key === 'acidPool') {
           countTitle = `${w.name} 장판 수`;
           countDesc = `동시에 투척/생성하는 성수 정화 장판 개수를 늘립니다.`;
@@ -315,7 +513,7 @@ class CardManager {
       });
 
       // [원거리 무기 전용: 투사체 비행 속도 강화]
-      if (key === 'magicMissile' || key === 'shotgun' || key === 'throwingDagger') {
+      if (key === 'magicMissile' || key === 'shotgun' || key === 'throwingDagger' || key === 'fireWand') {
         cardPool.push({
           id: `${key}_proj_speed`,
           type: 'weapon_upgrade',
@@ -345,8 +543,8 @@ class CardManager {
         title: '철벽 갑옷 (방어력)',
         icon: '🛡️',
         iconKey: 'icon_armor',
-        desc: '받는 모든 피해량을 고정 감소시킵니다. (최소 1)',
-        effectText: '방어력 +1',
+        desc: '받는 모든 피해를 고정 감쇄하고 비율로 추가 경감합니다.',
+        effectText: '방어력 +1 & 피해 4% 경감',
         maxLevel: 6,
         apply: () => { this.player.armor += 1; }
       },
@@ -365,10 +563,10 @@ class CardManager {
         title: '피의 계약 (공격력)',
         icon: '🩸',
         iconKey: 'icon_atk',
-        desc: '모든 무기의 타격 공격력을 대폭 증폭시킵니다.',
-        effectText: '전체 공격력 +50%',
+        desc: '모든 무기의 타격 공격력을 균형 있게 증폭시킵니다.',
+        effectText: '전체 공격력 +25%',
         maxLevel: 6,
-        apply: () => { this.player.atkPowerMult += 0.50; }
+        apply: () => { this.player.atkPowerMult += 0.25; }
       },
       {
         id: 'stat_regen',
@@ -440,11 +638,36 @@ class CardManager {
         title: '질풍의 깃털 (원거리 탄속)',
         icon: '🪶',
         iconKey: 'icon_proj_speed',
-        desc: '원거리 무기(단검, 마법화살, 산탄)의 탄속을 대폭 증가시킵니다.',
+        desc: '원거리 무기(단검, 마법화살, 산탄, 화염구)의 탄속을 대폭 증가시킵니다.',
         effectText: '원거리 탄속 +20%',
         maxLevel: 6,
         apply: () => {
           this.player.bonusProjSpeedMult = (this.player.bonusProjSpeedMult || 1.0) * 1.20;
+        }
+      },
+      {
+        id: 'stat_clover',
+        title: '행운의 클로버 (치명타/드랍)',
+        icon: '🍀',
+        iconKey: 'icon_clover',
+        desc: '치명타 확률이 대폭 상승하고 몬스터의 아이템/보석 드랍률이 증가합니다.',
+        effectText: '치명타 확률 +10% & 아이템 드랍률 +15%',
+        maxLevel: 6,
+        apply: () => {
+          this.player.critChance = (this.player.critChance || 0.05) + 0.10;
+          this.player.dropRateBonus = (this.player.dropRateBonus || 0.0) + 0.15;
+        }
+      },
+      {
+        id: 'stat_crown',
+        title: '지혜의 왕관 (경험치 증폭)',
+        icon: '👑',
+        iconKey: 'icon_crown',
+        desc: '몬스터 처치 및 보석 획득 시 얻는 경험치 획득량이 대폭 증가합니다.',
+        effectText: '경험치 획득량 +15%',
+        maxLevel: 6,
+        apply: () => {
+          this.player.expMult = (this.player.expMult || 1.0) + 0.15;
         }
       }
     ];

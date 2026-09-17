@@ -18,6 +18,10 @@ class Player {
     this.bonusProjectiles = 0;          // 캐릭터 투사체 개수 증가 (최대 3회 제한)
     this.bonusProjSpeedMult = 1.0;      // 캐릭터 원거리 투사체 속도 배율
     this.bonusAreaMult = 1.0;           // 캐릭터 전체 무기 공격 범위 배율
+    this.critChance = 0.05;             // 기본 치명타 확률 5%
+    this.critDamageMult = 2.0;          // 치명타 피해량 2배
+    this.expMult = 1.0;                 // 경험치 획득 배율 1.0배
+    this.dropRateBonus = 0.0;           // 특수 아이템 드랍률 보너스
     this.ownedPassives = {};            // 보유한 패시브 스탯 { id: { level, maxLevel, iconKey, title } } (최대 6종 슬롯 제한)
 
     // 레벨 및 경험치
@@ -25,6 +29,10 @@ class Player {
     this.exp = 0;
     this.maxExp = 15;
     this.totalKills = 0;
+
+    // 카드 선택 편의 시스템 (한 게임당 새로고침 3회)
+    this.rerollCount = 3;
+    this.maxRerolls = 3;
 
     // 이동 및 방향
     this.vx = 0;
@@ -107,13 +115,20 @@ class Player {
 
     this.x += this.vx * dt;
     this.y += this.vy * dt;
+
+    // 우주 부유섬 낭떠러지 밖으로 추락하지 않도록 바닥 테두리 엄격 제한
+    const bound = 1560;
+    this.x = Math.max(-bound, Math.min(bound, this.x));
+    this.y = Math.max(-bound, Math.min(bound, this.y));
   }
 
   takeDamage(amount) {
     if (this.isDead || this.invulnerableTimer > 0) return 0;
 
-    // 방어력 적용 (최소 1의 피해는 받음)
-    const actualDamage = Math.max(1, Math.round(amount - this.armor));
+    // 복합 방어력 적용: 고정 감쇄(-armor) + 받는 피해 비율 경감(레벨당 4%, 최대 50%)
+    const reductionRatio = Math.min(0.50, this.armor * 0.04);
+    const reducedDamage = (amount - this.armor) * (1 - reductionRatio);
+    const actualDamage = Math.max(1, Math.round(reducedDamage));
     this.hp -= actualDamage;
     this.invulnerableTimer = this.invulnerableDuration;
 
@@ -127,14 +142,29 @@ class Player {
     return actualDamage;
   }
 
+  // 10분 러닝타임에 최적화된 구간별 완만한 선형/티어드 경험치 요구량 곡선 (중후반 폭포 레벨업 방지)
+  getNextMaxExp(level) {
+    if (level < 15) {
+      return 15 + (level - 1) * 14; // Lv.1: 15, Lv.5: 71, Lv.10: 141, Lv.15: 211
+    } else if (level < 30) {
+      return 211 + (level - 15) * 42; // Lv.20: 421, Lv.25: 631, Lv.30: 841
+    } else if (level < 50) {
+      return 841 + (level - 30) * 80; // Lv.35: 1241, Lv.40: 1641, Lv.50: 2441
+    } else {
+      return 2441 + (level - 50) * 120;
+    }
+  }
+
   gainExp(amount, onLevelUp) {
     if (this.isDead) return;
 
-    this.exp += amount;
+    // 지혜의 왕관 패시브 적용 (경험치 증폭)
+    const gained = Math.round(amount * (this.expMult || 1.0));
+    this.exp += gained;
     while (this.exp >= this.maxExp) {
       this.exp -= this.maxExp;
       this.level += 1;
-      this.maxExp = Math.floor(this.maxExp * 1.3) + 10;
+      this.maxExp = this.getNextMaxExp(this.level);
       sounds.playLevelUp();
       if (onLevelUp) onLevelUp(this.level);
     }

@@ -217,18 +217,25 @@ class BossProjectile {
   }
 }
 
-// 10종 일반 몬스터 스펙 테이블 (뒤 5종 마물 경험치 대폭 상향)
+// 15종 일반 몬스터 스펙 테이블 (공중/지상 구분, 고유 특색 기믹)
 const ENEMY_TYPES = {
-  bat: { name: '박쥐', hp: 18, speed: 170, radius: 10, color: '#a855f7', exp: 1, damage: 6 },
-  slime: { name: '슬라임', hp: 32, speed: 85, radius: 13, color: '#22c55e', exp: 2, damage: 8 },
-  zombie: { name: '좀비', hp: 65, speed: 65, radius: 15, color: '#64748b', exp: 3, damage: 12 },
-  skeleton: { name: '해골', hp: 50, speed: 105, radius: 13, color: '#f1f5f9', exp: 4, damage: 10 },
-  goblin: { name: '고블린', hp: 42, speed: 145, radius: 12, color: '#84cc16', exp: 5, damage: 9 },
-  ghost: { name: '유령', hp: 60, speed: 115, radius: 15, color: '#38bdf8', exp: 8, damage: 11, alpha: 0.65 },
-  gargoyle: { name: '가고일', hp: 130, speed: 75, radius: 18, color: '#78716c', exp: 15, damage: 16 },
-  cultist: { name: '흑마술사', hp: 100, speed: 95, radius: 14, color: '#dc2626', exp: 25, damage: 14 },
-  assassin: { name: '암살자', hp: 85, speed: 180, radius: 13, color: '#18181b', exp: 35, damage: 18 },
-  golem: { name: '골렘', hp: 300, speed: 50, radius: 24, color: '#d97706', exp: 80, damage: 25, knockbackResist: 0.85 } // 85% 넉백 저항
+  bat: { name: '박쥐', hp: 18, speed: 170, radius: 10, color: '#a855f7', exp: 2, damage: 6, isFlying: true },
+  slime: { name: '슬라임', hp: 32, speed: 85, radius: 13, color: '#22c55e', exp: 3, damage: 8, isFlying: false },
+  miniSlime: { name: '아기 슬라임', hp: 14, speed: 110, radius: 8, color: '#4ade80', exp: 1, damage: 4, isFlying: false },
+  zombie: { name: '좀비', hp: 65, speed: 65, radius: 15, color: '#64748b', exp: 3, damage: 12, knockbackResist: 0.80, isFlying: false },
+  skeleton: { name: '해골', hp: 50, speed: 105, radius: 13, color: '#f1f5f9', exp: 4, damage: 10, isFlying: false },
+  goblin: { name: '고블린', hp: 42, speed: 145, radius: 12, color: '#84cc16', exp: 5, damage: 9, isFlying: false },
+  ghost: { name: '유령', hp: 60, speed: 115, radius: 15, color: '#38bdf8', exp: 6, damage: 11, alpha: 0.65, isFlying: true },
+  gargoyle: { name: '가고일', hp: 130, speed: 75, radius: 18, color: '#78716c', exp: 7, damage: 16, isFlying: true },
+  cultist: { name: '흑마술사', hp: 100, speed: 95, radius: 14, color: '#dc2626', exp: 9, damage: 14, isRanged: true, isFlying: false },
+  assassin: { name: '암살자', hp: 85, speed: 180, radius: 13, color: '#18181b', exp: 11, damage: 18, isFlying: false },
+  golem: { name: '골렘', hp: 300, speed: 50, radius: 24, color: '#d97706', exp: 25, damage: 25, knockbackResist: 0.85, isFlying: false },
+
+  // [신규 특색 몬스터 4종]
+  darkMage: { name: '타락한 마도사', hp: 140, speed: 95, radius: 14, color: '#7e22ce', exp: 12, damage: 16, isRanged: true, isFlying: true },
+  bloodHound: { name: '핏빛 사냥개', hp: 110, speed: 275, radius: 12, color: '#dc2626', exp: 10, damage: 18, knockbackResist: 0.35, isFlying: false },
+  wraithSwarm: { name: '망령 군단', hp: 55, speed: 145, radius: 11, color: '#06b6d4', exp: 5, damage: 12, alpha: 0.70, isFlying: true },
+  abyssTitan: { name: '심연의 거인', hp: 650, speed: 55, radius: 28, color: '#1e1b4b', exp: 28, damage: 32, knockbackResist: 0.92, isFlying: false }
 };
 
 class Enemy {
@@ -245,7 +252,19 @@ class Enemy {
     this.damage = config.damage;
     this.alpha = config.alpha || 1.0;
     this.knockbackResist = config.knockbackResist || 0; // 넉백 저항 수치
+    this.isFlying = config.isFlying || false;           // 공중/비행 몬스터 여부
+    this.isRanged = config.isRanged || false;           // 원거리 사격 여부
+    this.shootTimer = 1.0 + Math.random() * 1.5;
     this.isBoss = false;
+
+    // 고유 기믹 타이머
+    this.dashTimer = 2.0 + Math.random() * 1.5;
+    this.dashDuration = 0;
+    this.phaseTimer = Math.random() * 3;
+    this.isPhased = false;
+    this.reviveState = 0; // 0: 정상, 1: 뼈무덤(사망 대기), 2: 부활 완료
+    this.reviveTimer = 0;
+    this.stompTimer = 3.5 + Math.random() * 2.0;
 
     this.x = x;
     this.y = y;
@@ -260,30 +279,46 @@ class Enemy {
     this.offscreenTimer = 0;
   }
 
-  takeDamage(amount, knockbackDir, knockbackForce) {
+  takeDamage(amount, knockbackDir, knockbackForce, isCrit = null) {
     if (this.isDead) return;
+    if (this.isPhased) return; // 유령 위상 변이(무적) 상태 시 피해 무시
+    if (this.reviveState === 1) return; // 뼈무덤 상태 시 타격 불가
+
+    if (isCrit === null && window.game && window.game.player) {
+      isCrit = Math.random() < (window.game.player.critChance || 0.05);
+      if (isCrit) {
+        amount = Math.round(amount * (window.game.player.critDamageMult || 2.0));
+      }
+    }
 
     this.hp -= amount;
     this.hitFlashTimer = 0.12;
 
     if (window.game && window.game.damageNumbers) {
-      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount));
+      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, isCrit));
     }
 
     if (knockbackDir && knockbackForce > 0) {
-      // 몬스터별 넉백 저항 적용 (골렘 등은 85% 감쇄)
+      // 몬스터별 넉백 저항 적용 (좀비 80%, 골렘 85% 감쇄)
       const effectiveForce = knockbackForce * (1 - this.knockbackResist);
       this.kbX += knockbackDir.x * effectiveForce;
       this.kbY += knockbackDir.y * effectiveForce;
     }
 
     if (this.hp <= 0) {
+      // 해골 1회 뼈 재조립 부활 기믹
+      if (this.typeKey === 'skeleton' && this.reviveState === 0) {
+        this.reviveState = 1;
+        this.reviveTimer = 2.0;
+        this.hp = 0;
+        return;
+      }
       this.hp = 0;
       this.isDead = true;
     }
   }
 
-  update(dt, player, allEnemies) {
+  update(dt, player, allEnemies, enemyProjectiles) {
     if (this.isDead) return;
 
     this.animTimer += dt * 8;
@@ -293,6 +328,22 @@ class Enemy {
     this.kbX *= Math.max(0, 1 - dt * 8);
     this.kbY *= Math.max(0, 1 - dt * 8);
 
+    // 해골 뼈무덤 부활 대기 처리
+    if (this.reviveState === 1) {
+      this.reviveTimer -= dt;
+      this.vx = 0;
+      this.vy = 0;
+      if (this.reviveTimer <= 0) {
+        this.reviveState = 2;
+        this.hp = Math.round(this.maxHp * 0.55); // 55% 체력으로 부활
+        sounds.playKill();
+        if (window.game) {
+          window.game.addParticles(this.x, this.y, '#f1f5f9', 12);
+        }
+      }
+      return;
+    }
+
     // 플레이어를 향해 이동
     const dx = player.x - this.x;
     const dy = player.y - this.y;
@@ -301,6 +352,95 @@ class Enemy {
     if (dist > 0.1) {
       let moveDirX = dx / dist;
       let moveDirY = dy / dist;
+      let curSpeed = this.speed;
+
+      // 1. 박쥐 (bat): Sine-wave 지그재그 출렁임 비행
+      if (this.typeKey === 'bat') {
+        const perpX = -dy / dist;
+        const perpY = dx / dist;
+        const flutter = Math.sin(this.animTimer * 1.8) * 0.55;
+        moveDirX = (dx / dist) * 0.85 + perpX * flutter;
+        moveDirY = (dy / dist) * 0.85 + perpY * flutter;
+      }
+
+      // 2. 고블린 (goblin): 220px 거리 접근 시 측면 선회 포위 기동
+      else if (this.typeKey === 'goblin' && dist < 220) {
+        moveDirX = (dx / dist) * 0.45 - (dy / dist) * 0.85;
+        moveDirY = (dy / dist) * 0.45 + (dx / dist) * 0.85;
+      }
+
+      // 3. 유령 (ghost): 3.5초 주기 1.2초간 위상 변이 (반투명 무적)
+      else if (this.typeKey === 'ghost') {
+        this.phaseTimer += dt;
+        this.isPhased = (Math.floor(this.phaseTimer) % 4 === 0);
+        this.alpha = this.isPhased ? 0.20 : 0.70;
+      }
+
+      // 4. 암살자 (assassin): 210px 근접 시 0.4초간 그림자 돌진 (Shadow Dash)
+      else if (this.typeKey === 'assassin') {
+        this.dashTimer -= dt;
+        if (this.dashDuration > 0) {
+          this.dashDuration -= dt;
+          curSpeed = 380; // 초고속 돌진
+          if (window.game && Math.random() < 0.4) {
+            window.game.addParticles(this.x, this.y, '#18181b', 2);
+          }
+        } else if (dist < 210 && this.dashTimer <= 0) {
+          this.dashDuration = 0.4;
+          this.dashTimer = 3.5;
+          sounds.playSlash();
+        }
+      }
+
+      // 5. 골렘 (golem): 4.5초 주기 지진 발구르기 슬로우 충격파
+      else if (this.typeKey === 'golem') {
+        this.stompTimer -= dt;
+        if (this.stompTimer <= 0) {
+          this.stompTimer = 4.5;
+          sounds.playBossStomp();
+          if (window.game) {
+            window.game.addParticles(this.x, this.y, '#d97706', 14);
+          }
+          if (dist < 115) {
+            player.speed = player.baseSpeed * 0.65;
+            setTimeout(() => {
+              if (player) player.speed = player.baseSpeed;
+            }, 1200);
+          }
+        }
+      }
+
+      // 6. 원거리 사격형 몬스터 (흑마술사, 타락한 마도사 등) 카이팅 & 저주탄 발사 AI
+      if (this.isRanged) {
+        if (!this.shootTimer) this.shootTimer = 1.0 + Math.random() * 1.5;
+        this.shootTimer -= dt;
+
+        const idealDist = this.typeKey === 'cultist' ? 310 : 280;
+        if (dist < idealDist - 40) {
+          moveDirX = -dx / dist;
+          moveDirY = -dy / dist;
+        } else if (dist > idealDist + 60) {
+          moveDirX = dx / dist;
+          moveDirY = dy / dist;
+        } else {
+          // 측면 횡이동 선회
+          moveDirX = -dy / dist;
+          moveDirY = dx / dist;
+        }
+
+        // 사거리 내 플레이어에게 암흑/저주 탄환 조준 발사
+        if (this.shootTimer <= 0) {
+          this.shootTimer = this.typeKey === 'cultist' ? 2.6 : 2.2;
+          if (enemyProjectiles && dist < 550) {
+            const bulletSpeed = this.typeKey === 'cultist' ? 190 : 240;
+            const bulletColor = this.typeKey === 'cultist' ? '#ef4444' : '#c026d3';
+            const bvx = (dx / (dist || 1)) * bulletSpeed;
+            const bvy = (dy / (dist || 1)) * bulletSpeed;
+            enemyProjectiles.push(new BossProjectile(this.x, this.y, bvx, bvy, 6, bulletColor, this.damage));
+            sounds.playMagic();
+          }
+        }
+      }
 
       // 몬스터 간 간단한 분리(밀어내기) 처리
       let sepX = 0;
@@ -320,8 +460,8 @@ class Enemy {
         }
       }
 
-      this.vx = moveDirX * this.speed + sepX * 2.5 + this.kbX;
-      this.vy = moveDirY * this.speed + sepY * 2.5 + this.kbY;
+      this.vx = moveDirX * curSpeed + sepX * 2.5 + this.kbX;
+      this.vy = moveDirY * curSpeed + sepY * 2.5 + this.kbY;
     }
 
     this.x += this.vx * dt;
@@ -475,17 +615,57 @@ class BossEnemy extends Enemy {
       this.phaseTimer = 0;
       this.teleportTimer = 5.0;
       this.chargeTimer = 3.5;
+    } else if (bossStage === 12) {
+      // 12스테이지 보스: 심연의 리치 (Abyss Lich)
+      this.name = '심연의 리치 (Abyss Lich)';
+      this.maxHp = 26000;
+      this.hp = this.maxHp;
+      this.radius = 38;
+      this.color = '#38bdf8'; // 혹한의 영혼불빛
+      this.speed = 95;
+      this.damage = 50;
+      this.exp = 1600;
+      this.knockbackImmune = true;
+
+      this.teleportCooldown = 4.0;
+      this.teleportTimer = 3.5;
+      this.frostNovaTimer = 2.0;
+    } else if (bossStage === 15) {
+      // 15스테이지 종말의 보스: 종말의 사신 (Grim Reaper)
+      this.name = '종말의 사신 (Grim Reaper)';
+      this.maxHp = 52000;
+      this.hp = this.maxHp;
+      this.radius = 44;
+      this.color = '#18181b'; // 심연의 칠흑빛
+      this.speed = 135;
+      this.damage = 65;
+      this.exp = 3500;
+      this.knockbackImmune = true;
+
+      this.phaseTimer = 0;
+      this.teleportTimer = 4.2;
+      this.scytheChargeTimer = 3.0;
+      this.isCharging = false;
+      this.chargeDuration = 0;
+      this.chargeDir = { x: 1, y: 0 };
     }
   }
 
-  takeDamage(amount, knockbackDir, knockbackForce) {
+  takeDamage(amount, knockbackDir, knockbackForce, isCrit = null) {
     if (this.isDead) return;
+
+    if (isCrit === null && window.game && window.game.player) {
+      isCrit = Math.random() < (window.game.player.critChance || 0.05);
+      if (isCrit) {
+        amount = Math.round(amount * (window.game.player.critDamageMult || 2.0));
+      }
+    }
 
     this.hp -= amount;
     this.hitFlashTimer = 0.12;
 
     if (window.game && window.game.damageNumbers) {
-      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, true));
+      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, isCrit));
     }
 
     // 넉백 면역 보스는 뒤로 밀리지 않음!
@@ -661,6 +841,109 @@ class BossEnemy extends Enemy {
         this.vx = (dx / dist) * this.speed;
         this.vy = (dy / dist) * this.speed;
       }
+    } else if (this.bossStage === 12) {
+      // [12스테이지 보스: 심연의 리치 - 순간이동 프로스트 노바 & 3갈래 한기 탄환]
+      this.teleportTimer -= dt;
+      this.frostNovaTimer -= dt;
+
+      // 주기적 3갈래 한기 탄환 발사
+      if (this.frostNovaTimer <= 0) {
+        this.frostNovaTimer = 1.8;
+        const baseAngle = Math.atan2(dy, dx);
+        for (let i = -1; i <= 1; i++) {
+          const shotAngle = baseAngle + (i * 0.28);
+          bossProjectiles.push(new BossProjectile(
+            this.x, this.y,
+            Math.cos(shotAngle) * 260, Math.sin(shotAngle) * 260,
+            8, '#38bdf8', 24
+          ));
+        }
+      }
+
+      // 4초마다 순간이동 + 10방향 심연의 얼음 파동 방출
+      if (this.teleportTimer <= 0) {
+        this.teleportTimer = this.teleportCooldown;
+        sounds.playBossTeleport();
+        const angle = Math.random() * Math.PI * 2;
+        this.x = player.x + Math.cos(angle) * 210;
+        this.y = player.y + Math.sin(angle) * 210;
+
+        for (let i = 0; i < 10; i++) {
+          const novaAngle = (i / 10) * Math.PI * 2;
+          bossProjectiles.push(new BossProjectile(
+            this.x, this.y,
+            Math.cos(novaAngle) * 280, Math.sin(novaAngle) * 280,
+            9, '#0284c7', 26
+          ));
+        }
+      }
+
+      if (dist > 0.1) {
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+      }
+    } else if (this.bossStage === 15) {
+      // [15스테이지 진 최종 보스: 종말의 사신 - 나선형 암흑 참격 탄막 + 초고속 낫 돌진 + 순간이동]
+      this.phaseTimer += dt;
+      this.teleportTimer -= dt;
+      this.scytheChargeTimer -= dt;
+
+      // 상시 4방향 고속 회전 암흑 탄환 방출
+      if (Math.floor(this.phaseTimer * 5) % 2 === 0 && Math.random() < 0.4) {
+        const spiralBase = this.phaseTimer * 3.2;
+        for (let s = 0; s < 4; s++) {
+          const sAngle = spiralBase + (s * Math.PI / 2);
+          bossProjectiles.push(new BossProjectile(
+            this.x, this.y,
+            Math.cos(sAngle) * 290, Math.sin(sAngle) * 290,
+            9, '#7c3aed', 28
+          ));
+        }
+      }
+
+      // 사신 돌진 상태 업데이트
+      if (this.isCharging) {
+        this.chargeDuration -= dt;
+        this.vx = this.chargeDir.x * 460;
+        this.vy = this.chargeDir.y * 460;
+        if (this.chargeDuration <= 0) {
+          this.isCharging = false;
+        }
+      } else {
+        // 4초마다 고속 참격 돌진 감행
+        if (this.scytheChargeTimer <= 0) {
+          this.scytheChargeTimer = 4.0;
+          sounds.playBossCharge();
+          this.isCharging = true;
+          this.chargeDuration = 0.75;
+          if (dist > 0.1) {
+            this.chargeDir = { x: dx / dist, y: dy / dist };
+          }
+        }
+
+        // 4.5초마다 플레이어 근처 순간이동 + 14방향 사신의 절망 폭발
+        if (this.teleportTimer <= 0) {
+          this.teleportTimer = 4.5;
+          sounds.playBossTeleport();
+          const angle = Math.random() * Math.PI * 2;
+          this.x = player.x + Math.cos(angle) * 190;
+          this.y = player.y + Math.sin(angle) * 190;
+
+          for (let i = 0; i < 14; i++) {
+            const novaAngle = (i / 14) * Math.PI * 2;
+            bossProjectiles.push(new BossProjectile(
+              this.x, this.y,
+              Math.cos(novaAngle) * 320, Math.sin(novaAngle) * 320,
+              9, '#dc2626', 32
+            ));
+          }
+        }
+
+        if (!this.isCharging && dist > 0.1) {
+          this.vx = (dx / dist) * this.speed;
+          this.vy = (dy / dist) * this.speed;
+        }
+      }
     }
 
     this.x += this.vx * dt;
@@ -694,9 +977,11 @@ class BossEnemy extends Enemy {
       4: 'boss_void',
       6: 'boss_eye',
       8: 'boss_colossus',
-      10: 'boss_doom'
+      10: 'boss_doom',
+      12: 'boss_lich',
+      15: 'boss_reaper'
     };
-    const bossKey = bossKeyMap[this.bossStage] || 'boss_doom';
+    const bossKey = bossKeyMap[this.bossStage] || 'boss_reaper';
     const isHit = this.hitFlashTimer > 0;
     const facingX = (this.vx && Math.abs(this.vx) > 5) ? (this.vx < 0 ? -1 : 1) : 1;
     const spriteSize = Math.max(50, this.radius * 2.5);

@@ -25,6 +25,8 @@ class UIManager {
 
     this.cardModal = document.getElementById('cardModal');
     this.cardsList = document.getElementById('cardsList');
+    this.cardRerollBtn = document.getElementById('cardRerollBtn');
+    this.cardSkipBtn = document.getElementById('cardSkipBtn');
     this.gameOverModal = document.getElementById('gameOverModal');
     this.gameOverStats = document.getElementById('gameOverStats');
     this.restartBtn = document.getElementById('restartBtn');
@@ -125,7 +127,7 @@ class UIManager {
       if (i < keys.length) {
         const key = keys[i];
         const w = weapons[key];
-        const isEvolved = key === 'spinningAxe' || key === 'bladeWhip' || key === 'holyShotgun';
+        const isEvolved = key === 'spinningAxe' || key === 'bladeWhip' || key === 'holyShotgun' || key === 'arcaneSanctuary' || key === 'plasmaTempest';
         slot.className = `inv-icon inv-weapon ${isEvolved ? 'inv-evolution' : ''}`;
         
         let iconKey = 'icon_atk';
@@ -136,7 +138,11 @@ class UIManager {
         else if (key === 'magicMissile') iconKey = 'icon_missile';
         else if (key === 'shotgun') iconKey = 'icon_shotgun';
         else if (key === 'holyShotgun') iconKey = 'icon_holyshotgun';
-        else if (key === 'holyWater' || key === 'acidPool') iconKey = 'icon_holywater';
+        else if (key === 'holyWater' || key === 'acidPool' || key === 'sanctuary') iconKey = 'icon_holywater';
+        else if (key === 'lightningRing') iconKey = 'icon_lightning';
+        else if (key === 'fireWand') iconKey = 'icon_firewand';
+        else if (key === 'arcaneSanctuary') iconKey = 'icon_arcanesanctuary';
+        else if (key === 'plasmaTempest') iconKey = 'icon_plasmatempest';
 
         const imgSrc = assets.manifest[iconKey];
         const iconHtml = imgSrc ? `<img src="${imgSrc}" class="inv-img" alt="${w.name}">` : `<span>${w.icon}</span>`;
@@ -197,26 +203,90 @@ class UIManager {
     }, 2200);
   }
 
-  showCardSelection(cards, onSelect, isBossReward = false) {
+  showCardSelection(cards, onSelect, onReroll, onSkip, isBossReward = false, isStarting = false) {
     this.cardsList.innerHTML = '';
     this.cardModal.classList.remove('hidden');
 
     const modalTitle = this.cardModal.querySelector('.modal-title');
     const modalSub = this.cardModal.querySelector('.modal-sub');
     if (modalTitle) {
-      modalTitle.textContent = isBossReward ? '👑 BOSS VICTORY REWARD 👑' : '⭐ LEVEL UP! ⭐';
-      modalTitle.className = isBossReward ? 'modal-title text-gold' : 'modal-title';
+      if (isStarting) {
+        modalTitle.textContent = '⚔️ 시작 무기 선택 ⚔️';
+        modalTitle.className = 'modal-title text-gold';
+      } else if (isBossReward) {
+        modalTitle.textContent = '👑 BOSS VICTORY REWARD 👑';
+        modalTitle.className = 'modal-title text-gold';
+      } else {
+        modalTitle.textContent = '⭐ LEVEL UP! ⭐';
+        modalTitle.className = 'modal-title';
+      }
     }
     if (modalSub) {
-      modalSub.textContent = isBossReward
-        ? '보스를 물리친 대가로 특별한 보너스 카드가 주어집니다!'
-        : '강화 카드를 1장 선택하세요';
+      if (isStarting) {
+        modalSub.textContent = '원정을 함께할 첫 번째 시작 무기를 선택하세요!';
+      } else if (isBossReward) {
+        modalSub.textContent = '보스를 물리친 대가로 특별한 보너스 카드가 주어집니다!';
+      } else {
+        modalSub.textContent = '강화 카드를 1장 선택하세요';
+      }
+    }
+
+    // 새로고침 & 스킵 버튼 상태 및 이벤트 바인딩
+    if (this.cardRerollBtn) {
+      const remaining = this.game.player.rerollCount;
+      const maxR = this.game.player.maxRerolls;
+      this.cardRerollBtn.textContent = `🎲 새로고침 (${remaining}/${maxR})`;
+      this.cardRerollBtn.disabled = remaining <= 0;
+      this.cardRerollBtn.onclick = (e) => {
+        e.stopPropagation();
+        if (this.game.player.rerollCount > 0 && onReroll) {
+          sounds.playSelect();
+          onReroll();
+        }
+      };
+    }
+
+    if (this.cardSkipBtn) {
+      // 시작 무기 선택 시에는 반드시 무기를 선택해야 하므로 스킵 불가
+      if (isStarting) {
+        this.cardSkipBtn.style.display = 'none';
+      } else {
+        this.cardSkipBtn.style.display = '';
+        this.cardSkipBtn.onclick = (e) => {
+          e.stopPropagation();
+          this.cardModal.classList.add('hidden');
+          sounds.playSelect();
+          if (onSkip) onSkip();
+        };
+      }
     }
 
     cards.forEach(card => {
       const isEvo = card.category === 'evolution' || card.type === 'weapon_evolution';
+      const isPassive = card.category === 'passive';
+      const isWeapon = card.category === 'weapon';
+      const isConsumable = card.category === 'consumable';
+
+      let cardTypeClass = 'type-stat';
+      let tagLabel = '📿 패시브';
+      let tagClass = 'tag-passive';
+
+      if (isEvo) {
+        cardTypeClass = 'type-evolution';
+        tagLabel = '✨ 진화 무기';
+        tagClass = 'tag-evolution';
+      } else if (isWeapon) {
+        cardTypeClass = 'type-weapon';
+        tagLabel = '⚔️ 무기';
+        tagClass = 'tag-weapon';
+      } else if (isConsumable) {
+        cardTypeClass = 'type-consumable';
+        tagLabel = '🧪 회복';
+        tagClass = 'tag-consumable';
+      }
+
       const el = document.createElement('div');
-      el.className = `upgrade-card ${isEvo ? 'type-evolution' : (card.category === 'weapon' ? 'type-weapon' : 'type-stat')}`;
+      el.className = `upgrade-card ${cardTypeClass}`;
       const isNew = card.badge === 'NEW WEAPON';
       const isMaxBadge = card.badge && (card.badge.includes('6/6') || card.badge.includes('3/3'));
 
@@ -227,17 +297,20 @@ class UIManager {
 
       let evoHintHtml = '';
       if (card.evolutionHint) {
+        const hintClass = card.evolutionHint.status === 'ready'
+          ? 'hint-ready'
+          : (card.evolutionHint.status === 'linked' ? 'hint-linked' : 'hint-tree');
         evoHintHtml = `
-          <div class="card-evo-hint">
-            <span class="evo-plus">➕</span>
+          <div class="card-evo-hint ${hintClass}">
             <span class="evo-icon">${card.evolutionHint.evoIcon}</span>
-            <span class="evo-text">진화 가능 링크 (${card.evolutionHint.partnerName} 6강 완료 ➔ <strong>${card.evolutionHint.evoName}</strong>)</span>
+            <span class="evo-text">${card.evolutionHint.text}</span>
           </div>
         `;
       }
 
       el.innerHTML = `
-        <span class="card-badge ${isEvo ? 'badge-evolution' : (isNew ? 'badge-new' : (isMaxBadge ? 'badge-max' : ''))}">${card.badge}</span>
+        <span class="card-type-tag ${tagClass}">${tagLabel}</span>
+        <span class="card-badge ${isEvo ? 'badge-evolution' : (isNew ? 'badge-new' : (isMaxBadge ? 'badge-max' : (isPassive ? 'badge-passive' : 'badge-weapon')))}">${card.badge}</span>
         ${iconHtml}
         <div class="card-name">${card.title}</div>
         ${card.stars ? `<div class="card-stars">${card.stars}</div>` : ''}
@@ -268,7 +341,7 @@ class UIManager {
   showVictory(stats) {
     this.victoryStats.innerHTML = `
       <div class="stat-row"><span>클리어 시간</span><strong>${stats.time}</strong></div>
-      <div class="stat-row"><span>달성 스테이지</span><strong>Stage 10 (All Clear)</strong></div>
+      <div class="stat-row"><span>달성 스테이지</span><strong>Stage 15 (Hell All Clear)</strong></div>
       <div class="stat-row"><span>최종 레벨</span><strong>Lv. ${stats.level}</strong></div>
       <div class="stat-row"><span>처치한 마물</span><strong>${stats.kills} 마리</strong></div>
     `;
