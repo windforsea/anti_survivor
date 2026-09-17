@@ -526,46 +526,62 @@ class UIManager {
     if (this.victoryModal) this.victoryModal.classList.add('hidden');
   }
 
-  // 명예의 전당 챔피언 배너 노출 (사망 시, 로비 복귀 시)
-  showChampionBanner() {
+  // 명예의 전당 챔피언 배너 노출 (사망 시, 로비 복귀 시 - 서버 공용 API 우선 조회)
+  async showChampionBanner() {
     if (!this.championBanner) return;
-    try {
-      const raw = localStorage.getItem('vam_champion');
-      let champ = { name: '전설의 서바이버', quote: '어둠은 영원하지 않다. 끝까지 살아남아라!' };
-      if (raw) {
-        champ = JSON.parse(raw);
-      }
-      if (this.champName) this.champName.textContent = champ.name || '무명의 영웅';
-      if (this.champQuote) this.champQuote.textContent = `"${champ.quote || '승리를 향해 나아가라!'}"`;
+    let champ = { name: '전설의 서바이버', quote: '어둠은 영원하지 않다. 끝까지 살아남아라!' };
 
-      this.championBanner.classList.remove('hidden');
-      if (this.champBannerTimer) clearTimeout(this.champBannerTimer);
-      this.champBannerTimer = setTimeout(() => {
-        if (this.championBanner) this.championBanner.classList.add('hidden');
-      }, 4500);
-    } catch (e) {
-      console.warn('챔피언 배너 로드 실패:', e);
+    // 1. 서버 공용 API 호출 시도
+    try {
+      const res = await fetch('/api/champion', { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.name) champ = data;
+      }
+    } catch (netErr) {
+      // 오프라인이거나 서버 통신 실패 시 로컬 스토리지 백업 조회
+      try {
+        const raw = localStorage.getItem('vam_champion');
+        if (raw) champ = JSON.parse(raw);
+      } catch (e) {}
     }
+
+    if (this.champName) this.champName.textContent = champ.name || '무명의 영웅';
+    if (this.champQuote) this.champQuote.textContent = `"${champ.quote || '승리를 향해 나아가라!'}"`;
+
+    this.championBanner.classList.remove('hidden');
+    if (this.champBannerTimer) clearTimeout(this.champBannerTimer);
+    this.champBannerTimer = setTimeout(() => {
+      if (this.championBanner) this.championBanner.classList.add('hidden');
+    }, 4500);
   }
 
-  // 최종 보스 클리어 시 챔피언 등록 핸들러
-  handleChampionSubmit() {
+  // 최종 보스 클리어 시 챔피언 등록 핸들러 (서버 영구 파일 저장 및 로컬 백업)
+  async handleChampionSubmit() {
     const name = (this.championNameInput ? this.championNameInput.value.trim() : '') || '익명의 챔피언';
     const quote = (this.championQuoteInput ? this.championQuoteInput.value.trim() : '') || '모든 시련을 이겨냈다!';
+    const payload = { name, quote, date: Date.now() };
 
+    // 로컬 스토리지 즉시 캐시
     try {
-      localStorage.setItem('vam_champion', JSON.stringify({
-        name,
-        quote,
-        date: Date.now()
-      }));
-      if (this.championSubmitSuccess) {
-        this.championSubmitSuccess.classList.remove('hidden');
-      }
-      sounds.playLevelUp();
-    } catch (e) {
-      alert('등록 중 오류가 발생했습니다.');
+      localStorage.setItem('vam_champion', JSON.stringify(payload));
+    } catch (e) {}
+
+    // 서버로 영구 저장 전송 (다른 모든 접속자에게 즉시 공유)
+    try {
+      await fetch('/api/champion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch (netErr) {
+      console.warn('서버 챔피언 등록 실패 (로컬에만 저장됨):', netErr);
     }
+
+    if (this.championSubmitSuccess) {
+      this.championSubmitSuccess.classList.remove('hidden');
+    }
+    sounds.playLevelUp();
   }
 
   // 로비 모달 노출 및 상점 렌더링

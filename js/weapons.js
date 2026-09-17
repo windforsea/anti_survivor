@@ -236,7 +236,7 @@ class WeaponManager {
         name: '천상의 성역',
         icon: '⛪✨',
         iconSprite: 'icon_heavenlysanctuary',
-        desc: '성역 결계 내부가 성수로 들끓어 초고속 도트 피해를 가하고 주기적으로 천상의 충격파를 방출합니다.',
+        desc: '초대형 룬 결계를 형성하여 초고속 도트 피해를 입히며 낮은 확률로 적을 얼립니다.',
         baseCooldown: 0.38, // 도트 틱 주기
         baseDamage: 36,
         baseCount: 1,
@@ -245,7 +245,6 @@ class WeaponManager {
         damageLevel: 0,
         countLevel: 0,
         areaLevel: 0,
-        waveTimer: 0,
         cooldownTimer: 0
       },
       // [진화 2] 모닝스타 선풍 (morningstarTempest) = 채찍(5렙) + 표창(5렙)
@@ -254,10 +253,10 @@ class WeaponManager {
         name: '모닝스타 선풍',
         icon: '⛓️🌪️',
         iconSprite: 'icon_morningstartempest',
-        desc: '거대한 사슬 모닝스타로 전후방을 후려치며, 타격 지점에서 수많은 회전 표창 파편이 사방으로 방출됩니다.',
+        desc: '일반 채찍과 동일하게 휘두르며 첫 번째 타겟 적중 시 4방향으로 관통 표창을 발사합니다.',
         baseCooldown: 0.95,
         baseDamage: 52,
-        baseCount: 2, // 2연타
+        baseCount: 2, // 2연타 기본
         baseArea: 1.25,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -290,9 +289,9 @@ class WeaponManager {
         name: '학살자의 폭풍검',
         icon: '⚔️🌪️',
         iconSprite: 'icon_slayerbladestorm',
-        desc: '거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 적을 갈아내고, 주기적으로 전방에 초승달 검기를 방출합니다.',
-        baseCooldown: 0.65, // 전방 검기 발사 주기
-        baseDamage: 46,
+        desc: '거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 접근하는 모든 적을 갈아냅니다.',
+        baseCooldown: 0.50,
+        baseDamage: 56,     // 검기 삭제 보상으로 기본 공격력 대폭 상향 (46 -> 56)
         baseCount: 4,       // 회전 무기 4개
         baseArea: 1.25,
         cooldownLevel: 0,
@@ -421,7 +420,7 @@ class WeaponManager {
       range: 80 * area,   // 사거리
       damage: dmg,
       knockbackDir: { x: Math.cos(angle), y: Math.sin(angle) },
-      knockbackForce: 100, // 균형 잡힌 넉백
+      knockbackForce: 130, // 넉백 보강 (100 -> 130)
       life: 0.10,
       maxLife: 0.10,
       hitEnemies: new Set(),
@@ -491,7 +490,7 @@ class WeaponManager {
     });
   }
 
-  // [진화 1] 천상의 성역 (heavenlySanctuary): 초대형 결계 + 내부 성수 정화 틱 + 주기적 천상 충격파
+  // [진화 1] 천상의 성역 (heavenlySanctuary): 초대형 결계 + 내부 성수 정화 도트 + 적 빙결(동결) 효과
   executeHeavenlySanctuaryTick(w, enemies) {
     const dmg = this.getDamage(w);
     const area = this.getArea(w);
@@ -509,6 +508,11 @@ class WeaponManager {
         };
         enemy.takeDamage(dmg, kbDir, 80);
         hitCount++;
+
+        // 낮은 확률로 적 얼림(동결 1.5초, 보스는 40% 감속) 효과 부여 (약 5%)
+        if (Math.random() < 0.05 && !enemy.isDead && typeof enemy.freeze === 'function') {
+          enemy.freeze(1.5);
+        }
       }
     }
 
@@ -526,54 +530,22 @@ class WeaponManager {
     }
   }
 
-  // 천상의 성역 주기적 충격파 폭발 (1.2초 주기)
-  triggerHeavenlyPulse(w, enemies) {
-    sounds.playLevelUp();
-    const area = this.getArea(w);
-    const radius = 150 * area;
-    const pulseDmg = Math.round(this.getDamage(w) * 1.5);
-    const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : [];
-
-    for (const enemy of enemies) {
-      if (enemy.isDead) continue;
-      const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
-      if (dist <= radius + enemy.radius) {
-        const kbDir = {
-          x: (enemy.x - this.player.x) / (dist || 1),
-          y: (enemy.y - this.player.y) / (dist || 1)
-        };
-        enemy.takeDamage(pulseDmg, kbDir, 220);
-      }
-    }
-
-    for (const obs of obstacles) {
-      if (obs.isDead || !obs.isDestructible) continue;
-      const dist = Math.hypot(obs.x - this.player.x, obs.y - this.player.y);
-      if (dist <= radius + obs.radius) {
-        obs.takeDamage(pulseDmg, this.game);
-      }
-    }
-
-    if (this.game) {
-      this.game.addParticles(this.player.x, this.player.y, '#facc15', 20);
-      this.game.addParticles(this.player.x, this.player.y, '#38bdf8', 16);
-    }
-  }
-
-  // [진화 2] 모닝스타 선풍 (morningstarTempest): 거대 사슬 모닝스타 후려치기 + 360도 표창 파편 방출
-  executeMorningstarTempest(w, isBack = false) {
+  // [진화 2] 모닝스타 선풍 (morningstarTempest): 일반 채찍과 동일하게 휘두르며 첫 번째 타겟 적중 시 4방향 관통 표창 방출
+  executeMorningstarTempest(w, isBack = false, baseAngle = null) {
     sounds.playWhip();
-    sounds.playSlash();
     const dmg = this.getDamage(w);
     const area = this.getArea(w);
-    const baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
-    const angle = isBack ? (baseAngle + Math.PI) : baseAngle;
+    let targetAngle = baseAngle;
+    if (targetAngle === null || targetAngle === undefined) {
+      targetAngle = (w.lastTargetAngle !== undefined) ? w.lastTargetAngle : Math.atan2(this.player.facing.y, this.player.facing.x);
+    }
+    const angle = isBack ? (targetAngle + Math.PI) : targetAngle;
 
-    const arc = 2.35; // 135도 대형 광역 호
-    const range = 260 * area;
-    this.player.triggerAttackAnim('morningstartempest', angle, 0.24, { arc, range, area });
+    const arc = 2.05; // 채찍과 유사한 약 118도의 넓은 부채꼴 호
+    const range = 210 * area; // 채찍보다 확장된 사거리
+    this.player.triggerAttackAnim('whip', angle, 0.20, { arc, range, area });
 
-    // 타격 슬래시 등록
+    // 타격 슬래시 등록 (첫 타겟 적중 시 4방향 표창 생성 트리거 포함)
     this.slashes.push({
       type: 'cone',
       x: this.player.x,
@@ -583,47 +555,58 @@ class WeaponManager {
       range: range,
       damage: dmg,
       knockbackDir: { x: Math.cos(angle), y: Math.sin(angle) },
-      knockbackForce: 360,
-      life: 0.22,
-      maxLife: 0.22,
+      knockbackForce: 280,
+      life: 0.20,
+      maxLife: 0.20,
       drawSector: true,
-      maxAlpha: 0.35,
-      startColor: 'rgba(251, 191, 36, 0.50)',
-      midColor: 'rgba(245, 158, 11, 0.30)',
-      endColor: 'rgba(251, 191, 36, 0.65)',
-      strokeColor: 'rgba(254, 240, 138, 0.90)',
-      lineWidth: 5,
+      maxAlpha: 0.30,
+      startColor: 'rgba(251, 191, 36, 0.40)',
+      midColor: 'rgba(245, 158, 11, 0.25)',
+      endColor: 'rgba(251, 191, 36, 0.50)',
+      strokeColor: 'rgba(254, 240, 138, 0.85)',
+      lineWidth: 4,
+      isMorningstarTempest: true,
+      weaponRef: w,
+      shurikenSpawned: false,
       hitEnemies: new Set(),
       hitObstacles: new Set()
     });
+  }
 
-    // 타격 지점에서 6개의 표창 파편이 360도로 방사 방출
-    const shurikenCount = 6 + (w.countLevel || 0);
-    const shurikenDmg = Math.round(dmg * 0.65);
+  // 모닝스타 선풍: 첫 번째 타겟 적중 위치에서 4방향 관통 표창 발사
+  triggerMorningstar4Shurikens(tx, ty, w) {
+    sounds.playSlash();
+    const dmg = Math.round(this.getDamage(w) * 0.75);
+    const area = this.getArea(w);
     const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
-    const shurikenSpeed = 480 * projSpeedBonus;
+    const speed = 520 * projSpeedBonus;
 
-    for (let i = 0; i < shurikenCount; i++) {
-      const pAngle = (angle - Math.PI / 3) + (i * Math.PI * 2) / shurikenCount;
-      const spawnDist = 40 * area;
+    // 4방향(상, 하, 좌, 우) 관통 표창 발사
+    for (let i = 0; i < 4; i++) {
+      const angle = (i * Math.PI) / 2; // 0, 90, 180, 270도
       this.projectiles.push({
         type: 'shuriken',
-        x: this.player.x + Math.cos(pAngle) * spawnDist,
-        y: this.player.y + Math.sin(pAngle) * spawnDist,
-        vx: Math.cos(pAngle) * shurikenSpeed,
-        vy: Math.sin(pAngle) * shurikenSpeed,
+        x: tx,
+        y: ty,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
         radius: 6 * area,
         area: area,
-        damage: shurikenDmg,
-        pierce: 3,
-        knockbackForce: 140,
-        life: 0.70,
+        damage: dmg,
+        pierce: 3 + Math.floor((w.countLevel || 0) / 2),
+        knockbackForce: 150,
+        life: 0.65,
         homing: false,
         rotAngle: Math.random() * Math.PI * 2,
         color: '#facc15',
         hitEnemies: new Set(),
         hitObstacles: new Set()
       });
+    }
+
+    if (this.game) {
+      this.game.addParticles(tx, ty, '#facc15', 12);
+      this.game.addParticles(tx, ty, '#38bdf8', 8);
     }
   }
 
@@ -669,42 +652,9 @@ class WeaponManager {
     }
   }
 
-  // [진화 4] 학살자의 폭풍검 (slayerBladeStorm): 전방 초승달 검기 발사 (상시 회전 칼날은 update에서 처리)
+  // [진화 4] 학살자의 폭풍검 (slayerBladeStorm): 상시 회전 칼날은 update에서 처리 (검기 삭제)
   executeSlayerBladeStorm(w, enemies) {
-    sounds.playSlash();
-    const dmg = this.getDamage(w);
-    const area = this.getArea(w);
-    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
-    const speed = 560 * projSpeedBonus;
-
-    const closestEnemy = this.getClosestEnemy(enemies);
-    let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
-    if (closestEnemy) {
-      baseAngle = Math.atan2(closestEnemy.y - this.player.y, closestEnemy.x - this.player.x);
-    }
-
-    // 2발의 초승달 검기 일제 발사
-    for (let i = 0; i < 2; i++) {
-      const angleOffset = (i === 0 ? -0.12 : 0.12);
-      const angle = baseAngle + angleOffset;
-      this.projectiles.push({
-        type: 'swordWave',
-        x: this.player.x,
-        y: this.player.y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        radius: 12 * area,
-        area: area,
-        damage: Math.round(dmg * 1.15),
-        pierce: 5, // 5체 관통
-        knockbackForce: 260,
-        life: 0.85,
-        homing: false,
-        color: '#f59e0b',
-        hitEnemies: new Set(),
-        hitObstacles: new Set()
-      });
-    }
+    // 검기 삭제 완료 - 상시 궤도 회전 대검/도끼로만 전투 수행
   }
 
   // [진화 5] 테슬라 뇌전포 (teslaShotgun): 고전압 뇌전 산탄 + 체인 라이트닝 + 즉시 낙뢰 폭격
@@ -921,18 +871,13 @@ class WeaponManager {
       }
     }
 
-    // [진화 1] 천상의 성역 (heavenlySanctuary) 상시 성수 도트 결계 & 천상 충격파
+    // [진화 1] 천상의 성역 (heavenlySanctuary) 상시 성수 도트 결계 & 빙결
     const heavenly = this.weapons['heavenlySanctuary'] || this.weapons['holyShotgun'];
     if (heavenly) {
       heavenly.cooldownTimer -= dt;
       if (heavenly.cooldownTimer <= 0) {
         this.executeHeavenlySanctuaryTick(heavenly, enemies);
         heavenly.cooldownTimer = this.getCooldown(heavenly);
-      }
-      heavenly.waveTimer = (heavenly.waveTimer || 1.2) - dt;
-      if (heavenly.waveTimer <= 0) {
-        this.triggerHeavenlyPulse(heavenly, enemies);
-        heavenly.waveTimer = 1.2;
       }
     }
 
@@ -969,14 +914,14 @@ class WeaponManager {
       }
     }
 
-    // [진화 2] 모닝스타 선풍 전후방 초광역 연타 큐 처리
+    // [진화 2] 모닝스타 선풍 전후방 교차 연타 큐 처리
     if (this.bladeWhipStrikesQueue.length > 0) {
       this.bladeWhipStrikeTimer -= dt;
       if (this.bladeWhipStrikeTimer <= 0) {
         const isBack = this.bladeWhipStrikesQueue.shift();
-        this.bladeWhipStrikeTimer = 0.09;
+        this.bladeWhipStrikeTimer = 0.10;
         const msTempest = this.weapons['morningstarTempest'] || this.weapons['bladeWhip'];
-        if (msTempest) this.executeMorningstarTempest(msTempest, isBack);
+        if (msTempest) this.executeMorningstarTempest(msTempest, isBack, msTempest.lastTargetAngle);
       }
     }
 
@@ -1017,7 +962,7 @@ class WeaponManager {
               x: (enemy.x - this.player.x) / (Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y) || 1),
               y: (enemy.y - this.player.y) / (Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y) || 1)
             };
-            enemy.takeDamage(dmg, kbDir, 180);
+            enemy.takeDamage(dmg, kbDir, 240); // 넉백 상향 (180 -> 240)
             sounds.playSlash();
           }
         }
@@ -1092,6 +1037,12 @@ class WeaponManager {
           };
           enemy.takeDamage(s.damage, kbDir, s.knockbackForce);
           sounds.playHit();
+
+          // 모닝스타 선풍: 첫 번째 적중 시 적중 위치에서 4방향 관통 표창 방출
+          if (s.isMorningstarTempest && !s.shurikenSpawned) {
+            s.shurikenSpawned = true;
+            this.triggerMorningstar4Shurikens(enemy.x, enemy.y, s.weaponRef);
+          }
         }
       }
 
@@ -1115,6 +1066,12 @@ class WeaponManager {
         if (inHitbox) {
           s.hitObstacles.add(obs);
           obs.takeDamage(s.damage, this.game);
+
+          // 모닝스타 선풍: 장애물에 첫 적중 시에도 4방향 관통 표창 방출
+          if (s.isMorningstarTempest && !s.shurikenSpawned) {
+            s.shurikenSpawned = true;
+            this.triggerMorningstar4Shurikens(obs.x, obs.y, s.weaponRef);
+          }
         }
       }
     }
@@ -1444,20 +1401,29 @@ class WeaponManager {
         break;
       }
 
-      // [진화 2] 모닝스타 선풍 (morningstarTempest)
+      // [진화 2] 모닝스타 선풍 (morningstarTempest): 일반 채찍과 동일하게 자동 조준 및 교차 연타
       case 'morningstarTempest':
       case 'bladeWhip': {
-        const pattern = [false, true, false, true];
-        this.executeMorningstarTempest(w, pattern[0]);
+        const closestEnemy = this.getClosestEnemy(enemies);
+        let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+        if (closestEnemy) {
+          baseAngle = Math.atan2(closestEnemy.y - this.player.y, closestEnemy.x - this.player.x);
+        }
+        w.lastTargetAngle = baseAngle;
+
+        const pattern = [];
+        for (let i = 0; i < count; i++) {
+          pattern.push(i % 2 === 1); // false: 타겟 방향, true: 반대 방향
+        }
+        this.executeMorningstarTempest(w, pattern[0], baseAngle);
         this.bladeWhipStrikesQueue = pattern.slice(1);
         this.bladeWhipStrikeTimer = 0.10;
         break;
       }
 
-      // [진화 4] 학살자의 폭풍검 (slayerBladeStorm: 전방 검기 발사)
+      // [진화 4] 학살자의 폭풍검 (slayerBladeStorm: 검기 삭제 완료 - 상시 궤도 회전만 동작)
       case 'slayerBladeStorm':
       case 'spinningAxe': {
-        this.executeSlayerBladeStorm(w, enemies);
         break;
       }
 

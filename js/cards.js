@@ -1,5 +1,5 @@
 // 레벨업 카드 시스템: 무기 강화, 신규 무기 해금, 진화 무기 합성, 캐릭터 패시브 강화
-// 1. 캐릭터 패시브 스탯은 최대 5종만 인벤토리에 장착 가능 (각 6강 제한, 투사체 3강)
+// 1. 캐릭터 패시브 스탯은 최대 5종만 인벤토리에 장착 가능 (각 5강 제한, 범위 3강, 투사체 2강)
 // 2. 무기 슬롯 최대 5개 제한 (각 무기 총 5레벨 MAX 제한)
 // 3. 5대 정통 진화 무기 체계:
 //    - 천상의 성역 (heavenlySanctuary) = 성역 (sanctuary 5렙) + 성수 (holyWater 5렙)
@@ -170,10 +170,10 @@ class CardManager {
       fireWand: { name: '화염 지팡이', type: '원거리', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 폭발 화염구를 발사' },
 
       // 5대 진화 무기 메타
-      heavenlySanctuary: { name: '천상의 성역', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 성수 연쇄 폭발 펄스' },
-      morningstarTempest: { name: '모닝스타 선풍', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '거대 가시 철퇴 휩쓸기 및 360도 표창 폭풍' },
+      heavenlySanctuary: { name: '천상의 성역', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 적 빙결(동결) 효과' },
+      morningstarTempest: { name: '모닝스타 선풍', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '채찍 전후방 교차 타격 및 첫 적중 시 4방향 관통 표창 방출' },
       apocalypseComet: { name: '멸망의 혜성', type: '원거리', icon: '☄️🔥', iconKey: 'icon_apocalypsecomet', desc: '유도 화염 혜성 연사 및 헬파이어 연쇄 폭발' },
-      slayerBladeStorm: { name: '학살자의 폭풍검', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_slayerbladestorm', desc: '상시 궤도 회전 대검·도끼 및 초승달 전방 검기' },
+      slayerBladeStorm: { name: '학살자의 폭풍검', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_slayerbladestorm', desc: '초고속 상시 궤도 회전 대검·도끼 근접 방쇄' },
       teslaShotgun: { name: '테슬라 뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '고전압 뇌전 산탄 일제 사격 및 체인 라이트닝·낙뢰 폭격' }
     };
 
@@ -220,7 +220,7 @@ class CardManager {
           title: '[진화] 천상의 성역',
           icon: '⛪✨',
           iconKey: 'icon_heavenlysanctuary',
-          desc: '성역과 성수를 합성 진화합니다! 두 무기가 흡수 소멸되며 플레이어 주위에 초대형 룬 결계가 형성되고 성스러운 물 폭발 펄스가 방출됩니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '성역과 성수를 합성 진화합니다! 두 무기가 흡수 소멸되며 플레이어 주위에 초대형 룬 결계가 형성되고 도트 피해 시 낮은 확률로 적을 얼립니다. (1Lv 획득, 슬롯 1칸 반환)',
           effectText: '성역(5Lv) + 성수(5Lv) 합성 -> [천상의 성역 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -261,7 +261,7 @@ class CardManager {
           title: '[진화] 모닝스타 선풍',
           icon: '⛓️🌪️',
           iconKey: 'icon_morningstartempest',
-          desc: '채찍과 표창을 합성 진화합니다! 가시 철퇴를 초고속 360도로 휘두르며 사방으로 관통 표창 폭풍을 난사합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '채찍과 표창을 합성 진화합니다! 채찍을 전후방으로 휘두르며 첫 번째 적중 위치에서 4방향으로 관통 표창이 폭쇄 방출됩니다. (1Lv 획득, 슬롯 1칸 반환)',
           effectText: '채찍(5Lv) + 표창(5Lv) 합성 -> [모닝스타 선풍 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -341,7 +341,7 @@ class CardManager {
           title: '[진화] 학살자의 폭풍검',
           icon: '⚔️🌪️',
           iconKey: 'icon_slayerbladestorm',
-          desc: '철검과 도끼를 합성 진화합니다! 거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 전방에 초승달 검기를 방출합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '철검과 도끼를 합성 진화합니다! 거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 접근하는 모든 적을 갈아냅니다. (1Lv 획득, 슬롯 1칸 반환)',
           effectText: '철검(5Lv) + 도끼(5Lv) 합성 -> [학살자의 폭풍검 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -510,10 +510,10 @@ class CardManager {
             countDesc = `동시에 내리꽂는 낙뢰 벼락 개수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'holyWater' || key === 'acidPool') {
-            countDesc = `동시에 투척하는 성수 정화 장판 개수를 늘립니다.`;
+            countDesc = `동시에 투척하는 성수 갯수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'morningstarTempest') {
-            countDesc = `동시에 방출하는 회전 표창 폭풍 개수를 늘립니다.`;
+            countDesc = `적중 시 방출되는 관통 표창 개수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'apocalypseComet') {
             countDesc = `동시에 연사 투하되는 유도 화염 혜성 개수를 늘립니다.`;
@@ -552,7 +552,7 @@ class CardManager {
         iconKey: 'icon_armor',
         desc: '받는 피해를 감쇄하고 추가 경감합니다.',
         effectText: '방어력 +1 & 피해 4% 경감',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => { this.player.armor += 1; }
       },
       {
@@ -562,7 +562,7 @@ class CardManager {
         iconKey: 'icon_speed',
         desc: '이동 속도를 증가시킵니다.',
         effectText: '이동 속도 +12%',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => { this.player.speed += this.player.baseSpeed * 0.12; }
       },
       {
@@ -572,7 +572,7 @@ class CardManager {
         iconKey: 'icon_atk',
         desc: '공격력을 증가시킵니다.',
         effectText: '공격력 +25%',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => { this.player.atkPowerMult += 0.25; }
       },
       {
@@ -582,7 +582,7 @@ class CardManager {
         iconKey: 'icon_regen',
         desc: '매초 체력을 지속 자동 회복합니다.',
         effectText: '초당 체력 회복 +1.5 HP/s',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => { this.player.hpRegen += 1.5; }
       },
       {
@@ -592,7 +592,7 @@ class CardManager {
         iconKey: 'icon_hp',
         desc: '최대 체력을 증가시키고 체력을 즉시 일부 회복합니다.',
         effectText: '최대 체력 +25 & 회복 +25',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => {
           this.player.maxHp += 25;
           this.player.hp = Math.min(this.player.maxHp, this.player.hp + 25);
@@ -605,7 +605,7 @@ class CardManager {
         iconKey: 'icon_global_speed',
         desc: '재사용 대기시간을 단축합니다.',
         effectText: '쿨타임 감소 -15%',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => { this.player.globalCooldownMult *= 1.15; }
       },
       {
@@ -615,7 +615,7 @@ class CardManager {
         iconKey: 'item_magnet',
         desc: '경험치 보석을 흡수하는 자석 반경을 확장합니다.',
         effectText: '자석 반경 +60px',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => { this.player.magnetRadius += 60; }
       },
       {
@@ -625,7 +625,7 @@ class CardManager {
         iconKey: 'icon_axe',
         desc: '공격 범위 및 크기를 확대합니다.',
         effectText: '공격 범위 +30%',
-        maxLevel: 6,
+        maxLevel: 3,
         apply: () => { this.player.bonusAreaMult = (this.player.bonusAreaMult || 1.0) + 0.30; }
       },
       {
@@ -633,11 +633,11 @@ class CardManager {
         title: '복제의 오브',
         icon: '🪞',
         iconKey: 'icon_proj_count',
-        desc: '투사체 수 및 연속공격 횟수를 영구 증가시킵니다. (최대 3회)',
+        desc: '투사체 수 및 연속공격 횟수를 영구 증가시킵니다. (최대 2회)',
         effectText: '투사체/연속공격 +1',
-        maxLevel: 3,
+        maxLevel: 2,
         apply: () => {
-          this.player.bonusProjectiles = Math.min(3, (this.player.bonusProjectiles || 0) + 1);
+          this.player.bonusProjectiles = Math.min(2, (this.player.bonusProjectiles || 0) + 1);
         }
       },
       {
@@ -647,7 +647,7 @@ class CardManager {
         iconKey: 'icon_proj_speed',
         desc: '투사체의 비행 속도를 대폭 증가시킵니다.',
         effectText: '투사체 속도 +20%',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => {
           this.player.bonusProjSpeedMult = (this.player.bonusProjSpeedMult || 1.0) * 1.20;
         }
@@ -659,7 +659,7 @@ class CardManager {
         iconKey: 'icon_clover',
         desc: '치명타 확률이 상승하고 아이템 드랍률이 증가합니다.',
         effectText: '치명타 확률 +10% & 드랍률 +15%',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => {
           this.player.critChance = (this.player.critChance || 0.05) + 0.10;
           this.player.dropRateBonus = (this.player.dropRateBonus || 0.0) + 0.15;
@@ -672,7 +672,7 @@ class CardManager {
         iconKey: 'icon_crown',
         desc: '몬스터 처치 및 보석 획득 시 얻는 경험치 획득량이 증가합니다.',
         effectText: '경험치 획득량 +15%',
-        maxLevel: 6,
+        maxLevel: 5,
         apply: () => {
           this.player.expMult = (this.player.expMult || 1.0) + 0.15;
         }

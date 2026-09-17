@@ -26,12 +26,12 @@ class WaveManager {
       8: { mobs: ['assassin', 'golem', 'cultist'], interval: 0.35, batch: 8, hpScale: 5.40, bossTime: 22, bossStage: 8 }, // [물량 2배 구간: batch 8]
       9: { mobs: ['bat', 'slime', 'zombie', 'skeleton', 'goblin', 'ghost', 'gargoyle', 'cultist', 'assassin', 'golem'], interval: 0.28, batch: 5, hpScale: 6.80, boss: null }, // [체력 점프 3구간]
       10: { mobs: ['gargoyle', 'cultist', 'assassin', 'golem'], interval: 0.24, batch: 5, hpScale: 8.50, bossTime: 12, bossStage: 10 },
-      // --- 11~15 Hell 난이도 (기하급수 스케일링 & 신규 특색 몬스터) ---
-      11: { mobs: ['bloodHound', 'assassin'], interval: 0.22, batch: 6, hpScale: 11.5, boss: null }, // [초고속 돌진 맹견 떼]
-      12: { mobs: ['darkMage', 'bloodHound', 'gargoyle'], interval: 0.20, batch: 6, hpScale: 15.0, bossTime: 22, bossStage: 12 }, // [원거리 마법 탄막 + 리치 보스]
-      13: { mobs: ['wraithSwarm', 'bat', 'ghost'], interval: 0.15, batch: 12, hpScale: 19.5, boss: null }, // [극악의 물량 대습격 12마리 스웜]
-      14: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm'], interval: 0.18, batch: 7, hpScale: 25.0, boss: null }, // [초고체력 심연 타이탄 방벽 + 원거리 포격]
-      15: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'golem'], interval: 0.13, batch: 8, hpScale: 32.0, bossTime: 12, bossStage: 15 } // [최후의 결전: 사신 강림]
+      // --- 11~15 Hell 난이도 (기하급수 스케일링 완만화 & 적정 난이도 밸런싱) ---
+      11: { mobs: ['bloodHound', 'assassin'], interval: 0.24, batch: 5, hpScale: 9.5, boss: null }, // [초고속 돌진 맹견 떼]
+      12: { mobs: ['darkMage', 'bloodHound', 'gargoyle'], interval: 0.22, batch: 5, hpScale: 12.0, bossTime: 22, bossStage: 12 }, // [원거리 마법 탄막 + 리치 보스]
+      13: { mobs: ['wraithSwarm', 'bat', 'ghost'], interval: 0.20, batch: 8, hpScale: 15.0, boss: null }, // [망령 군단 대습격 8마리 스웜]
+      14: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm'], interval: 0.18, batch: 6, hpScale: 18.5, boss: null }, // [심연 타이탄 방벽 + 원거리 포격]
+      15: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'golem'], interval: 0.15, batch: 7, hpScale: 23.0, bossTime: 12, bossStage: 15 } // [최후의 결전: 사신 강림]
     };
   }
 

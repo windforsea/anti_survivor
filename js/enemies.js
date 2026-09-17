@@ -245,9 +245,9 @@ const ENEMY_TYPES = {
 
   // [신규 특색 몬스터 4종]
   darkMage: { name: '타락한 마도사', hp: 140, speed: 95, radius: 14, color: '#7e22ce', exp: 12, damage: 16, isRanged: true, isFlying: true },
-  bloodHound: { name: '핏빛 사냥개', hp: 110, speed: 275, radius: 12, color: '#dc2626', exp: 10, damage: 18, knockbackResist: 0.35, isFlying: false },
+  bloodHound: { name: '핏빛 사냥개', hp: 110, speed: 210, radius: 12, color: '#dc2626', exp: 10, damage: 18, knockbackResist: 0.35, isFlying: false }, // 속도 완화 (275 -> 210)
   wraithSwarm: { name: '망령 군단', hp: 55, speed: 145, radius: 11, color: '#06b6d4', exp: 5, damage: 12, alpha: 0.70, isFlying: true },
-  abyssTitan: { name: '심연의 거인', hp: 650, speed: 55, radius: 28, color: '#1e1b4b', exp: 28, damage: 32, knockbackResist: 0.92, isFlying: false }
+  abyssTitan: { name: '심연의 거인', hp: 450, speed: 55, radius: 28, color: '#1e1b4b', exp: 28, damage: 32, knockbackResist: 0.70, isFlying: false } // HP(650->450) 및 넉백저항(0.92->0.70) 완화
 };
 
 class Enemy {
@@ -269,6 +269,11 @@ class Enemy {
     this.isRanged = config.isRanged || false;           // 원거리 사격 여부
     this.shootTimer = 1.0 + Math.random() * 1.5;
     this.isBoss = false;
+
+    // 빙결 및 슬로우 상태
+    this.freezeTimer = 0;
+    this.slowTimer = 0;
+    this.slowMult = 1.0;
 
     // 고유 기믹 타이머
     this.dashTimer = 2.0 + Math.random() * 1.5;
@@ -331,8 +336,35 @@ class Enemy {
     }
   }
 
+  // 빙결 및 감속 부여 (천상의 성역 등)
+  freeze(duration = 1.5) {
+    if (this.isDead) return;
+    if (this.isBoss) {
+      // 보스는 완전 정지 대신 40% 감속 1.0초
+      this.slowTimer = 1.0;
+      this.slowMult = 0.60;
+    } else {
+      this.freezeTimer = Math.max(this.freezeTimer, duration);
+    }
+    if (window.game) {
+      window.game.addParticles(this.x, this.y, '#38bdf8', 6);
+      window.game.addParticles(this.x, this.y, '#e0f2fe', 4);
+    }
+  }
+
   update(dt, player, allEnemies, enemyProjectiles) {
     if (this.isDead) return;
+
+    // 빙결 상태 시 이동/공격 정지
+    if (this.freezeTimer > 0) {
+      this.freezeTimer -= dt;
+      this.animTimer += dt * 2;
+      return;
+    }
+
+    if (this.slowTimer > 0) {
+      this.slowTimer -= dt;
+    }
 
     this.animTimer += dt * 8;
     if (this.hitFlashTimer > 0) this.hitFlashTimer -= dt;
@@ -368,7 +400,7 @@ class Enemy {
     if (dist > 0.1) {
       let moveDirX = dx / dist;
       let moveDirY = dy / dist;
-      let curSpeed = this.speed;
+      let curSpeed = this.speed * (this.slowTimer > 0 ? this.slowMult : 1.0);
 
       // 1. 박쥐 (bat): Sine-wave 지그재그 출렁임 비행
       if (this.typeKey === 'bat') {
@@ -636,6 +668,21 @@ class Enemy {
       ctx.beginPath();
       ctx.arc(0, bob, this.radius, 0, Math.PI * 2);
       ctx.fill();
+      ctx.restore();
+    }
+
+    // 빙결 시 서리빛 얼음 결계 및 틴트 렌더링
+    if (this.freezeTimer > 0) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.40)';
+      ctx.strokeStyle = '#bae6fd';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
       ctx.restore();
     }
   }
