@@ -66,6 +66,10 @@
         <div class="cards-container" id="cardsList">
           <!-- JS에서 3장의 카드가 동적으로 생성됩니다 -->
         </div>
+        <div class="card-action-bar">
+          <button id="cardRerollBtn" class="card-btn btn-reroll">🎲 새로고침 (3/3)</button>
+          <button id="cardSkipBtn" class="card-btn btn-skip">⏩ 스킵 (체력 +20 회복)</button>
+        </div>
       </div>
     </div>
 
@@ -85,7 +89,7 @@
     <div id="victoryModal" class="modal-backdrop hidden">
       <div class="modal-box result-box game-victory">
         <h1 class="result-title text-gold">🏆 VICTORY! 🏆</h1>
-        <p class="result-sub">모든 웨이브와 파멸의 군주를 물리쳤습니다!</p>
+        <p class="result-sub">15스테이지 지옥의 시련과 종말의 사신을 격파했습니다!</p>
         <div class="result-stats" id="victoryStats">
           <!-- 최종 기록 -->
         </div>
