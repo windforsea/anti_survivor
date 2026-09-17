@@ -72,12 +72,19 @@ class Game {
 
   initInputListeners() {
     window.addEventListener('keydown', (e) => {
+      sounds.ensureContext(); // 사용자 첫 키보드 입력 시 오디오 활성화
+
+      // 카드 선택 모달(시작 무기/레벨업) 오픈 시 키보드 방향키/엔터/숫자키 처리
+      if (this.ui && this.ui.isCardModalOpen) {
+        const handled = this.ui.handleCardModalKeydown(e);
+        if (handled) return;
+      }
+
       if (e.code === 'Escape' || e.code === 'KeyP') {
         this.togglePause();
         return;
       }
       this.input.keys[e.code] = true;
-      sounds.ensureContext(); // 사용자 첫 키보드 입력 시 오디오 활성화
     });
 
     window.addEventListener('keyup', (e) => {

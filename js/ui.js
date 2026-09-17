@@ -41,6 +41,13 @@ class UIManager {
 
     this.soundToggleBtn = document.getElementById('soundToggleBtn');
 
+    // 키보드 카드 선택 포커스 상태
+    this.focusedCardIndex = 0;
+    this.activeCards = [];
+    this.cardElements = [];
+    this.onCardSelectCallback = null;
+    this.isCardModalOpen = false;
+
     this.initEventListeners();
     this.initJoystick();
   }
@@ -208,6 +215,13 @@ class UIManager {
     this.cardsList.innerHTML = '';
     this.cardModal.classList.remove('hidden');
 
+    // 키보드 네비게이션 상태 동기화
+    this.isCardModalOpen = true;
+    this.focusedCardIndex = 0;
+    this.activeCards = cards;
+    this.cardElements = [];
+    this.onCardSelectCallback = onSelect;
+
     const modalTitle = this.cardModal.querySelector('.modal-title');
     const modalSub = this.cardModal.querySelector('.modal-sub');
     if (modalTitle) {
@@ -256,13 +270,14 @@ class UIManager {
         this.cardSkipBtn.onclick = (e) => {
           e.stopPropagation();
           this.cardModal.classList.add('hidden');
+          this.isCardModalOpen = false;
           sounds.playSelect();
           if (onSkip) onSkip();
         };
       }
     }
 
-    cards.forEach(card => {
+    cards.forEach((card, index) => {
       const isEvo = card.category === 'evolution' || card.type === 'weapon_evolution';
       const isPassive = card.category === 'passive';
       const isWeapon = card.category === 'weapon';
@@ -309,7 +324,9 @@ class UIManager {
         `;
       }
 
+      const keyNum = index + 1;
       el.innerHTML = `
+        <span class="card-num-badge">${keyNum}</span>
         <span class="card-type-tag ${tagClass}">${tagLabel}</span>
         <span class="card-badge ${isEvo ? 'badge-evolution' : (isNew ? 'badge-new' : (isMaxBadge ? 'badge-max' : (isPassive ? 'badge-passive' : 'badge-weapon')))}">${card.badge}</span>
         ${iconHtml}
@@ -320,13 +337,100 @@ class UIManager {
         ${evoHintHtml}
       `;
 
-      el.addEventListener('click', () => {
-        this.cardModal.classList.add('hidden');
-        onSelect(card);
+      // 마우스 오버 시 키보드 포커스 동기화
+      el.addEventListener('mouseenter', () => {
+        this.setFocusedCardIndex(index);
       });
 
+      el.addEventListener('click', () => {
+        this.selectCardByIndex(index);
+      });
+
+      this.cardElements.push(el);
       this.cardsList.appendChild(el);
     });
+
+    // 기본 첫 번째 카드 포커스 활성화
+    this.updateCardFocus();
+  }
+
+  setFocusedCardIndex(index) {
+    if (!this.cardElements || this.cardElements.length === 0) return;
+    this.focusedCardIndex = Math.max(0, Math.min(this.cardElements.length - 1, index));
+    this.updateCardFocus();
+  }
+
+  updateCardFocus() {
+    if (!this.cardElements) return;
+    this.cardElements.forEach((el, idx) => {
+      el.classList.toggle('card-focused', idx === this.focusedCardIndex);
+    });
+  }
+
+  selectCardByIndex(index) {
+    if (!this.activeCards || index < 0 || index >= this.activeCards.length) return;
+    const card = this.activeCards[index];
+    this.cardModal.classList.add('hidden');
+    this.isCardModalOpen = false;
+    sounds.playSelect();
+    if (this.onCardSelectCallback) {
+      this.onCardSelectCallback(card);
+    }
+  }
+
+  handleCardModalKeydown(e) {
+    if (!this.isCardModalOpen || !this.activeCards || this.activeCards.length === 0) return false;
+
+    // 1. 숫자키 1~9 즉시 선택 (일반 숫자키 및 넘버패드)
+    let num = -1;
+    if (e.code && e.code.startsWith('Digit')) {
+      num = parseInt(e.code.replace('Digit', ''), 10);
+    } else if (e.code && e.code.startsWith('Numpad')) {
+      num = parseInt(e.code.replace('Numpad', ''), 10);
+    } else if (e.key >= '1' && e.key <= '9') {
+      num = parseInt(e.key, 10);
+    }
+
+    if (num >= 1 && num <= this.activeCards.length) {
+      this.selectCardByIndex(num - 1);
+      return true;
+    }
+
+    // 2. 좌측/상단 방향키: 이전 카드로 포커스 이동
+    if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
+      const prev = (this.focusedCardIndex - 1 + this.activeCards.length) % this.activeCards.length;
+      this.setFocusedCardIndex(prev);
+      sounds.playSelect();
+      return true;
+    }
+
+    // 3. 우측/하단 방향키: 다음 카드로 포커스 이동
+    if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
+      const next = (this.focusedCardIndex + 1) % this.activeCards.length;
+      this.setFocusedCardIndex(next);
+      sounds.playSelect();
+      return true;
+    }
+
+    // 4. Enter 또는 Space: 포커스된 카드 승인 선택
+    if (e.code === 'Enter' || e.code === 'NumpadEnter' || e.code === 'Space') {
+      this.selectCardByIndex(this.focusedCardIndex);
+      return true;
+    }
+
+    // 5. R 키: 새로고침 (Reroll)
+    if (e.code === 'KeyR' && this.cardRerollBtn && !this.cardRerollBtn.disabled) {
+      this.cardRerollBtn.click();
+      return true;
+    }
+
+    // 6. X 키: 스킵 (Skip)
+    if (e.code === 'KeyX' && this.cardSkipBtn && this.cardSkipBtn.style.display !== 'none') {
+      this.cardSkipBtn.click();
+      return true;
+    }
+
+    return false;
   }
   showGameOver(stats) {
     this.gameOverStats.innerHTML = `
