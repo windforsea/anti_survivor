@@ -1354,6 +1354,166 @@ const SPRITES = {
     "....KYWWWWYK....",
     ".....KYYYYK.....",
     "......KKKK......"
+  ],
+
+  // 표창 (Shuriken) 아이콘 16x16
+  icon_shuriken: [
+    ".......KK.......",
+    "......KLLK......",
+    ".....KLLMK......",
+    ".....KMMMK......",
+    "...KKKMMMK..KK..",
+    "..KLLMMMDMKKLLK.",
+    ".KLLMMMDDDMLLMK.",
+    "KKMMMDDKKDDMMMKK",
+    "KKMMMDDKKDDMMMKK",
+    ".KMLLMDDDMMLLK.",
+    ".KLLKKMDMMMKK...",
+    "..KK..KMMMKK....",
+    "......KMMMK.....",
+    "......KMLLK.....",
+    "......KLLK......",
+    ".......KK......."
+  ],
+
+  // 투사체 표창 (proj_shuriken) 16x16
+  proj_shuriken: [
+    ".......KK.......",
+    "......KWWK......",
+    ".....KLLLK......",
+    ".....KLMLK......",
+    "...KKKLMLKK.KK..",
+    "..KWWLMMDMKKWWK.",
+    ".KWWLMMDDDMLLWK.",
+    "KKLLMDDKKDDLLMKK",
+    "KKMLLDDKKDMMLLKK",
+    ".KWLLMDDDMLLWWK.",
+    ".KWWKKMDMLKKK...",
+    "..KK..KLMLK.....",
+    "......KLMLK.....",
+    "......KLLLK.....",
+    "......KWWK......",
+    ".......KK......."
+  ],
+
+  // 모닝스타 가시 철퇴 헤드 (anim_whip / anim_morningstar) 16x16
+  anim_whip: [
+    ".......KK.......",
+    "......KMMK......",
+    ".....KMDDMK.....",
+    "...KKKMDDMKKK...",
+    "..KMMKMDDMKMMK..",
+    ".KMDDMMWWMMDDK.",
+    ".KMDDMWWWWMDDK.",
+    "KKDDMWWKKWWDDMMK",
+    "KKDDMWWKKWWDDMMK",
+    ".KMDDMWWWWMDDK.",
+    ".KMDDMMWWMMDDK.",
+    "..KMMKMDDMKMMK..",
+    "...KKKMDDMKKK...",
+    ".....KMDDMK.....",
+    "......KMMK......",
+    ".......KK......."
+  ],
+
+  // [진화 1] 천상의 성역 (heavenlySanctuary: 성역 + 성수) 아이콘
+  icon_heavenlysanctuary: [
+    "......KYYK......",
+    ".....KYWWYK.....",
+    "....KYWTTWYK....",
+    "...KYWTKKTWYK...",
+    "..KYWTKWWKTWYK..",
+    ".KYYTTKWWKTTYYK.",
+    ".KYWWKKWWKKWWYK.",
+    "KYWTWWWWWWWWTTYK",
+    "KYWTWWWWWWWWTTYK",
+    ".KYWWKKWWKKWWYK.",
+    ".KYYTTKWWKTTYYK.",
+    "..KYWTKWWKTWYK..",
+    "...KYWTKKTWYK...",
+    "....KYWTTWYK....",
+    ".....KYWWYK.....",
+    "......KYYK......"
+  ],
+
+  // [진화 2] 모닝스타 선풍 (morningstarTempest: 채찍 + 표창) 아이콘
+  icon_morningstartempest: [
+    "...KK......KK...",
+    "..KLLK....KLLK..",
+    "..KLMMKKKKMMLK..",
+    "...KMMMDDMMMK...",
+    "..KMMMWWWWMMMK..",
+    ".KLMDWWKKWWDMMLK",
+    "KKMDWWKKKKWWDMKK",
+    "KLMDWKK..KKWDMML",
+    "KLMDWKK..KKWDMML",
+    "KKMDWWKKKKWWDMKK",
+    ".KLMDWWKKWWDMMLK",
+    "..KMMMWWWWMMMK..",
+    "...KMMMDDMMMK...",
+    "..KLMMKKKKMMLK..",
+    "..KLLK....KLLK..",
+    "...KK......KK..."
+  ],
+
+  // [진화 3] 멸망의 혜성 (apocalypseComet: 화염지팡이 + 마법화살) 아이콘
+  icon_apocalypsecomet: [
+    "......KCCK......",
+    "....KKCCCCKK....",
+    "...KCYYYYYYCK...",
+    "..KCYWWWWWWYCK..",
+    ".KCYWVVVVWWYCK.",
+    ".KCYWVVVVWWYCK.",
+    "KCCWVVRRVVWWCCK",
+    "KCCWVRRRRVWWCCK",
+    "KCCWVRRRRVWWCCK",
+    "KCCWVVRRVVWWCCK",
+    ".KCYWVVVVWWYCK.",
+    ".KCYWVVVVWWYCK.",
+    "..KCYWWWWWWYCK..",
+    "...KCYYYYYYCK...",
+    "....KKCCCCKK....",
+    "......KCCK......"
+  ],
+
+  // [진화 4] 학살자의 폭풍검 (slayerBladeStorm: 검 + 도끼) 아이콘
+  icon_slayerbladestorm: [
+    "KLLK........KLLK",
+    "KMLLK......KLLMK",
+    "KKMLLK....KLLMKK",
+    ".KKMLLK..KLLMKK.",
+    "..KKMDDKKDDMKK..",
+    "...KMDDYYDDMK...",
+    "...KMDYYYYDMK...",
+    "..KKDYYYYYYDKK..",
+    "..KKDYYYYYYDKK..",
+    "...KMDYYYYDMK...",
+    "...KMDDYYDDMK...",
+    "..KKMDDKKDDMKK..",
+    ".KKMLLK..KLLMKK.",
+    "KKMLLK....KLLMKK",
+    "KMLLK......KLLMK",
+    "KLLK........KLLK"
+  ],
+
+  // [진화 5] 테슬라 뇌전포 (teslaShotgun: 산탄총 + 번개반지) 아이콘
+  icon_teslashotgun: [
+    "....KK....KK....",
+    "...KTTK..KTTK...",
+    "..KTTWWKKTWWK...",
+    "..KTWWYYKYYWWK..",
+    ".KTWWYYKKYYWWK.",
+    ".KTTYYKKKKYTTK.",
+    "KKTTYYYYYYTTKKKK",
+    "KTTTTTTTTTTTTTTK",
+    "KTTTTTTTTTTTTTTK",
+    "KKTTYYYYYYTTKKKK",
+    ".KTTYYKKKKYTTK.",
+    ".KTWWYYKKYYWWK.",
+    "..KTWWYYKYYWWK..",
+    "..KTTWWKKTWWK...",
+    "...KTTK..KTTK...",
+    "....KK....KK...."
   ]
 };
 

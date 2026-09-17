@@ -14,9 +14,10 @@
     <!-- 인게임 상단 HUD -->
     <div id="hudOverlay">
       <div class="hud-top-bar">
-        <div class="hud-stat-box" id="stageBadge">STAGE 1 / 10</div>
+        <div class="hud-stat-box" id="stageBadge">STAGE 1 / 15</div>
         <div class="hud-stat-box" id="timerBadge">⏱️ 01:00</div>
         <div class="hud-stat-box" id="killBadge">💀 0</div>
+        <div class="hud-stat-box" id="goldBadge">🪙 0</div>
         <div class="hud-stat-box" id="levelBadge">Lv. 1</div>
         <button id="pauseToggleBtn" class="hud-btn" title="일시정지 (ESC / P)">⏸️</button>
         <button id="soundToggleBtn" class="hud-btn" title="소리 켜기/끄기">🔊</button>
@@ -39,6 +40,39 @@
         </div>
         <div class="inventory-slots" id="passiveSlots">
           <!-- 보유 패시브 카드 아이콘 목록 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 명예의 전당 챔피언 알림 배너 (사망/로비 이동 시 일시 노출) -->
+    <div id="championBanner" class="champion-banner hidden">
+      <div class="champion-banner-inner">
+        <span class="champion-icon">👑</span>
+        <div class="champion-text">
+          <div class="champion-header">
+            <span class="champion-tag">최근 클리어 챔피언</span>
+            <span class="champion-name" id="champName">전설의 서바이버</span>
+          </div>
+          <p class="champion-quote" id="champQuote">"어둠은 영원하지 않다. 끝까지 살아남아라!"</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 로비 및 영구 업그레이드 상점 모달 -->
+    <div id="lobbyModal" class="modal-backdrop">
+      <div class="modal-box lobby-box">
+        <div class="lobby-header">
+          <h1 class="lobby-title">⚔️ VAMPIRE SURVIVORS ⚔️</h1>
+          <p class="lobby-sub">전장에 출격하기 전 금화로 영구 스탯을 강화하세요</p>
+          <div class="lobby-gold-badge" id="lobbyGoldText">🪙 보유 금화: 0 G</div>
+        </div>
+
+        <div class="lobby-upgrades-grid" id="lobbyUpgradesList">
+          <!-- JS에서 9종 영구 업그레이드 카드가 동적으로 렌더링됩니다 -->
+        </div>
+
+        <div class="lobby-footer">
+          <button id="lobbyStartBtn" class="lobby-start-btn">⚡ 전장 출격 (게임 시작) ⚡</button>
         </div>
       </div>
     </div>
@@ -86,7 +120,10 @@
         <div class="result-stats" id="gameOverStats">
           <!-- 최종 기록 -->
         </div>
-        <button id="restartBtn" class="action-btn">다시 도전하기</button>
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+          <button id="gameOverLobbyBtn" class="action-btn" style="background: #334155;">🏠 로비로 이동</button>
+          <button id="restartBtn" class="action-btn" style="background: #dc2626;">다시 도전하기</button>
+        </div>
       </div>
     </div>
 
@@ -98,7 +135,23 @@
         <div class="result-stats" id="victoryStats">
           <!-- 최종 기록 -->
         </div>
-        <button id="victoryRestartBtn" class="action-btn">새로운 원정 시작</button>
+
+        <!-- 최종 보스 퇴치 시 닉네임 및 한마디 작성 폼 -->
+        <div class="champion-input-section" id="championInputSection">
+          <p class="champion-input-title">👑 명예의 전당 등록 👑</p>
+          <p class="champion-input-desc">챔피언의 승리 한마디를 남기면 다른 유저들에게 노출됩니다!</p>
+          <div class="champion-form">
+            <input type="text" id="championNameInput" placeholder="닉네임 (최대 10자)" maxlength="10">
+            <input type="text" id="championQuoteInput" placeholder="승리의 한마디 (최대 35자)" maxlength="35">
+            <button id="championSubmitBtn" class="champ-submit-btn">명예의 전당 등록</button>
+          </div>
+          <div id="championSubmitSuccess" class="champ-success-msg hidden">✨ 명예의 전당에 성공적으로 등록되었습니다! ✨</div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+          <button id="victoryLobbyBtn" class="action-btn" style="background: #334155;">🏠 로비로 이동</button>
+          <button id="victoryRestartBtn" class="action-btn" style="background: #eab308; color: #000; font-weight: bold;">새로운 원정 시작</button>
+        </div>
       </div>
     </div>
 

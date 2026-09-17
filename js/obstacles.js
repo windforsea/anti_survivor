@@ -66,20 +66,24 @@ class Obstacle {
     // 파괴 시 드랍 보상 (장애물과 겹치지 않는 안전한 열린 공간으로 스폰 보정)
     const safePos = game.obstacleManager ? game.obstacleManager.getUnblockedPosition(this.x, this.y, 16) : { x: this.x, y: this.y };
     const roll = Math.random();
-    if (roll < 0.35) {
-      // 체력 회복 포션 (체력 회복)
+    if (roll < 0.23) {
+      // 체력 회복 포션 (기존 35% -> 23%로 2/3 수준 감소)
       game.pickupItems.push(new PickupItem('heal', safePos.x, safePos.y));
-    } else if (roll < 0.65) {
+    } else if (roll < 0.48) {
       // 대형 경험치 보석 (EXP 20)
       game.expGems.push(new ExpGem(safePos.x, safePos.y, 20));
-    } else if (roll < 0.77) {
-      // 자석
+    } else if (roll < 0.70) {
+      // 금화 자루 (5~15G)
+      const goldVal = Math.floor(Math.random() * 11) + 5;
+      game.pickupItems.push(new PickupItem('gold', safePos.x, safePos.y, goldVal));
+    } else if (roll < 0.78) {
+      // 자석 (기존 대비 2/3 수준)
       game.pickupItems.push(new PickupItem('magnet', safePos.x, safePos.y));
-    } else if (roll < 0.89) {
-      // 폭탄
+    } else if (roll < 0.86) {
+      // 폭탄 (기존 대비 2/3 수준)
       game.pickupItems.push(new PickupItem('bomb', safePos.x, safePos.y));
-    } else if (roll < 0.96) {
-      // 얼음
+    } else if (roll < 0.91) {
+      // 얼음 (기존 대비 2/3 수준)
       game.pickupItems.push(new PickupItem('freeze', safePos.x, safePos.y));
     }
   }

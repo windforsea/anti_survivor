@@ -43,7 +43,8 @@ class Game {
     this.initCanvasResize();
     this.initInputListeners();
     this.start();
-    this.presentStartingWeaponSelection();
+    this.gameState = 'LOBBY';
+    this.ui.showLobby();
   }
 
   initCosmicStars() {
@@ -117,6 +118,35 @@ class Game {
     requestAnimationFrame(this.loop.bind(this));
   }
 
+  startRun() {
+    this.restart();
+  }
+
+  goToLobby() {
+    this.gameState = 'LOBBY';
+    if (this.ui) {
+      this.ui.hideGameOver();
+      this.ui.hideVictory();
+      this.ui.hidePauseModal();
+      this.ui.showChampionBanner(); // 사망 또는 로비 진입 시 챔피언 배너 띄움
+      this.ui.showLobby();
+    }
+  }
+
+  applyUpgradesFromSave() {
+    try {
+      const saveRaw = localStorage.getItem('vam_save_data');
+      if (saveRaw) {
+        const data = JSON.parse(saveRaw);
+        if (data.upgrades) {
+          this.player.applyPermanentUpgrades(data.upgrades);
+        }
+      }
+    } catch (e) {
+      console.warn('영구 업그레이드 로드 실패:', e);
+    }
+  }
+
   restart() {
     this.gameState = 'PLAYING';
     this.totalElapsedTime = 0;
@@ -131,11 +161,15 @@ class Game {
     this.bombFlashTimer = 0;
 
     this.player = new Player(0, 0);
+    this.applyUpgradesFromSave(); // 영구 업그레이드 스탯 적용!
     this.obstacleManager.reset();
     this.weaponManager = new WeaponManager(this.player, this);
     this.cardManager = new CardManager(this.player, this.weaponManager);
     this.waveManager.reset();
-    this.ui.hidePauseModal();
+    if (this.ui) {
+      this.ui.hidePauseModal();
+      this.ui.hideLobby();
+    }
     this.presentStartingWeaponSelection();
   }
 
@@ -211,7 +245,10 @@ class Game {
   }
 
   // 필드 특수 드랍 아이템 발동
-  applyPickupItem(type) {
+  // 필드 특수 드랍 아이템 발동
+  applyPickupItem(item) {
+    const type = typeof item === 'string' ? item : item.type;
+
     if (type === 'heal') {
       // 체력 포션: 체력 35 즉시 회복
       sounds.playLevelUp();
@@ -220,10 +257,15 @@ class Game {
       this.damageNumbers.push(new DamageNumber(this.player.x, this.player.y - 14, `+${healAmt}`, false, '#22c55e'));
       this.addParticles(this.player.x, this.player.y, '#22c55e', 18);
     } else if (type === 'magnet') {
-      // 자석: 전체 맵의 모든 경험치 보석 즉시 진공 회수
+      // 자석: 전체 맵의 모든 경험치 보석 및 필드 금화 즉시 진공 회수
       sounds.playLevelUp();
       for (const gem of this.expGems) {
         gem.magnetized = true;
+      }
+      for (const p of this.pickupItems) {
+        if (p.type === 'gold') {
+          p.magnetized = true;
+        }
       }
       this.addParticles(this.player.x, this.player.y, '#38bdf8', 20);
     } else if (type === 'bomb') {
@@ -241,29 +283,54 @@ class Game {
       sounds.playBossAlarm();
       this.freezeTimer = 4.5;
       this.addParticles(this.player.x, this.player.y, '#a5f3fc', 24);
+    } else if (type === 'gold') {
+      // 금화 습득
+      const rawVal = item.goldValue || 1;
+      const earned = Math.max(1, Math.round(rawVal * (this.player.goldMult || 1.0)));
+      this.player.gold = (this.player.gold || 0) + earned;
+      sounds.playGem();
+      this.damageNumbers.push(new DamageNumber(this.player.x, this.player.y - 16, `+${earned}G`, false, '#fbbf24'));
+      this.addParticles(this.player.x, this.player.y, '#f59e0b', 12);
+    }
+  }
+
+  // 획득한 골드를 로컬 영구 저장소에 합산 저장
+  saveEarnedGold() {
+    try {
+      const earned = this.player.gold || 0;
+      const saveRaw = localStorage.getItem('vam_save_data');
+      const data = saveRaw ? JSON.parse(saveRaw) : { gold: 0, upgrades: {} };
+      data.gold = (data.gold || 0) + earned;
+      localStorage.setItem('vam_save_data', JSON.stringify(data));
+    } catch (e) {
+      console.warn('골드 저장 실패:', e);
     }
   }
 
   triggerGameOver() {
     this.gameState = 'GAME_OVER';
+    this.saveEarnedGold();
     const m = Math.floor(this.totalElapsedTime / 60).toString().padStart(2, '0');
     const s = Math.floor(this.totalElapsedTime % 60).toString().padStart(2, '0');
     this.ui.showGameOver({
       time: `${m}:${s}`,
       stage: this.waveManager.currentStage,
       level: this.player.level,
-      kills: this.player.totalKills
+      kills: this.player.totalKills,
+      gold: this.player.gold || 0
     });
   }
 
   triggerVictory() {
     this.gameState = 'VICTORY';
+    this.saveEarnedGold();
     const m = Math.floor(this.totalElapsedTime / 60).toString().padStart(2, '0');
     const s = Math.floor(this.totalElapsedTime % 60).toString().padStart(2, '0');
     this.ui.showVictory({
       time: `${m}:${s}`,
       level: this.player.level,
-      kills: this.player.totalKills
+      kills: this.player.totalKills,
+      gold: this.player.gold || 0
     });
   }
 
@@ -368,13 +435,20 @@ class Game {
         // 경험치 보석 드랍 (뒤 5종 마물은 대량 경험치 보석)
         this.expGems.push(new ExpGem(safePos.x, safePos.y, enemy.exp));
 
-        // 특수 아이템 드랍 (일반몹 약 1.67%, 보스는 100% 확정 드랍, 행운의 클로버 보너스 적용)
+        // 1) 특수 아이템 드랍 (일반몹 약 1.11%로 기존 대비 2/3 감소, 보스는 100% 확정 드랍)
         const dropBonus = 1 + (this.player.dropRateBonus || 0);
-        const dropChance = enemy.isBoss ? 1.0 : (0.0167 * dropBonus);
-        if (Math.random() < dropChance) {
+        const itemDropChance = enemy.isBoss ? 1.0 : (0.0111 * dropBonus);
+        if (Math.random() < itemDropChance) {
           const types = ['magnet', 'bomb', 'freeze'];
           const picked = types[Math.floor(Math.random() * types.length)];
           this.pickupItems.push(new PickupItem(picked, safePos.x, safePos.y));
+        }
+
+        // 2) 금화 드랍 (특수 아이템과 동일한 약 1.11% 확률, 보스는 100% 확정 50G 보너스)
+        const goldDropChance = enemy.isBoss ? 1.0 : (0.0111 * dropBonus);
+        if (Math.random() < goldDropChance) {
+          const goldVal = enemy.isBoss ? 50 : Math.floor(Math.random() * 3) + 1;
+          this.pickupItems.push(new PickupItem('gold', safePos.x, safePos.y, goldVal));
         }
 
         // 사망 파티클
@@ -396,12 +470,12 @@ class Game {
       }
     }
 
-    // 6. 특수 드랍 아이템(자석, 폭탄, 얼음, 회복) 업데이트 및 습득 판정 (영구 보존)
+    // 6. 특수 드랍 아이템(자석, 폭탄, 얼음, 회복, 금화) 업데이트 및 습득 판정 (영구 보존)
     for (let i = this.pickupItems.length - 1; i >= 0; i--) {
       const item = this.pickupItems[i];
       const collected = item.update(dt, this.player);
       if (collected) {
-        this.applyPickupItem(item.type);
+        this.applyPickupItem(item);
         this.pickupItems.splice(i, 1);
       }
     }

@@ -35,12 +35,18 @@ class AssetManager {
       icon_sword: 'assets/sprites/icon_sword.png',
       icon_axe: 'assets/sprites/icon_axe.png',
       icon_dagger: 'assets/sprites/icon_dagger.png',
+      icon_shuriken: 'assets/sprites/icon_shuriken.png',
       icon_whip: 'assets/sprites/icon_whip.png',
       icon_missile: 'assets/sprites/icon_missile.png',
       icon_shotgun: 'assets/sprites/icon_shotgun.png',
       icon_acid: 'assets/sprites/icon_acid.png',
       icon_holywater: 'assets/sprites/icon_holywater.png',
       icon_holyshotgun: 'assets/sprites/icon_holyshotgun.png',
+      icon_heavenlysanctuary: 'assets/sprites/icon_heavenlysanctuary.png',
+      icon_morningstartempest: 'assets/sprites/icon_morningstartempest.png',
+      icon_apocalypsecomet: 'assets/sprites/icon_apocalypsecomet.png',
+      icon_slayerbladestorm: 'assets/sprites/icon_slayerbladestorm.png',
+      icon_teslashotgun: 'assets/sprites/icon_teslashotgun.png',
       icon_armor: 'assets/sprites/icon_armor.png',
       icon_speed: 'assets/sprites/icon_speed.png',
       icon_atk: 'assets/sprites/icon_atk.png',
@@ -79,6 +85,7 @@ class AssetManager {
       anim_bladewhip: 'assets/sprites/anim_bladewhip.png',
       anim_muzzle: 'assets/sprites/anim_muzzle.png',
       proj_dagger: 'assets/sprites/proj_dagger.png',
+      proj_shuriken: 'assets/sprites/proj_shuriken.png',
       proj_holypellet: 'assets/sprites/proj_holypellet.png'
     };
   }

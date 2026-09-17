@@ -8,6 +8,7 @@ class UIManager {
     this.stageBadge = document.getElementById('stageBadge');
     this.timerBadge = document.getElementById('timerBadge');
     this.killBadge = document.getElementById('killBadge');
+    this.goldBadge = document.getElementById('goldBadge');
     this.levelBadge = document.getElementById('levelBadge');
     this.expBarFill = document.getElementById('expBarFill');
     this.expText = document.getElementById('expText');
@@ -15,6 +16,26 @@ class UIManager {
     this.hpText = document.getElementById('hpText');
     this.weaponSlots = document.getElementById('weaponSlots');
     this.passiveSlots = document.getElementById('passiveSlots');
+
+    // 로비 및 영구 업그레이드 모달
+    this.lobbyModal = document.getElementById('lobbyModal');
+    this.lobbyGoldText = document.getElementById('lobbyGoldText');
+    this.lobbyUpgradesList = document.getElementById('lobbyUpgradesList');
+    this.lobbyStartBtn = document.getElementById('lobbyStartBtn');
+    this.gameOverLobbyBtn = document.getElementById('gameOverLobbyBtn');
+    this.victoryLobbyBtn = document.getElementById('victoryLobbyBtn');
+
+    // 명예의 전당 챔피언 배너
+    this.championBanner = document.getElementById('championBanner');
+    this.champName = document.getElementById('champName');
+    this.champQuote = document.getElementById('champQuote');
+
+    // 승리 시 챔피언 입력 폼
+    this.championInputSection = document.getElementById('championInputSection');
+    this.championNameInput = document.getElementById('championNameInput');
+    this.championQuoteInput = document.getElementById('championQuoteInput');
+    this.championSubmitBtn = document.getElementById('championSubmitBtn');
+    this.championSubmitSuccess = document.getElementById('championSubmitSuccess');
 
     // 모달 및 배너
     this.bossAlert = document.getElementById('bossAlert');
@@ -72,20 +93,54 @@ class UIManager {
       });
     }
 
-    this.soundToggleBtn.addEventListener('click', () => {
-      const isMuted = sounds.toggleMute();
-      this.soundToggleBtn.textContent = isMuted ? '🔇' : '🔊';
-    });
+    if (this.soundToggleBtn) {
+      this.soundToggleBtn.addEventListener('click', () => {
+        const isMuted = sounds.toggleMute();
+        this.soundToggleBtn.textContent = isMuted ? '🔇' : '🔊';
+      });
+    }
 
-    this.restartBtn.addEventListener('click', () => {
-      this.gameOverModal.classList.add('hidden');
-      this.game.restart();
-    });
+    if (this.restartBtn) {
+      this.restartBtn.addEventListener('click', () => {
+        this.hideGameOver();
+        this.game.restart();
+      });
+    }
 
-    this.victoryRestartBtn.addEventListener('click', () => {
-      this.victoryModal.classList.add('hidden');
-      this.game.restart();
-    });
+    if (this.victoryRestartBtn) {
+      this.victoryRestartBtn.addEventListener('click', () => {
+        this.hideVictory();
+        this.game.restart();
+      });
+    }
+
+    // 로비 출격 버튼
+    if (this.lobbyStartBtn) {
+      this.lobbyStartBtn.addEventListener('click', () => {
+        this.hideLobby();
+        this.game.startRun();
+      });
+    }
+
+    // 로비로 이동 버튼들
+    if (this.gameOverLobbyBtn) {
+      this.gameOverLobbyBtn.addEventListener('click', () => {
+        this.game.goToLobby();
+      });
+    }
+
+    if (this.victoryLobbyBtn) {
+      this.victoryLobbyBtn.addEventListener('click', () => {
+        this.game.goToLobby();
+      });
+    }
+
+    // 챔피언 등록 버튼
+    if (this.championSubmitBtn) {
+      this.championSubmitBtn.addEventListener('click', () => {
+        this.handleChampionSubmit();
+      });
+    }
   }
 
   showPauseModal() {
@@ -107,6 +162,9 @@ class UIManager {
     this.timerBadge.textContent = `⏱️ ${m}:${s}`;
 
     this.killBadge.textContent = `💀 ${player.totalKills}`;
+    if (this.goldBadge) {
+      this.goldBadge.textContent = `🪙 ${player.gold || 0}`;
+    }
     this.levelBadge.textContent = `Lv. ${player.level}`;
 
     // 2. 경험치 바
@@ -438,9 +496,15 @@ class UIManager {
       <div class="stat-row"><span>도달 스테이지</span><strong>Stage ${stats.stage}</strong></div>
       <div class="stat-row"><span>최종 레벨</span><strong>Lv. ${stats.level}</strong></div>
       <div class="stat-row"><span>처치한 마물</span><strong>${stats.kills} 마리</strong></div>
+      <div class="stat-row"><span>획득 금화</span><strong style="color: #facc15;">🪙 +${stats.gold || 0} G</strong></div>
     `;
     this.gameOverModal.classList.remove('hidden');
     sounds.playGameOver();
+    this.showChampionBanner(); // 사망 시 챔피언 배너 띄움
+  }
+
+  hideGameOver() {
+    if (this.gameOverModal) this.gameOverModal.classList.add('hidden');
   }
 
   showVictory(stats) {
@@ -449,9 +513,163 @@ class UIManager {
       <div class="stat-row"><span>달성 스테이지</span><strong>Stage 15 (Hell All Clear)</strong></div>
       <div class="stat-row"><span>최종 레벨</span><strong>Lv. ${stats.level}</strong></div>
       <div class="stat-row"><span>처치한 마물</span><strong>${stats.kills} 마리</strong></div>
+      <div class="stat-row"><span>획득 금화</span><strong style="color: #facc15;">🪙 +${stats.gold || 0} G</strong></div>
     `;
+    if (this.championSubmitSuccess) this.championSubmitSuccess.classList.add('hidden');
+    if (this.championNameInput) this.championNameInput.value = '';
+    if (this.championQuoteInput) this.championQuoteInput.value = '';
     this.victoryModal.classList.remove('hidden');
     sounds.playVictory();
+  }
+
+  hideVictory() {
+    if (this.victoryModal) this.victoryModal.classList.add('hidden');
+  }
+
+  // 명예의 전당 챔피언 배너 노출 (사망 시, 로비 복귀 시)
+  showChampionBanner() {
+    if (!this.championBanner) return;
+    try {
+      const raw = localStorage.getItem('vam_champion');
+      let champ = { name: '전설의 서바이버', quote: '어둠은 영원하지 않다. 끝까지 살아남아라!' };
+      if (raw) {
+        champ = JSON.parse(raw);
+      }
+      if (this.champName) this.champName.textContent = champ.name || '무명의 영웅';
+      if (this.champQuote) this.champQuote.textContent = `"${champ.quote || '승리를 향해 나아가라!'}"`;
+
+      this.championBanner.classList.remove('hidden');
+      if (this.champBannerTimer) clearTimeout(this.champBannerTimer);
+      this.champBannerTimer = setTimeout(() => {
+        if (this.championBanner) this.championBanner.classList.add('hidden');
+      }, 4500);
+    } catch (e) {
+      console.warn('챔피언 배너 로드 실패:', e);
+    }
+  }
+
+  // 최종 보스 클리어 시 챔피언 등록 핸들러
+  handleChampionSubmit() {
+    const name = (this.championNameInput ? this.championNameInput.value.trim() : '') || '익명의 챔피언';
+    const quote = (this.championQuoteInput ? this.championQuoteInput.value.trim() : '') || '모든 시련을 이겨냈다!';
+
+    try {
+      localStorage.setItem('vam_champion', JSON.stringify({
+        name,
+        quote,
+        date: Date.now()
+      }));
+      if (this.championSubmitSuccess) {
+        this.championSubmitSuccess.classList.remove('hidden');
+      }
+      sounds.playLevelUp();
+    } catch (e) {
+      alert('등록 중 오류가 발생했습니다.');
+    }
+  }
+
+  // 로비 모달 노출 및 상점 렌더링
+  showLobby() {
+    if (this.lobbyModal) {
+      this.lobbyModal.classList.remove('hidden');
+      this.renderLobbyUpgrades();
+    }
+  }
+
+  hideLobby() {
+    if (this.lobbyModal) {
+      this.lobbyModal.classList.add('hidden');
+    }
+  }
+
+  renderLobbyUpgrades() {
+    if (!this.lobbyUpgradesList) return;
+
+    let saveData = { gold: 0, upgrades: {} };
+    try {
+      const raw = localStorage.getItem('vam_save_data');
+      if (raw) saveData = JSON.parse(raw);
+    } catch (e) {}
+
+    const gold = saveData.gold || 0;
+    const upgrades = saveData.upgrades || {};
+
+    if (this.lobbyGoldText) {
+      this.lobbyGoldText.textContent = `🪙 보유 금화: ${gold.toLocaleString()} G`;
+    }
+
+    const configs = [
+      { id: 'atk', name: '공격력 증가', icon: '⚔️', desc: '모든 공격력 +4%', maxLevel: 5, baseCost: 100, costInc: 50 },
+      { id: 'cooldown', name: '쿨타임 감소', icon: '⏳', desc: '재사용 대기시간 -3%', maxLevel: 5, baseCost: 150, costInc: 75 },
+      { id: 'area', name: '공격 범위 증가', icon: '🎯', desc: '공격 및 폭발 범위 +5%', maxLevel: 5, baseCost: 100, costInc: 50 },
+      { id: 'hp', name: '최대 체력 증가', icon: '❤️', desc: '최대 생명력 +15', maxLevel: 5, baseCost: 80, costInc: 40 },
+      { id: 'speed', name: '이동 속도 증가', icon: '👟', desc: '이동 속도 +3%', maxLevel: 5, baseCost: 100, costInc: 50 },
+      { id: 'regen', name: '체력 재생', icon: '💍', desc: '초당 체력 회복 +0.5 HP/s', maxLevel: 3, baseCost: 200, costInc: 100 },
+      { id: 'magnet', name: '자석 반경 증가', icon: '🧲', desc: '보석/금화 흡수 반경 +20px', maxLevel: 5, baseCost: 70, costInc: 35 },
+      { id: 'greed', name: '금화 획득량 증가', icon: '🪙', desc: '금화 획득량 +10%', maxLevel: 5, baseCost: 120, costInc: 60 },
+      { id: 'revive', name: '부활', icon: '👼', desc: '사망 시 1회 체력 50% 부활', maxLevel: 1, baseCost: 1000, costInc: 0 }
+    ];
+
+    this.lobbyUpgradesList.innerHTML = '';
+
+    configs.forEach(cfg => {
+      const curLv = upgrades[cfg.id] || 0;
+      const isMax = curLv >= cfg.maxLevel;
+      const cost = cfg.baseCost + curLv * cfg.costInc;
+      const canAfford = gold >= cost;
+
+      const card = document.createElement('div');
+      card.className = 'lobby-upgrade-card';
+
+      // 핍 게이지
+      let pipsHtml = '';
+      for (let i = 0; i < cfg.maxLevel; i++) {
+        pipsHtml += `<div class="lobby-pip ${i < curLv ? 'active' : ''}"></div>`;
+      }
+
+      card.innerHTML = `
+        <div class="lobby-card-top">
+          <div class="lobby-card-icon">${cfg.icon}</div>
+          <div class="lobby-card-info">
+            <h3>${cfg.name}</h3>
+            <p>${cfg.desc}</p>
+          </div>
+        </div>
+        <div class="lobby-card-progress">
+          ${pipsHtml}
+        </div>
+        <button class="lobby-buy-btn" ${isMax || !canAfford ? 'disabled' : ''}>
+          ${isMax ? 'MAX 달성' : `${cost} G 강화`}
+        </button>
+      `;
+
+      const btn = card.querySelector('.lobby-buy-btn');
+      if (!isMax && canAfford) {
+        btn.addEventListener('click', () => {
+          this.buyPermanentUpgrade(cfg.id, cost, curLv + 1);
+        });
+      }
+
+      this.lobbyUpgradesList.appendChild(card);
+    });
+  }
+
+  buyPermanentUpgrade(id, cost, nextLv) {
+    try {
+      const raw = localStorage.getItem('vam_save_data');
+      const data = raw ? JSON.parse(raw) : { gold: 0, upgrades: {} };
+      if ((data.gold || 0) < cost) return;
+
+      data.gold -= cost;
+      if (!data.upgrades) data.upgrades = {};
+      data.upgrades[id] = nextLv;
+
+      localStorage.setItem('vam_save_data', JSON.stringify(data));
+      sounds.playLevelUp();
+      this.renderLobbyUpgrades();
+    } catch (e) {
+      console.warn('업그레이드 구매 실패:', e);
+    }
   }
 
   // 모바일 가상 조이스틱 터치 지원
