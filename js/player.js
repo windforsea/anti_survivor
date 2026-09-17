@@ -17,6 +17,7 @@ class Player {
     this.magnetRadius = 130;            // 기본 자석 흡수 반경
     this.bonusProjectiles = 0;          // 캐릭터 투사체 개수 증가 (최대 3회 제한)
     this.bonusProjSpeedMult = 1.0;      // 캐릭터 원거리 투사체 속도 배율
+    this.bonusAreaMult = 1.0;           // 캐릭터 전체 무기 공격 범위 배율
     this.ownedPassives = {};            // 보유한 패시브 스탯 { id: { level, maxLevel, iconKey, title } } (최대 6종 슬롯 제한)
 
     // 레벨 및 경험치
@@ -173,46 +174,49 @@ class Player {
       ctx.restore();
     }
 
-    // 공격 무기 휘두르기 및 발사 이펙트 스프라이트 렌더링
+    // 공격 무기 휘두르기 및 발사 이펙트 스프라이트 렌더링 (무기 범위 증가 시 에셋 크기도 비례 확대)
     for (const anim of this.attackAnims) {
       const progress = Math.max(0, Math.min(1, 1 - (anim.timer / anim.duration)));
+      const area = anim.area || 1.0;
 
       if (anim.type === 'sword' || anim.type === 'dagger') {
-        const thrustDist = 16 + Math.sin(progress * Math.PI) * 30;
+        const thrustDist = (16 + Math.sin(progress * Math.PI) * 30) * Math.sqrt(area);
         const px = this.x + Math.cos(anim.angle) * thrustDist;
         const py = this.y + Math.sin(anim.angle) * thrustDist;
         const spriteKey = anim.type === 'sword' ? 'anim_sword' : 'anim_dagger';
         const img = assets.images[spriteKey] || assets.images['anim_dagger'];
+        const size = Math.round(30 * area);
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.save();
           ctx.translate(px, py);
           ctx.rotate(anim.angle + Math.PI / 4);
           ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(img, -15, -15, 30, 30);
+          ctx.drawImage(img, -size / 2, -size / 2, size, size);
           ctx.restore();
         }
       } else if (anim.type === 'axe') {
         const orbitAngle = anim.startAngle + progress * Math.PI * 2.2;
-        const orbitDist = 42;
+        const orbitDist = 42 * area;
         const px = this.x + Math.cos(orbitAngle) * orbitDist;
         const py = this.y + Math.sin(orbitAngle) * orbitDist;
         const img = assets.images['anim_axe'];
+        const size = Math.round(36 * area);
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.save();
           ctx.translate(px, py);
           ctx.rotate(orbitAngle + Math.PI / 2);
           ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(img, -18, -18, 36, 36);
+          ctx.drawImage(img, -size / 2, -size / 2, size, size);
           ctx.restore();
         }
       } else if (anim.type === 'whip' || anim.type === 'bladewhip') {
         const isBlade = anim.type === 'bladewhip';
         const sweepArc = anim.arc || (isBlade ? 2.2 : 1.85);
-        const maxRange = anim.range || (isBlade ? 280 : 150);
+        const maxRange = anim.range || ((isBlade ? 280 : 150) * area);
 
         // 부채꼴 호(Arc)를 따라 좌에서 우로 긁어내며 회전 스윙
         const sweepAngle = (anim.angle - sweepArc / 2) + progress * sweepArc;
-        const currentDist = 36 + Math.sin(progress * Math.PI) * (maxRange - 42);
+        const currentDist = (36 + Math.sin(progress * Math.PI) * (maxRange - 42));
 
         const px = this.x + Math.cos(sweepAngle) * currentDist;
         const py = this.y + Math.sin(sweepAngle) * currentDist;
@@ -220,7 +224,7 @@ class Player {
         ctx.save();
         // 긁어내는 채찍 줄 궤적 (이등변 삼각형 밑변 원주를 훑는 곡선)
         ctx.strokeStyle = isBlade ? 'rgba(251, 191, 36, 0.85)' : 'rgba(245, 158, 11, 0.75)';
-        ctx.lineWidth = isBlade ? 5 : 3;
+        ctx.lineWidth = Math.round((isBlade ? 5 : 3) * Math.sqrt(area));
         ctx.lineCap = 'round';
         ctx.beginPath();
         const midAngle = sweepAngle - 0.22;
@@ -238,22 +242,23 @@ class Player {
           ctx.translate(px, py);
           ctx.rotate(sweepAngle + Math.PI / 2);
           ctx.imageSmoothingEnabled = false;
-          const sz = isBlade ? 42 : 32;
+          const sz = Math.round((isBlade ? 42 : 32) * area);
           ctx.drawImage(img, -sz / 2, -sz / 2, sz, sz);
         }
         ctx.restore();
       } else if (anim.type === 'muzzle') {
-        const muzzleDist = 24;
+        const muzzleDist = 24 * area;
         const px = this.x + Math.cos(anim.angle) * muzzleDist;
         const py = this.y + Math.sin(anim.angle) * muzzleDist;
         const img = assets.images['anim_muzzle'];
+        const size = Math.round(28 * area);
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.save();
           ctx.translate(px, py);
           ctx.rotate(anim.angle);
           ctx.imageSmoothingEnabled = false;
           ctx.globalAlpha = Math.max(0, anim.timer / anim.duration);
-          ctx.drawImage(img, -14, -14, 28, 28);
+          ctx.drawImage(img, -size / 2, -size / 2, size, size);
           ctx.restore();
         }
       }

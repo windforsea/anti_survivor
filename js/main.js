@@ -266,15 +266,18 @@ class Game {
       }
 
       if (enemy.isDead) {
+        // 장애물 내부 겹침 방지 안전 스폰 위치 계산
+        const safePos = this.obstacleManager ? this.obstacleManager.getUnblockedPosition(enemy.x, enemy.y, 14) : { x: enemy.x, y: enemy.y };
+
         // 경험치 보석 드랍 (뒤 5종 마물은 대량 경험치 보석)
-        this.expGems.push(new ExpGem(enemy.x, enemy.y, enemy.exp));
+        this.expGems.push(new ExpGem(safePos.x, safePos.y, enemy.exp));
 
         // 특수 아이템 드랍 (일반몹 약 1.67%, 보스는 100% 확정 드랍)
         const dropChance = enemy.isBoss ? 1.0 : 0.0167;
         if (Math.random() < dropChance) {
           const types = ['magnet', 'bomb', 'freeze'];
           const picked = types[Math.floor(Math.random() * types.length)];
-          this.pickupItems.push(new PickupItem(picked, enemy.x, enemy.y));
+          this.pickupItems.push(new PickupItem(picked, safePos.x, safePos.y));
         }
 
         // 사망 파티클

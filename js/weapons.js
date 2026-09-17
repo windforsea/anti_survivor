@@ -115,7 +115,7 @@ class WeaponManager {
         icon: '💥',
         desc: '바라보는 방향으로 전방 부채꼴 형태로 여러 발의 산탄을 일제히 사격합니다.',
         baseCooldown: 1.30,
-        baseDamage: 16,
+        baseDamage: 32, // 자동조준 불가 리스크 보상: 16 -> 32 (2배 상향)
         baseCount: 3, // 기본 3발
         baseArea: 1.0,
         speedLevel: 0,
@@ -133,6 +133,21 @@ class WeaponManager {
         baseDamage: 12, // 틱당 피해 상향
         baseCount: 1,
         baseArea: 1.0,
+        speedLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+      // 신규 무기: 성역 (플레이어 중심 360도 원형 도트 결계, 검 사거리 80px부터 시작, 공속 영향 X)
+      sanctuary: {
+        id: 'sanctuary',
+        name: '성역 (원형 결계)',
+        icon: '⛪',
+        desc: '플레이어 중심 360도 원형 결계로 적들에게 매초 지속 도트 피해를 입힙니다. (공속 영향 없음)',
+        baseCooldown: 1.0, // 고정 1초 주기 틱
+        baseDamage: 24,    // 초당 도트 피해
+        baseCount: 1,
+        baseArea: 1.0,     // 기본 반경 80px (일반 검 사거리와 동일)
         speedLevel: 0,
         countLevel: 0,
         areaLevel: 0,
@@ -194,7 +209,7 @@ class WeaponManager {
         icon: '✨',
         desc: '바라보는 방향으로 성스러운 산탄들을 일제히 발사하며, 적중 시 좁은 범위의 성스러운 폭발을 일으킵니다.',
         baseCooldown: 1.25,
-        baseDamage: 28,
+        baseDamage: 56, // 산탄총 상향 연동: 28 -> 56 (2배 상향)
         baseCount: 6,      // 6발 산탄
         baseArea: 1.0,
         speedLevel: 6,
@@ -233,7 +248,11 @@ class WeaponManager {
   }
 
   getCooldown(w) {
-    const speedBonus = 1 + w.speedLevel * 0.18;
+    // 성역은 공격속도 증가 영향 없음 (고정 1초 도트 틱)
+    if (w.id === 'sanctuary') {
+      return w.baseCooldown;
+    }
+    const speedBonus = 1 + (w.speedLevel || 0) * 0.10; // 무기 공속 10% 증가로 개편
     const totalMult = this.player.globalCooldownMult * speedBonus;
     return Math.max(0.08, w.baseCooldown / totalMult);
   }
@@ -247,7 +266,8 @@ class WeaponManager {
   }
 
   getArea(w) {
-    return w.baseArea * (1 + w.areaLevel * 0.22);
+    const areaBonus = 1 + (w.areaLevel || 0) * 0.20; // 무기 범위 20% 증가로 개편
+    return w.baseArea * areaBonus * (this.player.bonusAreaMult || 1.0);
   }
 
   // 1. 일반 검 (sword): 바라보는 방향 날렵한 근접 베기 (판정 슬림화, 원형선 제거)
@@ -261,7 +281,7 @@ class WeaponManager {
       targetAngle = Math.atan2(closestEnemy.y - this.player.y, closestEnemy.x - this.player.x);
     }
     const angle = targetAngle + (Math.random() - 0.5) * 0.1;
-    this.player.triggerAttackAnim('sword', angle, 0.12);
+    this.player.triggerAttackAnim('sword', angle, 0.12, { area });
 
     this.slashes.push({
       type: 'cone',
@@ -286,7 +306,7 @@ class WeaponManager {
     const dmg = this.getDamage(w);
     const area = this.getArea(w);
     const defaultAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
-    this.player.triggerAttackAnim('axe', defaultAngle, 0.22);
+    this.player.triggerAttackAnim('axe', defaultAngle, 0.22, { area });
 
     this.slashes.push({
       type: 'circle',
@@ -313,7 +333,7 @@ class WeaponManager {
 
     const arc = 1.95; // 약 112도의 넓은 부채꼴 호
     const range = 165 * area; // 긴 사거리
-    this.player.triggerAttackAnim('whip', angle, 0.20, { arc, range });
+    this.player.triggerAttackAnim('whip', angle, 0.20, { arc, range, area });
 
     this.slashes.push({
       type: 'cone',
@@ -350,7 +370,7 @@ class WeaponManager {
 
     const arc = 2.35; // 약 135도의 초대형 광역 부채꼴 호
     const range = 310 * area; // 화면 끝까지 휩쓰는 초장거리 사거리
-    this.player.triggerAttackAnim('bladewhip', angle, 0.24, { arc, range });
+    this.player.triggerAttackAnim('bladewhip', angle, 0.24, { arc, range, area });
 
     this.slashes.push({
       type: 'cone',
@@ -374,6 +394,43 @@ class WeaponManager {
       hitEnemies: new Set(),
       hitObstacles: new Set()
     });
+  }
+
+  // [신규 무기] 성역 (sanctuary): 플레이어 중심 360도 원형 결계 도트 틱 (검 사거리 80px 기준, 공속 영향 X)
+  executeSanctuaryTick(w, enemies) {
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const radius = 80 * area;
+    const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : [];
+
+    let hitCount = 0;
+    // 360도 범위 내 적 타격
+    for (const enemy of enemies) {
+      if (enemy.isDead) continue;
+      const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+      if (dist <= radius + enemy.radius) {
+        const kbDir = {
+          x: (enemy.x - this.player.x) / (dist || 1),
+          y: (enemy.y - this.player.y) / (dist || 1)
+        };
+        enemy.takeDamage(dmg, kbDir, 50);
+        hitCount++;
+      }
+    }
+
+    // 360도 범위 내 파괴 가능 장애물 타격
+    for (const obs of obstacles) {
+      if (obs.isDead || !obs.isDestructible) continue;
+      const dist = Math.hypot(obs.x - this.player.x, obs.y - this.player.y);
+      if (dist <= radius + obs.radius) {
+        obs.takeDamage(dmg, this.game);
+        hitCount++;
+      }
+    }
+
+    if (hitCount > 0) {
+      sounds.playAcid();
+    }
   }
 
   update(dt, enemies) {
@@ -776,6 +833,7 @@ class WeaponManager {
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
             radius: 5 * area, // 슬림한 투사체 판정
+            area: area,       // 스프라이트 렌더링 스케일용
             damage: dmg,
             pierce: 3,        // 3체 관통
             knockbackForce: 130,
@@ -809,6 +867,7 @@ class WeaponManager {
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
             radius: 7 * area,
+            area: area,
             damage: dmg,
             pierce: 1,
             knockbackForce: 90,
@@ -826,7 +885,7 @@ class WeaponManager {
         // 산탄 총포: 바라보는 방향으로 전방 부채꼴 산탄 (사거리 약 280px 제한)
         sounds.playShotgun();
         const baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
-        this.player.triggerAttackAnim('muzzle', baseAngle, 0.15);
+        this.player.triggerAttackAnim('muzzle', baseAngle, 0.15, { area });
 
         const totalPellets = count;
         const spreadTotal = 0.72;
@@ -842,6 +901,7 @@ class WeaponManager {
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
             radius: 5 * area,
+            area: area,
             damage: dmg,
             pierce: 2,
             knockbackForce: 160,
@@ -859,13 +919,13 @@ class WeaponManager {
         // 홀리 산탄총: 바라보는 방향으로 성스러운 산탄 발사 및 적중 시 좁은 범위 폭발 (사거리 약 310px)
         sounds.playShotgun();
         const baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
-        this.player.triggerAttackAnim('muzzle', baseAngle, 0.15);
+        this.player.triggerAttackAnim('muzzle', baseAngle, 0.15, { area });
 
         const totalPellets = count;
         const spreadTotal = 0.68;
         const speed = 560 * projSpeedBonus;
         const splashRadius = 35 * area;
-        const splashDmg = Math.round(20 * this.player.atkPowerMult);
+        const splashDmg = Math.round(35 * this.player.atkPowerMult); // 스플래시 피해도 상향
 
         for (let i = 0; i < totalPellets; i++) {
           const angleOffset = (Math.random() - 0.5) * spreadTotal;
@@ -877,6 +937,7 @@ class WeaponManager {
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
             radius: 6 * area,
+            area: area,
             damage: dmg,
             pierce: 1, // 적중 시 성스러운 폭발 발생
             splashRadius: splashRadius,
@@ -889,6 +950,12 @@ class WeaponManager {
             hitObstacles: new Set()
           });
         }
+        break;
+      }
+
+      case 'sanctuary': {
+        // 신규 무기: 성역 (플레이어 중심 360도 원형 도트 결계)
+        this.executeSanctuaryTick(w, enemies);
         break;
       }
 
@@ -922,6 +989,42 @@ class WeaponManager {
   }
 
   draw(ctx) {
+    // 0. 성역 (sanctuary) 360도 오라 결계 렌더링
+    const sanctuary = this.weapons['sanctuary'];
+    if (sanctuary) {
+      const area = this.getArea(sanctuary);
+      const radius = 80 * area;
+      const time = Date.now() * 0.002;
+      const pulse = 0.16 + Math.sin(time * 3) * 0.05;
+
+      ctx.save();
+      // 성스러운 황금빛 오라 바닥
+      ctx.fillStyle = `rgba(250, 204, 21, ${pulse})`;
+      ctx.beginPath();
+      ctx.arc(this.player.x, this.player.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 결계 외곽 테두리선
+      ctx.strokeStyle = `rgba(253, 224, 71, ${pulse + 0.35})`;
+      ctx.lineWidth = Math.max(2, Math.round(3 * Math.sqrt(area)));
+      ctx.shadowColor = '#facc15';
+      ctx.shadowBlur = 12;
+      ctx.stroke();
+
+      // 회전하는 8개 성스러운 룬 마커
+      const runes = 8;
+      for (let r = 0; r < runes; r++) {
+        const rAngle = time + (r * Math.PI * 2) / runes;
+        const rx = this.player.x + Math.cos(rAngle) * radius;
+        const ry = this.player.y + Math.sin(rAngle) * radius;
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(rx, ry, 3.5 * Math.sqrt(area), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
     // 1. 도트 장판 바닥 렌더링
     for (const pool of this.damagePools) {
       const alpha = Math.min(0.5, pool.life * 0.3);
@@ -950,19 +1053,21 @@ class WeaponManager {
 
     // 2. 근접 베기 렌더링: 투명 인디케이터(부채꼴/원형 선) 완전 제거 (순수 무기 휘두르기 스프라이트 연출만 표시)
 
-    // 3. 투사체 렌더링
+    // 3. 투사체 렌더링 (범위 증가 시 투사체 크기도 비례 확대)
     for (const p of this.projectiles) {
       ctx.save();
+      const projArea = p.area || 1.0;
 
       if (p.type === 'dagger') {
         // 던지는 단검 스프라이트 렌더링
         const img = assets.images['proj_dagger'];
         const angle = Math.atan2(p.vy, p.vx);
+        const size = Math.round(20 * projArea);
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.translate(p.x, p.y);
           ctx.rotate(angle + Math.PI / 2);
           ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(img, -10, -10, 20, 20);
+          ctx.drawImage(img, -size / 2, -size / 2, size, size);
         } else {
           ctx.fillStyle = p.color;
           ctx.beginPath();
@@ -972,8 +1077,9 @@ class WeaponManager {
       } else if (p.type === 'holyPellet') {
         // 홀리 산탄총 성스러운 탄환 렌더링
         const img = assets.images['proj_holypellet'];
+        const size = Math.round(16 * projArea);
         if (img && img.complete && img.naturalWidth > 0) {
-          ctx.drawImage(img, p.x - 8, p.y - 8, 16, 16);
+          ctx.drawImage(img, p.x - size / 2, p.y - size / 2, size, size);
         } else {
           ctx.fillStyle = '#fef08a';
           ctx.shadowColor = '#facc15';
@@ -1004,12 +1110,14 @@ class WeaponManager {
       ctx.restore();
     }
 
-    // 4. [진화 무기 1] 회전 도끼 (spinningAxe) 상시 궤도 회전 렌더링
+    // 4. [진화 무기 1] 회전 도끼 (spinningAxe) 상시 궤도 회전 렌더링 (범위 증가 시 도끼 크기 및 궤도 확대)
     const spinAxe = this.weapons['spinningAxe'];
     if (spinAxe) {
-      const orbitRadius = 82 * this.getArea(spinAxe);
+      const area = this.getArea(spinAxe);
+      const orbitRadius = 82 * area;
       const count = this.getCount(spinAxe);
       const img = assets.images['anim_axe'];
+      const axeSize = Math.round(36 * area);
 
       for (let i = 0; i < count; i++) {
         const angle = spinAxe.orbitAngle + (i * Math.PI * 2) / count;
@@ -1025,11 +1133,11 @@ class WeaponManager {
 
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(img, -18, -18, 36, 36);
+          ctx.drawImage(img, -axeSize / 2, -axeSize / 2, axeSize, axeSize);
         } else {
           ctx.fillStyle = '#d97706';
           ctx.beginPath();
-          ctx.arc(0, 0, 16, 0, Math.PI * 2);
+          ctx.arc(0, 0, 16 * area, 0, Math.PI * 2);
           ctx.fill();
         }
         ctx.restore();

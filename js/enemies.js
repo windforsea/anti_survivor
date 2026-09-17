@@ -58,6 +58,19 @@ class ExpGem {
       this.y += this.vy * dt;
     }
 
+    // 장애물 내부 끼임 방지 (장애물 밖으로 밀어냄)
+    if (window.game && window.game.obstacleManager) {
+      for (const obs of window.game.obstacleManager.obstacles) {
+        if (obs.isDead) continue;
+        const od = Math.hypot(this.x - obs.x, this.y - obs.y);
+        const minD = obs.radius + this.radius + 6;
+        if (od < minD && od > 0.01) {
+          this.x = obs.x + ((this.x - obs.x) / od) * minD;
+          this.y = obs.y + ((this.y - obs.y) / od) * minD;
+        }
+      }
+    }
+
     // 플레이어 습득 판정
     if (dist < player.radius + this.radius) {
       return true; // 획득됨
@@ -106,6 +119,19 @@ class PickupItem {
 
   update(dt, player) {
     this.bobTimer += dt * 4;
+
+    // 장애물 내부 끼임 방지 (장애물 밖으로 밀어냄)
+    if (window.game && window.game.obstacleManager) {
+      for (const obs of window.game.obstacleManager.obstacles) {
+        if (obs.isDead) continue;
+        const od = Math.hypot(this.x - obs.x, this.y - obs.y);
+        const minD = obs.radius + this.radius + 8;
+        if (od < minD && od > 0.01) {
+          this.x = obs.x + ((this.x - obs.x) / od) * minD;
+          this.y = obs.y + ((this.y - obs.y) / od) * minD;
+        }
+      }
+    }
 
     const dist = Math.hypot(player.x - this.x, player.y - this.y);
     // 플레이어 충돌 습득 판정

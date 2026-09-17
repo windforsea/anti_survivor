@@ -21,9 +21,35 @@ class CardManager {
   generateCards() {
     const cardPool = [];
 
+    // 진화 링크 파트너 6강 달성 여부 검사 헬퍼
+    const getEvolutionHint = (weaponKey) => {
+      const evoPairs = {
+        axe: { partner: 'sword', evoName: '회전 도끼', evoIcon: '🪓' },
+        sword: { partner: 'axe', evoName: '회전 도끼', evoIcon: '🪓' },
+        throwingDagger: { partner: 'whip', evoName: '칼날 채찍', evoIcon: '⛓️' },
+        whip: { partner: 'throwingDagger', evoName: '칼날 채찍', evoIcon: '⛓️' },
+        holyWater: { partner: 'shotgun', evoName: '홀리 산탄총', evoIcon: '✨' },
+        acidPool: { partner: 'shotgun', evoName: '홀리 산탄총', evoIcon: '✨' },
+        shotgun: { partner: 'holyWater', evoName: '홀리 산탄총', evoIcon: '✨' }
+      };
+
+      const pair = evoPairs[weaponKey];
+      if (!pair) return null;
+
+      const partnerWeapon = this.weaponManager.weapons[pair.partner];
+      if (partnerWeapon && this.weaponManager.getTotalUpgrades(partnerWeapon) >= 6) {
+        return {
+          partnerName: partnerWeapon.name.split(' ')[0], // 간단한 명칭
+          evoName: pair.evoName,
+          evoIcon: pair.evoIcon
+        };
+      }
+      return null;
+    };
+
     // 1. 미보유 무기 해금 카드 (최대 5개 무기 슬롯 제한)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
-    const allWeaponKeys = ['axe', 'whip', 'throwingDagger', 'magicMissile', 'shotgun', 'holyWater'];
+    const allWeaponKeys = ['axe', 'whip', 'throwingDagger', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary'];
     const unownedWeapons = allWeaponKeys.filter(k => !this.weaponManager.weapons[k]);
 
     const weaponMeta = {
@@ -32,14 +58,16 @@ class CardManager {
       whip: { name: '채찍', icon: '🪢', iconKey: 'icon_whip', desc: '사거리가 길며 강화에 따라 전방과 후방을 번갈아 교차 연타' },
       throwingDagger: { name: '던지는 단검', icon: '🔪', iconKey: 'icon_dagger', desc: '가장 가까운 몬스터를 향해 직진 관통 투사체 투척 (사거리 290px)' },
       magicMissile: { name: '마법 화살', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환' },
-      shotgun: { name: '산탄 총포', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄 일제 사격 (사거리 280px)' },
+      shotgun: { name: '산탄 총포', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄 일제 사격 (데미지 2배 상향)' },
       holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
+      sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_holywater', desc: '플레이어를 감싸는 360도 원형 결계로 적들에게 매초 도트 피해 부여 (공속 영향 없음)' },
       acidPool: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' }
     };
 
     if (ownedWeaponsCount < 5) {
       unownedWeapons.forEach(key => {
         const meta = weaponMeta[key];
+        const evoHint = getEvolutionHint(key);
         cardPool.push({
           id: `unlock_${key}`,
           type: 'weapon_new',
@@ -51,6 +79,7 @@ class CardManager {
           effectText: '신규 무기 획득',
           badge: 'NEW WEAPON',
           stars: '',
+          evolutionHint: evoHint,
           apply: () => {
             this.weaponManager.unlockWeapon(key);
           }
@@ -177,23 +206,45 @@ class CardManager {
 
       const nextLv = totalUpgrades + 1;
       const meta = weaponMeta[key] || { icon: '⚔️', iconKey: 'icon_atk' };
+      const evoHint = getEvolutionHint(key);
 
-      // [무기 공속 강화]
-      cardPool.push({
-        id: `${key}_speed`,
-        type: 'weapon_upgrade',
-        category: 'weapon',
-        title: `${w.name} 공속`,
-        icon: '⚡',
-        iconKey: meta.iconKey,
-        desc: `발사 주기 및 공격 속도를 단축합니다. (무기 총강화 ${nextLv}/6)`,
-        effectText: '공격 속도 +18%',
-        badge: `Lv.${nextLv}/6`,
-        stars: formatStars(nextLv, 6),
-        apply: () => {
-          this.weaponManager.upgradeWeapon(key, 'speed');
-        }
-      });
+      // [무기 공속 강화] - 성역(sanctuary)은 공속 영향 없으므로 제외
+      if (key !== 'sanctuary') {
+        cardPool.push({
+          id: `${key}_speed`,
+          type: 'weapon_upgrade',
+          category: 'weapon',
+          title: `${w.name} 공속`,
+          icon: '⚡',
+          iconKey: meta.iconKey,
+          desc: `발사 주기 및 공격 속도를 단축합니다. (무기 총강화 ${nextLv}/6)`,
+          effectText: '공격 속도 +10%',
+          badge: `Lv.${nextLv}/6`,
+          stars: formatStars(nextLv, 6),
+          evolutionHint: evoHint,
+          apply: () => {
+            this.weaponManager.upgradeWeapon(key, 'speed');
+          }
+        });
+      } else {
+        // 성역 전용 피해 강화
+        cardPool.push({
+          id: `sanctuary_speed`,
+          type: 'weapon_upgrade',
+          category: 'weapon',
+          title: `성역 결계 강화`,
+          icon: '⚡',
+          iconKey: meta.iconKey,
+          desc: `성역 결계의 정화 도트 피해를 증폭시킵니다. (무기 총강화 ${nextLv}/6)`,
+          effectText: '결계 피해 +25%',
+          badge: `Lv.${nextLv}/6`,
+          stars: formatStars(nextLv, 6),
+          evolutionHint: evoHint,
+          apply: () => {
+            this.weaponManager.upgradeWeapon('sanctuary', 'speed');
+          }
+        });
+      }
 
       // [무기 연타 / 투사체 수 강화] (최대 3회)
       if (w.countLevel < 3) {
@@ -221,6 +272,10 @@ class CardManager {
           countTitle = `${w.name} 장판 수`;
           countDesc = `동시에 투척/생성하는 성수 정화 장판 개수를 늘립니다.`;
           countEffect = '정화 장판 개수 +1개';
+        } else if (key === 'sanctuary') {
+          countTitle = `성역 밀도 강화`;
+          countDesc = `성스러운 결계의 밀도를 높여 도트 피해를 가속합니다.`;
+          countEffect = '결계 피해 +25%';
         }
 
         cardPool.push({
@@ -234,6 +289,7 @@ class CardManager {
           effectText: countEffect,
           badge: `Lv.${nextLv}/6`,
           stars: formatStars(nextLv, 6),
+          evolutionHint: evoHint,
           apply: () => {
             this.weaponManager.upgradeWeapon(key, 'count');
           }
@@ -248,10 +304,11 @@ class CardManager {
         title: `${w.name} 범위`,
         icon: '🎯',
         iconKey: meta.iconKey,
-        desc: `무기의 타격 반경 및 폭발 범위를 확대합니다. (무기 총강화 ${nextLv}/6)`,
-        effectText: '공격 범위 +22%',
+        desc: `무기의 타격 반경 및 결계 크기를 확대합니다. (무기 총강화 ${nextLv}/6)`,
+        effectText: '공격 범위 +20%',
         badge: `Lv.${nextLv}/6`,
         stars: formatStars(nextLv, 6),
+        evolutionHint: evoHint,
         apply: () => {
           this.weaponManager.upgradeWeapon(key, 'area');
         }
@@ -270,6 +327,7 @@ class CardManager {
           effectText: '투사체 속도 +18%',
           badge: `Lv.${nextLv}/6`,
           stars: formatStars(nextLv, 6),
+          evolutionHint: evoHint,
           apply: () => {
             this.weaponManager.upgradeWeapon(key, 'speedProj');
           }
@@ -277,7 +335,7 @@ class CardManager {
       }
     }
 
-    // 4. 캐릭터 패시브 스탯 카드 (총 8종 중 최대 5종 슬롯 제한)
+    // 4. 캐릭터 패시브 스탯 카드 (총 10종 중 최대 5종 슬롯 제한)
     const ownedPassiveKeys = Object.keys(this.player.ownedPassives);
     const canAcquireNewPassive = ownedPassiveKeys.length < 5;
 
@@ -307,10 +365,10 @@ class CardManager {
         title: '피의 계약 (공격력)',
         icon: '🩸',
         iconKey: 'icon_atk',
-        desc: '모든 무기의 타격 공격력을 증폭시킵니다.',
-        effectText: '전체 공격력 +15%',
+        desc: '모든 무기의 타격 공격력을 대폭 증폭시킵니다.',
+        effectText: '전체 공격력 +50%',
         maxLevel: 6,
-        apply: () => { this.player.atkPowerMult += 0.15; }
+        apply: () => { this.player.atkPowerMult += 0.50; }
       },
       {
         id: 'stat_regen',
@@ -341,9 +399,29 @@ class CardManager {
         icon: '⏳',
         iconKey: 'icon_global_speed',
         desc: '모든 장착 무기의 재사용 대기시간을 단축합니다.',
-        effectText: '전체 무기 쿨다운 -12%',
+        effectText: '전체 무기 쿨다운 -15%',
         maxLevel: 6,
-        apply: () => { this.player.globalCooldownMult *= 1.12; }
+        apply: () => { this.player.globalCooldownMult *= 1.15; }
+      },
+      {
+        id: 'stat_magnet',
+        title: '자력의 부적 (자석 범위)',
+        icon: '🧲',
+        iconKey: 'item_magnet',
+        desc: '경험치 보석을 흡수하는 자석 반경을 대폭 확장합니다.',
+        effectText: '보석 흡수 반경 +60px',
+        maxLevel: 6,
+        apply: () => { this.player.magnetRadius += 60; }
+      },
+      {
+        id: 'stat_area',
+        title: '확장의 룬 (공격 범위)',
+        icon: '🎯',
+        iconKey: 'icon_axe',
+        desc: '모든 무기의 공격 판정 및 이펙트 크기를 확대합니다.',
+        effectText: '전체 공격 범위 +30%',
+        maxLevel: 6,
+        apply: () => { this.player.bonusAreaMult = (this.player.bonusAreaMult || 1.0) + 0.30; }
       },
       {
         id: 'stat_proj_count',

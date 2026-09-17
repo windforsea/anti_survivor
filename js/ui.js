@@ -225,6 +225,17 @@ class UIManager {
         iconHtml = `<div class="card-icon"><img src="${assets.manifest[card.iconKey]}" alt="${card.title}" class="card-pixel-icon"></div>`;
       }
 
+      let evoHintHtml = '';
+      if (card.evolutionHint) {
+        evoHintHtml = `
+          <div class="card-evo-hint">
+            <span class="evo-plus">➕</span>
+            <span class="evo-icon">${card.evolutionHint.evoIcon}</span>
+            <span class="evo-text">진화 가능 링크 (${card.evolutionHint.partnerName} 6강 완료 ➔ <strong>${card.evolutionHint.evoName}</strong>)</span>
+          </div>
+        `;
+      }
+
       el.innerHTML = `
         <span class="card-badge ${isEvo ? 'badge-evolution' : (isNew ? 'badge-new' : (isMaxBadge ? 'badge-max' : ''))}">${card.badge}</span>
         ${iconHtml}
@@ -232,6 +243,7 @@ class UIManager {
         ${card.stars ? `<div class="card-stars">${card.stars}</div>` : ''}
         <div class="card-desc">${card.desc}</div>
         <div class="card-effect">${card.effectText}</div>
+        ${evoHintHtml}
       `;
 
       el.addEventListener('click', () => {

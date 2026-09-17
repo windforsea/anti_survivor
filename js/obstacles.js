@@ -63,23 +63,24 @@ class Obstacle {
       });
     }
 
-    // 파괴 시 드랍 보상 (경험치 보석 또는 유용한 회복/특수 아이템)
+    // 파괴 시 드랍 보상 (장애물과 겹치지 않는 안전한 열린 공간으로 스폰 보정)
+    const safePos = game.obstacleManager ? game.obstacleManager.getUnblockedPosition(this.x, this.y, 16) : { x: this.x, y: this.y };
     const roll = Math.random();
     if (roll < 0.35) {
       // 체력 회복 포션 (체력 회복)
-      game.pickupItems.push(new PickupItem('heal', this.x, this.y));
+      game.pickupItems.push(new PickupItem('heal', safePos.x, safePos.y));
     } else if (roll < 0.65) {
       // 대형 경험치 보석 (EXP 20)
-      game.expGems.push(new ExpGem(this.x, this.y, 20));
+      game.expGems.push(new ExpGem(safePos.x, safePos.y, 20));
     } else if (roll < 0.77) {
       // 자석
-      game.pickupItems.push(new PickupItem('magnet', this.x, this.y));
+      game.pickupItems.push(new PickupItem('magnet', safePos.x, safePos.y));
     } else if (roll < 0.89) {
       // 폭탄
-      game.pickupItems.push(new PickupItem('bomb', this.x, this.y));
+      game.pickupItems.push(new PickupItem('bomb', safePos.x, safePos.y));
     } else if (roll < 0.96) {
       // 얼음
-      game.pickupItems.push(new PickupItem('freeze', this.x, this.y));
+      game.pickupItems.push(new PickupItem('freeze', safePos.x, safePos.y));
     }
   }
 
@@ -228,6 +229,27 @@ class ObstacleManager {
         entity.y += pushY;
       }
     }
+  }
+
+  // 아이템/보석이 장애물(비파괴 바위, 나무 등) 내부에 겹쳐서 습득 불가능한 상태가 되지 않도록 안전 위치 계산
+  getUnblockedPosition(x, y, itemRadius = 14) {
+    let outX = x;
+    let outY = y;
+    for (const obs of this.obstacles) {
+      if (obs.isDead) continue;
+      const dist = Math.hypot(outX - obs.x, outY - obs.y);
+      const minDist = obs.radius + itemRadius + 14; // 여유 안전 거리 14px
+      if (dist < minDist) {
+        if (dist < 0.1) {
+          outX = obs.x + minDist;
+          outY = obs.y;
+        } else {
+          outX = obs.x + ((outX - obs.x) / dist) * minDist;
+          outY = obs.y + ((outY - obs.y) / dist) * minDist;
+        }
+      }
+    }
+    return { x: outX, y: outY };
   }
 
   draw(ctx, camera, viewWidth, viewHeight) {
