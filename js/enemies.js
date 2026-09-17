@@ -219,11 +219,11 @@ class BossProjectile {
 
 // 15종 일반 몬스터 스펙 테이블 (공중/지상 구분, 고유 특색 기믹)
 const ENEMY_TYPES = {
-  bat: { name: '박쥐', hp: 18, speed: 170, radius: 10, color: '#a855f7', exp: 2, damage: 6, isFlying: true },
-  slime: { name: '슬라임', hp: 32, speed: 85, radius: 13, color: '#22c55e', exp: 3, damage: 8, isFlying: false },
-  miniSlime: { name: '아기 슬라임', hp: 14, speed: 110, radius: 8, color: '#4ade80', exp: 1, damage: 4, isFlying: false },
-  zombie: { name: '좀비', hp: 65, speed: 65, radius: 15, color: '#64748b', exp: 3, damage: 12, knockbackResist: 0.80, isFlying: false },
-  skeleton: { name: '해골', hp: 50, speed: 105, radius: 13, color: '#f1f5f9', exp: 4, damage: 10, isFlying: false },
+  bat: { name: '박쥐', hp: 12, speed: 170, radius: 10, color: '#a855f7', exp: 2, damage: 6, isFlying: true },
+  slime: { name: '슬라임', hp: 18, speed: 85, radius: 13, color: '#22c55e', exp: 3, damage: 8, isFlying: false },
+  miniSlime: { name: '아기 슬라임', hp: 4, speed: 65, radius: 8, color: '#4ade80', exp: 1, damage: 4, isFlying: false },
+  zombie: { name: '좀비', hp: 42, speed: 65, radius: 15, color: '#64748b', exp: 3, damage: 12, knockbackResist: 0.45, isFlying: false },
+  skeleton: { name: '해골', hp: 34, speed: 105, radius: 13, color: '#f1f5f9', exp: 4, damage: 10, isFlying: false },
   goblin: { name: '고블린', hp: 42, speed: 145, radius: 12, color: '#84cc16', exp: 5, damage: 9, isFlying: false },
   ghost: { name: '유령', hp: 60, speed: 115, radius: 15, color: '#38bdf8', exp: 6, damage: 11, alpha: 0.65, isFlying: true },
   gargoyle: { name: '가고일', hp: 130, speed: 75, radius: 18, color: '#78716c', exp: 7, damage: 16, isFlying: true },
@@ -243,7 +243,8 @@ class Enemy {
     const config = ENEMY_TYPES[typeKey] || ENEMY_TYPES.bat;
     this.typeKey = typeKey;
     this.name = config.name;
-    this.maxHp = Math.round(config.hp * hpScale);
+    this.hpScale = (typeof hpScale === 'number' && !isNaN(hpScale)) ? hpScale : 1.0;
+    this.maxHp = Math.round(config.hp * this.hpScale);
     this.hp = this.maxHp;
     this.speed = config.speed;
     this.radius = config.radius;
@@ -335,7 +336,7 @@ class Enemy {
       this.vy = 0;
       if (this.reviveTimer <= 0) {
         this.reviveState = 2;
-        this.hp = Math.round(this.maxHp * 0.55); // 55% 체력으로 부활
+        this.hp = Math.round(this.maxHp * 0.35); // 35% 체력으로 부활 (약 12 HP)
         sounds.playKill();
         if (window.game) {
           window.game.addParticles(this.x, this.y, '#f1f5f9', 12);

@@ -44,8 +44,8 @@ class WeaponManager {
         name: '일반 검 (근접 속도)',
         icon: '🗡️',
         desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.',
-        baseCooldown: 0.50, // 0.5초 쿨다운 적용
-        baseDamage: 16,     // 슬라임 2타, 좀비 3타 처치 밸런스 유지
+        baseCooldown: 0.45, // 0.45초 쿨다운으로 경쾌한 슬래시
+        baseDamage: 20,     // 공격력 상향 (16 -> 20, 슬라임 및 잡몹 1~2타 처치)
         baseCount: 1,
         baseArea: 1.0,
         speedLevel: 0,
@@ -86,8 +86,8 @@ class WeaponManager {
         name: '던지는 단검 (직진 관통)',
         icon: '🔪',
         desc: '가장 가까운 몬스터를 향해 직진하여 다수의 적을 관통하는 단검을 던집니다.',
-        baseCooldown: 0.50,
-        baseDamage: 18,
+        baseCooldown: 0.45, // 쿨다운 상향 (0.50 -> 0.45)
+        baseDamage: 22,     // 공격력 상향 (18 -> 22)
         baseCount: 1,
         baseArea: 1.0,
         speedLevel: 0,
@@ -101,8 +101,8 @@ class WeaponManager {
         name: '마법 화살 (원거리 유도)',
         icon: '🔮',
         desc: '가장 가까운 적을 조준하여 빠른 속도로 유도 마법탄을 발사합니다.',
-        baseCooldown: 0.70,
-        baseDamage: 20, // 데미지 상향 (15 -> 20, 초반 유도 안정성 확보)
+        baseCooldown: 0.55, // 쿨다운 상향 (0.70 -> 0.55)
+        baseDamage: 25,     // 공격력 상향 (20 -> 25)
         baseCount: 1,
         baseArea: 1.0,
         speedLevel: 0,
@@ -140,16 +140,16 @@ class WeaponManager {
         areaLevel: 0,
         cooldownTimer: 0
       },
-      // 신규 무기: 성역 (플레이어 중심 360도 원형 도트 결계, 검 사거리 80px부터 시작, 공속 영향 X)
+      // 신규 무기: 성역 (플레이어 중심 360도 원형 도트 결계, 검 사거리 90px부터 시작, 공속 영향 X)
       sanctuary: {
         id: 'sanctuary',
         name: '성역 (원형 결계)',
         icon: '⛪',
         desc: '플레이어 중심 360도 원형 결계로 적들에게 매초 지속 도트 피해를 입힙니다. (공속 영향 없음)',
         baseCooldown: 1.0, // 고정 1초 주기 틱
-        baseDamage: 24,    // 초당 도트 피해
+        baseDamage: 28,    // 초당 도트 피해 상향 (24 -> 28)
         baseCount: 1,
-        baseArea: 1.0,     // 기본 반경 80px (일반 검 사거리와 동일)
+        baseArea: 1.0,     // 기본 반경 90px
         speedLevel: 0,
         countLevel: 0,
         areaLevel: 0,
@@ -227,8 +227,8 @@ class WeaponManager {
         icon: '⚡',
         iconSprite: 'icon_lightning',
         desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂아 반경 범위 피해를 입힙니다.',
-        baseCooldown: 1.25,
-        baseDamage: 38,
+        baseCooldown: 1.10, // 쿨다운 상향 (1.25 -> 1.10)
+        baseDamage: 42,     // 공격력 상향 (38 -> 42)
         baseCount: 1,
         baseArea: 1.0,
         speedLevel: 0,
@@ -243,8 +243,8 @@ class WeaponManager {
         icon: '🔥',
         iconSprite: 'icon_firewand',
         desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 주변 적들에게 화염 피해를 입힙니다.',
-        baseCooldown: 1.15,
-        baseDamage: 32,
+        baseCooldown: 1.00, // 쿨다운 상향 (1.15 -> 1.00)
+        baseDamage: 36,     // 공격력 상향 (32 -> 36)
         baseCount: 1,
         baseArea: 1.0,
         speedLevel: 0,
@@ -470,7 +470,7 @@ class WeaponManager {
   executeSanctuaryTick(w, enemies, isArcane = false) {
     const dmg = isArcane ? Math.round(this.getDamage(w) * 0.75) : this.getDamage(w);
     const area = this.getArea(w);
-    const radius = (isArcane ? 110 : 80) * area;
+    const radius = (isArcane ? 120 : 90) * area;
     const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : [];
 
     let hitCount = 0;
@@ -606,7 +606,7 @@ class WeaponManager {
         area: area,
         damage: dmg,
         pierce: 1,
-        splashRadius: 55 * area,
+        splashRadius: 65 * area,
         splashDamage: Math.round(dmg * 0.85),
         knockbackForce: 170,
         life: 0.82, // 사거리 약 380px
@@ -1380,7 +1380,7 @@ class WeaponManager {
     const sanctuary = this.weapons['sanctuary'];
     if (sanctuary) {
       const area = this.getArea(sanctuary);
-      const radius = 80 * area;
+      const radius = 90 * area;
       const time = Date.now() * 0.002;
       const pulse = 0.16 + Math.sin(time * 3) * 0.05;
 

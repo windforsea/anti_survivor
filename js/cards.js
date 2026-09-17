@@ -29,7 +29,7 @@ class CardManager {
       magicMissile: { name: '마법 화살', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환을 발사합니다.' },
       shotgun: { name: '산탄 총포', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄을 일제 사격합니다.' },
       holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.' },
-      sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_holywater', desc: '플레이어를 감싸는 원형 결계로 적들에게 매초 도트 피해를 입힙니다.' },
+      sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_sanctuary', desc: '플레이어를 감싸는 원형 결계로 적들에게 매초 도트 피해를 입힙니다.' },
       lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂아 반경 범위 피해를 입힙니다.' },
       fireWand: { name: '화염 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 광역 피해를 입힙니다.' }
     };
@@ -158,7 +158,7 @@ class CardManager {
       magicMissile: { name: '마법 화살', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환' },
       shotgun: { name: '산탄 총포', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄 일제 사격 (데미지 2배 상향)' },
       holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
-      sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_holywater', desc: '플레이어를 감싸는 360도 원형 결계로 적들에게 매초 도트 피해 부여 (공속 영향 없음)' },
+      sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_sanctuary', desc: '플레이어를 감싸는 360도 원형 결계로 적들에게 매초 도트 피해 부여 (공속 영향 없음)' },
       acidPool: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
       lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂음' },
       fireWand: { name: '화염 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 폭발 화염구를 발사' }
@@ -520,8 +520,8 @@ class CardManager {
           category: 'weapon',
           title: `${w.name} 탄속`,
           icon: '💨',
-          iconKey: 'icon_proj_speed',
-          desc: `발사된 탄환과 단검의 비행 속도를 증가시킵니다. (무기 총강화 ${nextLv}/6)`,
+          iconKey: meta.iconKey,
+          desc: `${w.name}의 투사체 비행 속도를 증가시킵니다. (무기 총강화 ${nextLv}/6)`,
           effectText: '투사체 속도 +18%',
           badge: `Lv.${nextLv}/6`,
           stars: formatStars(nextLv, 6),

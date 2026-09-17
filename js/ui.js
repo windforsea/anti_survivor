@@ -138,7 +138,8 @@ class UIManager {
         else if (key === 'magicMissile') iconKey = 'icon_missile';
         else if (key === 'shotgun') iconKey = 'icon_shotgun';
         else if (key === 'holyShotgun') iconKey = 'icon_holyshotgun';
-        else if (key === 'holyWater' || key === 'acidPool' || key === 'sanctuary') iconKey = 'icon_holywater';
+        else if (key === 'holyWater' || key === 'acidPool') iconKey = 'icon_holywater';
+        else if (key === 'sanctuary') iconKey = 'icon_sanctuary';
         else if (key === 'lightningRing') iconKey = 'icon_lightning';
         else if (key === 'fireWand') iconKey = 'icon_firewand';
         else if (key === 'arcaneSanctuary') iconKey = 'icon_arcanesanctuary';

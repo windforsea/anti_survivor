@@ -347,8 +347,9 @@ class Game {
 
         // 슬라임 분열 기믹: 일반 슬라임 사망 시 2마리의 미니 슬라임으로 분열 생성
         if (enemy.typeKey === 'slime' && !enemy.isMini) {
+          const parentScale = (typeof enemy.hpScale === 'number' && !isNaN(enemy.hpScale)) ? enemy.hpScale : 1.0;
           for (let s = -1; s <= 1; s += 2) {
-            const mini = new Enemy('miniSlime', enemy.x + s * 16, enemy.y + (Math.random() - 0.5) * 12, enemy.hpScale * 0.7);
+            const mini = new Enemy('miniSlime', enemy.x + s * 16, enemy.y + (Math.random() - 0.5) * 12, parentScale * 0.7);
             mini.isMini = true;
             this.enemies.push(mini);
           }
