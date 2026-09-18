@@ -584,17 +584,11 @@ class Game {
     // 화면 오버레이 이펙트 (빙결, 폭탄 플래시)
     if (this.freezeTimer > 0) {
       ctx.save();
-      ctx.fillStyle = 'rgba(165, 243, 252, 0.16)';
+      ctx.fillStyle = 'rgba(165, 243, 252, 0.12)';
       ctx.fillRect(0, 0, width, height);
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
-      ctx.lineWidth = 8;
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+      ctx.lineWidth = 6;
       ctx.strokeRect(0, 0, width, height);
-      ctx.fillStyle = '#bae6fd';
-      ctx.font = 'bold 16px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = '#0284c7';
-      ctx.shadowBlur = 8;
-      ctx.fillText(`❄️ ENEMY FROZEN (${this.freezeTimer.toFixed(1)}s) ❄️`, width / 2, 74);
       ctx.restore();
     }
 

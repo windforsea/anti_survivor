@@ -344,7 +344,7 @@ class UIManager {
     this.bossAlert.classList.remove('hidden');
     setTimeout(() => {
       this.bossAlert.classList.add('hidden');
-    }, 3500);
+    }, 1800);
   }
 
   showStageClear(stage) {
@@ -353,7 +353,7 @@ class UIManager {
     this.stageClearBanner.classList.remove('hidden');
     setTimeout(() => {
       this.stageClearBanner.classList.add('hidden');
-    }, 2200);
+    }, 1300);
   }
 
   showCardSelection(cards, onSelect, onReroll, onSkip, isBossReward = false, isStarting = false) {
