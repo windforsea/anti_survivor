@@ -448,7 +448,7 @@ class UIManager {
         this.cardSkipBtn.style.display = 'none';
       } else {
         this.cardSkipBtn.style.display = '';
-        this.cardSkipBtn.textContent = '⏩ 스킵/회복 [K] (+10 HP)';
+        this.cardSkipBtn.textContent = '⏩ 스킵/회복 [K] (+20 HP)';
         this.cardSkipBtn.onclick = (e) => {
           e.stopPropagation();
           this.cardModal.classList.add('hidden');

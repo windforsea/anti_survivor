@@ -238,8 +238,8 @@ class Game {
         },
         // onSkip
         () => {
-          // 스킵 시 체력 10 즉시 회복
-          const healAmt = 10;
+          // 스킵 시 체력 20 즉시 회복
+          const healAmt = 20;
           this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmt);
           this.damageNumbers.push(new DamageNumber(this.player.x, this.player.y - 14, `+${healAmt}`, false, '#22c55e'));
           this.addParticles(this.player.x, this.player.y, '#22c55e', 14);
