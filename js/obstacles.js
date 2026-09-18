@@ -214,8 +214,10 @@ class ObstacleManager {
     }
   }
 
-  // 플레이어 및 몬스터 밀어내기 원형 충돌 판정
+  // 플레이어 및 몬스터 밀어내기 원형 충돌 판정 (공중 몬스터는 장애물 무시 관통)
   resolveCollisions(entity) {
+    if (entity.isFlying) return; // 공중 비행 엔티티는 장애물 통과
+
     for (const obs of this.obstacles) {
       if (obs.isDead) continue;
       const minDist = obs.radius + entity.radius;

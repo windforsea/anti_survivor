@@ -713,6 +713,8 @@ class BossEnemy extends Enemy {
     super('golem', x, y, 1.0);
     this.isBoss = true;
     this.bossStage = bossStage;
+    // 공중 부유/비행형 보스는 장애물 무시 관통 (4: 그림자 마법사, 6: 혼돈의 눈, 12: 심연의 리치, 15: 종말의 사신, 18: 공허의 지네, 20: 혼돈의 절대신)
+    this.isFlying = (bossStage === 4 || bossStage === 6 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20);
 
     // 보스별 특화 설정
     if (bossStage === 2) {

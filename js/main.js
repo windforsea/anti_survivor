@@ -420,7 +420,9 @@ class Game {
       const enemy = this.enemies[i];
       if (!isFrozen) {
         enemy.update(dt, this.player, this.enemies, this.bossProjectiles);
-        this.obstacleManager.resolveCollisions(enemy);
+        if (!enemy.isFlying) {
+          this.obstacleManager.resolveCollisions(enemy);
+        }
       }
 
       // 그라운드 몬스터는 부유섬 밖 우주로 나가지 못하도록 경계 제한 [-1580, 1580]
