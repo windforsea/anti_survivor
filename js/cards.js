@@ -581,9 +581,9 @@ class CardManager {
         icon: '💍',
         iconKey: 'icon_regen',
         desc: '매초 체력을 지속 자동 회복합니다.',
-        effectText: '초당 체력 회복 +1.5 HP/s',
+        effectText: '초당 체력 회복 +0.9 HP/s',
         maxLevel: 5,
-        apply: () => { this.player.hpRegen += 1.5; }
+        apply: () => { this.player.hpRegen += 0.9; }
       },
       {
         id: 'stat_hp',

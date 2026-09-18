@@ -625,7 +625,7 @@ class UIManager {
       { id: 'area', name: '공격 범위 증가', icon: '🎯', desc: '공격 및 폭발 범위 +5%', maxLevel: 5, baseCost: 100, costInc: 50 },
       { id: 'hp', name: '최대 체력 증가', icon: '❤️', desc: '최대 생명력 +15', maxLevel: 5, baseCost: 80, costInc: 40 },
       { id: 'speed', name: '이동 속도 증가', icon: '👟', desc: '이동 속도 +3%', maxLevel: 5, baseCost: 100, costInc: 50 },
-      { id: 'regen', name: '체력 재생', icon: '💍', desc: '초당 체력 회복 +0.5 HP/s', maxLevel: 3, baseCost: 200, costInc: 100 },
+      { id: 'regen', name: '체력 재생', icon: '💍', desc: '초당 체력 회복 +0.3 HP/s', maxLevel: 3, baseCost: 200, costInc: 100 },
       { id: 'magnet', name: '자석 반경 증가', icon: '🧲', desc: '보석/금화 흡수 반경 +20px', maxLevel: 5, baseCost: 70, costInc: 35 },
       { id: 'greed', name: '금화 획득량 증가', icon: '🪙', desc: '금화 획득량 +10%', maxLevel: 5, baseCost: 120, costInc: 60 },
       { id: 'revive', name: '부활', icon: '👼', desc: '사망 시 1회 체력 50% 부활', maxLevel: 1, baseCost: 1000, costInc: 0 }

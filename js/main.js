@@ -222,8 +222,8 @@ class Game {
         },
         // onSkip
         () => {
-          // 스킵 시 체력 20 즉시 회복
-          const healAmt = 20;
+          // 스킵 시 체력 10 즉시 회복
+          const healAmt = 10;
           this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmt);
           this.damageNumbers.push(new DamageNumber(this.player.x, this.player.y - 14, `+${healAmt}`, false, '#22c55e'));
           this.addParticles(this.player.x, this.player.y, '#22c55e', 14);
@@ -250,9 +250,9 @@ class Game {
     const type = typeof item === 'string' ? item : item.type;
 
     if (type === 'heal') {
-      // 체력 포션: 체력 35 즉시 회복
+      // 체력 포션: 체력 10 즉시 회복
       sounds.playLevelUp();
-      const healAmt = 35;
+      const healAmt = 10;
       this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmt);
       this.damageNumbers.push(new DamageNumber(this.player.x, this.player.y - 14, `+${healAmt}`, false, '#22c55e'));
       this.addParticles(this.player.x, this.player.y, '#22c55e', 18);

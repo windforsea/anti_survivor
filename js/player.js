@@ -42,7 +42,7 @@ class Player {
     
     // 무적 시간 및 상태
     this.invulnerableTimer = 0;
-    this.invulnerableDuration = 2.0; // 피격 시 2.0초 무적
+    this.invulnerableDuration = 0.8; // 피격 시 0.8초 무적
     this.isDead = false;
 
     // 금화 및 영구 업그레이드 연동 변수
@@ -183,8 +183,8 @@ class Player {
       this.baseSpeed += bonus;
       this.speed += bonus;
     }
-    // 6. 체력 재생 (+0.5 HP/s per Lv)
-    if (upgrades.regen) this.hpRegen += upgrades.regen * 0.5;
+    // 6. 체력 재생 (+0.3 HP/s per Lv)
+    if (upgrades.regen) this.hpRegen += upgrades.regen * 0.3;
     // 7. 자석 반경 (+20px per Lv)
     if (upgrades.magnet) this.magnetRadius += upgrades.magnet * 20;
     // 8. 금화 획득량 (+10% per Lv)

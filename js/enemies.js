@@ -704,7 +704,7 @@ class BossEnemy extends Enemy {
       this.radius = 28;
       this.color = '#b45309'; // 맹수 주황
       this.speed = 100;
-      this.damage = 25;
+      this.damage = 32;
       this.exp = 150;
       
       this.chargeCooldown = 4.0;
@@ -721,7 +721,7 @@ class BossEnemy extends Enemy {
       this.radius = 26;
       this.color = '#7e22ce'; // 보라빛
       this.speed = 80;
-      this.damage = 30;
+      this.damage = 38;
       this.exp = 250;
 
       this.teleportCooldown = 4.5;
@@ -734,7 +734,7 @@ class BossEnemy extends Enemy {
       this.radius = 32;
       this.color = '#e11d48'; // 피빛 레드
       this.speed = 60;
-      this.damage = 32;
+      this.damage = 42;
       this.exp = 400;
 
       this.bulletSpiralAngle = 0;
@@ -747,7 +747,7 @@ class BossEnemy extends Enemy {
       this.radius = 36;
       this.color = '#475569'; // 짙은 강철색
       this.speed = 70;
-      this.damage = 40;
+      this.damage = 52;
       this.exp = 600;
       this.knockbackImmune = true; // 100% 넉백 무시!
 
@@ -760,7 +760,7 @@ class BossEnemy extends Enemy {
       this.radius = 42;
       this.color = '#991b1b'; // 심홍색
       this.speed = 110;
-      this.damage = 45;
+      this.damage = 60;
       this.exp = 1000;
       this.knockbackImmune = true;
 
@@ -775,7 +775,7 @@ class BossEnemy extends Enemy {
       this.radius = 38;
       this.color = '#38bdf8'; // 혹한의 영혼불빛
       this.speed = 95;
-      this.damage = 50;
+      this.damage = 68;
       this.exp = 1600;
       this.knockbackImmune = true;
 
@@ -790,7 +790,7 @@ class BossEnemy extends Enemy {
       this.radius = 44;
       this.color = '#18181b'; // 심연의 칠흑빛
       this.speed = 135;
-      this.damage = 65;
+      this.damage = 88;
       this.exp = 3500;
       this.knockbackImmune = true;
 
@@ -903,7 +903,7 @@ class BossEnemy extends Enemy {
           bossProjectiles.push(new BossProjectile(
             this.x, this.y,
             Math.cos(bAngle) * bSpd, Math.sin(bAngle) * bSpd,
-            8, '#c084fc', 16
+            8, '#c084fc', 20
           ));
         }
       }
@@ -924,7 +924,7 @@ class BossEnemy extends Enemy {
           bossProjectiles.push(new BossProjectile(
             this.x, this.y,
             Math.cos(curAngle) * bSpd, Math.sin(curAngle) * bSpd,
-            7, '#fb7185', 14
+            7, '#fb7185', 18
           ));
         }
       }
@@ -946,7 +946,7 @@ class BossEnemy extends Enemy {
           bossProjectiles.push(new BossProjectile(
             this.x, this.y,
             Math.cos(sAngle) * sSpd, Math.sin(sAngle) * sSpd,
-            9, '#f59e0b', 22
+            9, '#f59e0b', 28
           ));
         }
       }
@@ -967,7 +967,7 @@ class BossEnemy extends Enemy {
         bossProjectiles.push(new BossProjectile(
           this.x, this.y,
           Math.cos(bAngle) * 280, Math.sin(bAngle) * 280,
-          9, '#ef4444', 20
+          9, '#ef4444', 26
         ));
       }
 
@@ -984,7 +984,7 @@ class BossEnemy extends Enemy {
           bossProjectiles.push(new BossProjectile(
             this.x, this.y,
             Math.cos(novaAngle) * 300, Math.sin(novaAngle) * 300,
-            8, '#dc2626', 22
+            8, '#dc2626', 28
           ));
         }
       }
@@ -1007,7 +1007,7 @@ class BossEnemy extends Enemy {
           bossProjectiles.push(new BossProjectile(
             this.x, this.y,
             Math.cos(shotAngle) * 260, Math.sin(shotAngle) * 260,
-            8, '#38bdf8', 24
+            8, '#38bdf8', 30
           ));
         }
       }
@@ -1025,7 +1025,7 @@ class BossEnemy extends Enemy {
           bossProjectiles.push(new BossProjectile(
             this.x, this.y,
             Math.cos(novaAngle) * 280, Math.sin(novaAngle) * 280,
-            9, '#0284c7', 26
+            9, '#0284c7', 34
           ));
         }
       }
@@ -1048,7 +1048,7 @@ class BossEnemy extends Enemy {
           bossProjectiles.push(new BossProjectile(
             this.x, this.y,
             Math.cos(sAngle) * 290, Math.sin(sAngle) * 290,
-            9, '#7c3aed', 28
+            9, '#7c3aed', 36
           ));
         }
       }
@@ -1086,7 +1086,7 @@ class BossEnemy extends Enemy {
             bossProjectiles.push(new BossProjectile(
               this.x, this.y,
               Math.cos(novaAngle) * 320, Math.sin(novaAngle) * 320,
-              9, '#dc2626', 32
+              9, '#dc2626', 42
             ));
           }
         }
