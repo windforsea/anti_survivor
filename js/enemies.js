@@ -723,8 +723,8 @@ class BossEnemy extends Enemy {
     super('golem', x, y, 1.0);
     this.isBoss = true;
     this.bossStage = bossStage;
-    // 공중 부유/비행형 보스는 장애물 무시 관통 (4: 그림자 마법사, 6: 혼돈의 눈, 12: 심연의 리치, 15: 종말의 사신, 18: 공허의 지네, 20: 혼돈의 절대신)
-    this.isFlying = (bossStage === 4 || bossStage === 6 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20);
+    // 공중 부유/비행형 보스는 장애물 무시 관통 (4: 그림자 마법사, 6: 혼돈의 눈, 12: 심연의 리치, 15: 종말의 사신, 18: 공허의 지네, 20: 혼돈의 절대신, 99: 진 붉은 사신)
+    this.isFlying = (bossStage === 4 || bossStage === 6 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20 || bossStage === 99);
 
     // 보스별 특화 설정
     if (bossStage === 2) {
@@ -860,6 +860,21 @@ class BossEnemy extends Enemy {
       this.phaseTimer = 0;
       this.teleportTimer = 3.8;
       this.beamTimer = 2.5;
+    } else if (bossStage === 99) {
+      // 엔드게임 특수 보스: 진 붉은 사신 (The Red Death)
+      this.name = '진 붉은 사신 (The Red Death)';
+      this.maxHp = 666666;
+      this.hp = this.maxHp;
+      this.radius = 48;
+      this.color = '#ef4444'; // 핏빛 진홍색
+      this.speed = 360;       // 압도적인 추격 속도 (플레이어 220 대비 1.6배 이상)
+      this.damage = 99999;    // 스치면 1방 즉사
+      this.exp = 66666;
+      this.knockbackImmune = true;
+      this.isFlying = true;
+      this.isRedReaper = true;
+
+      this.scytheTimer = 0.8;
     }
   }
 
@@ -1241,6 +1256,23 @@ class BossEnemy extends Enemy {
         this.vx = (dx / dist) * this.speed;
         this.vy = (dy / dist) * this.speed;
       }
+    } else if (this.bossStage === 99) {
+      // [엔드게임 특수 보스: 진 붉은 사신 - 초고속 360 추격 + 넉백/지형 무시 + 주기적 사신의 낫 섬광]
+      this.scytheTimer = (this.scytheTimer || 0.8) - dt;
+      if (this.scytheTimer <= 0) {
+        this.scytheTimer = 1.0;
+        if (typeof sounds !== 'undefined' && sounds.playBossCharge) {
+          sounds.playBossCharge();
+        }
+        if (window.game && window.game.addParticles) {
+          window.game.addParticles(this.x, this.y, '#ef4444', 12);
+        }
+      }
+
+      if (dist > 0.1) {
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+      }
     }
 
     this.x += this.vx * dt;
@@ -1278,7 +1310,8 @@ class BossEnemy extends Enemy {
       12: 'boss_lich',
       15: 'boss_reaper',
       18: 'boss_wyrm',
-      20: 'boss_overlord'
+      20: 'boss_overlord',
+      99: 'boss_reaper'
     };
     const bossKey = bossKeyMap[this.bossStage] || 'boss_reaper';
     const isHit = this.hitFlashTimer > 0;
@@ -1293,8 +1326,15 @@ class BossEnemy extends Enemy {
     ctx.fill();
 
     // 보스 발밑 위협적인 마법진 오라
-    ctx.strokeStyle = this.knockbackImmune ? 'rgba(245, 158, 11, 0.4)' : 'rgba(225, 29, 72, 0.4)';
-    ctx.lineWidth = 2;
+    if (this.bossStage === 99) {
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
+      ctx.lineWidth = 4;
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 18;
+    } else {
+      ctx.strokeStyle = this.knockbackImmune ? 'rgba(245, 158, 11, 0.4)' : 'rgba(225, 29, 72, 0.4)';
+      ctx.lineWidth = 2;
+    }
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius * 1.15, 0, Math.PI * 2);
     ctx.stroke();
@@ -1319,8 +1359,8 @@ class BossEnemy extends Enemy {
     ctx.save();
     ctx.translate(this.x, this.y);
 
-    // 황금 왕관 표식
-    ctx.fillStyle = '#fde047';
+    // 황금/사신 왕관 표식
+    ctx.fillStyle = this.bossStage === 99 ? '#ef4444' : '#fde047';
     ctx.beginPath();
     ctx.moveTo(-14, -this.radius - 4);
     ctx.lineTo(-7, -this.radius - 14);

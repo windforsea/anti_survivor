@@ -59,27 +59,27 @@ class Obstacle {
       });
     }
 
-    // 파괴 시 드랍 보상 (장애물과 겹치지 않는 안전한 열린 공간으로 스폰 보정)
+    // 파괴 시 드랍 보상 (기존 대비 50% 수준으로 드랍률 하향)
     const safePos = game.obstacleManager ? game.obstacleManager.getUnblockedPosition(this.x, this.y, 16) : { x: this.x, y: this.y };
     const roll = Math.random();
-    if (roll < 0.23) {
-      // 체력 회복 포션 (기존 35% -> 23%로 2/3 수준 감소)
+    if (roll < 0.115) {
+      // 체력 회복 포션 (기존 23% -> 11.5%로 반감)
       game.pickupItems.push(new PickupItem('heal', safePos.x, safePos.y));
-    } else if (roll < 0.48) {
+    } else if (roll < 0.35) {
       // 대형 경험치 보석 (EXP 20)
       game.expGems.push(new ExpGem(safePos.x, safePos.y, 20));
-    } else if (roll < 0.70) {
-      // 금화 자루 (5~15G)
+    } else if (roll < 0.46) {
+      // 금화 자루 (5~15G, 기존 22% -> 11%로 반감)
       const goldVal = Math.floor(Math.random() * 11) + 5;
       game.pickupItems.push(new PickupItem('gold', safePos.x, safePos.y, goldVal));
-    } else if (roll < 0.78) {
-      // 자석 (기존 대비 2/3 수준)
+    } else if (roll < 0.50) {
+      // 자석 (기존 8% -> 4%로 반감)
       game.pickupItems.push(new PickupItem('magnet', safePos.x, safePos.y));
-    } else if (roll < 0.86) {
-      // 폭탄 (기존 대비 2/3 수준)
+    } else if (roll < 0.54) {
+      // 폭탄 (기존 8% -> 4%로 반감)
       game.pickupItems.push(new PickupItem('bomb', safePos.x, safePos.y));
-    } else if (roll < 0.91) {
-      // 얼음 (기존 대비 2/3 수준)
+    } else if (roll < 0.565) {
+      // 얼음 (기존 5% -> 2.5%로 반감)
       game.pickupItems.push(new PickupItem('freeze', safePos.x, safePos.y));
     }
   }

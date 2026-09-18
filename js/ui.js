@@ -277,7 +277,15 @@ class UIManager {
     const sec = Math.ceil(waveManager.stageTimeLeft);
     const m = Math.floor(sec / 60).toString().padStart(2, '0');
     const s = (sec % 60).toString().padStart(2, '0');
-    this.timerBadge.textContent = `⏱️ ${m}:${s}`;
+    if (waveManager.currentStage >= waveManager.maxStage && waveManager.stageTimeLeft <= 0) {
+      this.timerBadge.textContent = `☠️ 사신 강림!`;
+      this.timerBadge.style.color = '#ef4444';
+      this.timerBadge.style.fontWeight = 'bold';
+    } else {
+      this.timerBadge.textContent = `⏱️ ${m}:${s}`;
+      this.timerBadge.style.color = '';
+      this.timerBadge.style.fontWeight = '';
+    }
 
     this.killBadge.textContent = `💀 ${player.totalKills}`;
     if (this.goldBadge) {

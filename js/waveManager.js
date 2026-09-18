@@ -49,6 +49,8 @@ class WaveManager {
     this.bossSpawnedThisStage = false;
     this.eventWaveTriggered = false;
     this.isStageClearing = false;
+    this.redReaperSpawned = false;
+    this.redReaperTimer = 0;
   }
 
   update(dt) {
@@ -67,6 +69,21 @@ class WaveManager {
     if (config.bossStage && !this.bossSpawnedThisStage) {
       if (elapsed >= config.bossTime) {
         this.spawnBoss(config.bossStage);
+      }
+    }
+
+    // [최종 20스테이지 기믹] 시간 제한 만료 시 즉사급 붉은 사신(The Red Death) 강림 및 60초마다 추가 소환
+    if (this.currentStage === this.maxStage && this.stageTimeLeft <= 0) {
+      if (!this.redReaperSpawned) {
+        this.redReaperSpawned = true;
+        this.spawnRedReaper();
+        this.redReaperTimer = 60.0;
+      } else {
+        this.redReaperTimer -= dt;
+        if (this.redReaperTimer <= 0) {
+          this.redReaperTimer = 60.0;
+          this.spawnRedReaper();
+        }
       }
     }
 
@@ -96,16 +113,29 @@ class WaveManager {
 
     // 보스 격파 여부 확인
     if (this.activeBoss && this.activeBoss.isDead) {
+      const isRedReaper = (this.activeBoss.bossStage === 99 || this.activeBoss.isRedReaper);
       this.activeBoss = null;
       // 보스 처치 즉시 1회 업그레이드 카드 선택창 오픈
       this.game.triggerBossRewardCard();
-      // 보스가 처치되었고 타이머가 만료되었거나 보스 처치로 조기 클리어
-      if (this.stageTimeLeft <= 0 || config.bossStage) {
-        this.advanceStage();
+
+      if (isRedReaper) {
+        // 진 붉은 사신 격파 시 대망의 기적적인 최종 승리!
+        this.game.triggerVictory();
+      } else if (this.currentStage >= this.maxStage) {
+        // 20스테이지 통상 보스(혼돈의 절대신) 처치: 다음 스테이지로 안 넘어가고 시간 만료(사신 강림)까지 버팀!
+        if (this.game.ui && this.game.ui.showBossAlert) {
+          this.game.ui.showBossAlert('혼돈의 절대신 격파! 시간이 다 될 때까지 살아남으십시오!');
+        }
+      } else {
+        if (this.stageTimeLeft <= 0 || config.bossStage) {
+          this.advanceStage();
+        }
       }
     } else if (!config.bossStage && this.stageTimeLeft <= 0) {
       // 일반 스테이지는 타이머 종료 시 다음 스테이지로
-      this.advanceStage();
+      if (this.currentStage < this.maxStage) {
+        this.advanceStage();
+      }
     }
   }
 
@@ -187,6 +217,29 @@ class WaveManager {
     // 경보 사운드 및 HUD 배너 알림
     sounds.playBossAlarm();
     this.game.ui.showBossAlert(boss.name);
+  }
+
+  // 20스테이지 시간 만료 시 즉사급 붉은 사신(The Red Death) 소환
+  spawnRedReaper() {
+    const player = this.game.player;
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 520;
+    const x = player.x + Math.cos(angle) * dist;
+    const y = player.y + Math.sin(angle) * dist;
+
+    const reaper = new BossEnemy(99, x, y);
+    this.game.enemies.push(reaper);
+
+    // 긴급 사운드, 햅틱 진동, HUD 경고 배너
+    if (typeof sounds !== 'undefined' && sounds.playBossAlarm) {
+      sounds.playBossAlarm();
+    }
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+      try { navigator.vibrate([200, 100, 200, 100, 400]); } catch (e) {}
+    }
+    if (this.game.ui && this.game.ui.showBossAlert) {
+      this.game.ui.showBossAlert('☠️ [재앙 강림] 시간 만료! 진 붉은 사신이 영혼을 거두러 옵니다! ☠️');
+    }
   }
 
   advanceStage() {

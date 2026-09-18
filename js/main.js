@@ -453,17 +453,17 @@ class Game {
         // 경험치 보석 드랍 (뒤 5종 마물은 대량 경험치 보석)
         this.expGems.push(new ExpGem(safePos.x, safePos.y, enemy.exp));
 
-        // 1) 특수 아이템 드랍 (일반몹 약 1.11%로 기존 대비 2/3 감소, 보스는 100% 확정 드랍)
+        // 1) 특수 아이템 드랍 (일반몹 약 0.55%로 기존 대비 50% 추가 감소, 보스는 100% 확정 드랍)
         const dropBonus = 1 + (this.player.dropRateBonus || 0);
-        const itemDropChance = enemy.isBoss ? 1.0 : (0.0111 * dropBonus);
+        const itemDropChance = enemy.isBoss ? 1.0 : (0.0055 * dropBonus);
         if (Math.random() < itemDropChance) {
           const types = ['magnet', 'bomb', 'freeze'];
           const picked = types[Math.floor(Math.random() * types.length)];
           this.pickupItems.push(new PickupItem(picked, safePos.x, safePos.y));
         }
 
-        // 2) 금화 드랍 (특수 아이템과 동일한 약 1.11% 확률, 보스는 100% 확정 50G 보너스)
-        const goldDropChance = enemy.isBoss ? 1.0 : (0.0111 * dropBonus);
+        // 2) 금화 드랍 (특수 아이템과 동일한 약 0.55% 확률, 보스는 100% 확정 50G 보너스)
+        const goldDropChance = enemy.isBoss ? 1.0 : (0.0055 * dropBonus);
         if (Math.random() < goldDropChance) {
           const goldVal = enemy.isBoss ? 50 : Math.floor(Math.random() * 3) + 1;
           this.pickupItems.push(new PickupItem('gold', safePos.x, safePos.y, goldVal));
@@ -473,6 +473,11 @@ class Game {
         this.addParticles(enemy.x, enemy.y, enemy.color, enemy.isBoss ? 24 : 8);
         this.player.onKillEnemy(enemy);
         sounds.playKill();
+
+        if (enemy.isRedReaper || enemy.bossStage === 99) {
+          this.triggerVictory();
+        }
+
         this.enemies.splice(i, 1);
       }
     }
