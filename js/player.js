@@ -1,29 +1,66 @@
 // 플레이어 클래스 및 컨트롤러
 class Player {
-  constructor(x, y) {
+  constructor(x, y, characterType = 'knight') {
     this.x = x;
     this.y = y;
     this.radius = 16;
+    this.characterType = characterType;
     
-    // 기본 스탯 (카드 업그레이드로 강화 가능)
-    this.maxHp = 100;
-    this.hp = 100;
-    this.baseSpeed = 220;
-    this.speed = 220;
-    this.armor = 0;                     // 피해 고정 감쇄 (최소 피해 1)
-    this.atkPowerMult = 1.0;            // 공격력 %
+    // 캐릭터별 기본 베이스 스탯 및 스프라이트
+    if (characterType === 'mage') {
+      this.spriteKey = 'player_mage';
+      this.charName = '화염 마도사';
+      this.maxHp = 80;
+      this.hp = 80;
+      this.baseSpeed = 210;
+      this.speed = 210;
+      this.armor = 0;
+      this.atkPowerMult = 1.20;            // 기본 공격력 +20%
+      this.globalCooldownMult = 1.10;      // 쿨타임 -10%
+      this.bonusProjSpeedMult = 1.15;      // 투사체 속도 +15%
+    } else if (characterType === 'assassin') {
+      this.spriteKey = 'player_assassin';
+      this.charName = '그림자 암살자';
+      this.maxHp = 90;
+      this.hp = 90;
+      this.baseSpeed = 260;                // 초고속 이동 속도
+      this.speed = 260;
+      this.armor = 0;
+      this.atkPowerMult = 1.0;
+      this.globalCooldownMult = 1.0;
+      this.bonusProjSpeedMult = 1.0;
+    } else {
+      // knight (기본)
+      this.spriteKey = 'player';
+      this.charName = '방랑 기사';
+      this.maxHp = 120;                    // 체력 +20
+      this.hp = 120;
+      this.baseSpeed = 220;
+      this.speed = 220;
+      this.armor = 1;                      // 기본 방어력 1
+      this.atkPowerMult = 1.0;
+      this.globalCooldownMult = 1.0;
+      this.bonusProjSpeedMult = 1.0;
+    }
+
     this.hpRegen = 0.0;                 // 초당 체력 재생
-    this.globalCooldownMult = 1.0;      // 전체 무기 쿨다운 단축 (공격속도 증가)
-    this.baseMagnetRadius = 130;        // 기본 자석 흡수 반경 베이스
-    this.magnetRadius = 130;            // 현재 자석 흡수 반경
+    this.baseMagnetRadius = characterType === 'assassin' ? 155 : 130;
+    this.magnetRadius = this.baseMagnetRadius;
     this.bonusProjectiles = 0;          // 캐릭터 투사체 개수 증가 (최대 3회 제한)
-    this.bonusProjSpeedMult = 1.0;      // 캐릭터 원거리 투사체 속도 배율
     this.bonusAreaMult = 1.0;           // 캐릭터 전체 무기 공격 범위 배율
-    this.critChance = 0.05;             // 기본 치명타 확률 5%
+    this.critChance = characterType === 'assassin' ? 0.20 : 0.05; // 암살자 20%, 기본 5%
     this.critDamageMult = 2.0;          // 치명타 피해량 2배
     this.expMult = 1.0;                 // 경험치 획득 배율 1.0배
     this.dropRateBonus = 0.0;           // 특수 아이템 드랍률 보너스
-    this.ownedPassives = {};            // 보유한 패시브 스탯 { id: { level, maxLevel, iconKey, title } } (최대 6종 슬롯 제한)
+    this.ownedPassives = {};            // 보유한 패시브 스탯
+
+    // 신규 패시브: 흡혈 및 방벽 쉴드
+    this.vampireChance = 0.0;           // 처치 시 체력 회복 확률 (stat_vampire)
+    this.maxShieldStacks = 0;           // 최대 쉴드 개수 (stat_shield, 최대 2)
+    this.currentShieldStacks = 0;       // 현재 쉴드 개수
+    this.shieldCooldown = 18.0;         // 쉴드 충전 쿨다운 (초)
+    this.shieldTimer = 0.0;
+    this.shieldAngle = 0.0;             // 쉴드 회전 렌더링 각도
 
     // 레벨 및 경험치
     this.level = 1;
@@ -123,14 +160,56 @@ class Player {
     this.x += this.vx * dt;
     this.y += this.vy * dt;
 
+    // 쉴드 쿨다운 충전 로직 (빛의 성벽 패시브)
+    if (this.maxShieldStacks > 0 && this.currentShieldStacks < this.maxShieldStacks) {
+      this.shieldTimer += dt;
+      if (this.shieldTimer >= this.shieldCooldown) {
+        this.shieldTimer = 0;
+        this.currentShieldStacks += 1;
+        if (window.game && window.game.damageNumbers) {
+          window.game.damageNumbers.push(new DamageNumber(this.x, this.y - 25, '방벽 충전!', false));
+        }
+      }
+    }
+    this.shieldAngle += dt * 2.5;
+
     // 우주 부유섬 낭떠러지 밖으로 추락하지 않도록 바닥 테두리 엄격 제한
     const bound = 1560;
     this.x = Math.max(-bound, Math.min(bound, this.x));
     this.y = Math.max(-bound, Math.min(bound, this.y));
   }
 
+  // 몬스터 처치 시 호출 (흡혈 패시브 연동)
+  onKillEnemy(enemy) {
+    this.totalKills += 1;
+    if (this.vampireChance > 0 && Math.random() < this.vampireChance) {
+      if (this.hp < this.maxHp) {
+        this.hp = Math.min(this.maxHp, this.hp + 1);
+        if (window.game && window.game.damageNumbers) {
+          window.game.damageNumbers.push(new DamageNumber(this.x, this.y - 20, '+1 HP', false));
+        }
+      }
+    }
+  }
+
   takeDamage(amount) {
     if (this.isDead || this.invulnerableTimer > 0) return 0;
+
+    // 빛의 성벽 방벽 쉴드 방어 판정
+    if (this.currentShieldStacks > 0) {
+      this.currentShieldStacks -= 1;
+      this.invulnerableTimer = 0.6; // 피격 무적
+      this.shieldTimer = 0;
+      sounds.playWeaponHit();
+      if (window.game) {
+        window.game.addParticles(this.x, this.y, '#38bdf8', 35);
+        window.game.addParticles(this.x, this.y, '#fef08a', 20);
+        if (window.game.damageNumbers) {
+          window.game.damageNumbers.push(new DamageNumber(this.x, this.y - 28, '방벽 방어!', false));
+        }
+      }
+      return 0;
+    }
 
     // 복합 방어력 적용: 고정 감쇄(-armor) + 받는 피해 비율 경감(레벨당 4%, 최대 50%)
     const reductionRatio = Math.min(0.50, this.armor * 0.04);
@@ -254,7 +333,8 @@ class Player {
     ctx.restore();
 
     // 다크 판타지 도트 스프라이트 렌더링 (방향 반전 및 걸음 흔들림 적용)
-    const drawn = assets.drawSprite(ctx, 'player', this.x, this.y + bobOffset - 2, 38, this.facing.x, false);
+    const currentSprite = this.spriteKey || 'player';
+    const drawn = assets.drawSprite(ctx, currentSprite, this.x, this.y + bobOffset - 2, 38, this.facing.x, false);
 
     // 폴백 (에셋 로드 전)
     if (!drawn) {
@@ -266,6 +346,30 @@ class Player {
       ctx.fill();
       ctx.strokeStyle = '#8290be';
       ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 빛의 성벽 방벽 쉴드 회전 렌더링
+    if (this.currentShieldStacks > 0) {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.shieldAngle);
+      for (let i = 0; i < this.currentShieldStacks; i++) {
+        const a = (i * Math.PI * 2) / Math.max(1, this.currentShieldStacks);
+        const sx = Math.cos(a) * (this.radius + 12);
+        const sy = Math.sin(a) * (this.radius + 12);
+        ctx.fillStyle = '#38bdf8';
+        ctx.shadowColor = '#38bdf8';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.radius + 12, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
     }

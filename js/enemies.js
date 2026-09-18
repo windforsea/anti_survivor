@@ -352,8 +352,29 @@ class Enemy {
     }
   }
 
+  // 중독 효과 부여 (맹독 비수, 베놈 블리자드)
+  poison(duration = 3.0, dps = 10) {
+    if (this.isDead) return;
+    this.poisonTimer = Math.max(this.poisonTimer || 0, duration);
+    this.poisonDps = Math.max(this.poisonDps || 0, dps);
+  }
+
   update(dt, player, allEnemies, enemyProjectiles) {
     if (this.isDead) return;
+
+    // 중독 도트 피해 처리
+    if (this.poisonTimer > 0) {
+      this.poisonTimer -= dt;
+      this.poisonTickTimer = (this.poisonTickTimer || 0) - dt;
+      if (this.poisonTickTimer <= 0) {
+        this.poisonTickTimer = 0.5;
+        const tickDmg = Math.max(1, Math.round((this.poisonDps || 10) * 0.5));
+        this.takeDamage(tickDmg, null, 0, false);
+        if (window.game) {
+          window.game.addParticles(this.x, this.y, '#22c55e', 3);
+        }
+      }
+    }
 
     // 빙결 상태 시 이동/공격 정지
     if (this.freezeTimer > 0) {
@@ -397,10 +418,9 @@ class Enemy {
     const dy = player.y - this.y;
     const dist = Math.hypot(dx, dy);
 
-    if (dist > 0.1) {
-      let moveDirX = dx / dist;
-      let moveDirY = dy / dist;
-      let curSpeed = this.speed * (this.slowTimer > 0 ? this.slowMult : 1.0);
+    let curSpeed = this.speed * (this.slowTimer > 0 ? (this.slowMult || 0.65) : 1.0);
+    let moveDirX = dist > 0.1 ? (dx / dist) : 0;
+    let moveDirY = dist > 0.1 ? (dy / dist) : 0;
 
       // 1. 박쥐 (bat): Sine-wave 지그재그 출렁임 비행
       if (this.typeKey === 'bat') {
@@ -800,6 +820,35 @@ class BossEnemy extends Enemy {
       this.isCharging = false;
       this.chargeDuration = 0;
       this.chargeDir = { x: 1, y: 0 };
+    } else if (bossStage === 18) {
+      // 18스테이지 보스: 공허의 지네 (Void Wyrm)
+      this.name = '공허의 지네 (Void Wyrm)';
+      this.maxHp = 75000;
+      this.hp = this.maxHp;
+      this.radius = 46;
+      this.color = '#a855f7'; // 아케인 퍼플
+      this.speed = 145;
+      this.damage = 95;
+      this.exp = 5000;
+      this.knockbackImmune = true;
+
+      this.wyrmZigTimer = 0;
+      this.wyrmSpitTimer = 2.0;
+    } else if (bossStage === 20) {
+      // 20스테이지 진 최종 보스: 혼돈의 절대신 (Chaos Overlord)
+      this.name = '혼돈의 절대신 (Chaos Overlord)';
+      this.maxHp = 120000;
+      this.hp = this.maxHp;
+      this.radius = 52;
+      this.color = '#e11d48'; // 절대 크림슨
+      this.speed = 125;
+      this.damage = 120;
+      this.exp = 10000;
+      this.knockbackImmune = true;
+
+      this.phaseTimer = 0;
+      this.teleportTimer = 3.8;
+      this.beamTimer = 2.5;
     }
   }
 
@@ -1096,6 +1145,90 @@ class BossEnemy extends Enemy {
           this.vy = (dy / dist) * this.speed;
         }
       }
+    } else if (this.bossStage === 18) {
+      // [18스테이지 보스: 공허의 지네 - 지그재그 기동 + 공허 화염 탄환 난사]
+      this.wyrmZigTimer += dt * 4.0;
+      this.wyrmSpitTimer -= dt;
+
+      // 지그재그 우회 기동
+      const perpAngle = Math.atan2(dy, dx) + Math.PI / 2;
+      const wave = Math.sin(this.wyrmZigTimer) * 120;
+      const targetAngle = Math.atan2(dy, dx);
+      this.vx = Math.cos(targetAngle) * this.speed + Math.cos(perpAngle) * wave;
+      this.vy = Math.sin(targetAngle) * this.speed + Math.sin(perpAngle) * wave;
+
+      // 2초마다 5갈래 공허 침 탄환 발사
+      if (this.wyrmSpitTimer <= 0) {
+        this.wyrmSpitTimer = 1.9;
+        sounds.playBossCharge();
+        const baseA = Math.atan2(dy, dx);
+        for (let i = -2; i <= 2; i++) {
+          const shotA = baseA + (i * 0.22);
+          bossProjectiles.push(new BossProjectile(
+            this.x, this.y,
+            Math.cos(shotA) * 280, Math.sin(shotA) * 280,
+            9, '#a855f7', 38
+          ));
+        }
+      }
+    } else if (this.bossStage === 20) {
+      // [20스테이지 진 최종 보스: 혼돈의 절대신 - 16방향 나선 탄막 + 빔 레이저 + 텔레포트 절망 폭발]
+      this.phaseTimer += dt;
+      this.teleportTimer -= dt;
+      this.beamTimer -= dt;
+
+      // 1. 상시 16방향 초고속 나선 탄막
+      if (Math.floor(this.phaseTimer * 6) % 2 === 0 && Math.random() < 0.45) {
+        const spiralBase = this.phaseTimer * 3.5;
+        for (let s = 0; s < 4; s++) {
+          const sAngle = spiralBase + (s * Math.PI / 2);
+          bossProjectiles.push(new BossProjectile(
+            this.x, this.y,
+            Math.cos(sAngle) * 310, Math.sin(sAngle) * 310,
+            10, '#f43f5e', 45
+          ));
+        }
+      }
+
+      // 2. 2.5초마다 플레이어 방향 3연사 고속 혼돈 빔 탄환
+      if (this.beamTimer <= 0) {
+        this.beamTimer = 2.4;
+        const beamAngle = Math.atan2(dy, dx);
+        for (let b = 0; b < 3; b++) {
+          setTimeout(() => {
+            if (!this.isDead) {
+              bossProjectiles.push(new BossProjectile(
+                this.x, this.y,
+                Math.cos(beamAngle) * 380, Math.sin(beamAngle) * 380,
+                11, '#fde047', 50
+              ));
+            }
+          }, b * 140);
+        }
+      }
+
+      // 3. 3.8초마다 순간이동 + 16방향 혼돈 폭발
+      if (this.teleportTimer <= 0) {
+        this.teleportTimer = 3.8;
+        sounds.playBossTeleport();
+        const a = Math.random() * Math.PI * 2;
+        this.x = player.x + Math.cos(a) * 220;
+        this.y = player.y + Math.sin(a) * 220;
+
+        for (let i = 0; i < 16; i++) {
+          const burstA = (i / 16) * Math.PI * 2;
+          bossProjectiles.push(new BossProjectile(
+            this.x, this.y,
+            Math.cos(burstA) * 340, Math.sin(burstA) * 340,
+            10, '#e11d48', 48
+          ));
+        }
+      }
+
+      if (dist > 0.1) {
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+      }
     }
 
     this.x += this.vx * dt;
@@ -1131,7 +1264,9 @@ class BossEnemy extends Enemy {
       8: 'boss_colossus',
       10: 'boss_doom',
       12: 'boss_lich',
-      15: 'boss_reaper'
+      15: 'boss_reaper',
+      18: 'boss_wyrm',
+      20: 'boss_overlord'
     };
     const bossKey = bossKeyMap[this.bossStage] || 'boss_reaper';
     const isHit = this.hitFlashTimer > 0;

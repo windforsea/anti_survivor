@@ -119,7 +119,12 @@ class Game {
   }
 
   startRun() {
-    this.restart();
+    this.startRunWithCharacter(this.currentCharacter || 'knight');
+  }
+
+  startRunWithCharacter(charType = 'knight') {
+    this.currentCharacter = charType;
+    this.restart(charType);
   }
 
   goToLobby() {
@@ -128,6 +133,7 @@ class Game {
       this.ui.hideGameOver();
       this.ui.hideVictory();
       this.ui.hidePauseModal();
+      this.ui.hideCharacterSelect();
       this.ui.showChampionBanner(); // 사망 또는 로비 진입 시 챔피언 배너 띄움
       this.ui.showLobby();
     }
@@ -144,7 +150,8 @@ class Game {
     }
   }
 
-  restart() {
+  restart(charType = this.currentCharacter || 'knight') {
+    this.currentCharacter = charType;
     this.gameState = 'PLAYING';
     this.totalElapsedTime = 0;
     this.enemies = [];
@@ -157,7 +164,7 @@ class Game {
     this.freezeTimer = 0;
     this.bombFlashTimer = 0;
 
-    this.player = new Player(0, 0);
+    this.player = new Player(0, 0, charType);
     this.applyUpgradesFromSave(); // 영구 업그레이드 스탯 적용!
     this.obstacleManager.reset();
     this.weaponManager = new WeaponManager(this.player, this);
@@ -166,8 +173,20 @@ class Game {
     if (this.ui) {
       this.ui.hidePauseModal();
       this.ui.hideLobby();
+      this.ui.hideCharacterSelect();
+      this.ui.hideGameOver();
+      this.ui.hideVictory();
     }
-    this.presentStartingWeaponSelection();
+
+    // 선택된 캐릭터의 전용 시그니처 시작 무기 지급
+    const startWeaponMap = {
+      knight: 'sword',
+      mage: 'fireWand',
+      assassin: 'poisonDagger'
+    };
+    const weaponKey = startWeaponMap[charType] || 'sword';
+    this.weaponManager.unlockWeapon(weaponKey);
+    this.lastTime = performance.now();
   }
 
   // 게임 시작 시 3종의 기본 무기 중 1종 선택
@@ -448,9 +467,9 @@ class Game {
           this.pickupItems.push(new PickupItem('gold', safePos.x, safePos.y, goldVal));
         }
 
-        // 사망 파티클
+        // 사망 파티클 및 킬 카운트/흡혈 처리
         this.addParticles(enemy.x, enemy.y, enemy.color, enemy.isBoss ? 24 : 8);
-        this.player.totalKills += 1;
+        this.player.onKillEnemy(enemy);
         sounds.playKill();
         this.enemies.splice(i, 1);
       }

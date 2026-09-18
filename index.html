@@ -14,7 +14,7 @@
     <!-- 인게임 상단 HUD -->
     <div id="hudOverlay">
       <div class="hud-top-bar">
-        <div class="hud-stat-box" id="stageBadge">STAGE 1 / 15</div>
+        <div class="hud-stat-box" id="stageBadge">STAGE 1 / 20</div>
         <div class="hud-stat-box" id="timerBadge">⏱️ 01:00</div>
         <div class="hud-stat-box" id="killBadge">💀 0</div>
         <div class="hud-stat-box" id="goldBadge">🪙 0</div>
@@ -73,7 +73,74 @@
         </div>
 
         <div class="lobby-footer">
-          <button id="lobbyStartBtn" class="lobby-start-btn">⚡ 전장 출격 (게임 시작) ⚡</button>
+          <button id="lobbyStartBtn" class="lobby-start-btn">⚡ 전장 출격 (캐릭터 선택) ⚡</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 캐릭터 선택 모달 -->
+    <div id="characterSelectModal" class="modal-backdrop hidden">
+      <div class="modal-box char-select-box">
+        <div class="char-select-header">
+          <h2 class="modal-title">⚔️ 영웅을 선택하세요 ⚔️</h2>
+          <p class="modal-sub">각 영웅은 고유한 특성과 시작 무기를 지니고 있습니다</p>
+        </div>
+
+        <div class="char-cards-grid">
+          <!-- 1. 방랑 기사 알렉스 -->
+          <div class="char-card" data-char="knight">
+            <div class="char-card-badge">BALANCE</div>
+            <div class="char-avatar-box">
+              <img src="assets/sprites/player.png" alt="방랑 기사" class="char-pixel-img">
+            </div>
+            <h3 class="char-name">방랑 기사 (Alex)</h3>
+            <p class="char-desc">탄탄한 체력과 견고한 갑옷으로 전선을 사수하는 균형형 전사</p>
+            <div class="char-stats-list">
+              <div class="char-stat-row"><span class="stat-lbl">최대 체력</span><span class="stat-val buff">120 (+20)</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">기본 방어력</span><span class="stat-val buff">1 (+1)</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">이동 속도</span><span class="stat-val">220 px/s</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">시작 무기</span><span class="stat-val highlight">🗡️ 철검</span></div>
+            </div>
+            <button class="char-select-btn" data-char="knight">출격하기</button>
+          </div>
+
+          <!-- 2. 화염 마도사 엘레나 -->
+          <div class="char-card" data-char="mage">
+            <div class="char-card-badge fire">FIRE MAGIC</div>
+            <div class="char-avatar-box">
+              <img src="assets/sprites/player_mage.png" alt="화염 마도사" class="char-pixel-img">
+            </div>
+            <h3 class="char-name">화염 마도사 (Elena)</h3>
+            <p class="char-desc">강력한 원소 마법으로 광역 폭쇄 화력을 쏟아붓는 마도학자</p>
+            <div class="char-stats-list">
+              <div class="char-stat-row"><span class="stat-lbl">기본 공격력</span><span class="stat-val buff">+20%</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">쿨타임 단축</span><span class="stat-val buff">-10%</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">최대 체력</span><span class="stat-val debuff">80 (-20)</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">시작 무기</span><span class="stat-val highlight">🔥 화염 지팡이</span></div>
+            </div>
+            <button class="char-select-btn" data-char="mage">출격하기</button>
+          </div>
+
+          <!-- 3. 그림자 암살자 카인 -->
+          <div class="char-card" data-char="assassin">
+            <div class="char-card-badge shadow">SHADOW / CRIT</div>
+            <div class="char-avatar-box">
+              <img src="assets/sprites/player_assassin.png" alt="그림자 암살자" class="char-pixel-img">
+            </div>
+            <h3 class="char-name">그림자 암살자 (Kain)</h3>
+            <p class="char-desc">어둠을 틈타 초고속으로 기동하며 급소를 관통하는 암살자</p>
+            <div class="char-stats-list">
+              <div class="char-stat-row"><span class="stat-lbl">이동 속도</span><span class="stat-val buff">260 (+18%)</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">치명타 확률</span><span class="stat-val buff">20% (+15%)</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">자석 반경</span><span class="stat-val buff">155px (+25px)</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">시작 무기</span><span class="stat-val highlight">🗡️🧪 맹독 비수</span></div>
+            </div>
+            <button class="char-select-btn" data-char="assassin">출격하기</button>
+          </div>
+        </div>
+
+        <div class="char-select-footer">
+          <button id="charSelectBackBtn" class="char-back-btn">⬅️ 로비로 돌아가기</button>
         </div>
       </div>
     </div>

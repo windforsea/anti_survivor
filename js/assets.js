@@ -67,6 +67,21 @@ class AssetManager {
       icon_crown: 'assets/sprites/icon_crown.png',
       miniSlime: 'assets/sprites/miniSlime.png',
 
+      // 신규 캐릭터 2종
+      player_mage: 'assets/sprites/player_mage.png',
+      player_assassin: 'assets/sprites/player_assassin.png',
+
+      // 신규 무기 및 패시브 아이콘
+      icon_poisondagger: 'assets/sprites/icon_poisondagger.png',
+      icon_frostorb: 'assets/sprites/icon_frostorb.png',
+      icon_venomblizzard: 'assets/sprites/icon_venomblizzard.png',
+      icon_vampire: 'assets/sprites/icon_vampire.png',
+      icon_shield: 'assets/sprites/icon_shield.png',
+
+      // 신규 보스 2종
+      boss_wyrm: 'assets/sprites/boss_wyrm.png',
+      boss_overlord: 'assets/sprites/boss_overlord.png',
+
       // 특수 드랍 아이템
       item_magnet: 'assets/sprites/item_magnet.png',
       item_bomb: 'assets/sprites/item_bomb.png',

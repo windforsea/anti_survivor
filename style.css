@@ -1331,3 +1331,202 @@ body, #gameContainer, canvas {
   border-color: #38bdf8;
 }
 
+/* ================= 캐릭터 선택 모달 및 카드 스타일 ================= */
+.char-select-box {
+  max-width: 860px;
+  width: 95%;
+  background: rgba(15, 23, 42, 0.95);
+  border: 2px solid #6366f1;
+  box-shadow: 0 0 35px rgba(99, 102, 241, 0.4), inset 0 0 20px rgba(15, 23, 42, 0.8);
+  padding: 24px 20px;
+}
+
+.char-select-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.char-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.char-card {
+  position: relative;
+  background: rgba(30, 41, 59, 0.75);
+  border: 2px solid #475569;
+  border-radius: 14px;
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.char-card:hover {
+  transform: translateY(-6px);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 24px rgba(56, 189, 248, 0.35);
+  background: rgba(30, 41, 59, 0.95);
+}
+
+.char-card-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+.char-card-badge.fire {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border-color: #ef4444;
+}
+
+.char-card-badge.shadow {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border-color: #a855f7;
+}
+
+.char-avatar-box {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(15, 23, 42, 0.9) 70%);
+  border: 2px solid #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 14px;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.3);
+}
+
+.char-pixel-img {
+  width: 52px;
+  height: 52px;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.6));
+  animation: charBounce 1.8s infinite ease-in-out;
+}
+
+@keyframes charBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.char-name {
+  font-size: 18px;
+  color: #f8fafc;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.char-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-bottom: 14px;
+  min-height: 34px;
+}
+
+.char-stats-list {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.65);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.char-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.char-stat-row .stat-lbl {
+  color: #64748b;
+}
+
+.char-stat-row .stat-val {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.char-stat-row .stat-val.buff {
+  color: #4ade80;
+}
+
+.char-stat-row .stat-val.debuff {
+  color: #f87171;
+}
+
+.char-stat-row .stat-val.highlight {
+  color: #fde047;
+}
+
+.char-select-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  transition: all 0.2s ease;
+}
+
+.char-select-btn:hover {
+  background: linear-gradient(135deg, #6366f1 0%, #60a5fa 100%);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.6);
+  transform: translateY(-2px);
+}
+
+.char-select-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.char-back-btn {
+  background: rgba(51, 65, 85, 0.7);
+  border: 1px solid #64748b;
+  color: #cbd5e1;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.char-back-btn:hover {
+  background: #475569;
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .char-cards-grid {
+    grid-template-columns: 1fr;
+    max-height: 55vh;
+    overflow-y: auto;
+  }
+}
+

@@ -22,7 +22,7 @@ class CardManager {
 
   // 게임 시작 시 3종의 기본 무기 중 1개를 선택 (패시브 제외)
   generateStartingWeaponCards() {
-    const starterKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand'];
+    const starterKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb'];
     const weaponMeta = {
       sword: { name: '철검', icon: '🗡️', iconKey: 'icon_sword', desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.' },
       axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냅니다.' },
@@ -34,7 +34,9 @@ class CardManager {
       holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.' },
       sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_sanctuary', desc: '플레이어를 감싸는 원형 결계로 적들에게 매초 도트 피해를 입힙니다.' },
       lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂아 반경 범위 피해를 입힙니다.' },
-      fireWand: { name: '화염 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 광역 피해를 입힙니다.' }
+      fireWand: { name: '화염 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 광역 피해를 입힙니다.' },
+      poisonDagger: { name: '맹독 비수', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 맹독 비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.' },
+      frostOrb: { name: '빙결 보주', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동을 발산하여 감속시키고 피해를 입힙니다.' }
     };
 
     const shuffled = [...starterKeys].sort(() => 0.5 - Math.random());
@@ -64,7 +66,7 @@ class CardManager {
   generateCards() {
     const cardPool = [];
 
-    // 진화 링크 힌트 헬퍼: 5대 진화 조합 안내 (주 5렙 + 부 5렙 조건)
+    // 진화 링크 힌트 헬퍼: 6대 진화 조합 안내 (주 5렙 + 부 5렙 조건)
     const getEvolutionHint = (weaponKey) => {
       const evoPairs = {
         // [진화 1] 성역 + 성수 = 천상의 성역
@@ -87,7 +89,11 @@ class CardManager {
 
         // [진화 5] 산탄 총포 + 번개 반지 = 테슬라 뇌전포
         shotgun: { partner: 'lightningRing', partnerKor: '번개 반지', evoId: 'teslaShotgun', evoName: '테슬라 뇌전포', evoIcon: '⚡💥' },
-        lightningRing: { partner: 'shotgun', partnerKor: '산탄 총포', evoId: 'teslaShotgun', evoName: '테슬라 뇌전포', evoIcon: '⚡💥' }
+        lightningRing: { partner: 'shotgun', partnerKor: '산탄 총포', evoId: 'teslaShotgun', evoName: '테슬라 뇌전포', evoIcon: '⚡💥' },
+
+        // [진화 6] 맹독 비수 + 빙결 보주 = 베놈 블리자드
+        poisonDagger: { partner: 'frostOrb', partnerKor: '빙결 보주', evoId: 'venomBlizzard', evoName: '베놈 블리자드', evoIcon: '❄️🧪' },
+        frostOrb: { partner: 'poisonDagger', partnerKor: '맹독 비수', evoId: 'venomBlizzard', evoName: '베놈 블리자드', evoIcon: '❄️🧪' }
       };
 
       const pair = evoPairs[weaponKey];
@@ -168,13 +174,16 @@ class CardManager {
       acidPool: { name: '성수', type: '도트', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
       lightningRing: { name: '번개 반지', type: '원거리', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂음' },
       fireWand: { name: '화염 지팡이', type: '원거리', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 폭발 화염구를 발사' },
+      poisonDagger: { name: '맹독 비수', type: '원거리', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 맹독 비수를 쾌속 연사하며 피격된 적에게 중독 피해 부여' },
+      frostOrb: { name: '빙결 보주', type: '원거리', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동 발산 및 감속' },
 
-      // 5대 진화 무기 메타
+      // 6대 진화 무기 메타
       heavenlySanctuary: { name: '천상의 성역', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 적 빙결(동결) 효과' },
       morningstarTempest: { name: '모닝스타 선풍', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '채찍 전후방 교차 타격 및 첫 적중 시 4방향 관통 표창 방출' },
       apocalypseComet: { name: '멸망의 혜성', type: '원거리', icon: '☄️🔥', iconKey: 'icon_apocalypsecomet', desc: '유도 화염 혜성 연사 및 헬파이어 연쇄 폭발' },
       slayerBladeStorm: { name: '학살자의 폭풍검', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_slayerbladestorm', desc: '초고속 상시 궤도 회전 대검·도끼 근접 방쇄' },
-      teslaShotgun: { name: '테슬라 뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '고전압 뇌전 산탄 일제 사격 및 체인 라이트닝·낙뢰 폭격' }
+      teslaShotgun: { name: '테슬라 뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '고전압 뇌전 산탄 일제 사격 및 체인 라이트닝·낙뢰 폭격' },
+      venomBlizzard: { name: '베놈 블리자드', type: '원거리', icon: '❄️🧪', iconKey: 'icon_venomblizzard', desc: '거대 서리독 구체 전진 파동 및 8방향 독성 얼음 파편 폭발 방출' }
     };
 
     if (ownedWeaponsCount < 6) {
@@ -402,6 +411,45 @@ class CardManager {
       }
     }
 
+    // [진화 6] 베놈 블리자드 = 맹독 비수(5Lv) + 빙결 보주(5Lv)
+    const wDagger = this.weaponManager.weapons['poisonDagger'];
+    const wFrost = this.weaponManager.weapons['frostOrb'];
+    const hasVenomBlizzard = !!this.weaponManager.weapons['venomBlizzard'];
+
+    if (wDagger && wFrost && !hasVenomBlizzard) {
+      const daggerLv = this.weaponManager.getLevel(wDagger);
+      const frostLv = this.weaponManager.getLevel(wFrost);
+
+      if (daggerLv >= 5 && frostLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_venom_blizzard',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 베놈 블리자드',
+          icon: '❄️🧪',
+          iconKey: 'icon_venomblizzard',
+          desc: '맹독 비수와 빙결 보주를 합성 진화합니다! 거대한 서리독 구체를 발사하여 냉기 파동을 방출하고 8방향 독성 얼음 파편으로 폭발합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '맹독 비수(5Lv) + 빙결 보주(5Lv) 합성 -> [베놈 블리자드 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('poisonDagger');
+              this.weaponManager.consumedWeapons.add('frostOrb');
+            }
+            delete this.weaponManager.weapons['poisonDagger'];
+            delete this.weaponManager.weapons['frostOrb'];
+            this.weaponManager.unlockWeapon('venomBlizzard');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#10b981', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#38bdf8', 50);
+            }
+          }
+        });
+      }
+    }
+
     // 3. 보유 중인 무기별 강화 카드 (기본 무기 및 진화 무기 모두 1~5레벨 업그레이드 지원)
     for (const key in this.weaponManager.weapons) {
       const w = this.weaponManager.weapons[key];
@@ -517,6 +565,15 @@ class CardManager {
             countEffect = '투사체 +1개';
           } else if (key === 'apocalypseComet') {
             countDesc = `동시에 연사 투하되는 유도 화염 혜성 개수를 늘립니다.`;
+            countEffect = '투사체 +1개';
+          } else if (key === 'poisonDagger') {
+            countDesc = `동시에 투척하는 맹독 비수 개수를 늘립니다.`;
+            countEffect = '투사체 +1개';
+          } else if (key === 'frostOrb') {
+            countDesc = `동시에 발사하는 빙결 보주 개수를 늘립니다.`;
+            countEffect = '투사체 +1개';
+          } else if (key === 'venomBlizzard') {
+            countDesc = `동시에 발사하는 서리독 구체 개수를 늘립니다.`;
             countEffect = '투사체 +1개';
           }
         }
@@ -678,6 +735,35 @@ class CardManager {
         maxLevel: 5,
         apply: () => {
           this.player.expMult = (this.player.expMult || 1.0) + 0.20;
+        }
+      },
+      {
+        id: 'stat_vampire',
+        title: '흡혈의 송곳니',
+        icon: '🧛‍♂️',
+        iconKey: 'icon_vampire',
+        desc: '적 처치 시 피의 정수를 흡수하여 일정 확률로 체력을 회복합니다.',
+        effectText: '처치 시 체력 +1 회복 확률 +2%',
+        maxLevel: 5,
+        apply: () => {
+          this.player.vampireChance = (this.player.vampireChance || 0) + (this.player.vampireChance === 0 ? 0.03 : 0.02);
+        }
+      },
+      {
+        id: 'stat_shield',
+        title: '빛의 성벽',
+        icon: '🛡️✨',
+        iconKey: 'icon_shield',
+        desc: '주기적으로 1회의 피격을 100% 무효화하는 에너지 방벽을 생성합니다.',
+        effectText: '방벽 쿨타임 -2.5초 (최대 2스택)',
+        maxLevel: 5,
+        apply: () => {
+          this.player.maxShieldStacks = 2;
+          if (this.player.currentShieldStacks === 0) {
+            this.player.currentShieldStacks = 1;
+          }
+          const curLv = (this.player.ownedPassives['stat_shield']?.level || 0) + 1;
+          this.player.shieldCooldown = Math.max(8.0, 18.0 - (curLv - 1) * 2.5);
         }
       }
     ];

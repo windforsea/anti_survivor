@@ -1,6 +1,6 @@
 # 🎨 에셋 및 스프라이트 명세 (Assets & Sprites)
 
-Anti Survivors의 70종 다크 판타지 도트 픽셀 아트 스프라이트 리소스 및 생성기(`generate_assets.js`) 가이드입니다.
+Anti Survivors의 79종 다크 판타지 도트 픽셀 아트 스프라이트 리소스 및 생성기(`generate_assets.js`) 가이드입니다.
 
 ---
 
@@ -10,25 +10,27 @@ Anti Survivors의 70종 다크 판타지 도트 픽셀 아트 스프라이트 �
 
 ```text
 assets/sprites/
-├── 👤 플레이어 (1종)
+├── 👤 플레이어 (3종)
 ├── 👾 일반 몬스터 (15종) + 분열체 (1종)
-├── 👑 보스 몬스터 (7종)
-├── 🎴 무기/패시브 카드 아이콘 (33종)
+├── 👑 보스 몬스터 (9종)
+├── 🎴 무기/패시브 카드 아이콘 (38종)
 ├── 📦 필드 아이템 & 장애물 (6종)
 ├── 💥 공격 이펙트 & 투사체 (6종)
 └── 🧱 배경 지형 타일 (1종)
-총 70종 스프라이트
+총 79종 스프라이트
 ```
 
 ---
 
-## 📑 70종 스프라이트 분류 명세표
+## 📑 79종 스프라이트 분류 명세표
 
-### 1. 플레이어 & 몬스터 스프라이트 (23종)
+### 1. 플레이어 & 몬스터 스프라이트 (27종)
 
 | 키값 / 파일명 | 용도 | 설명 |
 | :--- | :--- | :--- |
-| `player.png` | 플레이어 캐릭터 | 망토를 두른 다크 판타지 용사 |
+| `player.png` | 플레이어: 방랑 기사 | 망토와 강철 갑옷을 두른 균형형 전사 |
+| `player_mage.png` | 플레이어: 화염 마도사 | 진홍빛 로브와 마법봉을 든 원소 마도학자 |
+| `player_assassin.png` | 플레이어: 그림자 암살자 | 흑단 가면에 쌍단검을 든 고속 암살자 |
 | `bat.png` | 박쥐 | 보랏빛 날개를 펄럭이는 공중 박쥐 |
 | `slime.png` | 슬라임 | 녹색 반투명 젤리형 지상 몬스터 |
 | `miniSlime.png` | 아기 슬라임 | 슬라임 처치 시 2마리로 분열되는 소형체 |
@@ -50,11 +52,13 @@ assets/sprites/
 | `boss_colossus.png` | 불멸의 골렘 (8 Stg) | 넉백 면역 및 대지진을 일으키는 거대 골렘 |
 | `boss_doom.png` | 파멸의 군주 (10 Stg) | 텔레포트, 돌진, 8방향 탄막을 복합 구사하는 군주 |
 | `boss_lich.png` | 심연의 리치 (12 Stg) | 빙결 탄환과 프로스트 노바를 발산하는 언데드 군주 |
-| `boss_reaper.png` | 종말의 사신 (15 Stg) | **최종 보스**: 암흑 나선검기, 절망 폭발, 낫 돌진 |
+| `boss_reaper.png` | 종말의 사신 (15 Stg) | **중간 관문 보스**: 암흑 나선검기, 절망 폭발, 낫 돌진 |
+| `boss_wyrm.png` | 공허의 지네 (18 Stg) | **심연 보스**: 지그재그 기동과 5방향 맹독 탄환 |
+| `boss_overlord.png` | 혼돈의 절대신 (20 Stg) | **진 최종 보스**: 16방향 나선 탄막, 레이저, 순간폭발 |
 
 ---
 
-### 2. 카드 및 인벤토리 아이콘 스프라이트 (33종)
+### 2. 카드 및 인벤토리 아이콘 스프라이트 (38종)
 
 #### [기본 무기 아이콘]
 - `icon_sword.png`: 철검
@@ -67,6 +71,8 @@ assets/sprites/
 - `icon_sanctuary.png`: 성역
 - `icon_lightning.png`: 번개 반지
 - `icon_firewand.png`: 화염 지팡이
+- `icon_poisondagger.png`: 맹독 비수 (신규)
+- `icon_frostorb.png`: 빙결 보주 (신규)
 - `icon_dagger.png`: 투척 단검 (예비/특수)
 - `icon_acid.png`: 부식성 산액 (예비/특수)
 - `icon_holyshotgun.png`: 성스러운 산탄 (예비/특수)
@@ -77,6 +83,7 @@ assets/sprites/
 - `icon_apocalypsecomet.png`: 멸망의 혜성 (화염 지팡이 + 마법 화살)
 - `icon_slayerbladestorm.png`: 학살자의 폭풍검 (철검 + 도끼)
 - `icon_teslashotgun.png`: 테슬라 뇌전포 (산탄 총포 + 번개 반지)
+- `icon_venomblizzard.png`: 베놈 블리자드 (맹독 비수 + 빙결 보주, 신규)
 - `icon_arcanesanctuary.png`: 비전 성역 (파생/바리에이션)
 - `icon_plasmatempest.png`: 플라즈마 선풍 (파생/바리에이션)
 
@@ -92,6 +99,8 @@ assets/sprites/
 - `icon_proj_count.png`: 복제의 오브 (투사체/연속공격 수량)
 - `icon_clover.png`: 행운의 클로버 (치명타/드랍률)
 - `icon_crown.png`: 지혜의 왕관 (경험치 보너스)
+- `icon_vampire.png`: 흡혈의 송곳니 (흡혈 패시브, 신규)
+- `icon_shield.png`: 빛의 성벽 (방벽 보호막 패시브, 신규)
 
 ---
 

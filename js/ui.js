@@ -25,6 +25,10 @@ class UIManager {
     this.gameOverLobbyBtn = document.getElementById('gameOverLobbyBtn');
     this.victoryLobbyBtn = document.getElementById('victoryLobbyBtn');
 
+    // 캐릭터 선택 모달
+    this.characterSelectModal = document.getElementById('characterSelectModal');
+    this.charSelectBackBtn = document.getElementById('charSelectBackBtn');
+
     // 명예의 전당 챔피언 배너
     this.championBanner = document.getElementById('championBanner');
     this.champName = document.getElementById('champName');
@@ -196,13 +200,45 @@ class UIManager {
       });
     }
 
-    // 로비 출격 버튼
+    // 로비 출격 버튼 -> 캐릭터 선택 모달 열기
     if (this.lobbyStartBtn) {
       this.lobbyStartBtn.addEventListener('click', () => {
         this.hideLobby();
-        this.game.startRun();
+        this.showCharacterSelect();
       });
     }
+
+    // 캐릭터 선택 모달 뒤로가기 버튼 -> 로비 복귀
+    if (this.charSelectBackBtn) {
+      this.charSelectBackBtn.addEventListener('click', () => {
+        this.hideCharacterSelect();
+        this.showLobby();
+      });
+    }
+
+    // 캐릭터 카드 및 선택 버튼 클릭 이벤트 바인딩
+    const charCards = document.querySelectorAll('.char-card');
+    charCards.forEach(card => {
+      const charType = card.getAttribute('data-char');
+      const btn = card.querySelector('.char-select-btn');
+
+      const selectHero = () => {
+        this.triggerHaptic(30);
+        sounds.playLevelUp();
+        this.hideCharacterSelect();
+        this.game.startRunWithCharacter(charType);
+      };
+
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectHero();
+        });
+      }
+      card.addEventListener('click', () => {
+        selectHero();
+      });
+    });
 
     // 로비로 이동 버튼들
     if (this.gameOverLobbyBtn) {
@@ -597,7 +633,7 @@ class UIManager {
   showVictory(stats) {
     this.victoryStats.innerHTML = `
       <div class="stat-row"><span>클리어 시간</span><strong>${stats.time}</strong></div>
-      <div class="stat-row"><span>달성 스테이지</span><strong>Stage 15 (Hell All Clear)</strong></div>
+      <div class="stat-row"><span>달성 스테이지</span><strong>Stage 20 (Chaos All Clear)</strong></div>
       <div class="stat-row"><span>최종 레벨</span><strong>Lv. ${stats.level}</strong></div>
       <div class="stat-row"><span>처치한 마물</span><strong>${stats.kills} 마리</strong></div>
       <div class="stat-row"><span>획득 금화</span><strong style="color: #facc15;">🪙 +${stats.gold || 0} G</strong></div>
@@ -671,6 +707,19 @@ class UIManager {
       this.championSubmitSuccess.classList.remove('hidden');
     }
     sounds.playLevelUp();
+  }
+
+  // 캐릭터 선택 모달 표시
+  showCharacterSelect() {
+    if (this.characterSelectModal) {
+      this.characterSelectModal.classList.remove('hidden');
+    }
+  }
+
+  hideCharacterSelect() {
+    if (this.characterSelectModal) {
+      this.characterSelectModal.classList.add('hidden');
+    }
   }
 
   // 로비 모달 노출 및 상점 렌더링

@@ -1514,6 +1514,186 @@ const SPRITES = {
     "..KTTWWKKTWWK...",
     "...KTTK..KTTK...",
     "....KK....KK...."
+  ],
+
+  // [신규 캐릭터 1] 화염 마도사 엘레나 (player_mage)
+  player_mage: [
+    ".....KKKKK......",
+    "....KRRRRRK.....",
+    "...KRRYYYRRK....",
+    "...KRPPPPRRK....",
+    "...KWWWWWWPK....",
+    "....KKDDKKK.....",
+    "...KPPCCPPK.....",
+    "..KPPCCCCPPK....",
+    "..KPPCCCCPPK....",
+    "..KPDDDDDPKK....",
+    "...KPDDDDPK.....",
+    "...KPPKKPPK.....",
+    "...KPPKKPPK.....",
+    "...KRRKKRRK.....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
+  ],
+
+  // [신규 캐릭터 2] 그림자 암살자 카인 (player_assassin)
+  player_assassin: [
+    ".....KKKKK......",
+    "....KKDDDKK.....",
+    "...KKDYYYDKK....",
+    "...KKKKKKKKK....",
+    "...KKCCCCCCK....",
+    "....KKDDKKK.....",
+    "...KKDDKKDK.....",
+    "..KKDDDDDDKK....",
+    "..KKDDDDDDKK....",
+    "..KKDDKKDDKK....",
+    "...KKDDDDDKK....",
+    "...KKDKKDKKK....",
+    "...KKDKKDKKK....",
+    "...KKMKKMKKK....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
+  ],
+
+  // [신규 기본 무기 1] 맹독 비수 아이콘 (icon_poisondagger)
+  icon_poisondagger: [
+    "............KK..",
+    "...........KSAK.",
+    "..........KSAK..",
+    ".........KSAK...",
+    "........KSAK....",
+    ".......KSAK.....",
+    "......KSAK......",
+    ".....KSAK.......",
+    "..KKKSAK........",
+    ".KDDSAK.........",
+    "KDDDSAK.........",
+    ".KDDKK..........",
+    "..KK.KK.........",
+    "......KK........",
+    ".......KK.......",
+    "........KK......"
+  ],
+
+  // [신규 기본 무기 2] 빙결 보주 아이콘 (icon_frostorb)
+  icon_frostorb: [
+    ".....KKKKKK.....",
+    "...KKTTWWTTKK...",
+    "..KTTWWWWWWTTK..",
+    ".KTWWTTBBTTWWTTK",
+    ".KTWWTBBBBTWWTTK",
+    "KTWWTTBBBBTTWWTT",
+    "KTTTTBBBBBBTTTTK",
+    "KTWWTTBBBBTTWWTT",
+    "KTWWTTBBBBTTWWTT",
+    "KTTTTBBBBBBTTTTK",
+    "KTWWTTBBBBTTWWTT",
+    ".KTWWTBBBBTWWTTK",
+    ".KTWWTTBBTTWWTTK",
+    "..KTTWWWWWWTTK..",
+    "...KKTTWWTTKK...",
+    ".....KKKKKK....."
+  ],
+
+  // [신규 진화 무기 6] 베놈 블리자드 아이콘 (icon_venomblizzard)
+  icon_venomblizzard: [
+    ".....KKKKKK.....",
+    "...KKSATTTASKK..",
+    "..KSAWWWWWWASK..",
+    ".KSAWTTAATTWASK.",
+    ".KSAWTAASATWASK.",
+    "KSAWTTAASATTWASK",
+    "KSATTSSAASSTTTAK",
+    "KSAWTTAASATTWASK",
+    "KSAWTTAASATTWASK",
+    "KSATTSSAASSTTTAK",
+    "KSAWTTAASATTWASK",
+    ".KSAWTAASATWASK.",
+    ".KSAWTTAATTWASK.",
+    "..KSAWWWWWWASK..",
+    "...KKSATTTASKK..",
+    ".....KKKKKK....."
+  ],
+
+  // [신규 패시브 1] 흡혈의 송곳니 아이콘 (icon_vampire)
+  icon_vampire: [
+    "....KK....KK....",
+    "...KRCCK..KRCCK...",
+    "..KRCCCCKKRCCCCK..",
+    ".KRCCCCCCKRCCCCCCK",
+    ".KRCCWWCCKRCCWWCCK",
+    "KRCCCWWCCKRCCCWWCK",
+    "KRCCCWWCCKRCCCWWCK",
+    "KRCCCWWCCKRCCCWWCK",
+    "KRCCCCWCCKRCCCCWCK",
+    ".KRCCCCWKRCCCCWK.",
+    ".KRCCCCKKRCCCCK..",
+    "..KRCCCKKRCCCK...",
+    "...KRCCKKRCCK....",
+    "....KRCKKRCK.....",
+    ".....KK..KK.....",
+    "................"
+  ],
+
+  // [신규 패시브 2] 빛의 성벽 방벽 쉴드 아이콘 (icon_shield)
+  icon_shield: [
+    "KKKKKKKKKKKKKKKK",
+    "KTTTTTTTTTTTTTTK",
+    "KTWWWWWWWWWWWWTT",
+    "KTWWYYYYYYYYWWTT",
+    "KTWWYYYYYYYYWWTT",
+    "KTWWYYKKKKYYWWTT",
+    "KTWWYYKKKKYYWWTT",
+    "KTWWYYKKKKYYWWTT",
+    ".KTWYYYYYYYYWWK.",
+    ".KTWWYYYYYYWWK..",
+    "..KTWWYYYYWWK...",
+    "...KTWWYYWWK....",
+    "....KTWWWWK.....",
+    ".....KTTWK......",
+    "......KTK.......",
+    ".......K........"
+  ],
+
+  // [신규 18 Stg 보스] 공허의 지네 (boss_wyrm)
+  boss_wyrm: [
+    "....KKKKKKKK....",
+    "...KPVVYYVVPK...",
+    "..KPVVYYYYVVPK..",
+    ".KPVYYYYYYYYVPK.",
+    ".KPVYYKKKKYYVPK.",
+    "KPVVYYKPPKYYVVPK",
+    "KPVVYYKPPKYYVVPK",
+    "KPVVYYKKKKYYVVPK",
+    "KPVVYYYYYYYYVVPK",
+    ".KPVVVYYYYVVVPK.",
+    "..KPPVVVVVVPPK..",
+    "...KKPPVVPPKK...",
+    "....KKKPPKKK....",
+    ".....KKPPKK.....",
+    "......KPPK......",
+    ".......KK......."
+  ],
+
+  // [신규 20 Stg 진 최종 보스] 혼돈의 절대신 (boss_overlord)
+  boss_overlord: [
+    "..KK........KK..",
+    ".KYYK......KYYK.",
+    "KYYYYKKKKKKYYYYK",
+    "KYYYYKCCCCKYYYYK",
+    ".KYYKCWWWWCKYYK.",
+    "..KKCWWYYWWCKK..",
+    "...KCWWYYWWCK...",
+    "...KCWWWWWWCK...",
+    "..KKCCCDDCCCKK..",
+    ".KTTCCCCDDCCCKTK",
+    "KTTTCCCCCCCCCTTK",
+    "KTTKCCCCCCCCKTTK",
+    ".KK.KCCCCCCK.KK.",
+    "....KCCCCCCK....",
+    "...KDKKKKKKDK...",
+    "...KK......KK..."
   ]
 };
 

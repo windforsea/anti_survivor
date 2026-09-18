@@ -321,6 +321,63 @@ class WeaponManager {
         cooldownTimer: 0
       },
 
+      // [신규 기본 무기 1] 맹독 비수 (poisonDagger)
+      poisonDagger: {
+        id: 'poisonDagger',
+        name: '맹독 비수',
+        icon: '🗡️🧪',
+        iconSprite: 'icon_poisondagger',
+        desc: '바라보는 방향으로 독이 묻은 비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.',
+        baseCooldown: 0.38,
+        baseDamage: 18,
+        baseCount: 1,
+        baseArea: 1.0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 기본 무기 2] 빙결 보주 (frostOrb)
+      frostOrb: {
+        id: 'frostOrb',
+        name: '빙결 보주',
+        icon: '❄️🔮',
+        iconSprite: 'icon_frostorb',
+        desc: '전방으로 천천히 전진하며 주변 적들에게 지속적인 냉기 파동을 발산하여 감속시키고 피해를 입힙니다.',
+        baseCooldown: 2.20,
+        baseDamage: 24,
+        baseCount: 1,
+        baseArea: 1.0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [진화 6] 베놈 블리자드 (venomBlizzard = 맹독 비수 5Lv + 빙결 보주 5Lv, 추천안 C 2단계 원거리 발사형)
+      venomBlizzard: {
+        id: 'venomBlizzard',
+        name: '베놈 블리자드',
+        icon: '❄️🧪',
+        iconSprite: 'icon_venomblizzard',
+        desc: '거대한 서리독 구체를 전방으로 발사합니다. 구체는 전진하며 초당 2회 냉기 파동을 방출하고, 수명 종료 시 8방향으로 독성 얼음 파편을 폭발 방출합니다.',
+        baseCooldown: 1.80,
+        baseDamage: 45,
+        baseCount: 1,
+        baseArea: 1.25,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        speedProjLevel: 0,
+        cooldownTimer: 0
+      },
+
       // 이전 진화 무기 호환용
       spinningAxe: { id: 'slayerBladeStorm' },
       bladeWhip: { id: 'morningstarTempest' },
@@ -1088,8 +1145,38 @@ class WeaponManager {
           p.exploded = true;
           this.triggerFireSplash(p, enemies, obstacles);
         }
+        if (p.type === 'venomBlizzardOrb' && !p.exploded) {
+          p.exploded = true;
+          this.triggerVenomBlizzardShards(p.x, p.y, p.area, p.damage);
+        }
         this.projectiles.splice(i, 1);
         continue;
+      }
+
+      // 빙결 보주 & 베놈 블리자드 보주 비행 중 주기적 냉기 파동 발산
+      if (p.type === 'frostOrb' || p.type === 'venomBlizzardOrb') {
+        p.pulseTimer = (p.pulseTimer || 0) - dt;
+        if (p.pulseTimer <= 0) {
+          p.pulseTimer = p.type === 'venomBlizzardOrb' ? 0.30 : 0.35;
+          const pulseRadius = (p.type === 'venomBlizzardOrb' ? 125 : 85) * (p.area || 1.0);
+          for (const enemy of enemies) {
+            if (enemy.isDead) continue;
+            const dist = Math.hypot(enemy.x - p.x, enemy.y - p.y);
+            if (dist <= pulseRadius + enemy.radius) {
+              enemy.takeDamage(p.damage, null, 0);
+              if (p.type === 'venomBlizzardOrb') {
+                enemy.freeze(1.5);
+                enemy.poison(3.0, Math.round(p.damage * 0.5));
+              } else {
+                enemy.slowTimer = 1.5;
+                enemy.slowMult = 0.65;
+              }
+            }
+          }
+          if (window.game) {
+            window.game.addParticles(p.x, p.y, p.color, 4);
+          }
+        }
       }
 
       // 유도 로직 (마법 화살 & 멸망의 혜성 & 비전 미사일)
@@ -1130,6 +1217,11 @@ class WeaponManager {
           const kbDir = { x: p.vx / (Math.hypot(p.vx, p.vy) || 1), y: p.vy / (Math.hypot(p.vx, p.vy) || 1) };
           enemy.takeDamage(p.damage, kbDir, p.knockbackForce);
           sounds.playHit();
+
+          // 맹독 비수 및 독 파편 적중 시 중독 부여
+          if (p.type === 'poisonDagger' || p.type === 'poisonShard') {
+            enemy.poison(3.0, Math.round(p.damage * 0.45));
+          }
 
           if (p.splashRadius > 0) {
             if (p.type === 'fireball' || p.type === 'apocalypseComet') {
@@ -1558,6 +1650,159 @@ class WeaponManager {
         this.executeFireWand(w, enemies);
         break;
       }
+
+      case 'poisonDagger': {
+        this.executePoisonDagger(w, enemies);
+        break;
+      }
+
+      case 'frostOrb': {
+        this.executeFrostOrb(w, enemies);
+        break;
+      }
+
+      case 'venomBlizzard': {
+        this.executeVenomBlizzard(w, enemies);
+        break;
+      }
+    }
+  }
+
+  // 11. 맹독 비수 (poisonDagger): 플레이어 조준 방향으로 쾌속 직진 비수 연사 및 중독
+  executePoisonDagger(w, enemies) {
+    sounds.playSlash();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.20) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 550 * projSpeedBonus;
+    const baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.14 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'poisonDagger',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 7 * area,
+        area: area,
+        damage: dmg,
+        pierce: 2 + Math.floor((w.countLevel || 0) / 2),
+        knockbackForce: 110,
+        life: 0.65,
+        color: '#22c55e',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // 12. 빙결 보주 (frostOrb): 천천히 전진하며 주변 지속 냉기 파동 발산 및 감속
+  executeFrostOrb(w, enemies) {
+    sounds.playMagic();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.20) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 130 * projSpeedBonus;
+
+    const closestEnemy = this.getClosestEnemy(enemies);
+    let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+    if (closestEnemy) {
+      baseAngle = Math.atan2(closestEnemy.y - this.player.y, closestEnemy.x - this.player.x);
+    }
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.24 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'frostOrb',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 14 * area,
+        area: area,
+        damage: dmg,
+        pierce: 9999,
+        knockbackForce: 50,
+        pulseTimer: 0,
+        life: 3.2,
+        color: '#38bdf8',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // [진화 6] 베놈 블리자드 (venomBlizzard: 추천안 C 2단계 원거리 발사형)
+  executeVenomBlizzard(w, enemies) {
+    sounds.playMagic();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.20) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 145 * projSpeedBonus;
+
+    const closestEnemy = this.getClosestEnemy(enemies);
+    let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+    if (closestEnemy) {
+      baseAngle = Math.atan2(closestEnemy.y - this.player.y, closestEnemy.x - this.player.x);
+    }
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.22 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'venomBlizzardOrb',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 20 * area,
+        area: area,
+        damage: dmg,
+        pierce: 9999,
+        knockbackForce: 60,
+        pulseTimer: 0,
+        life: 2.8,
+        color: '#10b981',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // 베놈 블리자드 2단계: 8방향 서리독 파편 폭발
+  triggerVenomBlizzardShards(x, y, area, damage) {
+    sounds.playSlash();
+    if (window.game) {
+      window.game.addParticles(x, y, '#10b981', 25);
+      window.game.addParticles(x, y, '#38bdf8', 25);
+    }
+    const shardSpeed = 460;
+    const shardDmg = Math.round(damage * 1.35);
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      this.projectiles.push({
+        type: 'poisonShard',
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * shardSpeed,
+        vy: Math.sin(angle) * shardSpeed,
+        radius: 6 * area,
+        area: area,
+        damage: shardDmg,
+        pierce: 3,
+        knockbackForce: 130,
+        life: 0.55,
+        color: '#34d399',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
     }
   }
 
@@ -1861,6 +2106,79 @@ class WeaponManager {
         ctx.fillStyle = '#38bdf8';
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'poisonDagger') {
+        // 맹독 비수 렌더링 (녹색 독성 안광 + 고속 직진 비수)
+        const angle = Math.atan2(p.vy, p.vx);
+        const sz = Math.round(18 * projArea);
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(angle);
+        ctx.fillStyle = '#22c55e';
+        ctx.shadowColor = '#4ade80';
+        ctx.shadowBlur = 12;
+        ctx.fillRect(-sz / 2, -3, sz, 6);
+        ctx.fillStyle = '#f0fdf4';
+        ctx.fillRect(-sz / 2 + 2, -1.5, sz - 4, 3);
+        ctx.restore();
+      } else if (p.type === 'frostOrb') {
+        // 빙결 보주 렌더링 (시안빛 회전 얼음 구체 + 냉기 펄스 테두리)
+        const radius = p.radius;
+        const pulse = Math.sin(Date.now() * 0.008) * 4;
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, (85 * projArea) + pulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.shadowColor = '#0284c7';
+        ctx.shadowBlur = 16;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#e0f2fe';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'venomBlizzardOrb') {
+        // [진화 6] 베놈 블리자드 보주 렌더링 (맹독 녹색 + 빙결 시안 회전 구체 + 광역 파동 링)
+        const radius = p.radius;
+        const pulse = Math.sin(Date.now() * 0.010) * 6;
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, (125 * projArea) + pulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#10b981';
+        ctx.shadowColor = '#34d399';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.60, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fef08a';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'poisonShard') {
+        // 베놈 블리자드 2단계 독성 얼음 파편 렌더링
+        ctx.fillStyle = '#34d399';
+        ctx.shadowColor = '#10b981';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius * 0.45, 0, Math.PI * 2);
         ctx.fill();
       } else {
         // 일반 투사체 (마법 화살, 산탄)
