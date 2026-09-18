@@ -431,7 +431,7 @@ class UIManager {
     if (this.cardRerollBtn) {
       const remaining = this.game.player.rerollCount;
       const maxR = this.game.player.maxRerolls;
-      this.cardRerollBtn.textContent = `🎲 새로고침 (${remaining}/${maxR})`;
+      this.cardRerollBtn.textContent = `🎲 새로고침 [R] (${remaining}/${maxR})`;
       this.cardRerollBtn.disabled = remaining <= 0;
       this.cardRerollBtn.onclick = (e) => {
         e.stopPropagation();
@@ -448,6 +448,7 @@ class UIManager {
         this.cardSkipBtn.style.display = 'none';
       } else {
         this.cardSkipBtn.style.display = '';
+        this.cardSkipBtn.textContent = '⏩ 스킵/회복 [K] (+10 HP)';
         this.cardSkipBtn.onclick = (e) => {
           e.stopPropagation();
           this.cardModal.classList.add('hidden');
@@ -600,13 +601,13 @@ class UIManager {
     }
 
     // 5. R 키: 새로고침 (Reroll)
-    if (e.code === 'KeyR' && this.cardRerollBtn && !this.cardRerollBtn.disabled) {
+    if ((e.code === 'KeyR' || e.key === 'r' || e.key === 'R' || e.key === 'ㄱ') && this.cardRerollBtn && !this.cardRerollBtn.disabled) {
       this.cardRerollBtn.click();
       return true;
     }
 
-    // 6. X 키: 스킵 (Skip)
-    if (e.code === 'KeyX' && this.cardSkipBtn && this.cardSkipBtn.style.display !== 'none') {
+    // 6. K 키 (또는 X 키): 스킵 및 체력 회복 (Skip & Heal)
+    if ((e.code === 'KeyK' || e.key === 'k' || e.key === 'K' || e.key === 'ㅏ' || e.code === 'KeyX' || e.key === 'x' || e.key === 'X' || e.key === 'ㅌ') && this.cardSkipBtn && this.cardSkipBtn.style.display !== 'none') {
       this.cardSkipBtn.click();
       return true;
     }
