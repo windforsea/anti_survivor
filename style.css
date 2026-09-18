@@ -1254,3 +1254,75 @@ html, body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ================= 모바일 플로팅 가상 조이스틱 ================= */
+.joystick-zone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60vw; /* 화면 좌측 60% 영역 터치 감지 */
+  height: 100vh;
+  z-index: 50;
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  display: block;
+}
+
+.joystick-base {
+  position: absolute;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(15, 23, 42, 0.55) 70%, rgba(56, 189, 248, 0.5) 100%);
+  border: 2px solid rgba(56, 189, 248, 0.7);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease-out, visibility 0.15s;
+}
+
+.joystick-base.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.joystick-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #38bdf8 0%, #0284c7 100%);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.9), inset 0 2px 4px rgba(255, 255, 255, 0.7);
+  border: 2px solid #ffffff;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* 모바일 전역 터치 최적화 */
+body, #gameContainer, canvas {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 전체화면 토글 버튼 */
+#fullscreenToggleBtn {
+  font-size: 15px;
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #38bdf8;
+}
+
+#fullscreenToggleBtn:hover {
+  background: #0284c7;
+  color: #fff;
+  border-color: #38bdf8;
+}
+

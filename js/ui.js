@@ -61,6 +61,7 @@ class UIManager {
     this.pauseRestartBtn = document.getElementById('pauseRestartBtn');
 
     this.soundToggleBtn = document.getElementById('soundToggleBtn');
+    this.fullscreenToggleBtn = document.getElementById('fullscreenToggleBtn');
 
     // 키보드 카드 선택 포커스 상태
     this.focusedCardIndex = 0;
@@ -69,8 +70,89 @@ class UIManager {
     this.onCardSelectCallback = null;
     this.isCardModalOpen = false;
 
+    this.wakeLock = null;
+
     this.initEventListeners();
     this.initJoystick();
+    this.initFullscreen();
+    this.initWakeLock();
+  }
+
+  // 모바일 햅틱 진동 피드백
+  triggerHaptic(pattern = 35) {
+    if ('vibrate' in navigator) {
+      try {
+        navigator.vibrate(pattern);
+      } catch (e) {}
+    }
+  }
+
+  // XSS 텍스트 살균
+  sanitizeText(str) {
+    if (!str || typeof str !== 'string') return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .slice(0, 50); // 최대 50자 제한
+  }
+
+  // 모바일 화면 꺼짐 방지 (Screen Wake Lock API)
+  async initWakeLock() {
+    if ('wakeLock' in navigator) {
+      try {
+        this.wakeLock = await navigator.wakeLock.request('screen');
+        document.addEventListener('visibilitychange', async () => {
+          if (this.wakeLock !== null && document.visibilityState === 'visible') {
+            try {
+              this.wakeLock = await navigator.wakeLock.request('screen');
+            } catch (err) {}
+          }
+        });
+      } catch (e) {}
+    }
+  }
+
+  // 전체화면 및 가로 모드 토글
+  initFullscreen() {
+    if (!this.fullscreenToggleBtn) return;
+    this.fullscreenToggleBtn.addEventListener('click', async () => {
+      this.triggerHaptic(25);
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) {
+          await el.requestFullscreen().catch(() => {});
+        } else if (el.webkitRequestFullscreen) {
+          el.webkitRequestFullscreen();
+        }
+        // 지원 브라우저 가로 화면 락 시도
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock('landscape').catch(() => {});
+        }
+        this.fullscreenToggleBtn.textContent = '✖';
+        this.fullscreenToggleBtn.title = '전체화면 종료';
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+        if (screen.orientation && screen.orientation.unlock) {
+          screen.orientation.unlock();
+        }
+        this.fullscreenToggleBtn.textContent = '⛶';
+        this.fullscreenToggleBtn.title = '전체화면 (모바일 권장)';
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && this.fullscreenToggleBtn) {
+        this.fullscreenToggleBtn.textContent = '⛶';
+        this.fullscreenToggleBtn.title = '전체화면 (모바일 권장)';
+      }
+    });
   }
 
   initEventListeners() {
@@ -563,8 +645,10 @@ class UIManager {
 
   // 최종 보스 클리어 시 챔피언 등록 핸들러 (서버 영구 파일 저장 및 로컬 백업)
   async handleChampionSubmit() {
-    const name = (this.championNameInput ? this.championNameInput.value.trim() : '') || '익명의 챔피언';
-    const quote = (this.championQuoteInput ? this.championQuoteInput.value.trim() : '') || '모든 시련을 이겨냈다!';
+    const rawName = (this.championNameInput ? this.championNameInput.value.trim() : '') || '익명의 챔피언';
+    const rawQuote = (this.championQuoteInput ? this.championQuoteInput.value.trim() : '') || '모든 시련을 이겨냈다!';
+    const name = this.sanitizeText(rawName);
+    const quote = this.sanitizeText(rawQuote);
     const payload = { name, quote, date: Date.now() };
 
     // 로컬 스토리지 즉시 캐시
@@ -606,12 +690,7 @@ class UIManager {
   renderLobbyUpgrades() {
     if (!this.lobbyUpgradesList) return;
 
-    let saveData = { gold: 0, upgrades: {} };
-    try {
-      const raw = localStorage.getItem('vam_save_data');
-      if (raw) saveData = JSON.parse(raw);
-    } catch (e) {}
-
+    const saveData = saveManager.load();
     const gold = saveData.gold || 0;
     const upgrades = saveData.upgrades || {};
 
@@ -677,59 +756,83 @@ class UIManager {
 
   buyPermanentUpgrade(id, cost, nextLv) {
     try {
-      const raw = localStorage.getItem('vam_save_data');
-      const data = raw ? JSON.parse(raw) : { gold: 0, upgrades: {} };
-      if ((data.gold || 0) < cost) return;
+      const success = saveManager.spendGoldForUpgrade(id, cost, nextLv);
+      if (!success) return;
 
-      data.gold -= cost;
-      if (!data.upgrades) data.upgrades = {};
-      data.upgrades[id] = nextLv;
-
-      localStorage.setItem('vam_save_data', JSON.stringify(data));
       sounds.playLevelUp();
+      this.triggerHaptic([20, 20]);
       this.renderLobbyUpgrades();
     } catch (e) {
       console.warn('업그레이드 구매 실패:', e);
     }
   }
 
-  // 모바일 가상 조이스틱 터치 지원
+  // 모바일 동적 플로팅 가상 조이스틱 (화면 좌측 60% 터치 시 터치 위치에 즉시 생성)
   initJoystick() {
     const zone = document.getElementById('joystickZone');
+    const base = document.getElementById('joystickBase');
     const knob = document.getElementById('joystickKnob');
-
-    // 터치 기기이거나 작은 화면일 때 조이스틱 표시
-    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (isTouchDevice || window.innerWidth <= 800) {
-      zone.style.display = 'block';
-    }
+    if (!zone || !base || !knob) return;
 
     let touchId = null;
-    let baseRect = null;
-    const maxRadius = 45;
+    let touchOrigin = { x: 0, y: 0 };
+    const maxRadius = 48;
 
     zone.addEventListener('touchstart', (e) => {
-      e.preventDefault();
+      // 모달창이 열려있거나 일시정지 중이면 무시
+      if (this.game.gameState !== 'PLAYING') return;
+
       const touch = e.changedTouches[0];
+      // 화면 좌측 65% 영역 터치 감지
+      if (touch.clientX > window.innerWidth * 0.65) return;
+
+      e.preventDefault();
       touchId = touch.identifier;
-      baseRect = zone.getBoundingClientRect();
-      handleTouch(touch);
+      touchOrigin = { x: touch.clientX, y: touch.clientY };
+
+      // 터치한 바로 그 좌표에 조이스틱 베이스 배치 및 활성화
+      base.style.left = `${touch.clientX}px`;
+      base.style.top = `${touch.clientY}px`;
+      base.classList.add('active');
+      knob.style.transform = 'translate(-50%, -50%)';
+
+      this.triggerHaptic(15);
     }, { passive: false });
 
     zone.addEventListener('touchmove', (e) => {
+      if (touchId === null) return;
       e.preventDefault();
+
       for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === touchId) {
-          handleTouch(e.changedTouches[i]);
+        const touch = e.changedTouches[i];
+        if (touch.identifier === touchId) {
+          let dx = touch.clientX - touchOrigin.x;
+          let dy = touch.clientY - touchOrigin.y;
+          const dist = Math.hypot(dx, dy);
+
+          let clampX = dx;
+          let clampY = dy;
+          if (dist > maxRadius) {
+            clampX = (dx / dist) * maxRadius;
+            clampY = (dy / dist) * maxRadius;
+          }
+
+          knob.style.transform = `translate(calc(-50% + ${clampX}px), calc(-50% + ${clampY}px))`;
+
+          this.game.input.joystick.active = true;
+          this.game.input.joystick.x = clampX / maxRadius;
+          this.game.input.joystick.y = clampY / maxRadius;
           break;
         }
       }
     }, { passive: false });
 
     const endTouch = (e) => {
+      if (touchId === null) return;
       for (let i = 0; i < e.changedTouches.length; i++) {
         if (e.changedTouches[i].identifier === touchId) {
           touchId = null;
+          base.classList.remove('active');
           knob.style.transform = 'translate(-50%, -50%)';
           this.game.input.joystick.active = false;
           this.game.input.joystick.x = 0;
@@ -741,26 +844,5 @@ class UIManager {
 
     zone.addEventListener('touchend', endTouch);
     zone.addEventListener('touchcancel', endTouch);
-
-    const handleTouch = (touch) => {
-      if (!baseRect) baseRect = zone.getBoundingClientRect();
-      const centerX = baseRect.left + baseRect.width / 2;
-      const centerY = baseRect.top + baseRect.height / 2;
-
-      let dx = touch.clientX - centerX;
-      let dy = touch.clientY - centerY;
-      const dist = Math.hypot(dx, dy);
-
-      if (dist > maxRadius) {
-        dx = (dx / dist) * maxRadius;
-        dy = (dy / dist) * maxRadius;
-      }
-
-      knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-
-      this.game.input.joystick.active = true;
-      this.game.input.joystick.x = dx / maxRadius;
-      this.game.input.joystick.y = dy / maxRadius;
-    };
   }
 }

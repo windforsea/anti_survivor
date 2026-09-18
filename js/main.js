@@ -135,12 +135,9 @@ class Game {
 
   applyUpgradesFromSave() {
     try {
-      const saveRaw = localStorage.getItem('vam_save_data');
-      if (saveRaw) {
-        const data = JSON.parse(saveRaw);
-        if (data.upgrades) {
-          this.player.applyPermanentUpgrades(data.upgrades);
-        }
+      const data = saveManager.load();
+      if (data && data.upgrades) {
+        this.player.applyPermanentUpgrades(data.upgrades);
       }
     } catch (e) {
       console.warn('영구 업그레이드 로드 실패:', e);
@@ -294,14 +291,11 @@ class Game {
     }
   }
 
-  // 획득한 골드를 로컬 영구 저장소에 합산 저장
+  // 획득한 골드를 로컬 영구 저장소에 무결성 서명과 함께 합산 저장
   saveEarnedGold() {
     try {
       const earned = this.player.gold || 0;
-      const saveRaw = localStorage.getItem('vam_save_data');
-      const data = saveRaw ? JSON.parse(saveRaw) : { gold: 0, upgrades: {} };
-      data.gold = (data.gold || 0) + earned;
-      localStorage.setItem('vam_save_data', JSON.stringify(data));
+      saveManager.addGold(earned);
     } catch (e) {
       console.warn('골드 저장 실패:', e);
     }
@@ -324,6 +318,9 @@ class Game {
   triggerVictory() {
     this.gameState = 'VICTORY';
     this.saveEarnedGold();
+    if (this.ui) {
+      this.ui.triggerHaptic([100, 50, 100, 50, 200]);
+    }
     const m = Math.floor(this.totalElapsedTime / 60).toString().padStart(2, '0');
     const s = Math.floor(this.totalElapsedTime % 60).toString().padStart(2, '0');
     this.ui.showVictory({
@@ -749,6 +746,9 @@ class Game {
 
 // 게임 기동 및 다크 판타지 에셋 로드
 window.addEventListener('load', () => {
+  // 세이브 데이터 1차 무결성 검증
+  saveManager.load();
+
   assets.loadAll(() => {
     console.log('⚔️ 다크 판타지 픽셀 아트 에셋 로드 완료!');
   });
