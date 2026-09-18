@@ -52,9 +52,9 @@ Node.js 내장 모듈(`http`, `fs`, `path`)만을 사용한 무의존성 경량 
 - **포트**: 기본 `3000`번 포트 바인딩
 - **정적 파일 서빙**: HTML, CSS, JS, PNG 파일의 적절한 MIME 타입 자동 매핑
 - **LAN 멀티 접속**: 동일 Wi-Fi/공유기 네트워크 내 스마트폰, 태블릿 등 모바일 기기 접속 지원
-- **챔피언 명예의 전당 API**:
-  - `GET /api/champion`: 현재 등록된 챔피언 정보 반환
-  - `POST /api/champion`: 15스테이지 최종 보스 클리어 시 닉네임과 한마디 등록 (`champion.json`에 영구 보존)
+- **챔피언 명예의 전당 API (`/api/champion`)**:
+  - `GET /api/champion`: 클리어 시간순 상위 3위(`top3`) 랭킹 목록 및 최근 클리어 유저(`recent`) 객체 반환
+  - `POST /api/champion`: 20스테이지 최종 보스 클리어 시 닉네임, 한마디, 클리어 시간(`clearTime`, `timeSeconds`), 레벨, 킬 수 등록 (`champion.json` 및 `localStorage`에 영구 보존, Vercel Serverless `api/champion.js` 지원)
 
 ---
 

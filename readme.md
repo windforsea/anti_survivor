@@ -53,7 +53,9 @@ vam/
 ├── 📄 server.js               # Node.js 경량 로컬 정적 파일 서빙 HTTP 서버 (포트 3000, LAN 접속 및 챔피언 API)
 ├── 📄 start_server.bat        # 원클릭 서버 실행 배치 파일 (Node 검사 -> 브라우저 자동 오픈 -> 서버 구동)
 ├── 📄 generate_assets.js      # 순수 Node.js로 79종 픽셀 아트 PNG 스프라이트를 즉시 생성하는 빌더 스크립트
-├── 📄 champion.json           # 최종 승리 챔피언 기록(닉네임, 한마디, 날짜) 서버 저장소
+├── 📄 champion.json           # 최종 승리 챔피언 명예의 전당 기록(1~3위 랭킹 및 최근 유저 글) 서버 저장소
+├── 📂 api/                    # Vercel Serverless 엔드포인트
+│   └── 📄 champion.js         # 클라우드 호스팅용 명예의 전당 REST API
 ├── 📄 readme.md               # 게임 개요, 실행법 및 문서 가이드 허브 (본 파일)
 │
 ├── 📂 docs/                   # 세부 도메인별 프로젝트 명세 문서 (7개 파일)
