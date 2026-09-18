@@ -22,10 +22,19 @@ class DamageNumber {
     const alpha = Math.max(0, this.life / this.maxLife);
     ctx.save();
     ctx.globalAlpha = alpha;
-    ctx.font = this.isCrit ? 'bold 16px sans-serif' : 'bold 13px sans-serif';
-    ctx.fillStyle = this.isCrit ? '#facc15' : '#ffffff';
-    ctx.strokeStyle = '#000000';
-    ctx.lineWidth = 3;
+    if (this.isCrit) {
+      ctx.font = '900 18px sans-serif';
+      ctx.fillStyle = '#fde047';
+      ctx.shadowColor = '#ca8a04';
+      ctx.shadowBlur = 8;
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 3.5;
+    } else {
+      ctx.font = 'bold 13px sans-serif';
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 3;
+    }
     ctx.strokeText(this.damage, this.x, this.y);
     ctx.fillText(this.damage, this.x, this.y);
     ctx.restore();
@@ -312,8 +321,9 @@ class Enemy {
     this.hp -= amount;
     this.hitFlashTimer = 0.12;
 
-    if (window.game && window.game.damageNumbers) {
-      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, isCrit));
+    // 일반 데미지 표기는 프레임 최적화를 위해 생략하고, 크리티컬(치명타) 시에만 표기
+    if (isCrit && window.game && window.game.damageNumbers) {
+      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, true));
     }
 
     if (knockbackDir && knockbackForce > 0) {
@@ -866,8 +876,9 @@ class BossEnemy extends Enemy {
     this.hp -= amount;
     this.hitFlashTimer = 0.12;
 
-    if (window.game && window.game.damageNumbers) {
-      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, isCrit));
+    // 일반 데미지 표기는 프레임 최적화를 위해 생략하고, 크리티컬(치명타) 시에만 표기
+    if (isCrit && window.game && window.game.damageNumbers) {
+      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, true));
     }
 
     // 넉백 면역 보스는 뒤로 밀리지 않음!

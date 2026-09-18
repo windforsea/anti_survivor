@@ -28,11 +28,7 @@ class Obstacle {
     this.hp -= amount;
     this.hitFlashTimer = 0.12;
 
-    // 타격 데미지 텍스트 팝업
-    if (game && game.damageNumbers) {
-      game.damageNumbers.push(new DamageNumber(this.x, this.y - 10, amount, false));
-    }
-
+    // 프레임 최적화를 위해 장애물 일반 데미지 표기 생략
     if (this.hp <= 0) {
       this.hp = 0;
       this.destroy(game);
