@@ -41,6 +41,15 @@ class UIManager {
     this.championSubmitBtn = document.getElementById('championSubmitBtn');
     this.championSubmitSuccess = document.getElementById('championSubmitSuccess');
 
+    // 명예의 전당 전용 랭킹 모달
+    this.hallOfFameModal = document.getElementById('hallOfFameModal');
+    this.hofRankList = document.getElementById('hofRankList');
+    this.hofRecentCard = document.getElementById('hofRecentCard');
+    this.closeHofBtn = document.getElementById('closeHofBtn');
+    this.lobbyHallOfFameBtn = document.getElementById('lobbyHallOfFameBtn');
+    this.victoryHallOfFameBtn = document.getElementById('victoryHallOfFameBtn');
+    this.lastVictoryStats = null;
+
     // 모달 및 배너
     this.bossAlert = document.getElementById('bossAlert');
     this.bossAlertText = document.getElementById('bossAlertText');
@@ -257,6 +266,28 @@ class UIManager {
     if (this.championSubmitBtn) {
       this.championSubmitBtn.addEventListener('click', () => {
         this.handleChampionSubmit();
+      });
+    }
+
+    // 명예의 전당 모달 열기/닫기 이벤트 바인딩
+    if (this.lobbyHallOfFameBtn) {
+      this.lobbyHallOfFameBtn.addEventListener('click', () => {
+        this.openHallOfFame();
+      });
+    }
+    if (this.victoryHallOfFameBtn) {
+      this.victoryHallOfFameBtn.addEventListener('click', () => {
+        this.openHallOfFame();
+      });
+    }
+    if (this.closeHofBtn) {
+      this.closeHofBtn.addEventListener('click', () => {
+        this.closeHallOfFame();
+      });
+    }
+    if (this.championBanner) {
+      this.championBanner.addEventListener('click', () => {
+        this.openHallOfFame();
       });
     }
   }
@@ -640,6 +671,7 @@ class UIManager {
   }
 
   showVictory(stats) {
+    this.lastVictoryStats = stats;
     this.victoryStats.innerHTML = `
       <div class="stat-row"><span>클리어 시간</span><strong>${stats.time}</strong></div>
       <div class="stat-row"><span>달성 스테이지</span><strong>Stage 20 (Chaos All Clear)</strong></div>
@@ -658,7 +690,7 @@ class UIManager {
     if (this.victoryModal) this.victoryModal.classList.add('hidden');
   }
 
-  // 명예의 전당 챔피언 배너 노출 (사망 시, 로비 복귀 시 - 서버 공용 API 우선 조회)
+  // 명예의 전당 챔피언 배너 노출 (사망 시, 로비 복귀 시 - 최근 클리어 유저)
   async showChampionBanner() {
     if (!this.championBanner) return;
     let champ = { name: '전설의 서바이버', quote: '어둠은 영원하지 않다. 끝까지 살아남아라!' };
@@ -668,13 +700,18 @@ class UIManager {
       const res = await fetch('/api/champion', { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        if (data && data.name) champ = data;
+        if (data) {
+          champ = data.recent || (data.records && data.records[0]) || data;
+        }
       }
     } catch (netErr) {
       // 오프라인이거나 서버 통신 실패 시 로컬 스토리지 백업 조회
       try {
-        const raw = localStorage.getItem('vam_champion');
-        if (raw) champ = JSON.parse(raw);
+        const raw = localStorage.getItem('vam_hall_of_fame');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          champ = parsed.recent || (parsed.records && parsed.records[0]) || champ;
+        }
       } catch (e) {}
     }
 
@@ -694,28 +731,169 @@ class UIManager {
     const rawQuote = (this.championQuoteInput ? this.championQuoteInput.value.trim() : '') || '모든 시련을 이겨냈다!';
     const name = this.sanitizeText(rawName);
     const quote = this.sanitizeText(rawQuote);
-    const payload = { name, quote, date: Date.now() };
 
-    // 로컬 스토리지 즉시 캐시
+    const stats = this.lastVictoryStats || {
+      time: '14:30',
+      timeSeconds: 870,
+      level: 30,
+      kills: 500,
+      hero: (this.game && this.game.player ? this.game.player.characterType : 'knight')
+    };
+
+    const newRecord = {
+      name,
+      quote,
+      clearTime: stats.time,
+      timeSeconds: stats.timeSeconds || 900,
+      level: stats.level || 1,
+      kills: stats.kills || 0,
+      hero: stats.hero || 'knight',
+      date: Date.now()
+    };
+
+    // 로컬 스토리지 즉시 캐시 & 랭킹 리스트 갱신
+    let localData = { records: [], recent: newRecord };
     try {
-      localStorage.setItem('vam_champion', JSON.stringify(payload));
+      const raw = localStorage.getItem('vam_hall_of_fame');
+      if (raw) localData = JSON.parse(raw);
+      if (!Array.isArray(localData.records)) localData.records = [];
+      localData.records.push(newRecord);
+      localData.records.sort((a, b) => (Number(a.timeSeconds) || 99999) - (Number(b.timeSeconds) || 99999));
+      if (localData.records.length > 50) localData.records = localData.records.slice(0, 50);
+      localData.recent = newRecord;
+      localStorage.setItem('vam_hall_of_fame', JSON.stringify(localData));
+      localStorage.setItem('vam_champion', JSON.stringify(newRecord));
     } catch (e) {}
 
-    // 서버로 영구 저장 전송 (다른 모든 접속자에게 즉시 공유)
+    // 서버로 영구 저장 전송
+    let serverResData = null;
     try {
-      await fetch('/api/champion', {
+      const res = await fetch('/api/champion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(newRecord)
       });
+      if (res.ok) {
+        serverResData = await res.json();
+      }
     } catch (netErr) {
-      console.warn('서버 챔피언 등록 실패 (로컬에만 저장됨):', netErr);
+      console.warn('서버 챔피언 등록 실패 (로컬 스토리지에 정상 보존됨):', netErr);
     }
 
     if (this.championSubmitSuccess) {
       this.championSubmitSuccess.classList.remove('hidden');
     }
     sounds.playLevelUp();
+
+    // 0.8초 후 명예의 전당 모달을 즉시 열어 최신 순위(1~3위 및 최근 글) 확인
+    setTimeout(() => {
+      this.openHallOfFame(serverResData || localData);
+    }, 800);
+  }
+
+  // 명예의 전당 모달 열기
+  async openHallOfFame(cachedData = null) {
+    if (!this.hallOfFameModal) return;
+
+    let data = cachedData;
+    if (!data) {
+      // 1. 서버 API 조회
+      try {
+        const res = await fetch('/api/champion', { cache: 'no-store' });
+        if (res.ok) {
+          data = await res.json();
+        }
+      } catch (e) {}
+
+      // 2. 서버 실패 시 로컬 스토리지 백업
+      if (!data) {
+        try {
+          const raw = localStorage.getItem('vam_hall_of_fame');
+          if (raw) data = JSON.parse(raw);
+        } catch (e) {}
+      }
+    }
+
+    this.renderHallOfFame(data);
+    this.hallOfFameModal.classList.remove('hidden');
+  }
+
+  // 명예의 전당 1~3위 및 4번째 최근 클리어 유저 렌더링
+  renderHallOfFame(data) {
+    const defaultRecords = [
+      { name: 'ho', quote: 'yaho', clearTime: '13:45', timeSeconds: 825, hero: 'knight', level: 36, kills: 890, date: 1789692887241 },
+      { name: '성기사 아더', quote: '빛의 가호로 어둠을 물리쳤다!', clearTime: '14:12', timeSeconds: 852, hero: 'knight', level: 34, kills: 810, date: 1789685000000 },
+      { name: '마도학자 린', quote: '화염의 폭풍 앞에 모든 것이 재가 되리라.', clearTime: '14:38', timeSeconds: 878, hero: 'mage', level: 32, kills: 760, date: 1789680000000 }
+    ];
+
+    let records = (data && Array.isArray(data.records) && data.records.length > 0)
+      ? [...data.records]
+      : (data && Array.isArray(data.top3) && data.top3.length > 0)
+        ? [...data.top3]
+        : defaultRecords;
+
+    records.sort((a, b) => (Number(a.timeSeconds) || 99999) - (Number(b.timeSeconds) || 99999));
+
+    // 상위 3위 채우기
+    while (records.length < 3) {
+      records.push(defaultRecords[records.length] || {
+        name: '용감한 서바이버',
+        quote: '새로운 챔피언의 도전을 기다립니다.',
+        clearTime: '15:00',
+        timeSeconds: 900
+      });
+    }
+
+    const top3 = records.slice(0, 3);
+    const medals = ['🥇 1위', '🥈 2위', '🥉 3위'];
+    const rankClasses = ['rank-1', 'rank-2', 'rank-3'];
+
+    if (this.hofRankList) {
+      this.hofRankList.innerHTML = top3.map((rec, idx) => {
+        const heroName = rec.hero === 'mage' ? '화염 마도사' : rec.hero === 'assassin' ? '그림자 암살자' : '방랑 기사';
+        return `
+          <div class="hof-card ${rankClasses[idx]}">
+            <div class="hof-medal">${medals[idx]}</div>
+            <div class="hof-info">
+              <div class="hof-info-top">
+                <span class="hof-user-name">${rec.name || '익명'}</span>
+                <span class="hof-time-badge">⏱️ ${rec.clearTime || '15:00'}</span>
+              </div>
+              <p class="hof-quote">"${rec.quote || '승리는 나의 것!'}"</p>
+              <div class="hof-meta">Lv.${rec.level || 30} ${heroName} · ⚔️ ${rec.kills || 0}처치</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 4번째 칸: 최근 클리어 유저의 외침
+    const recent = (data && data.recent)
+      ? data.recent
+      : (records[0] || defaultRecords[0]);
+
+    if (this.hofRecentCard) {
+      const recentHero = recent.hero === 'mage' ? '화염 마도사' : recent.hero === 'assassin' ? '그림자 암살자' : '방랑 기사';
+      const dateStr = recent.date ? new Date(recent.date).toLocaleDateString() : '최근';
+
+      this.hofRecentCard.innerHTML = `
+        <div class="hof-recent-icon">⚡</div>
+        <div class="hof-info">
+          <div class="hof-info-top">
+            <span class="hof-user-name" style="color: #38bdf8;">${recent.name || '익명'} <small style="font-size: 11px; color: #94a3b8;">(${dateStr})</small></span>
+            <span class="hof-time-badge" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">⏱️ ${recent.clearTime || '15:00'}</span>
+          </div>
+          <p class="hof-quote" style="color: #e2e8f0; font-size: 13px;">"${recent.quote || '끝까지 살아남아라!'}"</p>
+          <div class="hof-meta" style="color: #0284c7;">Lv.${recent.level || 30} ${recentHero} · ⚔️ ${recent.kills || 0}처치</div>
+        </div>
+      `;
+    }
+  }
+
+  closeHallOfFame() {
+    if (this.hallOfFameModal) {
+      this.hallOfFameModal.classList.add('hidden');
+    }
   }
 
   // 캐릭터 선택 모달 표시

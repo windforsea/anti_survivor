@@ -344,9 +344,11 @@ class Game {
     const s = Math.floor(this.totalElapsedTime % 60).toString().padStart(2, '0');
     this.ui.showVictory({
       time: `${m}:${s}`,
+      timeSeconds: Math.floor(this.totalElapsedTime),
       level: this.player.level,
       kills: this.player.totalKills,
-      gold: this.player.gold || 0
+      gold: this.player.gold || 0,
+      hero: this.player.characterType || 'knight'
     });
   }
 

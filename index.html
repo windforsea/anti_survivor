@@ -72,8 +72,9 @@
           <!-- JS에서 9종 영구 업그레이드 카드가 동적으로 렌더링됩니다 -->
         </div>
 
-        <div class="lobby-footer">
-          <button id="lobbyStartBtn" class="lobby-start-btn">⚡ 전장 출격 (캐릭터 선택) ⚡</button>
+        <div class="lobby-footer" style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+          <button id="lobbyHallOfFameBtn" class="lobby-start-btn" style="background: linear-gradient(135deg, #854d0e 0%, #ca8a04 100%); border-color: #facc15; flex: 1; min-width: 160px;">👑 명예의 전당</button>
+          <button id="lobbyStartBtn" class="lobby-start-btn" style="flex: 2; min-width: 200px;">⚡ 전장 출격 (캐릭터 선택) ⚡</button>
         </div>
       </div>
     </div>
@@ -218,9 +219,37 @@
           <div id="championSubmitSuccess" class="champ-success-msg hidden">✨ 명예의 전당에 성공적으로 등록되었습니다! ✨</div>
         </div>
 
-        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+        <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+          <button id="victoryHallOfFameBtn" class="action-btn" style="background: linear-gradient(135deg, #854d0e, #ca8a04); border: 1px solid #facc15; color: #fff;">👑 명예의 전당 랭킹</button>
           <button id="victoryLobbyBtn" class="action-btn" style="background: #334155;">🏠 로비로 이동</button>
           <button id="victoryRestartBtn" class="action-btn" style="background: #eab308; color: #000; font-weight: bold;">새로운 원정 시작</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 명예의 전당 랭킹 전용 모달 (1~3위 + 4번째 칸 띄워 최근 클리어 유저 글) -->
+    <div id="hallOfFameModal" class="modal-backdrop hidden">
+      <div class="modal-box hof-box">
+        <div class="hof-header">
+          <h2 class="hof-title">👑 명예의 전당 👑</h2>
+          <p class="hof-sub">가장 신속하게 시련을 극복한 영웅들의 전설적인 기록</p>
+        </div>
+
+        <!-- 1위 ~ 3위 랭킹 섹션 -->
+        <div class="hof-section-title">⏱️ 클리어 타임 TOP 3 랭킹</div>
+        <div class="hof-rank-list" id="hofRankList">
+          <!-- 1위, 2위, 3위 카드가 동적으로 렌더링됩니다 -->
+        </div>
+
+        <!-- 4번째: 칸을 띄워서 최근 클리어 유저의 글 표시 -->
+        <div class="hof-divider"></div>
+        <div class="hof-section-title recent-title">✨ 최근 클리어 유저의 외침</div>
+        <div class="hof-recent-card" id="hofRecentCard">
+          <!-- 최근 클리어 유저 카드가 동적으로 렌더링됩니다 -->
+        </div>
+
+        <div class="hof-footer">
+          <button id="closeHofBtn" class="action-btn" style="background: #334155; min-width: 140px;">닫기</button>
         </div>
       </div>
     </div>

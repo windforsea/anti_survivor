@@ -49,6 +49,15 @@ const server = http.createServer((req, res) => {
 
   // 1. 공용 챔피언 명예의 전당 API
   if (req.url === '/api/champion') {
+    const defaultData = {
+      records: [
+        { name: 'ho', quote: 'yaho', clearTime: '13:45', timeSeconds: 825, date: 1789692887241, level: 36, kills: 890 },
+        { name: '성기사 아더', quote: '빛의 가호로 어둠을 물리쳤다!', clearTime: '14:12', timeSeconds: 852, date: 1789685000000, level: 34, kills: 810 },
+        { name: '마도학자 린', quote: '화염의 폭풍 앞에 모든 것이 재가 되리라.', clearTime: '14:38', timeSeconds: 878, date: 1789680000000, level: 32, kills: 760 }
+      ],
+      recent: { name: 'ho', quote: 'yaho', clearTime: '13:45', timeSeconds: 825, date: 1789692887241, level: 36, kills: 890 }
+    };
+
     if (req.method === 'GET') {
       fs.readFile(CHAMPION_FILE, 'utf8', (err, data) => {
         res.writeHead(200, {
@@ -56,9 +65,37 @@ const server = http.createServer((req, res) => {
           'Cache-Control': 'no-cache, no-store, must-revalidate'
         });
         if (err || !data) {
-          res.end(JSON.stringify({ name: '용감한 생존자', quote: '내가 이 구역의 지배자다!', date: Date.now() }));
+          res.end(JSON.stringify(defaultData));
         } else {
-          res.end(data);
+          try {
+            const parsed = JSON.parse(data);
+            let records = [];
+            let recent = null;
+
+            if (Array.isArray(parsed.records)) {
+              records = parsed.records;
+              recent = parsed.recent || records[records.length - 1] || defaultData.recent;
+            } else if (parsed.name) {
+              // 이전 단일 객체 포맷 호환 마이그레이션
+              const legacyItem = {
+                name: parsed.name,
+                quote: parsed.quote || '',
+                clearTime: parsed.clearTime || '14:30',
+                timeSeconds: parsed.timeSeconds || 870,
+                date: parsed.date || Date.now()
+              };
+              records = [legacyItem];
+              recent = legacyItem;
+            }
+
+            // 클리어 타임 기준 오름차순(가장 빠른 기록 순) 정렬
+            records.sort((a, b) => (Number(a.timeSeconds) || 99999) - (Number(b.timeSeconds) || 99999));
+            const top3 = records.slice(0, 3);
+
+            res.end(JSON.stringify({ records, top3, recent }));
+          } catch (e) {
+            res.end(JSON.stringify(defaultData));
+          }
         }
       });
       return;
@@ -66,24 +103,66 @@ const server = http.createServer((req, res) => {
       let body = '';
       req.on('data', chunk => {
         body += chunk;
-        if (body.length > 10000) req.destroy(); // 과도한 페이로드 차단
+        if (body.length > 20000) req.destroy(); // 과도한 페이로드 차단
       });
       req.on('end', () => {
         try {
           const parsed = JSON.parse(body);
-          const championData = {
-            name: String(parsed.name || '무명의 영웅').slice(0, 20),
-            quote: String(parsed.quote || '승리는 나의 것!').slice(0, 60),
-            date: Date.now()
+          const newRecord = {
+            name: String(parsed.name || '익명의 영웅').slice(0, 20),
+            quote: String(parsed.quote || '승리는 우리의 것!').slice(0, 60),
+            clearTime: String(parsed.clearTime || '15:00').slice(0, 10),
+            timeSeconds: Number(parsed.timeSeconds) || 900,
+            date: Date.now(),
+            hero: String(parsed.hero || 'knight').slice(0, 20),
+            level: Number(parsed.level) || 1,
+            kills: Number(parsed.kills) || 0
           };
-          fs.writeFile(CHAMPION_FILE, JSON.stringify(championData, null, 2), 'utf8', (wErr) => {
-            if (wErr) {
-              res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
-              res.end(JSON.stringify({ success: false, error: '저장 실패' }));
-            } else {
-              res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-              res.end(JSON.stringify({ success: true, data: championData }));
+
+          fs.readFile(CHAMPION_FILE, 'utf8', (rErr, rData) => {
+            let records = [];
+            if (!rErr && rData) {
+              try {
+                const existing = JSON.parse(rData);
+                if (Array.isArray(existing.records)) {
+                  records = existing.records;
+                } else if (existing.name) {
+                  records = [{
+                    name: existing.name,
+                    quote: existing.quote,
+                    clearTime: existing.clearTime || '14:30',
+                    timeSeconds: existing.timeSeconds || 870,
+                    date: existing.date || Date.now()
+                  }];
+                }
+              } catch (e) {}
             }
+
+            // 새 기록 추가 후 정렬
+            records.push(newRecord);
+            records.sort((a, b) => (Number(a.timeSeconds) || 99999) - (Number(b.timeSeconds) || 99999));
+            // 최대 50위까지만 보관
+            if (records.length > 50) records = records.slice(0, 50);
+
+            const filePayload = {
+              records: records,
+              recent: newRecord
+            };
+
+            fs.writeFile(CHAMPION_FILE, JSON.stringify(filePayload, null, 2), 'utf8', (wErr) => {
+              if (wErr) {
+                res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ success: false, error: '저장 실패' }));
+              } else {
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({
+                  success: true,
+                  top3: records.slice(0, 3),
+                  recent: newRecord,
+                  records: records
+                }));
+              }
+            });
           });
         } catch (pErr) {
           res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });

@@ -1134,7 +1134,8 @@ html, body {
   z-index: 999;
   width: 90%;
   max-width: 600px;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
   animation: champFade 4.5s forwards ease-in-out;
 }
 
@@ -1252,6 +1253,188 @@ html, body {
   font-size: 13px;
   font-weight: bold;
   margin-top: 8px;
+}
+
+/* ============================================================
+   👑 명예의 전당 전용 모달 (Hall of Fame)
+   ============================================================ */
+.hof-box {
+  max-width: 620px;
+  width: 92%;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: linear-gradient(180deg, #111827 0%, #030712 100%);
+  border: 2px solid #eab308;
+  box-shadow: 0 0 35px rgba(234, 179, 8, 0.4), inset 0 0 20px rgba(0, 0, 0, 0.8);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.hof-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.hof-title {
+  color: #facc15;
+  font-size: 24px;
+  font-weight: 800;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+  margin: 0;
+}
+
+.hof-sub {
+  color: #94a3b8;
+  font-size: 13px;
+  margin: 6px 0 0;
+}
+
+.hof-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fef08a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.hof-section-title.recent-title {
+  color: #38bdf8;
+}
+
+.hof-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hof-card {
+  display: flex;
+  align-items: center;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid #475569;
+  border-radius: 10px;
+  padding: 12px 16px;
+  gap: 14px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.hof-card:hover {
+  transform: translateY(-2px);
+}
+
+.hof-card.rank-1 {
+  border-color: #facc15;
+  background: linear-gradient(90deg, rgba(234, 179, 8, 0.18) 0%, rgba(30, 41, 59, 0.8) 100%);
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.25);
+}
+
+.hof-card.rank-2 {
+  border-color: #94a3b8;
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.18) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+
+.hof-card.rank-3 {
+  border-color: #b45309;
+  background: linear-gradient(90deg, rgba(180, 83, 9, 0.18) 0%, rgba(30, 41, 59, 0.8) 100%);
+}
+
+.hof-medal {
+  font-size: 26px;
+  width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.hof-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hof-info-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.hof-user-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hof-time-badge {
+  font-size: 13px;
+  font-weight: 800;
+  color: #facc15;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  padding: 2px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.hof-quote {
+  font-size: 12px;
+  color: #cbd5e1;
+  font-style: italic;
+  margin: 4px 0 0;
+  word-break: break-all;
+}
+
+.hof-meta {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* 4번째 최근 클리어 분리 섹션 */
+.hof-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.5), transparent);
+  margin: 20px 0 16px;
+}
+
+.hof-recent-card {
+  background: linear-gradient(135deg, rgba(14, 116, 144, 0.25) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 2px solid #0284c7;
+  border-radius: 12px;
+  padding: 14px 18px;
+  box-shadow: 0 0 20px rgba(2, 132, 199, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hof-recent-icon {
+  font-size: 30px;
+  flex-shrink: 0;
+}
+
+.hof-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.hof-close-btn {
+  background: #334155;
+  color: #fff;
+  font-weight: bold;
+  border: 1px solid #475569;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.hof-close-btn:hover {
+  background: #475569;
 }
 
 @media (max-width: 768px) {
