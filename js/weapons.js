@@ -724,7 +724,8 @@ class WeaponManager {
     const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
     const speed = 580 * projSpeedBonus;
 
-    const baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
     this.player.triggerAttackAnim('muzzle', baseAngle, 0.16, { area });
 
     const spreadTotal = 0.85;
@@ -1576,9 +1577,10 @@ class WeaponManager {
       }
 
       case 'shotgun': {
-        // 산탄 총포: 바라보는 방향으로 전방 부채꼴 산탄
+        // 산탄 총포: 가장 가까운 적을 향해 전방 부채꼴 산탄 (자동 조준)
         sounds.playShotgun();
-        const baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+        const closest = this.getClosestEnemy(enemies);
+        const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
         this.player.triggerAttackAnim('muzzle', baseAngle, 0.15, { area });
 
         const totalPellets = count;
@@ -1675,8 +1677,8 @@ class WeaponManager {
     const area = this.getArea(w);
     const count = this.getCount(w);
     const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.20) * (this.player.bonusProjSpeedMult || 1.0);
-    const speed = 550 * projSpeedBonus;
-    const baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
 
     for (let i = 0; i < count; i++) {
       const spread = count > 1 ? (i - (count - 1) / 2) * 0.14 : 0;

@@ -617,19 +617,23 @@ class UIManager {
       return true;
     }
 
-    // 2. 좌측/상단 방향키: 이전 카드로 포커스 이동
+    // 2. 좌측/상단 방향키: 이전 카드로 포커스 이동 (끝에 도달 시 루프 없이 멈춤)
     if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
-      const prev = (this.focusedCardIndex - 1 + this.activeCards.length) % this.activeCards.length;
-      this.setFocusedCardIndex(prev);
-      sounds.playSelect();
+      const prev = Math.max(0, this.focusedCardIndex - 1);
+      if (prev !== this.focusedCardIndex) {
+        this.setFocusedCardIndex(prev);
+        sounds.playSelect();
+      }
       return true;
     }
 
-    // 3. 우측/하단 방향키: 다음 카드로 포커스 이동
+    // 3. 우측/하단 방향키: 다음 카드로 포커스 이동 (끝에 도달 시 루프 없이 멈춤)
     if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
-      const next = (this.focusedCardIndex + 1) % this.activeCards.length;
-      this.setFocusedCardIndex(next);
-      sounds.playSelect();
+      const next = Math.min(this.activeCards.length - 1, this.focusedCardIndex + 1);
+      if (next !== this.focusedCardIndex) {
+        this.setFocusedCardIndex(next);
+        sounds.playSelect();
+      }
       return true;
     }
 
