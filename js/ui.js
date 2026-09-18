@@ -783,14 +783,14 @@ class UIManager {
       if (this.game.gameState !== 'PLAYING') return;
 
       const touch = e.changedTouches[0];
-      // 화면 좌측 65% 영역 터치 감지
-      if (touch.clientX > window.innerWidth * 0.65) return;
+      // 상단 60px(HUD 조작 바 영역) 터치는 버튼 클릭을 위해 제외
+      if (touch.clientY < 60) return;
 
       e.preventDefault();
       touchId = touch.identifier;
       touchOrigin = { x: touch.clientX, y: touch.clientY };
 
-      // 터치한 바로 그 좌표에 조이스틱 베이스 배치 및 활성화
+      // 터치한 바로 그 좌표에 조이스틱 베이스 배치 및 활성화 (왼손/오른손잡이 완전 대응)
       base.style.left = `${touch.clientX}px`;
       base.style.top = `${touch.clientY}px`;
       base.classList.add('active');
