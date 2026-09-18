@@ -33,11 +33,11 @@ class WaveManager {
       14: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm'], interval: 0.18, batch: 6, hpScale: 18.5, boss: null }, // [심연 타이탄 방벽 + 원거리 포격]
       15: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'golem'], interval: 0.15, batch: 7, hpScale: 23.0, bossTime: 12, bossStage: 15 }, // [사신 강림]
       // --- 16~20 Abyss Chaos 난이도 (20웨이브 확장) ---
-      16: { mobs: ['darkMage', 'bloodHound', 'assassin', 'gargoyle'], interval: 0.14, batch: 7, hpScale: 27.0, boss: null },
-      17: { mobs: ['wraithSwarm', 'ghost', 'cultist'], interval: 0.13, batch: 8, hpScale: 32.0, boss: null }, // [20s 망령 대군단 이벤트]
-      18: { mobs: ['abyssTitan', 'golem', 'bloodHound'], interval: 0.12, batch: 8, hpScale: 37.0, bossTime: 20, bossStage: 18 }, // [공허의 지네 보스]
-      19: { mobs: ['bat', 'slime', 'zombie', 'skeleton', 'goblin', 'ghost', 'gargoyle', 'cultist', 'assassin', 'golem', 'darkMage', 'bloodHound', 'wraithSwarm', 'abyssTitan'], interval: 0.11, batch: 9, hpScale: 44.0, boss: null }, // [전 몬스터 총출동 난전]
-      20: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'assassin'], interval: 0.10, batch: 10, hpScale: 52.0, bossTime: 12, bossStage: 20 } // [진 최종 결전: 혼돈의 절대신]
+      16: { mobs: ['darkMage', 'bloodHound', 'assassin', 'gargoyle'], interval: 0.16, batch: 6, hpScale: 20.0, boss: null },
+      17: { mobs: ['wraithSwarm', 'ghost', 'cultist'], interval: 0.15, batch: 6, hpScale: 22.0, boss: null }, // [20s 망령 대군단 이벤트]
+      18: { mobs: ['abyssTitan', 'golem', 'bloodHound'], interval: 0.14, batch: 7, hpScale: 25.0, bossTime: 20, bossStage: 18 }, // [공허의 지네 보스]
+      19: { mobs: ['bat', 'slime', 'zombie', 'skeleton', 'goblin', 'ghost', 'gargoyle', 'cultist', 'assassin', 'golem', 'darkMage', 'bloodHound', 'wraithSwarm', 'abyssTitan'], interval: 0.12, batch: 7, hpScale: 28.0, boss: null }, // [전 몬스터 총출동 난전]
+      20: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'assassin'], interval: 0.12, batch: 8, hpScale: 30.0, bossTime: 12, bossStage: 20 } // [진 최종 결전: 혼돈의 절대신]
     };
   }
 
@@ -118,14 +118,9 @@ class WaveManager {
       // 보스 처치 즉시 1회 업그레이드 카드 선택창 오픈
       this.game.triggerBossRewardCard();
 
-      if (isRedReaper) {
-        // 진 붉은 사신 격파 시 대망의 기적적인 최종 승리!
+      if (isRedReaper || this.currentStage >= this.maxStage) {
+        // 진 붉은 사신 또는 20스테이지 진 최종 보스(혼돈의 절대신) 격파 시 대망의 최종 승리!
         this.game.triggerVictory();
-      } else if (this.currentStage >= this.maxStage) {
-        // 20스테이지 통상 보스(혼돈의 절대신) 처치: 다음 스테이지로 안 넘어가고 시간 만료(사신 강림)까지 버팀!
-        if (this.game.ui && this.game.ui.showBossAlert) {
-          this.game.ui.showBossAlert('혼돈의 절대신 격파! 시간이 다 될 때까지 살아남으십시오!');
-        }
       } else {
         if (this.stageTimeLeft <= 0 || config.bossStage) {
           this.advanceStage();

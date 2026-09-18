@@ -249,7 +249,7 @@ const ENEMY_TYPES = {
   ghost: { name: '유령', hp: 60, speed: 115, radius: 15, color: '#38bdf8', exp: 6, damage: 11, alpha: 0.65, isFlying: true },
   gargoyle: { name: '가고일', hp: 130, speed: 75, radius: 18, color: '#78716c', exp: 7, damage: 16, isFlying: true },
   cultist: { name: '흑마술사', hp: 100, speed: 95, radius: 14, color: '#dc2626', exp: 9, damage: 14, isRanged: true, isFlying: false },
-  assassin: { name: '암살자', hp: 85, speed: 180, radius: 13, color: '#18181b', exp: 11, damage: 18, isFlying: false },
+  assassin: { name: '암살자', hp: 60, speed: 155, radius: 13, color: '#18181b', exp: 11, damage: 12, isFlying: false },
   golem: { name: '골렘', hp: 300, speed: 50, radius: 24, color: '#d97706', exp: 25, damage: 25, knockbackResist: 0.85, isFlying: false },
 
   // [신규 특색 몬스터 4종]
@@ -455,18 +455,18 @@ class Enemy {
         this.alpha = this.isPhased ? 0.20 : 0.70;
       }
 
-      // 4. 암살자 (assassin): 210px 근접 시 0.4초간 그림자 돌진 (Shadow Dash)
+      // 4. 암살자 (assassin): 210px 근접 시 0.35초간 그림자 돌진 (Shadow Dash - 너프 적용)
       else if (this.typeKey === 'assassin') {
         this.dashTimer -= dt;
         if (this.dashDuration > 0) {
           this.dashDuration -= dt;
-          curSpeed = 380; // 초고속 돌진
+          curSpeed = 280; // 돌진 속도 완화 (380 -> 280)
           if (window.game && Math.random() < 0.4) {
             window.game.addParticles(this.x, this.y, '#18181b', 2);
           }
         } else if (dist < 210 && this.dashTimer <= 0) {
-          this.dashDuration = 0.4;
-          this.dashTimer = 3.5;
+          this.dashDuration = 0.35; // 돌진 지속시간 소폭 단축 (0.4 -> 0.35)
+          this.dashTimer = 4.5; // 돌진 쿨타임 증가 (3.5 -> 4.5)
           sounds.playSlash();
         }
       }
@@ -848,7 +848,7 @@ class BossEnemy extends Enemy {
     } else if (bossStage === 20) {
       // 20스테이지 진 최종 보스: 혼돈의 절대신 (Chaos Overlord)
       this.name = '혼돈의 절대신 (Chaos Overlord)';
-      this.maxHp = 120000;
+      this.maxHp = 68000; // 120000 -> 68000 (플레이어 최종 DPS로 적정 시간 내 격파 가능하게 밸런싱)
       this.hp = this.maxHp;
       this.radius = 52;
       this.color = '#e11d48'; // 절대 크림슨
