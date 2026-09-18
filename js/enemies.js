@@ -531,7 +531,6 @@ class Enemy {
 
       this.vx = moveDirX * curSpeed + sepX * 2.5 + this.kbX;
       this.vy = moveDirY * curSpeed + sepY * 2.5 + this.kbY;
-    }
 
     this.x += this.vx * dt;
     this.y += this.vy * dt;
