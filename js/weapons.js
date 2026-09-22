@@ -1036,22 +1036,14 @@ class WeaponManager {
         }
 
         // [특수 기믹] 몬스터 및 보스 원거리 투사체 요격 및 삭제 (패링)
+        // 후반부 다량의 탄막 삭제 시 렉 방지를 위해 파티클/사운드 없이 무음·무이펙트로 즉시 삭제
         if (this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
           for (let pIdx = this.game.bossProjectiles.length - 1; pIdx >= 0; pIdx--) {
             const bp = this.game.bossProjectiles[pIdx];
             const pDist = Math.hypot(bp.x - bx, bp.y - by);
             if (pDist <= bladeRadius + (bp.radius || 6)) {
-              // 투사체 즉시 제거 (플레이어 피격 방지)
+              // 투사체 즉시 제거 (플레이어 피격 방지, 0ms 부하 없는 무음·무이펙트 처리)
               this.game.bossProjectiles.splice(pIdx, 1);
-              // 칼날에 튕겨 나가는 스파크 파티클 생성
-              if (this.game.addParticles) {
-                this.game.addParticles(bp.x, bp.y, '#38bdf8', 6);
-                this.game.addParticles(bp.x, bp.y, '#ffffff', 4);
-              }
-              // 요격 베기 사운드
-              if (typeof sounds !== 'undefined' && sounds.playSlash) {
-                sounds.playSlash();
-              }
             }
           }
         }
@@ -1347,6 +1339,12 @@ class WeaponManager {
       maxLife: 0.16
     });
 
+    // 테슬라 뇌전포 낙뢰 착탄 고전압 스파크 파티클 연출
+    if (this.game && this.game.addParticles) {
+      this.game.addParticles(tx, ty, '#38bdf8', 12);
+      this.game.addParticles(tx, ty, '#ffffff', 8);
+    }
+
     // 2. 주변 적 2~3마리 체인 라이트닝 감전
     let chained = 0;
     for (const other of enemies) {
@@ -1354,8 +1352,9 @@ class WeaponManager {
       const d = Math.hypot(other.x - tx, other.y - ty);
       if (d < 160) {
         other.takeDamage(Math.round(p.damage * 0.7), null, 80);
-        if (this.game) {
+        if (this.game && this.game.addParticles) {
           this.game.addParticles(other.x, other.y, '#38bdf8', 6);
+          this.game.addParticles(other.x, other.y, '#ffffff', 4);
         }
         chained++;
         if (chained >= 3) break;
