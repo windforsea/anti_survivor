@@ -116,7 +116,7 @@ vam/
 | **슬라임 & 분열체** | [`js/enemies/monsters/slime.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/slime.js)<br>[`js/enemies/monsters/miniSlime.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/miniSlime.js) | 기본 체력, 분열 마릿수(2), 분열체 이속 및 체력 |
 | **좀비 & 해골** | [`js/enemies/monsters/zombie.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/zombie.js)<br>[`js/enemies/monsters/skeleton.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/skeleton.js) | 좀비 넉백 저항(45%), 해골 부활 대기시간(2s) 및 부활 체력 비율(35%) |
 | **그림자 암살자** | [`js/enemies/monsters/assassin.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/assassin.js) | 급습 돌진 속도(280), 급습 쿨타임(4.5s), 돌진 사거리 |
-| **원거리 마도사들** | [`js/enemies/monsters/cultist.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/cultist.js)<br>[`js/enemies/monsters/darkMage.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/darkMage.js) | 거리 유지(카이팅) 거리, 투사체 발사 주기, 탄속 |
+| **원거리 마도사들** | [`js/enemies/monsters/cultist.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/cultist.js)<br>[`js/enemies/monsters/darkMage.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/darkMage.js) | 거리 유지(카이팅) 거리, 투사체 발사 주기, 탄속, 스폰량 2/3 감축 밸런스 |
 | **골렘 / 타이탄** | [`js/enemies/monsters/golem.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/golem.js)<br>[`js/enemies/monsters/abyssTitan.js`](file:///g:/내%20드라이브/vam/js/enemies/monsters/abyssTitan.js) | 발구르기 감속 디버프, 높은 넉백 저항(70~85%), 체력 |
 
 ### 2. 보스 스탯 및 전투 패턴 수정 (`js/enemies/bosses/`)
@@ -145,7 +145,7 @@ vam/
 | **테슬라 뇌전포** | [`js/weapons/evolutions/teslaShotgun.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/teslaShotgun.js) | 뇌전 탄환 수량(6발), 체인 라이트닝 전이 횟수, 낙뢰 피해량 |
 | **천상의 성역** | [`js/weapons/evolutions/heavenlySanctuary.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/heavenlySanctuary.js) | 초대형 룬 결계 반경(135px), 초고속 틱 주기(0.38s), 빙결 확률(5%) |
 | **멸망의 혜성** | [`js/weapons/evolutions/apocalypseComet.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/apocalypseComet.js) | 화염 혜성 유도 속도, 폭발 반경, 화염 연쇄 피해 |
-| **학살자의 폭풍검** | [`js/weapons/evolutions/slayerBladeStorm.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/slayerBladeStorm.js) | 상시 회전 대검 개수(4개), 회전 반경, 회전 속도, 넉백 |
+| **학살자의 폭풍검** | [`js/weapons/evolutions/slayerBladeStorm.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/slayerBladeStorm.js) | 상시 회전 대검 개수(4개), 회전 반경, 회전 속도, 넉백, **적 투사체 요격 삭제** |
 | **모닝스타 선풍** | [`js/weapons/evolutions/morningstarTempest.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/morningstarTempest.js) | 2연타 피해량, 적중 시 십자(4방향) 표창 폭쇄 투사체 수 |
 
 ### 5. 카드 옵션, 아이템 및 시스템 조절
@@ -153,6 +153,6 @@ vam/
 | :--- | :--- | :--- |
 | **레벨업 카드 데이터** | [`js/cards/data/weaponCards.js`](file:///g:/내%20드라이브/vam/js/cards/data/weaponCards.js)<br>[`js/cards/data/passiveCards.js`](file:///g:/내%20드라이브/vam/js/cards/data/passiveCards.js)<br>[`js/cards/data/evolutionCards.js`](file:///g:/내%20드라이브/vam/js/cards/data/evolutionCards.js) | 무기/패시브/진화 카드 설명, 레벨별 수치 증가량, 카드 아이콘 |
 | **드랍 아이템 & 보석** | [`js/items/gem.js`](file:///g:/내%20드라이브/vam/js/items/gem.js)<br>[`js/items/dropItems.js`](file:///g:/내%20드라이브/vam/js/items/dropItems.js) | 색상별 경험치 획득량, 자석 흡수 속도, 5종 드랍템 효과 수치 |
-| **웨이브 & 스폰 주기** | [`js/waveManager.js`](file:///g:/내%20드라이브/vam/js/waveManager.js) | 20스테이지 단계별 시간(60초), 몹 스폰량, 돌발 이벤트 타이머 |
+| **웨이브 & 스폰 주기** | [`js/waveManager.js`](file:///g:/내%20드라이브/vam/js/waveManager.js) | 20스테이지 단계별 시간(45초), 몹 스폰량, 원거리 몹 2/3 감축, 돌발 이벤트 타이머 |
 | **플레이어 기본 스탯** | [`js/player.js`](file:///g:/내%20드라이브/vam/js/player.js) | 기사/마도사/암살자 기본 체력, 속도, 공격력 보너스, 픽업 범위 |
 | **명예의 전당 & UI** | [`js/ui/components/lobby.js`](file:///g:/내%20드라이브/vam/js/ui/components/lobby.js)<br>[`js/ui.js`](file:///g:/내%20드라이브/vam/js/ui.js) | 1~3위 순위 표시 레이아웃, 최근 클리어 소감 등록창, 키보드 조작 |
