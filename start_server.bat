@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
 cd /d "%~dp0"
-title Vampire Survivors Web Game Server
+title Anti Survivors Web Game Server
 
 echo ====================================================
-echo   Vampire Survivors 웹 게임 서버를 시작합니다...
+echo   Anti Survivors 웹 게임 서버를 시작합니다...
 echo ====================================================
 echo.
 
