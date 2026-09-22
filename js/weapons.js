@@ -1699,6 +1699,7 @@ class WeaponManager {
     const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.20) * (this.player.bonusProjSpeedMult || 1.0);
     const closest = this.getClosestEnemy(enemies);
     const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const speed = 520 * projSpeedBonus;
 
     for (let i = 0; i < count; i++) {
       const spread = count > 1 ? (i - (count - 1) / 2) * 0.14 : 0;
