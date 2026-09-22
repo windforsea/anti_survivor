@@ -181,7 +181,7 @@ class CardManager {
       heavenlySanctuary: { name: '천상의 성역', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 적 빙결(동결) 효과' },
       morningstarTempest: { name: '모닝스타 선풍', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '채찍 전후방 교차 타격 및 첫 적중 시 4방향 관통 표창 방출' },
       apocalypseComet: { name: '멸망의 혜성', type: '원거리', icon: '☄️🔥', iconKey: 'icon_apocalypsecomet', desc: '유도 화염 혜성 연사 및 헬파이어 연쇄 폭발' },
-      slayerBladeStorm: { name: '학살자의 폭풍검', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_slayerbladestorm', desc: '초고속 상시 궤도 회전 대검·도끼 근접 방쇄' },
+      slayerBladeStorm: { name: '학살자의 폭풍검', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_slayerbladestorm', desc: '초고속 상시 궤도 회전 대검·도끼 근접 방쇄 및 적 투사체 요격 삭제' },
       teslaShotgun: { name: '테슬라 뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '고전압 뇌전 산탄 일제 사격 및 체인 라이트닝·낙뢰 폭격' },
       venomBlizzard: { name: '베놈 블리자드', type: '원거리', icon: '❄️🧪', iconKey: 'icon_venomblizzard', desc: '거대 서리독 구체 전진 파동 및 8방향 독성 얼음 파편 폭발 방출' }
     };
@@ -350,7 +350,7 @@ class CardManager {
           title: '[진화] 학살자의 폭풍검',
           icon: '⚔️🌪️',
           iconKey: 'icon_slayerbladestorm',
-          desc: '철검과 도끼를 합성 진화합니다! 거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 접근하는 모든 적을 갈아냅니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '철검과 도끼를 합성 진화합니다! 거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 접근하는 모든 적을 갈아내고 적 투사체를 요격하여 삭제합니다. (1Lv 획득, 슬롯 1칸 반환)',
           effectText: '철검(5Lv) + 도끼(5Lv) 합성 -> [학살자의 폭풍검 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',

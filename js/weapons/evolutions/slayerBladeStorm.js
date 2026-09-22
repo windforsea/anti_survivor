@@ -11,7 +11,7 @@ export const slayerBladeStormWeaponConfig = {
   "baseDamage": 56,
   "baseCount": 4,
   "baseArea": 1.2,
-  "desc": "철검(5Lv) + 도끼(5Lv) 합성. 플레이어 주위를 초고속 상시 궤도 회전"
+  "desc": "철검(5Lv) + 도끼(5Lv) 합성. 플레이어 주위를 초고속 상시 궤도 회전하며 적을 갈아내고 몬스터 투사체를 요격하여 삭제"
 };
 
 if (typeof window !== 'undefined') {

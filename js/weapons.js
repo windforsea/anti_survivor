@@ -1008,7 +1008,7 @@ class WeaponManager {
         const angle = bladeStorm.orbitAngle + (i * Math.PI * 2) / count;
         const bx = this.player.x + Math.cos(angle) * orbitRadius;
         const by = this.player.y + Math.sin(angle) * orbitRadius;
-        const bladeRadius = 22;
+        const bladeRadius = 22 * this.getArea(bladeStorm);
 
         // 적 타격
         for (const enemy of enemies) {
@@ -1032,6 +1032,27 @@ class WeaponManager {
           if (dist <= bladeRadius + obs.radius) {
             bladeStorm.hitTimers.set(obs, 0.25);
             obs.takeDamage(dmg, this.game);
+          }
+        }
+
+        // [특수 기믹] 몬스터 및 보스 원거리 투사체 요격 및 삭제 (패링)
+        if (this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
+          for (let pIdx = this.game.bossProjectiles.length - 1; pIdx >= 0; pIdx--) {
+            const bp = this.game.bossProjectiles[pIdx];
+            const pDist = Math.hypot(bp.x - bx, bp.y - by);
+            if (pDist <= bladeRadius + (bp.radius || 6)) {
+              // 투사체 즉시 제거 (플레이어 피격 방지)
+              this.game.bossProjectiles.splice(pIdx, 1);
+              // 칼날에 튕겨 나가는 스파크 파티클 생성
+              if (this.game.addParticles) {
+                this.game.addParticles(bp.x, bp.y, '#38bdf8', 6);
+                this.game.addParticles(bp.x, bp.y, '#ffffff', 4);
+              }
+              // 요격 베기 사운드
+              if (typeof sounds !== 'undefined' && sounds.playSlash) {
+                sounds.playSlash();
+              }
+            }
           }
         }
       }

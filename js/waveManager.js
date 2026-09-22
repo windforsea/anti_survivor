@@ -151,8 +151,22 @@ class WaveManager {
     const islandBound = 1540;
 
     for (let i = 0; i < count; i++) {
-      const mobKey = mobs[Math.floor(Math.random() * mobs.length)];
-      const typeDef = ENEMY_TYPES[mobKey] || {};
+      let mobKey = mobs[Math.floor(Math.random() * mobs.length)];
+      let typeDef = ENEMY_TYPES[mobKey] || {};
+
+      // [밸런스 조정] 원거리 몬스터(흑마술사, 타락한 마도사 등) 생성량을 기존의 2/3로 감소
+      // 원거리 몬스터가 추첨되었을 때 1/3(33.3%) 확률로 비원거리 몬스터로 교체하거나 스폰 생략
+      if (typeDef.isRanged && Math.random() < (1 / 3)) {
+        const meleeMobs = mobs.filter(m => !(ENEMY_TYPES[m] && ENEMY_TYPES[m].isRanged));
+        if (meleeMobs.length > 0) {
+          mobKey = meleeMobs[Math.floor(Math.random() * meleeMobs.length)];
+          typeDef = ENEMY_TYPES[mobKey] || {};
+        } else {
+          // 비원거리 대체 몹이 없는 경우 해당 1마리 스폰 건너뛰기
+          continue;
+        }
+      }
+
       const isFlying = !!typeDef.isFlying;
 
       const angle = Math.random() * Math.PI * 2;
