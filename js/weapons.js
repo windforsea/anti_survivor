@@ -697,7 +697,7 @@ class WeaponManager {
       radius: 95 * area,
       damage: dmg,
       knockbackDir: null,
-      knockbackForce: 240,
+      knockbackForce: 160,
       life: 0.22,
       maxLife: 0.22,
       hitEnemies: new Set(),
@@ -1364,7 +1364,7 @@ class WeaponManager {
           y: this.player.y + (Math.random() - 0.5) * 40,
           target: null,
           hitTimer: 0,
-          missileTimer: 0.2 * idx, // 교차 발사 엇박자
+          missileTimer: 0.6 * idx, // 3체 0.6초 교차 엇박자 발사
           hoverAngle: (idx * Math.PI * 2) / 3,
           trail: []
         });
@@ -1373,7 +1373,7 @@ class WeaponManager {
         eclipseSpiral.familiars.length = count;
       }
 
-      // 화면 내 잔존 미사일 개수 카운트 (후반 렉 원천 차단: 최대 10발 제한)
+      // 화면 내 잔존 미사일 개수 카운트 (후반 렉 원천 차단: 최대 32발 제한)
       let currentGhostCount = 0;
       for (let pIdx = 0; pIdx < this.projectiles.length; pIdx++) {
         if (this.projectiles[pIdx].type === 'voidGhostMissile') currentGhostCount++;
@@ -1445,31 +1445,42 @@ class WeaponManager {
           }
         }
 
-        // 4. 비전 매직 미사일 주기적 소환 난사 (후반 렉 방지 가드: 화면 최대 10발 제한)
-        fam.missileTimer = (fam.missileTimer || 0.65) - dt;
+        // 4. 비전 매직 미사일 보주 외곽 8방향 방출 (후반 렉 방지 가드: 화면 최대 32발 제한)
+        fam.missileTimer = (fam.missileTimer !== undefined ? fam.missileTimer : (0.6 * i)) - dt;
         if (fam.missileTimer <= 0) {
-          fam.missileTimer = 0.65; // 0.65초 주기
+          fam.missileTimer = 1.8; // 1.8초 주기 (3체가 0.6초 간격으로 번갈아 8방향 발사)
 
-          if (currentGhostCount < 10 && enemies.length > 0) {
-            const missileTarget = this.getRandomAliveEnemy(enemies, 600) || fam.target || this.getClosestEnemy(enemies);
-            if (missileTarget) {
-              const ang = Math.atan2(missileTarget.y - fam.y, missileTarget.x - fam.x) + (Math.random() - 0.5) * 0.4;
+          if (currentGhostCount < 32) {
+            sounds.playMagic();
+            const spawnOffset = orbRadius + 14; // 보주 외곽 위치 (약 32px)
+            const missileDmg = Math.max(1, Math.round(dmg * 0.45));
+            const areaMult = this.getArea(eclipseSpiral);
+
+            for (let k = 0; k < 8; k++) {
+              const ang = (k / 8) * Math.PI * 2;
+              const spawnX = fam.x + Math.cos(ang) * spawnOffset;
+              const spawnY = fam.y + Math.sin(ang) * spawnOffset;
               this.projectiles.push({
                 type: 'voidGhostMissile',
-                x: fam.x,
-                y: fam.y,
-                vx: Math.cos(ang) * 480,
-                vy: Math.sin(ang) * 480,
-                radius: 6 * this.getArea(eclipseSpiral),
-                damage: Math.round(dmg * 0.55),
-                pierce: 1,
-                homing: true,
-                life: 1.2,
+                x: spawnX,
+                y: spawnY,
+                vx: Math.cos(ang) * 440,
+                vy: Math.sin(ang) * 440,
+                radius: 7 * areaMult,
+                damage: missileDmg,
+                pierce: 2,
+                homing: false,
+                life: 1.1,
                 color: '#e879f9',
                 hitEnemies: new Set(),
                 hitObstacles: new Set()
               });
               currentGhostCount++;
+            }
+
+            if (this.game && this.game.addParticles) {
+              this.game.addParticles(fam.x, fam.y, '#e879f9', 8);
+              this.game.addParticles(fam.x, fam.y, '#c084fc', 6);
             }
           }
         }
