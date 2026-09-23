@@ -14,9 +14,8 @@ function formatStars(currentLevel, maxLevel) {
   return '★'.repeat(filled) + '☆'.repeat(empty);
 }
 
-// 6종 캐릭터별 고유 시그니처 무기 체계 (타 직업의 시그니처 무기는 절대 등장하지 않음)
+// 5종 캐릭터별 고유 시그니처 무기 체계 (철검은 전 직업 공용 무기로 전환되어 모든 캐릭터 사용 가능)
 const CHARACTER_SIGNATURE_WEAPONS = {
-  knight: 'sword',          // 방랑기사: 철검
   mage: 'fireWand',         // 마도사: 불 지팡이
   assassin: 'poisonDagger', // 암살자: 독비수
   cleric: 'holyWater',      // 성직자: 성수
@@ -26,7 +25,7 @@ const CHARACTER_SIGNATURE_WEAPONS = {
 
 // 해당 캐릭터가 사용할 수 없는 타 직업 시그니처 무기 목록 반환 (블랙리스트)
 function getForbiddenWeaponsForClass(charType) {
-  const mySig = CHARACTER_SIGNATURE_WEAPONS[charType] || 'sword';
+  const mySig = CHARACTER_SIGNATURE_WEAPONS[charType] || null;
   return Object.values(CHARACTER_SIGNATURE_WEAPONS).filter(sig => sig !== mySig);
 }
 
