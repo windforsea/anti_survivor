@@ -1239,10 +1239,261 @@ class WeaponManager {
       }
     }
 
+    // [기본 무기 14] 어둠의 보주 (shadowOrb) 자율 추적 사역마(소환수 구체) 다단히트
+    const shadowOrb = this.weapons['shadowOrb'];
+    if (shadowOrb) {
+      const projSpeedMult = (1 + (shadowOrb.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+      const orbSpeed = 420 * projSpeedMult;
+      const count = this.getCount(shadowOrb);
+      const dmg = this.getDamage(shadowOrb);
+      const orbRadius = 14 * this.getArea(shadowOrb);
+      const hitInterval = Math.max(0.18, 0.30 / (1 + (shadowOrb.cooldownLevel || 0) * 0.08));
+
+      if (!shadowOrb.familiars) shadowOrb.familiars = [];
+      // 구체 개수 동기화
+      while (shadowOrb.familiars.length < count) {
+        const idx = shadowOrb.familiars.length;
+        shadowOrb.familiars.push({
+          x: this.player.x + (Math.random() - 0.5) * 30,
+          y: this.player.y + (Math.random() - 0.5) * 30,
+          target: null,
+          hitTimer: 0,
+          hoverAngle: (idx * Math.PI * 2) / Math.max(1, count),
+          trail: []
+        });
+      }
+      if (shadowOrb.familiars.length > count) {
+        shadowOrb.familiars.length = count;
+      }
+
+      // 각 사역마 구체 업데이트
+      for (let i = 0; i < shadowOrb.familiars.length; i++) {
+        const fam = shadowOrb.familiars[i];
+
+        // 1. 타겟 유효성 검사 (타겟이 없거나 사망 시 새 타겟 탐색)
+        if (!fam.target || fam.target.isDead) {
+          fam.target = null;
+          let closest = null;
+          let minDist = 650;
+          for (const e of enemies) {
+            if (e.isDead) continue;
+            const d = Math.hypot(e.x - fam.x, e.y - fam.y);
+            if (d < minDist) {
+              minDist = d;
+              closest = e;
+            }
+          }
+          fam.target = closest;
+        }
+
+        // 2. 이동 로직
+        if (fam.target) {
+          const dx = fam.target.x - fam.x;
+          const dy = fam.target.y - fam.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist > 5) {
+            const moveStep = Math.min(dist, orbSpeed * dt);
+            fam.x += (dx / dist) * moveStep;
+            fam.y += (dy / dist) * moveStep;
+          }
+
+          // 3. 다단히트 타격 (적과 밀착 시)
+          if (dist <= orbRadius + fam.target.radius + 10) {
+            fam.hitTimer = (fam.hitTimer || 0) - dt;
+            if (fam.hitTimer <= 0) {
+              fam.hitTimer = hitInterval;
+              const kbDir = { x: dx / (dist || 1), y: dy / (dist || 1) };
+              fam.target.takeDamage(dmg, kbDir, 80);
+              sounds.playHit();
+              if (this.game && this.game.addParticles) {
+                this.game.addParticles(fam.x, fam.y, '#9333ea', 3);
+              }
+              // 타격으로 적 사망 시 즉시 타겟 해제 -> 다음 프레임 다른 적으로 신속 전환
+              if (fam.target.isDead) {
+                fam.target = null;
+              }
+            }
+          }
+        } else {
+          // 적이 없을 때: 플레이어 주변 호위 선회
+          fam.hoverAngle = (fam.hoverAngle || 0) + 2.4 * dt;
+          const targetX = this.player.x + Math.cos(fam.hoverAngle + (i * Math.PI * 2) / count) * 45;
+          const targetY = this.player.y + Math.sin(fam.hoverAngle + (i * Math.PI * 2) / count) * 45;
+          const dx = targetX - fam.x;
+          const dy = targetY - fam.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist > 2) {
+            const step = Math.min(dist, orbSpeed * 0.8 * dt);
+            fam.x += (dx / dist) * step;
+            fam.y += (dy / dist) * step;
+          }
+        }
+
+        // 잔상(Trail) 갱신 (최대 5개)
+        if (!fam.trail) fam.trail = [];
+        fam.trail.unshift({ x: fam.x, y: fam.y });
+        if (fam.trail.length > 5) fam.trail.pop();
+
+        // 파괴 가능 장애물 접촉 시 타격
+        for (const obs of obstacles) {
+          if (obs.isDead || !obs.isDestructible) continue;
+          const dist = Math.hypot(obs.x - fam.x, obs.y - fam.y);
+          if (dist <= orbRadius + obs.radius) {
+            obs.takeDamage(dmg, this.game);
+          }
+        }
+      }
+    }
+
+    // [진화 14] 황혼의 나선 (eclipseSpiral) 자율 추적 사역마 3체 + 비전 매직 미사일 소환 난사
+    const eclipseSpiral = this.weapons['eclipseSpiral'];
+    if (eclipseSpiral) {
+      const projSpeedMult = (1 + (eclipseSpiral.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+      const orbSpeed = 520 * projSpeedMult;
+      const count = 3; // 진화 시 항상 3체
+      const dmg = this.getDamage(eclipseSpiral);
+      const orbRadius = 18 * this.getArea(eclipseSpiral);
+      const hitInterval = 0.20; // 0.20초 초고속 다단히트
+
+      if (!eclipseSpiral.familiars) eclipseSpiral.familiars = [];
+      while (eclipseSpiral.familiars.length < count) {
+        const idx = eclipseSpiral.familiars.length;
+        eclipseSpiral.familiars.push({
+          x: this.player.x + (Math.random() - 0.5) * 40,
+          y: this.player.y + (Math.random() - 0.5) * 40,
+          target: null,
+          hitTimer: 0,
+          missileTimer: 0.2 * idx, // 교차 발사 엇박자
+          hoverAngle: (idx * Math.PI * 2) / 3,
+          trail: []
+        });
+      }
+      if (eclipseSpiral.familiars.length > count) {
+        eclipseSpiral.familiars.length = count;
+      }
+
+      // 화면 내 잔존 미사일 개수 카운트 (후반 렉 원천 차단: 최대 10발 제한)
+      let currentGhostCount = 0;
+      for (let pIdx = 0; pIdx < this.projectiles.length; pIdx++) {
+        if (this.projectiles[pIdx].type === 'voidGhostMissile') currentGhostCount++;
+      }
+
+      for (let i = 0; i < eclipseSpiral.familiars.length; i++) {
+        const fam = eclipseSpiral.familiars[i];
+
+        // 1. 타겟 유효성 검사 (서로 다른 타겟 분산 우선)
+        if (!fam.target || fam.target.isDead) {
+          fam.target = null;
+          let closest = null;
+          let minDist = 750;
+          const otherTargets = new Set(eclipseSpiral.familiars.map(f => f.target).filter(t => t && !t.isDead));
+
+          for (const e of enemies) {
+            if (e.isDead) continue;
+            const d = Math.hypot(e.x - fam.x, e.y - fam.y);
+            const effectiveDist = otherTargets.has(e) ? d + 120 : d;
+            if (effectiveDist < minDist) {
+              minDist = effectiveDist;
+              closest = e;
+            }
+          }
+          fam.target = closest;
+        }
+
+        // 2. 이동
+        if (fam.target) {
+          const dx = fam.target.x - fam.x;
+          const dy = fam.target.y - fam.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist > 6) {
+            const moveStep = Math.min(dist, orbSpeed * dt);
+            fam.x += (dx / dist) * moveStep;
+            fam.y += (dy / dist) * moveStep;
+          }
+
+          // 3. 초고속 다단히트 타격
+          if (dist <= orbRadius + fam.target.radius + 12) {
+            fam.hitTimer = (fam.hitTimer || 0) - dt;
+            if (fam.hitTimer <= 0) {
+              fam.hitTimer = hitInterval;
+              const kbDir = { x: dx / (dist || 1), y: dy / (dist || 1) };
+              fam.target.takeDamage(dmg, kbDir, 110);
+              sounds.playHit();
+              if (this.game && this.game.addParticles) {
+                this.game.addParticles(fam.x, fam.y, '#c084fc', 4);
+                this.game.addParticles(fam.x, fam.y, '#f3e8ff', 2);
+              }
+              if (fam.target.isDead) {
+                fam.target = null;
+              }
+            }
+          }
+        } else {
+          // 호위 선회
+          fam.hoverAngle = (fam.hoverAngle || 0) + 3.0 * dt;
+          const targetX = this.player.x + Math.cos(fam.hoverAngle + (i * Math.PI * 2) / 3) * 60;
+          const targetY = this.player.y + Math.sin(fam.hoverAngle + (i * Math.PI * 2) / 3) * 60;
+          const dx = targetX - fam.x;
+          const dy = targetY - fam.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist > 2) {
+            const step = Math.min(dist, orbSpeed * 0.85 * dt);
+            fam.x += (dx / dist) * step;
+            fam.y += (dy / dist) * step;
+          }
+        }
+
+        // 4. 비전 매직 미사일 주기적 소환 난사 (후반 렉 방지 가드: 화면 최대 10발 제한)
+        fam.missileTimer = (fam.missileTimer || 0.65) - dt;
+        if (fam.missileTimer <= 0) {
+          fam.missileTimer = 0.65; // 0.65초 주기
+
+          if (currentGhostCount < 10 && enemies.length > 0) {
+            const missileTarget = this.getRandomAliveEnemy(enemies, 600) || fam.target || this.getClosestEnemy(enemies);
+            if (missileTarget) {
+              const ang = Math.atan2(missileTarget.y - fam.y, missileTarget.x - fam.x) + (Math.random() - 0.5) * 0.4;
+              this.projectiles.push({
+                type: 'voidGhostMissile',
+                x: fam.x,
+                y: fam.y,
+                vx: Math.cos(ang) * 480,
+                vy: Math.sin(ang) * 480,
+                radius: 6 * this.getArea(eclipseSpiral),
+                damage: Math.round(dmg * 0.55),
+                pierce: 1,
+                homing: true,
+                life: 1.2,
+                color: '#e879f9',
+                hitEnemies: new Set(),
+                hitObstacles: new Set()
+              });
+              currentGhostCount++;
+            }
+          }
+        }
+
+        // 잔상(Trail) 갱신 (최대 6개)
+        if (!fam.trail) fam.trail = [];
+        fam.trail.unshift({ x: fam.x, y: fam.y });
+        if (fam.trail.length > 6) fam.trail.pop();
+
+        // 파괴 가능 장애물
+        for (const obs of obstacles) {
+          if (obs.isDead || !obs.isDestructible) continue;
+          const dist = Math.hypot(obs.x - fam.x, obs.y - fam.y);
+          if (dist <= orbRadius + obs.radius) {
+            obs.takeDamage(dmg, this.game);
+          }
+        }
+      }
+    }
+
     // 무기 쿨다운 업데이트 및 발사 트리거
     for (const key in this.weapons) {
       const w = this.weapons[key];
-      if (w.id === 'spinningAxe') continue; // 상시 지속 회전
+      if (w.id === 'spinningAxe' || w.id === 'slayerBladeStorm' || w.id === 'shadowOrb' || w.id === 'eclipseSpiral') continue; // 상시 지속 회전
       w.cooldownTimer -= dt;
 
       if (w.cooldownTimer <= 0) {
@@ -1350,6 +1601,8 @@ class WeaponManager {
     // 2. 원거리 투사체 업데이트
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const p = this.projectiles[i];
+      p.life -= dt;
+
       if (p.type === 'shuriken') {
         p.rotAngle = (p.rotAngle || 0) + dt * 32;
       }
@@ -1389,41 +1642,6 @@ class WeaponManager {
           }
           if (window.game) {
             window.game.addParticles(p.x, p.y, p.color, 4);
-          }
-        }
-      }
-
-      // 궤도 보주 (어둠의 보주 & 황혼의 나선) 위치 업데이트 및 유령탄 발사
-      if (p.type === 'shadowOrbProj' || p.type === 'eclipseOrbProj') {
-        p.orbitAngle = (p.orbitAngle || 0) + dt * (p.type === 'eclipseOrbProj' ? 3.8 : 2.8);
-        const curAngle = p.orbitAngle + (p.angleOffset || 0);
-        p.x = this.player.x + Math.cos(curAngle) * p.orbitRadius;
-        p.y = this.player.y + Math.sin(curAngle) * p.orbitRadius;
-
-        // 황혼의 나선 2단계: 0.70초마다 유도 유령탄 발사 (초당 과다 난사 방지)
-        if (p.type === 'eclipseOrbProj') {
-          p.fireTimer = (p.fireTimer || 0.70) - dt;
-          if (p.fireTimer <= 0) {
-            p.fireTimer = 0.70;
-            const tgt = this.getClosestEnemy(enemies);
-            if (tgt) {
-              const ang = Math.atan2(tgt.y - p.y, tgt.x - p.x);
-              this.projectiles.push({
-                type: 'voidGhostMissile',
-                x: p.x,
-                y: p.y,
-                vx: Math.cos(ang) * 450,
-                vy: Math.sin(ang) * 450,
-                radius: 6 * (p.area || 1.0),
-                damage: Math.round(p.damage * 0.55),
-                pierce: 1,
-                homing: true,
-                life: 1.5,
-                color: '#e879f9',
-                hitEnemies: new Set(),
-                hitObstacles: new Set()
-              });
-            }
           }
         }
       }
@@ -1478,8 +1696,8 @@ class WeaponManager {
         }
       }
 
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
+      p.x += (p.vx || 0) * dt;
+      p.y += (p.vy || 0) * dt;
 
       // 적 충돌 검사
       for (const enemy of enemies) {
@@ -2447,35 +2665,9 @@ class WeaponManager {
     }
   }
 
-  // [기본 무기 14] 어둠의 보주 (shadowOrb): 나선 궤도 암흑 구체 소환 (중첩 무한 증식 방지)
+  // [기본 무기 14] 어둠의 보주 (shadowOrb): 자율 추적 사역마 (update 루프에서 상시 구동)
   executeShadowOrb(w, enemies) {
-    sounds.playMagic();
-    const dmg = this.getDamage(w);
-    const area = this.getArea(w);
-    const count = this.getCount(w);
-
-    // 기존 어둠의 보주 투사체 정리 (중첩 증식 방지)
-    this.projectiles = this.projectiles.filter(p => p.type !== 'shadowOrbProj');
-
-    for (let i = 0; i < count; i++) {
-      this.projectiles.push({
-        type: 'shadowOrbProj',
-        x: this.player.x,
-        y: this.player.y,
-        damage: dmg,
-        area: area,
-        angleOffset: (i * Math.PI * 2) / count,
-        orbitRadius: 78 * area,
-        orbitAngle: 0,
-        life: 3.5,
-        radius: 10 * area,
-        pierce: 999,
-        color: '#7e22ce',
-        hitCooldowns: new Map(),
-        hitEnemies: new Set(),
-        hitObstacles: new Set()
-      });
-    }
+    // update() 루프에서 사역마(familiars)로 상시 동작
   }
 
   // [신규 진화 13] 태풍의 눈 (cycloneBow = 바람 활 + 표창): 대형 회오리 화살 + 착탄 블랙홀
@@ -2507,36 +2699,9 @@ class WeaponManager {
     });
   }
 
-  // [신규 진화 14] 황혼의 나선 (eclipseSpiral = 어둠의 보주 + 마법 화살): 나선 암흑구체 3개 고정 + 0.7초 주기 유령탄
+  // [신규 진화 14] 황혼의 나선 (eclipseSpiral = 어둠의 보주 + 마법 화살): 자율 추적 사역마 3체 + 미사일 소환 (update 루프에서 상시 구동)
   executeEclipseSpiral(w, enemies) {
-    sounds.playMagic();
-    const dmg = this.getDamage(w);
-    const area = this.getArea(w);
-    const count = 3;
-
-    // 기존 황혼의 나선 보주 정리 (12개 이상 무한 증식 및 렉 차단)
-    this.projectiles = this.projectiles.filter(p => p.type !== 'eclipseOrbProj');
-
-    for (let i = 0; i < count; i++) {
-      this.projectiles.push({
-        type: 'eclipseOrbProj',
-        x: this.player.x,
-        y: this.player.y,
-        damage: dmg,
-        area: area,
-        angleOffset: (i * Math.PI * 2) / count,
-        orbitRadius: 105 * area,
-        orbitAngle: 0,
-        life: 4.0,
-        radius: 13 * area,
-        pierce: 999,
-        color: '#c084fc',
-        fireTimer: 0.70,
-        hitCooldowns: new Map(),
-        hitEnemies: new Set(),
-        hitObstacles: new Set()
-      });
-    }
+    // update() 루프에서 사역마(familiars)로 상시 동작
   }
 
   draw(ctx) {
@@ -3104,6 +3269,107 @@ class WeaponManager {
           ctx.arc(0, 0, 16 * area, 0, Math.PI * 2);
           ctx.fill();
         }
+        ctx.restore();
+      }
+    }
+
+    // 5. [기본 무기 14] 어둠의 보주 (shadowOrb) 자율 추적 사역마(소환수 구체) 렌더링
+    const shadowOrb = this.weapons['shadowOrb'];
+    if (shadowOrb && shadowOrb.familiars) {
+      const area = this.getArea(shadowOrb);
+      const baseR = 12 * area;
+
+      for (const fam of shadowOrb.familiars) {
+        // 잔상 렌더링 (보랏빛 유성 꼬리)
+        if (fam.trail && fam.trail.length > 1) {
+          for (let t = 0; t < fam.trail.length; t++) {
+            const pt = fam.trail[t];
+            const alpha = (1 - t / fam.trail.length) * 0.45;
+            const trR = baseR * (1 - (t / fam.trail.length) * 0.5);
+            ctx.fillStyle = `rgba(168, 85, 247, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, trR, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // 외곽 암흑 글로우 오라
+        ctx.save();
+        ctx.shadowColor = '#9333ea';
+        ctx.shadowBlur = 14;
+        ctx.fillStyle = '#6b21a8';
+        ctx.beginPath();
+        ctx.arc(fam.x, fam.y, baseR, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 내부 마력 코어
+        ctx.fillStyle = '#c084fc';
+        ctx.beginPath();
+        ctx.arc(fam.x, fam.y, baseR * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 중심 하이라이트 점
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(fam.x, fam.y, baseR * 0.25, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // 6. [진화 14] 황혼의 나선 (eclipseSpiral) 대형 사역마 3체 및 일식 링 렌더링
+    const eclipseSpiral = this.weapons['eclipseSpiral'];
+    if (eclipseSpiral && eclipseSpiral.familiars) {
+      const area = this.getArea(eclipseSpiral);
+      const baseR = 16 * area;
+      const pulseTime = Date.now() * 0.008;
+
+      for (let fIdx = 0; fIdx < eclipseSpiral.familiars.length; fIdx++) {
+        const fam = eclipseSpiral.familiars[fIdx];
+
+        // 잔상 렌더링 (은하수 보라-자주빛 꼬리)
+        if (fam.trail && fam.trail.length > 1) {
+          for (let t = 0; t < fam.trail.length; t++) {
+            const pt = fam.trail[t];
+            const alpha = (1 - t / fam.trail.length) * 0.55;
+            const trR = baseR * (1 - (t / fam.trail.length) * 0.45);
+            ctx.fillStyle = `rgba(192, 132, 252, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, trR, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        ctx.save();
+        // 회전하는 일식 고리 (Eclipse Ring)
+        const ringPulse = Math.sin(pulseTime * 2 + fIdx) * 3;
+        ctx.strokeStyle = 'rgba(232, 121, 249, 0.75)';
+        ctx.lineWidth = 2;
+        ctx.shadowColor = '#e879f9';
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(fam.x, fam.y, baseR + 5 + ringPulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 본체 암흑 코어
+        ctx.shadowColor = '#a855f7';
+        ctx.shadowBlur = 18;
+        ctx.fillStyle = '#4c1d95';
+        ctx.beginPath();
+        ctx.arc(fam.x, fam.y, baseR, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 황혼 에너지 펄스
+        ctx.fillStyle = '#a855f7';
+        ctx.beginPath();
+        ctx.arc(fam.x, fam.y, baseR * 0.65, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 백색 비전 중심핵
+        ctx.fillStyle = '#fdf4ff';
+        ctx.beginPath();
+        ctx.arc(fam.x, fam.y, baseR * 0.3, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
       }
     }
