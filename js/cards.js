@@ -26,16 +26,16 @@ class CardManager {
     const weaponMeta = {
       sword: { name: '철검', icon: '🗡️', iconKey: 'icon_sword', desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.' },
       axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냅니다.' },
-      whip: { name: '채찍', icon: '🪢', iconKey: 'icon_whip', desc: '가장 가까운 적을 자동 조준하여 휘두르고, 강화에 따라 반대 방향과 번갈아 교차 강타합니다.' },
+      whip: { name: '채찍', icon: '🪢', iconKey: 'icon_whip', desc: '가장 가까운 적을 자동 조준하여 휘두르고, 반대 방향과 번갈아 교차 강타합니다.' },
       shuriken: { name: '표창', icon: '🥷', iconKey: 'icon_shuriken', desc: '가장 가까운 몬스터를 향해 고속 회전하며 관통하는 표창을 던집니다.' },
       throwingDagger: { name: '표창', icon: '🥷', iconKey: 'icon_shuriken', desc: '가장 가까운 몬스터를 향해 고속 회전하며 관통하는 표창을 던집니다.' },
       magicMissile: { name: '마법 화살', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환을 발사합니다.' },
-      shotgun: { name: '산탄 총포', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄을 일제 사격합니다.' },
+      shotgun: { name: '산탄총', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄을 일제 사격합니다.' },
       holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.' },
       sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_sanctuary', desc: '플레이어를 감싸는 원형 결계로 적들에게 매초 도트 피해를 입힙니다.' },
       lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂아 반경 범위 피해를 입힙니다.' },
-      fireWand: { name: '화염 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 광역 피해를 입힙니다.' },
-      poisonDagger: { name: '맹독 비수', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 맹독 비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.' },
+      fireWand: { name: '불 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 광역 피해를 입힙니다.' },
+      poisonDagger: { name: '독비수', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 독비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.' },
       frostOrb: { name: '빙결 보주', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동을 발산하여 감속시키고 피해를 입힙니다.' }
     };
 
@@ -66,69 +66,55 @@ class CardManager {
   generateCards() {
     const cardPool = [];
 
-    // 진화 링크 힌트 헬퍼: 6대 진화 조합 안내 (주 5렙 + 부 5렙 조건)
+    // 진화 링크 힌트 헬퍼: 12대 진화 조합 안내 (각 무기당 2개 진화 루트 지원)
     const getEvolutionHint = (weaponKey) => {
-      const evoPairs = {
-        // [진화 1] 성역 + 성수 = 천상의 성역
-        sanctuary: { partner: 'holyWater', partnerKor: '성수', evoId: 'heavenlySanctuary', evoName: '천상의 성역', evoIcon: '⛪✨' },
-        holyWater: { partner: 'sanctuary', partnerKor: '성역', evoId: 'heavenlySanctuary', evoName: '천상의 성역', evoIcon: '⛪✨' },
-        acidPool: { partner: 'sanctuary', partnerKor: '성역', evoId: 'heavenlySanctuary', evoName: '천상의 성역', evoIcon: '⛪✨' },
+      const evoList = [
+        // 루트 1
+        { w1: 'sanctuary', w2: 'holyWater', evoId: 'heavenlySanctuary', evoName: '생츄어리', evoIcon: '⛪✨' },
+        { w1: 'whip', w2: 'shuriken', evoId: 'morningstarTempest', evoName: '모닝스타', evoIcon: '⛓️🌪️' },
+        { w1: 'fireWand', w2: 'magicMissile', evoId: 'apocalypseComet', evoName: '메테오', evoIcon: '☄️🔥' },
+        { w1: 'sword', w2: 'axe', evoId: 'slayerBladeStorm', evoName: '폭풍검', evoIcon: '⚔️🌪️' },
+        { w1: 'shotgun', w2: 'lightningRing', evoId: 'teslaShotgun', evoName: '뇌전포', evoIcon: '⚡💥' },
+        { w1: 'poisonDagger', w2: 'frostOrb', evoId: 'venomBlizzard', evoName: '블리자드', evoIcon: '❄️🧪' },
+        // 루트 2
+        { w1: 'sword', w2: 'lightningRing', evoId: 'thunderBlade', evoName: '벼락검', evoIcon: '⚡🗡️' },
+        { w1: 'axe', w2: 'fireWand', evoId: 'fireAxe', evoName: '화염도끼', evoIcon: '🪓🔥' },
+        { w1: 'whip', w2: 'frostOrb', evoId: 'frostWhip', evoName: '얼음채찍', evoIcon: '🪢❄️' },
+        { w1: 'shuriken', w2: 'shotgun', evoId: 'scatterShuriken', evoName: '산탄표창', evoIcon: '🥷💥' },
+        { w1: 'magicMissile', w2: 'holyWater', evoId: 'holyArrow', evoName: '신성화살', evoIcon: '🏹✨' },
+        { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪' }
+      ];
 
-        // [진화 2] 채찍 + 표창 = 모닝스타 선풍
-        whip: { partner: 'shuriken', partnerKor: '표창', evoId: 'morningstarTempest', evoName: '모닝스타 선풍', evoIcon: '⛓️🌪️' },
-        shuriken: { partner: 'whip', partnerKor: '채찍', evoId: 'morningstarTempest', evoName: '모닝스타 선풍', evoIcon: '⛓️🌪️' },
-        throwingDagger: { partner: 'whip', partnerKor: '채찍', evoId: 'morningstarTempest', evoName: '모닝스타 선풍', evoIcon: '⛓️🌪️' },
+      for (const evo of evoList) {
+        if (this.weaponManager.weapons[evo.evoId]) continue;
+        let partnerKey = null;
+        if (evo.w1 === weaponKey) partnerKey = evo.w2;
+        else if (evo.w2 === weaponKey) partnerKey = evo.w1;
 
-        // [진화 3] 화염 지팡이 + 마법 화살 = 멸망의 혜성
-        fireWand: { partner: 'magicMissile', partnerKor: '마법 화살', evoId: 'apocalypseComet', evoName: '멸망의 혜성', evoIcon: '☄️🔥' },
-        magicMissile: { partner: 'fireWand', partnerKor: '화염 지팡이', evoId: 'apocalypseComet', evoName: '멸망의 혜성', evoIcon: '☄️🔥' },
+        if (partnerKey && this.weaponManager.weapons[partnerKey]) {
+          const partnerName = weaponMeta[partnerKey]?.name || partnerKey;
+          const currentWeapon = this.weaponManager.weapons[weaponKey];
+          const partnerWeapon = this.weaponManager.weapons[partnerKey];
+          const currentLv = currentWeapon ? this.weaponManager.getLevel(currentWeapon) : 0;
+          const partnerLv = partnerWeapon ? this.weaponManager.getLevel(partnerWeapon) : 0;
 
-        // [진화 4] 철검 + 도끼 = 학살자의 폭풍검
-        sword: { partner: 'axe', partnerKor: '도끼', evoId: 'slayerBladeStorm', evoName: '학살자의 폭풍검', evoIcon: '⚔️🌪️' },
-        axe: { partner: 'sword', partnerKor: '철검', evoId: 'slayerBladeStorm', evoName: '학살자의 폭풍검', evoIcon: '⚔️🌪️' },
-
-        // [진화 5] 산탄 총포 + 번개 반지 = 테슬라 뇌전포
-        shotgun: { partner: 'lightningRing', partnerKor: '번개 반지', evoId: 'teslaShotgun', evoName: '테슬라 뇌전포', evoIcon: '⚡💥' },
-        lightningRing: { partner: 'shotgun', partnerKor: '산탄 총포', evoId: 'teslaShotgun', evoName: '테슬라 뇌전포', evoIcon: '⚡💥' },
-
-        // [진화 6] 맹독 비수 + 빙결 보주 = 베놈 블리자드
-        poisonDagger: { partner: 'frostOrb', partnerKor: '빙결 보주', evoId: 'venomBlizzard', evoName: '베놈 블리자드', evoIcon: '❄️🧪' },
-        frostOrb: { partner: 'poisonDagger', partnerKor: '맹독 비수', evoId: 'venomBlizzard', evoName: '베놈 블리자드', evoIcon: '❄️🧪' }
-      };
-
-      const pair = evoPairs[weaponKey];
-      if (!pair) return null;
-
-      // 이미 해당 진화 무기를 보유하고 있다면 힌트 표시 불필요
-      if (this.weaponManager.weapons[pair.evoId]) return null;
-
-      const currentWeapon = this.weaponManager.weapons[weaponKey];
-      const partnerWeapon = this.weaponManager.weapons[pair.partner];
-
-      // 인벤토리에 조합 파트너 무기가 없다면 힌트 박스 미표시
-      if (!partnerWeapon) return null;
-
-      const currentLv = currentWeapon ? this.weaponManager.getLevel(currentWeapon) : 0;
-      const partnerLv = this.weaponManager.getLevel(partnerWeapon);
-
-      // 조건 충족: 본인 5렙(MAX) + 파트너 5렙(MAX)
-      const isReady = (currentLv >= 5 && partnerLv >= 5);
-      if (isReady) {
-        return {
-          status: 'ready',
-          evoName: pair.evoName,
-          evoIcon: pair.evoIcon,
-          text: `✨ ${pair.evoName} (진화 가능)`
-        };
+          if (currentLv >= 5 && partnerLv >= 5) {
+            return {
+              status: 'ready',
+              evoName: evo.evoName,
+              evoIcon: evo.evoIcon,
+              text: `✨ ${evo.evoName} (진화 가능)`
+            };
+          }
+          return {
+            status: 'linked',
+            evoName: evo.evoName,
+            evoIcon: evo.evoIcon,
+            text: evo.evoName
+          };
+        }
       }
-
-      // 파트너 무기 보유 중일 때 진화 무기 명칭만 심플하게 표시
-      return {
-        status: 'linked',
-        evoName: pair.evoName,
-        evoIcon: pair.evoIcon,
-        text: pair.evoName
-      };
+      return null;
     };
 
     // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한)
@@ -142,7 +128,13 @@ class CardManager {
       apocalypseComet: ['fireWand', 'magicMissile'],
       slayerBladeStorm: ['sword', 'axe'],
       teslaShotgun: ['shotgun', 'lightningRing'],
-      venomBlizzard: ['poisonDagger', 'frostOrb']
+      venomBlizzard: ['poisonDagger', 'frostOrb'],
+      thunderBlade: ['sword', 'lightningRing'],
+      fireAxe: ['axe', 'fireWand'],
+      frostWhip: ['whip', 'frostOrb'],
+      scatterShuriken: ['shuriken', 'shotgun'],
+      holyArrow: ['magicMissile', 'holyWater'],
+      plague: ['poisonDagger', 'sanctuary']
     };
 
     const isConsumedWeapon = (key) => {
@@ -213,7 +205,7 @@ class CardManager {
     // 2. 특수 진화 무기 합성 카드 (5종, 조건: 두 재료 무기 모두 5레벨 MAX)
     const evolutionCards = [];
 
-    // [진화 1] 천상의 성역 = 성역(5Lv) + 성수(5Lv)
+    // [진화 1] 생츄어리 = 성역(5Lv) + 성수(5Lv)
     const wSanctuary = this.weaponManager.weapons['sanctuary'];
     const wHolyWater = this.weaponManager.weapons['holyWater'] || this.weaponManager.weapons['acidPool'];
     const hasHeavenlySanctuary = !!this.weaponManager.weapons['heavenlySanctuary'];
@@ -227,11 +219,11 @@ class CardManager {
           id: 'evolve_heavenly_sanctuary',
           type: 'weapon_evolution',
           category: 'evolution',
-          title: '[진화] 천상의 성역',
+          title: '[진화] 생츄어리',
           icon: '⛪✨',
           iconKey: 'icon_heavenlysanctuary',
-          desc: '성역과 성수를 합성 진화합니다! 두 무기가 흡수 소멸되며 플레이어 주위에 초대형 룬 결계가 형성되고 도트 피해 시 낮은 확률로 적을 얼립니다. (1Lv 획득, 슬롯 1칸 반환)',
-          effectText: '성역(5Lv) + 성수(5Lv) 합성 -> [천상의 성역 1Lv]',
+          desc: '성역과 성수를 합성 진화합니다! 초대형 성역 결계가 형성되고 범위 내 적에게 지속 피해 및 빙결을 겁니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '성역(5Lv) + 성수(5Lv) 합성 -> [생츄어리 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
           apply: () => {
@@ -254,7 +246,7 @@ class CardManager {
       }
     }
 
-    // [진화 2] 모닝스타 선풍 = 모닝스타 채찍(5Lv) + 표창(5Lv)
+    // [진화 2] 모닝스타 = 채찍(5Lv) + 표창(5Lv)
     const wWhip = this.weaponManager.weapons['whip'];
     const wShuriken = this.weaponManager.weapons['shuriken'] || this.weaponManager.weapons['throwingDagger'];
     const hasMorningstarTempest = !!this.weaponManager.weapons['morningstarTempest'];
@@ -268,11 +260,11 @@ class CardManager {
           id: 'evolve_morningstar_tempest',
           type: 'weapon_evolution',
           category: 'evolution',
-          title: '[진화] 모닝스타 선풍',
+          title: '[진화] 모닝스타',
           icon: '⛓️🌪️',
           iconKey: 'icon_morningstartempest',
-          desc: '채찍과 표창을 합성 진화합니다! 채찍을 전후방으로 휘두르며 첫 번째 적중 위치에서 4방향으로 관통 표창이 폭쇄 방출됩니다. (1Lv 획득, 슬롯 1칸 반환)',
-          effectText: '채찍(5Lv) + 표창(5Lv) 합성 -> [모닝스타 선풍 1Lv]',
+          desc: '채찍과 표창을 합성 진화합니다! 채찍 타격 후 적중 위치에서 4방향 관통 표창이 폭쇄 방출됩니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '채찍(5Lv) + 표창(5Lv) 합성 -> [모닝스타 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
           apply: () => {
@@ -295,7 +287,7 @@ class CardManager {
       }
     }
 
-    // [진화 3] 멸망의 혜성 = 화염 지팡이(5Lv) + 마법 화살(5Lv)
+    // [진화 3] 메테오 = 불 지팡이(5Lv) + 마법 화살(5Lv)
     const wFire = this.weaponManager.weapons['fireWand'];
     const wMissile = this.weaponManager.weapons['magicMissile'];
     const hasApocalypseComet = !!this.weaponManager.weapons['apocalypseComet'];
@@ -309,11 +301,11 @@ class CardManager {
           id: 'evolve_apocalypse_comet',
           type: 'weapon_evolution',
           category: 'evolution',
-          title: '[진화] 멸망의 혜성',
+          title: '[진화] 메테오',
           icon: '☄️🔥',
           iconKey: 'icon_apocalypsecomet',
-          desc: '화염 지팡이와 마법 화살을 합성 진화합니다! 유도 추적 초고열 화염 혜성을 연속 투하하여 헬파이어 연쇄 폭발을 일으킵니다. (1Lv 획득, 슬롯 1칸 반환)',
-          effectText: '화염 지팡이(5Lv) + 마법 화살(5Lv) 합성 -> [멸망의 혜성 1Lv]',
+          desc: '불 지팡이와 마법 화살을 합성 진화합니다! 유도 추적 화염 메테오를 연속 투하하여 연쇄 폭발을 일으킵니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '불 지팡이(5Lv) + 마법 화살(5Lv) 합성 -> [메테오 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
           apply: () => {
@@ -334,7 +326,7 @@ class CardManager {
       }
     }
 
-    // [진화 4] 학살자의 폭풍검 = 철검(5Lv) + 도끼(5Lv)
+    // [진화 4] 폭풍검 = 철검(5Lv) + 도끼(5Lv)
     const wSword = this.weaponManager.weapons['sword'];
     const wAxe = this.weaponManager.weapons['axe'];
     const hasSlayerBladeStorm = !!this.weaponManager.weapons['slayerBladeStorm'];
@@ -348,11 +340,11 @@ class CardManager {
           id: 'evolve_slayer_blade_storm',
           type: 'weapon_evolution',
           category: 'evolution',
-          title: '[진화] 학살자의 폭풍검',
+          title: '[진화] 폭풍검',
           icon: '⚔️🌪️',
           iconKey: 'icon_slayerbladestorm',
-          desc: '철검과 도끼를 합성 진화합니다! 거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 접근하는 모든 적을 갈아내고 적 투사체를 요격하여 삭제합니다. (1Lv 획득, 슬롯 1칸 반환)',
-          effectText: '철검(5Lv) + 도끼(5Lv) 합성 -> [학살자의 폭풍검 1Lv]',
+          desc: '철검과 도끼를 합성 진화합니다! 대검과 도끼가 주위를 상시 회전하며 적을 베고 투사체를 요격합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '철검(5Lv) + 도끼(5Lv) 합성 -> [폭풍검 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
           apply: () => {
@@ -373,7 +365,7 @@ class CardManager {
       }
     }
 
-    // [진화 5] 테슬라 뇌전포 = 산탄 총포(5Lv) + 번개 반지(5Lv)
+    // [진화 5] 뇌전포 = 산탄총(5Lv) + 번개 반지(5Lv)
     const wShotgun = this.weaponManager.weapons['shotgun'];
     const wLightning = this.weaponManager.weapons['lightningRing'];
     const hasTeslaShotgun = !!this.weaponManager.weapons['teslaShotgun'];
@@ -387,11 +379,11 @@ class CardManager {
           id: 'evolve_tesla_shotgun',
           type: 'weapon_evolution',
           category: 'evolution',
-          title: '[진화] 테슬라 뇌전포',
+          title: '[진화] 뇌전포',
           icon: '⚡💥',
           iconKey: 'icon_teslashotgun',
-          desc: '산탄 총포와 번개 반지를 합성 진화합니다! 고전압 뇌전 산탄을 일제 사격하며 체인 라이트닝과 하늘에서 벼락이 동시 폭격됩니다. (1Lv 획득, 슬롯 1칸 반환)',
-          effectText: '산탄 총포(5Lv) + 번개 반지(5Lv) 합성 -> [테슬라 뇌전포 1Lv]',
+          desc: '산탄총과 번개 반지를 합성 진화합니다! 뇌전 산탄 사격과 함께 체인 라이트닝 낙뢰가 폭격됩니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '산탄총(5Lv) + 번개 반지(5Lv) 합성 -> [뇌전포 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
           apply: () => {
@@ -412,7 +404,7 @@ class CardManager {
       }
     }
 
-    // [진화 6] 베놈 블리자드 = 맹독 비수(5Lv) + 빙결 보주(5Lv)
+    // [진화 6] 블리자드 = 독비수(5Lv) + 빙결 보주(5Lv)
     const wDagger = this.weaponManager.weapons['poisonDagger'];
     const wFrost = this.weaponManager.weapons['frostOrb'];
     const hasVenomBlizzard = !!this.weaponManager.weapons['venomBlizzard'];
@@ -426,11 +418,11 @@ class CardManager {
           id: 'evolve_venom_blizzard',
           type: 'weapon_evolution',
           category: 'evolution',
-          title: '[진화] 베놈 블리자드',
+          title: '[진화] 블리자드',
           icon: '❄️🧪',
           iconKey: 'icon_venomblizzard',
-          desc: '맹독 비수와 빙결 보주를 합성 진화합니다! 거대한 서리독 구체를 발사하여 냉기 파동을 방출하고 8방향 독성 얼음 파편으로 폭발합니다. (1Lv 획득, 슬롯 1칸 반환)',
-          effectText: '맹독 비수(5Lv) + 빙결 보주(5Lv) 합성 -> [베놈 블리자드 1Lv]',
+          desc: '독비수와 빙결 보주를 합성 진화합니다! 서리 구체가 냉기 파동을 일으킨 후 8방향 얼음 파편으로 폭발합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '독비수(5Lv) + 빙결 보주(5Lv) 합성 -> [블리자드 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
           apply: () => {
@@ -445,6 +437,220 @@ class CardManager {
             if (window.game) {
               window.game.addParticles(this.player.x, this.player.y, '#10b981', 50);
               window.game.addParticles(this.player.x, this.player.y, '#38bdf8', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 7] 벼락검 = 철검(5Lv) + 번개 반지(5Lv)
+    const hasThunderBlade = !!this.weaponManager.weapons['thunderBlade'];
+    if (wSword && wLightning && !hasThunderBlade) {
+      const swordLv = this.weaponManager.getLevel(wSword);
+      const lightningLv = this.weaponManager.getLevel(wLightning);
+      if (swordLv >= 5 && lightningLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_thunder_blade',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 벼락검',
+          icon: '⚡⚔️',
+          iconKey: 'icon_thunderblade',
+          desc: '철검과 번개 반지를 합성 진화합니다! 전방을 강타 베기하며 타겟 적에게 즉시 강력한 벼락을 내리칩니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '철검(5Lv) + 번개 반지(5Lv) 합성 -> [벼락검 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('sword');
+              this.weaponManager.consumedWeapons.add('lightningRing');
+            }
+            delete this.weaponManager.weapons['sword'];
+            delete this.weaponManager.weapons['lightningRing'];
+            this.weaponManager.unlockWeapon('thunderBlade');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#38bdf8', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#fbbf24', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 8] 화염도끼 = 도끼(5Lv) + 불 지팡이(5Lv)
+    const hasFireAxe = !!this.weaponManager.weapons['fireAxe'];
+    if (wAxe && wFire && !hasFireAxe) {
+      const axeLv = this.weaponManager.getLevel(wAxe);
+      const fireLv = this.weaponManager.getLevel(wFire);
+      if (axeLv >= 5 && fireLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_fire_axe',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 화염도끼',
+          icon: '🪓🔥',
+          iconKey: 'icon_fireaxe',
+          desc: '도끼와 불 지팡이를 합성 진화합니다! 도끼가 360도 대회전하며 사방으로 화염구를 뿜어내어 폭발시킵니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '도끼(5Lv) + 불 지팡이(5Lv) 합성 -> [화염도끼 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('axe');
+              this.weaponManager.consumedWeapons.add('fireWand');
+            }
+            delete this.weaponManager.weapons['axe'];
+            delete this.weaponManager.weapons['fireWand'];
+            this.weaponManager.unlockWeapon('fireAxe');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#ef4444', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#f59e0b', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 9] 얼음채찍 = 채찍(5Lv) + 빙결 보주(5Lv)
+    const hasFrostWhip = !!this.weaponManager.weapons['frostWhip'];
+    if (wWhip && wFrost && !hasFrostWhip) {
+      const whipLv = this.weaponManager.getLevel(wWhip);
+      const frostLv = this.weaponManager.getLevel(wFrost);
+      if (whipLv >= 5 && frostLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_frost_whip',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 얼음채찍',
+          icon: '❄️⛓️',
+          iconKey: 'icon_frostwhip',
+          desc: '채찍과 빙결 보주를 합성 진화합니다! 전후방을 냉기 채찍으로 후려치며 피격된 모든 적을 1초간 동결시킵니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '채찍(5Lv) + 빙결 보주(5Lv) 합성 -> [얼음채찍 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('whip');
+              this.weaponManager.consumedWeapons.add('frostOrb');
+            }
+            delete this.weaponManager.weapons['whip'];
+            delete this.weaponManager.weapons['frostOrb'];
+            this.weaponManager.unlockWeapon('frostWhip');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#38bdf8', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#e0f2fe', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 10] 산탄표창 = 표창(5Lv) + 산탄총(5Lv)
+    const hasScatterShuriken = !!this.weaponManager.weapons['scatterShuriken'];
+    if (wShuriken && wShotgun && !hasScatterShuriken) {
+      const shurikenLv = this.weaponManager.getLevel(wShuriken);
+      const shotgunLv = this.weaponManager.getLevel(wShotgun);
+      if (shurikenLv >= 5 && shotgunLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_scatter_shuriken',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 산탄표창',
+          icon: '🎯💥',
+          iconKey: 'icon_scattershuriken',
+          desc: '표창과 산탄총을 합성 진화합니다! 부채꼴로 5발의 대형 표창을 일제 발사하여 적들을 꿰뚫고 크게 밀쳐냅니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '표창(5Lv) + 산탄총(5Lv) 합성 -> [산탄표창 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('shuriken');
+              this.weaponManager.consumedWeapons.add('throwingDagger');
+              this.weaponManager.consumedWeapons.add('shotgun');
+            }
+            delete this.weaponManager.weapons['shuriken'];
+            delete this.weaponManager.weapons['throwingDagger'];
+            delete this.weaponManager.weapons['shotgun'];
+            this.weaponManager.unlockWeapon('scatterShuriken');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#94a3b8', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#fbbf24', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 11] 신성화살 = 마법 화살(5Lv) + 성수(5Lv)
+    const hasHolyArrow = !!this.weaponManager.weapons['holyArrow'];
+    if (wMissile && wHolyWater && !hasHolyArrow) {
+      const missileLv = this.weaponManager.getLevel(wMissile);
+      const holyWaterLv = this.weaponManager.getLevel(wHolyWater);
+      if (missileLv >= 5 && holyWaterLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_holy_arrow',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 신성화살',
+          icon: '🏹✨',
+          iconKey: 'icon_holyarrow',
+          desc: '마법 화살과 성수를 합성 진화합니다! 유도 추적 신성 화살을 쏘아보내며 적중한 자리에 3초간 정화 장판을 생성합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '마법 화살(5Lv) + 성수(5Lv) 합성 -> [신성화살 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('magicMissile');
+              this.weaponManager.consumedWeapons.add('holyWater');
+              this.weaponManager.consumedWeapons.add('acidPool');
+            }
+            delete this.weaponManager.weapons['magicMissile'];
+            delete this.weaponManager.weapons['holyWater'];
+            delete this.weaponManager.weapons['acidPool'];
+            this.weaponManager.unlockWeapon('holyArrow');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#60a5fa', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#fef08a', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 12] 역병 = 독비수(5Lv) + 성역(5Lv)
+    const hasPlague = !!this.weaponManager.weapons['plague'];
+    if (wDagger && wSanctuary && !hasPlague) {
+      const daggerLv = this.weaponManager.getLevel(wDagger);
+      const sanctuaryLv = this.weaponManager.getLevel(wSanctuary);
+      if (daggerLv >= 5 && sanctuaryLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_plague',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 역병',
+          icon: '☣️💀',
+          iconKey: 'icon_plague',
+          desc: '독비수와 성역을 합성 진화합니다! 플레이어 주위에 독기 결계를 펼쳐 지속 중독을 걸고, 30초마다 화면 전체에 대폭발을 일으킵니다! (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '독비수(5Lv) + 성역(5Lv) 합성 -> [역병 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('poisonDagger');
+              this.weaponManager.consumedWeapons.add('sanctuary');
+            }
+            delete this.weaponManager.weapons['poisonDagger'];
+            delete this.weaponManager.weapons['sanctuary'];
+            this.weaponManager.unlockWeapon('plague');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#a855f7', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#10b981', 50);
             }
           }
         });

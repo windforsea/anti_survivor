@@ -17,6 +17,12 @@ import { apocalypseCometWeaponConfig } from './evolutions/apocalypseComet.js';
 import { slayerBladeStormWeaponConfig } from './evolutions/slayerBladeStorm.js';
 import { teslaShotgunWeaponConfig } from './evolutions/teslaShotgun.js';
 import { venomBlizzardWeaponConfig } from './evolutions/venomBlizzard.js';
+import { thunderBladeWeaponConfig } from './evolutions/thunderBlade.js';
+import { fireAxeWeaponConfig } from './evolutions/fireAxe.js';
+import { frostWhipWeaponConfig } from './evolutions/frostWhip.js';
+import { scatterShurikenWeaponConfig } from './evolutions/scatterShuriken.js';
+import { holyArrowWeaponConfig } from './evolutions/holyArrow.js';
+import { plagueWeaponConfig } from './evolutions/plague.js';
 
 export const ALL_WEAPON_CONFIGS = {
   sword: swordWeaponConfig,
@@ -37,8 +43,15 @@ export const ALL_WEAPON_CONFIGS = {
   slayerBladeStorm: slayerBladeStormWeaponConfig,
   teslaShotgun: teslaShotgunWeaponConfig,
   venomBlizzard: venomBlizzardWeaponConfig,
+  thunderBlade: thunderBladeWeaponConfig,
+  fireAxe: fireAxeWeaponConfig,
+  frostWhip: frostWhipWeaponConfig,
+  scatterShuriken: scatterShurikenWeaponConfig,
+  holyArrow: holyArrowWeaponConfig,
+  plague: plagueWeaponConfig,
 };
 
 if (typeof window !== 'undefined') {
   window.ALL_WEAPON_CONFIGS = ALL_WEAPON_CONFIGS;
 }
+

@@ -136,7 +136,7 @@ class WeaponManager {
       },
       shotgun: {
         id: 'shotgun',
-        name: '산탄 총포',
+        name: '산탄총',
         icon: '💥',
         desc: '바라보는 방향으로 전방 부채꼴 형태로 여러 발의 산탄을 일제히 사격합니다.',
         baseCooldown: 1.30,
@@ -213,7 +213,7 @@ class WeaponManager {
       },
       fireWand: {
         id: 'fireWand',
-        name: '화염 지팡이',
+        name: '불 지팡이',
         icon: '🔥',
         iconSprite: 'icon_firewand',
         desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 주변 적들에게 화염 피해를 입힙니다.',
@@ -229,11 +229,11 @@ class WeaponManager {
         cooldownTimer: 0
       },
 
-      // ================= 5대 정통 특수 진화 무기 (5렙+5렙 조합, 1레벨 시작 및 5레벨까지 강화 가능) =================
-      // [진화 1] 천상의 성역 (heavenlySanctuary) = 성역(5렙) + 성수(5렙)
+      // ================= 12대 정통 특수 진화 무기 (5렙+5렙 조합, 1레벨 시작 및 5레벨까지 강화 가능) =================
+      // [진화 1] 생츄어리 (heavenlySanctuary) = 성역(5렙) + 성수(5렙)
       heavenlySanctuary: {
         id: 'heavenlySanctuary',
-        name: '천상의 성역',
+        name: '생츄어리',
         icon: '⛪✨',
         iconSprite: 'icon_heavenlysanctuary',
         desc: '초대형 룬 결계를 형성하여 초고속 도트 피해를 입히며 낮은 확률로 적을 얼립니다.',
@@ -247,10 +247,10 @@ class WeaponManager {
         areaLevel: 0,
         cooldownTimer: 0
       },
-      // [진화 2] 모닝스타 선풍 (morningstarTempest) = 채찍(5렙) + 표창(5렙)
+      // [진화 2] 모닝스타 (morningstarTempest) = 채찍(5렙) + 표창(5렙)
       morningstarTempest: {
         id: 'morningstarTempest',
-        name: '모닝스타 선풍',
+        name: '모닝스타',
         icon: '⛓️🌪️',
         iconSprite: 'icon_morningstartempest',
         desc: '일반 채찍과 동일하게 휘두르며 첫 번째 타겟 적중 시 4방향으로 관통 표창을 발사합니다.',
@@ -265,10 +265,10 @@ class WeaponManager {
         speedProjLevel: 0,
         cooldownTimer: 0
       },
-      // [진화 3] 멸망의 혜성 (apocalypseComet) = 화염 지팡이(5렙) + 마법 화살(5렙)
+      // [진화 3] 메테오 (apocalypseComet) = 불 지팡이(5렙) + 마법 화살(5렙)
       apocalypseComet: {
         id: 'apocalypseComet',
-        name: '멸망의 혜성',
+        name: '메테오',
         icon: '☄️🔥',
         iconSprite: 'icon_apocalypsecomet',
         desc: '적을 유도 추적하는 거대한 초고열 화염 혜성을 연사 발사하며, 명중 시 초대형 헬파이어 연쇄 폭발을 일으킵니다.',
@@ -283,16 +283,16 @@ class WeaponManager {
         speedProjLevel: 0,
         cooldownTimer: 0
       },
-      // [진화 4] 학살자의 폭풍검 (slayerBladeStorm) = 철검(5렙) + 도끼(5렙)
+      // [진화 4] 폭풍검 (slayerBladeStorm) = 철검(5렙) + 도끼(5렙)
       slayerBladeStorm: {
         id: 'slayerBladeStorm',
-        name: '학살자의 폭풍검',
+        name: '폭풍검',
         icon: '⚔️🌪️',
         iconSprite: 'icon_slayerbladestorm',
         desc: '거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 접근하는 모든 적을 갈아냅니다.',
         baseCooldown: 0.50,
-        baseDamage: 56,     // 검기 삭제 보상으로 기본 공격력 대폭 상향 (46 -> 56)
-        baseCount: 4,       // 회전 무기 4개
+        baseDamage: 56,
+        baseCount: 4,
         baseArea: 1.25,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -302,16 +302,16 @@ class WeaponManager {
         hitTimers: new Map(),
         cooldownTimer: 0
       },
-      // [진화 5] 테슬라 뇌전포 (teslaShotgun) = 산탄 총포(5렙) + 번개 반지(5렙)
+      // [진화 5] 뇌전포 (teslaShotgun) = 산탄총(5렙) + 번개 반지(5렙)
       teslaShotgun: {
         id: 'teslaShotgun',
-        name: '테슬라 뇌전포',
+        name: '뇌전포',
         icon: '⚡💥',
         iconSprite: 'icon_teslashotgun',
         desc: '전방 부채꼴로 고전압 뇌전 탄환들을 일제 산탄 사격하며, 적중 시 체인 라이트닝과 하늘에서 낙뢰가 동시 폭격됩니다.',
         baseCooldown: 1.25,
         baseDamage: 45,
-        baseCount: 6,       // 6발 뇌전 산탄
+        baseCount: 6,
         baseArea: 1.20,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -321,10 +321,10 @@ class WeaponManager {
         cooldownTimer: 0
       },
 
-      // [신규 기본 무기 1] 맹독 비수 (poisonDagger)
+      // [기본 무기] 독비수 (poisonDagger)
       poisonDagger: {
         id: 'poisonDagger',
-        name: '맹독 비수',
+        name: '독비수',
         icon: '🗡️🧪',
         iconSprite: 'icon_poisondagger',
         desc: '바라보는 방향으로 독이 묻은 비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.',
@@ -340,7 +340,7 @@ class WeaponManager {
         cooldownTimer: 0
       },
 
-      // [신규 기본 무기 2] 빙결 보주 (frostOrb)
+      // [기본 무기] 빙결 보주 (frostOrb)
       frostOrb: {
         id: 'frostOrb',
         name: '빙결 보주',
@@ -359,10 +359,10 @@ class WeaponManager {
         cooldownTimer: 0
       },
 
-      // [진화 6] 베놈 블리자드 (venomBlizzard = 맹독 비수 5Lv + 빙결 보주 5Lv, 추천안 C 2단계 원거리 발사형)
+      // [진화 6] 블리자드 (venomBlizzard = 독비수 5Lv + 빙결 보주 5Lv)
       venomBlizzard: {
         id: 'venomBlizzard',
-        name: '베놈 블리자드',
+        name: '블리자드',
         icon: '❄️🧪',
         iconSprite: 'icon_venomblizzard',
         desc: '서리독 구체를 전방으로 발사합니다. 구체는 전진하며 초당 2회 냉기 파동(반경 51px)을 방출하고, 발사 2초 후 폭발하여 8방향으로 독단검을 일제 사격합니다.',
@@ -375,6 +375,115 @@ class WeaponManager {
         countLevel: 0,
         areaLevel: 0,
         speedProjLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 7] 벼락검 (thunderBlade = 철검 5Lv + 번개 반지 5Lv)
+      thunderBlade: {
+        id: 'thunderBlade',
+        name: '벼락검',
+        icon: '⚡🗡️',
+        iconSprite: 'icon_thunderblade',
+        desc: '전방을 날카롭게 강타 베기하며, 베어낸 타겟 위치에 즉시 강력한 벼락이 내리꽂힙니다.',
+        baseCooldown: 0.55,
+        baseDamage: 55,
+        baseCount: 1,
+        baseArea: 1.25,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 8] 화염도끼 (fireAxe = 도끼 5Lv + 불 지팡이 5Lv)
+      fireAxe: {
+        id: 'fireAxe',
+        name: '화염도끼',
+        icon: '🪓🔥',
+        iconSprite: 'icon_fireaxe',
+        desc: '360도 도끼 회전 베기 직후, 사방 4방향으로 폭발 화염구를 일제 방출합니다.',
+        baseCooldown: 1.05,
+        baseDamage: 62,
+        baseCount: 1,
+        baseArea: 1.30,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 9] 얼음채찍 (frostWhip = 채찍 5Lv + 빙결 보주 5Lv)
+      frostWhip: {
+        id: 'frostWhip',
+        name: '얼음채찍',
+        icon: '🪢❄️',
+        iconSprite: 'icon_frostwhip',
+        desc: '전방과 후방을 교차 강타하며, 피격된 모든 적을 1초간 완전 빙결시킵니다.',
+        baseCooldown: 0.90,
+        baseDamage: 52,
+        baseCount: 2,
+        baseArea: 1.25,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 10] 산탄표창 (scatterShuriken = 표창 5Lv + 산탄총 5Lv)
+      scatterShuriken: {
+        id: 'scatterShuriken',
+        name: '산탄표창',
+        icon: '🥷💥',
+        iconSprite: 'icon_scattershuriken',
+        desc: '전방 부채꼴로 5개의 대형 회전 관통 표창을 일제히 투척하여 적들을 밀쳐냅니다.',
+        baseCooldown: 0.70,
+        baseDamage: 38,
+        baseCount: 5,
+        baseArea: 1.20,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 11] 신성화살 (holyArrow = 마법 화살 5Lv + 성수 5Lv)
+      holyArrow: {
+        id: 'holyArrow',
+        name: '신성화살',
+        icon: '🏹✨',
+        iconSprite: 'icon_holyarrow',
+        desc: '가장 가까운 적을 유도 추적하는 빛의 화살 2발을 발사하며, 착탄 위치에 3초간 지속되는 정화 장판을 생성합니다.',
+        baseCooldown: 0.65,
+        baseDamage: 42,
+        baseCount: 2,
+        baseArea: 1.15,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 12] 역병 (plague = 독비수 5Lv + 성역 5Lv)
+      plague: {
+        id: 'plague',
+        name: '역병',
+        icon: '☠️⛪',
+        iconSprite: 'icon_plague',
+        desc: '플레이어 주변에 성스러운 독기 결계를 유지하며, 30초마다 화면 전체에 거대한 역병 폭발을 일으킵니다.',
+        baseCooldown: 0.80,
+        baseDamage: 36,
+        baseCount: 1,
+        baseArea: 1.40,
+        burstTimer: 30.0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
         cooldownTimer: 0
       },
 
@@ -1247,6 +1356,20 @@ class WeaponManager {
             this.triggerTeslaStrike(p, enemy, enemies);
           }
 
+          // 신성화살: 적중 시 정화 장판 생성
+          if (p.type === 'holyArrow') {
+            this.damagePools.push({
+              x: enemy.x,
+              y: enemy.y,
+              radius: 55 * (p.area || 1.0),
+              damage: Math.round(p.damage * 0.45),
+              life: 3.0,
+              tickTimer: 0,
+              color: '#fef08a',
+              isHoly: true
+            });
+          }
+
           p.pierce -= 1;
           if (p.pierce <= 0) {
             p.life = 0;
@@ -1683,6 +1806,36 @@ class WeaponManager {
         this.executeVenomBlizzard(w, enemies);
         break;
       }
+
+      case 'thunderBlade': {
+        this.executeThunderBlade(w, enemies);
+        break;
+      }
+
+      case 'fireAxe': {
+        this.executeFireAxe(w, enemies);
+        break;
+      }
+
+      case 'frostWhip': {
+        this.executeFrostWhip(w, enemies);
+        break;
+      }
+
+      case 'scatterShuriken': {
+        this.executeScatterShuriken(w, enemies);
+        break;
+      }
+
+      case 'holyArrow': {
+        this.executeHolyArrow(w, enemies);
+        break;
+      }
+
+      case 'plague': {
+        this.executePlagueTick(w, enemies);
+        break;
+      }
     }
   }
 
@@ -1825,6 +1978,239 @@ class WeaponManager {
     }
   }
 
+  // [신규 진화 7] 벼락검 (thunderBlade): 전방 강력 베기 + 타겟 위치 벼락 낙뢰
+  executeThunderBlade(w, enemies) {
+    sounds.playSlash();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const range = 110 * area;
+    const closestEnemy = this.getClosestEnemy(enemies);
+    let targetAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+    if (closestEnemy) {
+      targetAngle = Math.atan2(closestEnemy.y - this.player.y, closestEnemy.x - this.player.x);
+    }
+    this.player.triggerAttackAnim('slash', targetAngle, 0.12, { area: area * 1.25, color: '#facc15' });
+
+    let hitTarget = null;
+    for (const enemy of enemies) {
+      if (enemy.isDead) continue;
+      const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+      if (dist <= range + enemy.radius) {
+        const angleToEnemy = Math.atan2(enemy.y - this.player.y, enemy.x - this.player.x);
+        let diff = Math.abs(angleToEnemy - targetAngle);
+        while (diff > Math.PI) diff = Math.abs(diff - Math.PI * 2);
+        if (diff <= Math.PI * 0.45) {
+          const kbDir = { x: Math.cos(targetAngle), y: Math.sin(targetAngle) };
+          enemy.takeDamage(dmg, kbDir, 160);
+          if (!hitTarget) hitTarget = enemy;
+        }
+      }
+    }
+
+    // 2단계: 베어낸 타겟(또는 전방)에 즉시 벼락 낙뢰
+    const lightningTarget = hitTarget || closestEnemy;
+    if (lightningTarget) {
+      sounds.playThunder();
+      const lx = lightningTarget.x;
+      const ly = lightningTarget.y;
+      const strikeDmg = Math.round(dmg * 1.3);
+      for (const e of enemies) {
+        if (e.isDead) continue;
+        if (Math.hypot(e.x - lx, e.y - ly) <= 70 * area + e.radius) {
+          e.takeDamage(strikeDmg, null, 80);
+        }
+      }
+      if (window.game) {
+        window.game.addParticles(lx, ly, '#facc15', 20);
+        window.game.addParticles(lx, ly, '#ffffff', 10);
+      }
+    }
+  }
+
+  // [신규 진화 8] 화염도끼 (fireAxe): 360도 도끼 회전 베기 + 4방향 화염구 방출
+  executeFireAxe(w, enemies) {
+    sounds.playSlash();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const radius = 115 * area;
+    this.player.triggerAttackAnim('circle', 0, 0.18, { area: area * 1.3, color: '#f97316' });
+
+    for (const enemy of enemies) {
+      if (enemy.isDead) continue;
+      const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+      if (dist <= radius + enemy.radius) {
+        const kbDir = {
+          x: (enemy.x - this.player.x) / (dist || 1),
+          y: (enemy.y - this.player.y) / (dist || 1)
+        };
+        enemy.takeDamage(dmg, kbDir, 200);
+      }
+    }
+
+    // 2단계: 4방향 화염구 방출 및 폭발
+    sounds.playFire();
+    const speed = 400;
+    for (let i = 0; i < 4; i++) {
+      const angle = (i / 4) * Math.PI * 2;
+      this.projectiles.push({
+        type: 'fireball',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 8 * area,
+        area: area,
+        damage: Math.round(dmg * 0.8),
+        splashRadius: 65 * area,
+        splashDamage: Math.round(dmg * 0.8),
+        pierce: 1,
+        knockbackForce: 120,
+        life: 0.85,
+        color: '#f97316',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // [신규 진화 9] 얼음채찍 (frostWhip): 전후방 교차 타격 + 1초 완전 빙결
+  executeFrostWhip(w, enemies) {
+    sounds.playSlash();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const closest = this.getClosestEnemy(enemies);
+    let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
+    if (closest) {
+      baseAngle = Math.atan2(closest.y - this.player.y, closest.x - this.player.x);
+    }
+
+    // 1단계 타격 + 2단계 완전 빙결
+    const strike = (angle) => {
+      this.player.triggerAttackAnim('whip', angle, 0.15, { area, color: '#38bdf8' });
+      for (const enemy of enemies) {
+        if (enemy.isDead) continue;
+        const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+        if (dist <= 180 * area + enemy.radius) {
+          const angleToEnemy = Math.atan2(enemy.y - this.player.y, enemy.x - this.player.x);
+          let diff = Math.abs(angleToEnemy - angle);
+          while (diff > Math.PI) diff = Math.abs(diff - Math.PI * 2);
+          if (diff <= Math.PI * 0.40) {
+            enemy.takeDamage(dmg, { x: Math.cos(angle), y: Math.sin(angle) }, 130);
+            enemy.freeze(1.0); // 1초 완전 빙결
+          }
+        }
+      }
+    };
+    strike(baseAngle);
+    setTimeout(() => strike(baseAngle + Math.PI), 100);
+  }
+
+  // [신규 진화 10] 산탄표창 (scatterShuriken): 전방 부채꼴 5발 대형 관통 수리검
+  executeScatterShuriken(w, enemies) {
+    sounds.playSlash();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = 5;
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const speed = 580;
+
+    for (let i = 0; i < count; i++) {
+      const spread = (i - (count - 1) / 2) * 0.18;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'shuriken',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 8 * area,
+        area: area,
+        damage: dmg,
+        pierce: 5,
+        knockbackForce: 200,
+        life: 0.70,
+        rotAngle: Math.random() * Math.PI * 2,
+        color: '#f43f5e',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // [신규 진화 11] 신성화살 (holyArrow): 유도 화살 2발 + 적중 시 정화 장판
+  executeHolyArrow(w, enemies) {
+    sounds.playMagic();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = 2;
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const speed = 460;
+
+    for (let i = 0; i < count; i++) {
+      const spread = (i - (count - 1) / 2) * 0.25;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'holyArrow',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 7 * area,
+        area: area,
+        damage: dmg,
+        pierce: 1,
+        homing: true,
+        knockbackForce: 100,
+        life: 1.8,
+        color: '#fef08a',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // [신규 진화 12] 역병 (plague): 결계 기본 도트 + 30초마다 화면 전체 대폭발 (전멸기)
+  executePlagueTick(w, enemies) {
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const radius = 105 * area;
+
+    // 1단계: 성스러운 독기 결계 도트 피해
+    for (const enemy of enemies) {
+      if (enemy.isDead) continue;
+      const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+      if (dist <= radius + enemy.radius) {
+        enemy.takeDamage(dmg, null, 0);
+        enemy.poison(3.0, Math.round(dmg * 0.35));
+      }
+    }
+
+    // 2단계: 30초 타이머 체크 및 화면 전체 대폭발
+    w.burstTimer = (w.burstTimer === undefined ? 30.0 : w.burstTimer) - (w.baseCooldown || 0.8);
+    if (w.burstTimer <= 0) {
+      w.burstTimer = 30.0;
+      sounds.playThunder();
+      sounds.playAcid();
+      const burstDmg = dmg * 8; // 화면 전체 대형 폭발 피해
+
+      for (const enemy of enemies) {
+        if (enemy.isDead) continue;
+        enemy.takeDamage(burstDmg, null, 0);
+      }
+
+      if (window.game) {
+        // 화면 전체 보라색/녹색 역병 파티클 방출
+        for (let k = 0; k < 60; k++) {
+          const rx = this.player.x + (Math.random() - 0.5) * 1200;
+          const ry = this.player.y + (Math.random() - 0.5) * 800;
+          window.game.addParticles(rx, ry, k % 2 === 0 ? '#a855f7' : '#22c55e', 3);
+        }
+      }
+    }
+  }
+
   draw(ctx) {
     // 0. 성역 (sanctuary) 360도 오라 결계 렌더링
     const sanctuary = this.weapons['sanctuary'];
@@ -1857,6 +2243,39 @@ class WeaponManager {
         ctx.fillStyle = '#fef08a';
         ctx.beginPath();
         ctx.arc(rx, ry, 3.5 * Math.sqrt(area), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // 0-1. 역병 (plague) 360도 독기 결계 렌더링
+    const plague = this.weapons['plague'];
+    if (plague) {
+      const area = this.getArea(plague);
+      const radius = 105 * area;
+      const time = Date.now() * 0.002;
+      const pulse = 0.18 + Math.sin(time * 3) * 0.06;
+
+      ctx.save();
+      ctx.fillStyle = `rgba(168, 85, 247, ${pulse})`;
+      ctx.beginPath();
+      ctx.arc(this.player.x, this.player.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = `rgba(34, 197, 94, ${pulse + 0.4})`;
+      ctx.lineWidth = Math.max(2, Math.round(3 * Math.sqrt(area)));
+      ctx.shadowColor = '#22c55e';
+      ctx.shadowBlur = 12;
+      ctx.stroke();
+
+      const runes = 8;
+      for (let r = 0; r < runes; r++) {
+        const rAngle = time + (r * Math.PI * 2) / runes;
+        const rx = this.player.x + Math.cos(rAngle) * radius;
+        const ry = this.player.y + Math.sin(rAngle) * radius;
+        ctx.fillStyle = '#a855f7';
+        ctx.beginPath();
+        ctx.arc(rx, ry, 4 * Math.sqrt(area), 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.restore();

@@ -76,6 +76,12 @@ class AssetManager {
       icon_poisondagger: 'assets/sprites/icon_poisondagger.png',
       icon_frostorb: 'assets/sprites/icon_frostorb.png',
       icon_venomblizzard: 'assets/sprites/icon_venomblizzard.png',
+      icon_thunderblade: 'assets/sprites/icon_thunderblade.png',
+      icon_fireaxe: 'assets/sprites/icon_fireaxe.png',
+      icon_frostwhip: 'assets/sprites/icon_frostwhip.png',
+      icon_scattershuriken: 'assets/sprites/icon_scattershuriken.png',
+      icon_holyarrow: 'assets/sprites/icon_holyarrow.png',
+      icon_plague: 'assets/sprites/icon_plague.png',
       icon_vampire: 'assets/sprites/icon_vampire.png',
       icon_shield: 'assets/sprites/icon_shield.png',
 
