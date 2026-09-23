@@ -365,7 +365,7 @@ class WeaponManager {
         name: '베놈 블리자드',
         icon: '❄️🧪',
         iconSprite: 'icon_venomblizzard',
-        desc: '서리독 구체를 전방으로 발사합니다. 구체는 전진하며 초당 2회 냉기 파동(반경 51px)을 방출하고, 발사 4초 후 폭발하여 8방향으로 독단검을 일제 사격합니다.',
+        desc: '서리독 구체를 전방으로 발사합니다. 구체는 전진하며 초당 2회 냉기 파동(반경 51px)을 방출하고, 발사 2초 후 폭발하여 8방향으로 독단검을 일제 사격합니다.',
         baseCooldown: 1.80,
         baseDamage: 45,
         baseCount: 1,
@@ -1787,7 +1787,7 @@ class WeaponManager {
         pierce: 9999,
         knockbackForce: 60,
         pulseTimer: 0,
-        life: 4.0,
+        life: 2.0,
         color: '#10b981',
         hitEnemies: new Set(),
         hitObstacles: new Set()
@@ -1795,7 +1795,7 @@ class WeaponManager {
     }
   }
 
-  // 베놈 블리자드 2단계: 4초 후 폭발하여 8방향 독단검(poisonDagger) 발사
+  // 베놈 블리자드 2단계: 2초 후 폭발하여 8방향 독단검(poisonDagger) 발사
   triggerVenomBlizzardShards(x, y, area, damage) {
     sounds.playSlash();
     if (window.game) {
