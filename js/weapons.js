@@ -2228,6 +2228,28 @@ class WeaponManager {
       }
     }
 
+    // [특수 기믹] 화염도끼 360도 회전 베기 시 적 및 보스 투사체 요격 및 즉시 삭제 (패링)
+    if (this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
+      for (let pIdx = this.game.bossProjectiles.length - 1; pIdx >= 0; pIdx--) {
+        const bp = this.game.bossProjectiles[pIdx];
+        const pDist = Math.hypot(bp.x - this.player.x, bp.y - this.player.y);
+        if (pDist <= radius + (bp.radius || 6)) {
+          this.game.bossProjectiles.splice(pIdx, 1);
+        }
+      }
+    }
+
+    // 장애물 피해 부여
+    if (this.game && this.game.obstacles && this.game.obstacles.obstacles) {
+      for (const obs of this.game.obstacles.obstacles) {
+        if (obs.isDestroyed) continue;
+        const dist = Math.hypot(obs.x - this.player.x, obs.y - this.player.y);
+        if (dist <= radius + obs.radius) {
+          obs.takeDamage(dmg, this.game);
+        }
+      }
+    }
+
     // 2단계: 4방향 화염구 방출 및 폭발
     sounds.playFire();
     const speed = 400;
