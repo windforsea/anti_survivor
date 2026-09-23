@@ -11,38 +11,16 @@ Anti Survivors의 클라이언트/서버 아키텍처, 11대 핵심 자바스크
 ```text
 js/
 ├── 📄 main.js             # 게임 엔진 루프(requestAnimationFrame), 우주 부유섬 맵 및 엔티티 총괄 관리
-├── 📄 player.js           # 플레이어 엔티티(스탯, 이동, 피격/무적, 치명타, 픽업 범위)
+├── 📄 player.js           # 플레이어 엔티티(스탯, 이동, 피격/무적, 치명타, 픽업 범위, 벼락검 90도 베기 모션)
 ├── 📄 saveManager.js      # FNV-1a 해시 체크섬 기반 세이브 무결성 검증 및 위변조 방지
 ├── 📄 waveManager.js      # 웨이브 스케줄러: 25단계 웨이브 타임라인(총 18분 45초), 스폰 계수, 사신 강림 트리거
 ├── 📄 audio.js            # 사운드 엔진: Web Audio API 기반 8비트 레트로 신디사이저
-├── 📄 assets.js           # 에셋 로더: 79종 스프라이트 이미지 프리로더 및 캔버스 렌더링 헬퍼
+├── 📄 assets.js           # 에셋 로더: 94종 스프라이트 이미지 프리로더 및 캔버스 렌더링 헬퍼
 ├── 📄 ui.js               # UI 매니저: HUD, 인게임 UI, 모바일 가상 조이스틱, XSS 방어
-├── 📄 weapons.js          # 무기 엔진: 레지스트리(`WeaponConfigs`) 연동 및 타격/피격 파이프라인
-├── 📄 enemies.js          # 몬스터/보스 엔진: 레지스트리(`MonsterConfigs`, `BossConfigs`) 연동 파이프라인
-├── 📄 cards.js            # 레벨업 카드 시스템: 분할된 카드 데이터(`CardData`) 연동
-│
-├── 📂 enemies/            # 👾 몬스터/보스 세분화 도메인
-│   ├── 📄 enemyRegistry.js # 일반 몬스터(15종)/보스(11종) 통합 레지스트리 매핑
-│   ├── 📄 projectiles.js   # 적 투사체(암흑구체, 맹독탄, 레이저) 발사/이동/판정 엔진
-│   ├── 📂 monsters/       # 15종 개별 일반 몬스터 스탯 및 AI (bat.js, slime.js, assassin.js 등)
-│   └── 📂 bosses/         # 10종 개별 보스 스탯 및 전투 패턴 (direBoar.js, grimReaper.js 등) + 25Stg 심연의 군주
-│
-├── 📂 weapons/            # 🗡️ 무기 세분화 도메인
-│   ├── 📄 weaponRegistry.js # 기본 무기(12종)/진화 무기(6종) 통합 레지스트리 매핑
-│   ├── 📂 basic/          # 12종 개별 기본 무기 스펙/투사체 (sword.js, shotgun.js, frostOrb.js 등)
-│   └── 📂 evolutions/     # 6종 개별 진화 무기 스펙/특수효과 (heavenlySanctuary.js, venomBlizzard.js 등)
-│
-├── 📂 cards/              # 🃏 카드 세분화 도메인
-│   └── 📂 data/           # weaponCards.js (12종), passiveCards.js (14종), evolutionCards.js (6종)
-│
-├── 📂 items/              # 📦 아이템 세분화 도메인
-│   ├── 📄 gem.js          # 경험치 보석(등급별 수치) 및 자석 흡수 물리
-│   ├── 📄 dropItems.js    # 5종 특수 드랍 아이템(포션, 자석, 폭탄, 시계, 금화)
-│   └── 📄 obstacles.js    # 청크 안전 스폰, 바위/나무 지형 충돌, 파괴 상자
-│
-└── 📂 ui/components/      # 🖥️ UI 컴포넌트 세분화 도메인
-    ├── 📄 lobby.js        # 로비 영구 강화 상점 & 명예의 전당 (1~3위 닉네임, 시간, 직업)
-    └── 📄 characterSelect.js # 기사, 마도사, 암살자, 해골 성직자 영웅 선택 카드 모달
+├── 📄 weapons.js          # 무기 엔진: 14종 기본 무기 및 14대 2단계 진화 무기 통합 시뮬레이션
+├── 📄 enemies.js          # 몬스터/보스 엔진: 15종 몹/11종 보스 AI, 빙결/넉백 면역 밸런싱, 렉 없는 크리티컬 느낌표 표기
+├── 📄 cards.js            # 레벨업 카드 시스템: 타직업 시그니처 5종 차단(Blacklist) 및 공용 8종 무기 개방 풀
+└── 📄 obstacles.js        # 필드 장애물(바위, 고대 나무, 파괴 상자) 배치 및 충돌/파괴/아이템 드랍
 ```
 
 ### 3중 하위 호환 레지스트리 패턴 (Registry Pattern)
