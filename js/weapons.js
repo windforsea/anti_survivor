@@ -1168,7 +1168,7 @@ class WeaponManager {
         p.pulseTimer = (p.pulseTimer || 0) - dt;
         if (p.pulseTimer <= 0) {
           p.pulseTimer = p.type === 'venomBlizzardOrb' ? 0.30 : 0.35;
-          const pulseRadius = (p.type === 'venomBlizzardOrb' ? 125 : 85) * (p.area || 1.0);
+          const pulseRadius = (p.type === 'venomBlizzardOrb' ? 125 : 51) * (p.area || 1.0);
           for (const enemy of enemies) {
             if (enemy.isDead) continue;
             const dist = Math.hypot(enemy.x - p.x, enemy.y - p.y);
@@ -1743,7 +1743,7 @@ class WeaponManager {
         y: this.player.y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        radius: 14 * area,
+        radius: 8.5 * area,
         area: area,
         damage: dmg,
         pierce: 9999,
@@ -2147,7 +2147,7 @@ class WeaponManager {
         ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, (85 * projArea) + pulse, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, (51 * projArea) + pulse, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.fillStyle = '#38bdf8';
