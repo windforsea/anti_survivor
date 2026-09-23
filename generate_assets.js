@@ -10,34 +10,29 @@ if (!fs.existsSync(ASSETS_DIR)) {
 
 // 순수 JS 기반 초경량 PNG 인코더
 function createPNG(width, height, rgbaBuffer) {
-  // PNG 시그니처
   const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
-  // IHDR 청크
   const ihdrData = Buffer.alloc(13);
   ihdrData.writeUInt32BE(width, 0);
   ihdrData.writeUInt32BE(height, 4);
   ihdrData.writeUInt8(8, 8); // 8-bit depth
   ihdrData.writeUInt8(6, 9); // RGBA color type
-  ihdrData.writeUInt8(0, 10); // compression
-  ihdrData.writeUInt8(0, 11); // filter
-  ihdrData.writeUInt8(0, 12); // interlace
+  ihdrData.writeUInt8(0, 10);
+  ihdrData.writeUInt8(0, 11);
+  ihdrData.writeUInt8(0, 12);
 
   const ihdrChunk = makeChunk('IHDR', ihdrData);
 
-  // IDAT 청크 (각 행 앞의 필터 바이트 0 포함)
   const rowSize = width * 4;
   const rawScanlines = Buffer.alloc((rowSize + 1) * height);
   for (let y = 0; y < height; y++) {
     const rowOffset = y * (rowSize + 1);
-    rawScanlines[rowOffset] = 0; // Filter None
+    rawScanlines[rowOffset] = 0;
     rgbaBuffer.copy(rawScanlines, rowOffset + 1, y * rowSize, (y + 1) * rowSize);
   }
 
   const compressedData = zlib.deflateSync(rawScanlines);
   const idatChunk = makeChunk('IDAT', compressedData);
-
-  // IEND 청크
   const iendChunk = makeChunk('IEND', Buffer.alloc(0));
 
   return Buffer.concat([signature, ihdrChunk, idatChunk, iendChunk]);
@@ -55,7 +50,6 @@ function makeChunk(type, data) {
   return chunk;
 }
 
-// CRC32 연산
 function crc32(buf) {
   let c = 0xffffffff;
   for (let n = 0; n < buf.length; n++) {
@@ -67,7 +61,6 @@ function crc32(buf) {
   return c ^ 0xffffffff;
 }
 
-// HEX 색상을 RGBA로 변환
 function hexToRgba(hex) {
   if (!hex || hex === '.') return [0, 0, 0, 0];
   const num = parseInt(hex.replace('#', ''), 16);
@@ -79,7 +72,6 @@ function hexToRgba(hex) {
   ];
 }
 
-// 텍스트 매트릭스를 RGBA 버퍼로 변환 (scale로 배율 확대 가능)
 function renderMatrix(rows, palette, scale = 2) {
   const origH = rows.length;
   const origW = rows[0].length;
@@ -110,33 +102,32 @@ function renderMatrix(rows, palette, scale = 2) {
   return { width, height, buf };
 }
 
-// ================= 다크 판타지 픽셀 아트 데이터 =================
-
+// ================= 다크 판타지 픽셀 아트 팔레트 =================
 const PALETTE = {
   '.': '.',
   'K': '#0f111a', // 딥 블랙 외곽선
   'D': '#1e2235', // 어두운 흉갑/음영
   'M': '#3e4566', // 중간 강철
   'L': '#8290be', // 밝은 하이라이트 강철
-  'W': '#e2e8f0', // 순백/뼈
+  'W': '#e2e8f0', // 순백/뼈/빛
   'R': '#881337', // 핏빛 어두운 천/망토
   'C': '#e11d48', // 선혈 크림슨 레드
   'G': '#b45309', // 어두운 황금
-  'Y': '#fde047', // 황금 안광/투구 틈새
+  'Y': '#fde047', // 황금 안광/빛
   'S': '#14532d', // 맹독 슬라임 딥 그린
   'A': '#22c55e', // 슬라임 밝은 녹색
   'P': '#581c87', // 그림자 보라
   'V': '#a855f7', // 아케인 바이올렛
   'B': '#0369a1', // 영혼 푸른빛
   'T': '#38bdf8', // 시안 영기
-  'O': '#78350f', // 맹수 짙은 털
-  'E': '#d97706', // 맹수 밝은 털
+  'O': '#78350f', // 맹수 짙은 털/목재
+  'E': '#d97706', // 맹수 밝은 털/호박색
   'Z': '#475569', // 석조 그레이
   'H': '#94a3b8'  // 밝은 석조
 };
 
 const SPRITES = {
-  // 플레이어 (다크 나이트) 16x16
+  // [플레이어 6종]
   player: [
     ".....KKKKK......",
     "....KMMMMMK.....",
@@ -155,8 +146,98 @@ const SPRITES = {
     "...KDKKKKDK.....",
     "....KK..KK......"
   ],
+  player_mage: [
+    ".....KKKKK......",
+    "....KRRRRRK.....",
+    "...KRRYYYRRK....",
+    "...KRPPPPRRK....",
+    "...KWWWWWWPK....",
+    "....KKDDKKK.....",
+    "...KPPCCPPK.....",
+    "..KPPCCCCPPK....",
+    "..KPPCCCCPPK....",
+    "..KPDDDDDPKK....",
+    "...KPDDDDPK.....",
+    "...KPPKKPPK.....",
+    "...KPPKKPPK.....",
+    "...KRRKKRRK.....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
+  ],
+  player_assassin: [
+    ".....KKKKK......",
+    "....KKDDDKK.....",
+    "...KKDYYYDKK....",
+    "...KKKKKKKKK....",
+    "...KKCCCCCCK....",
+    "....KKDDKKK.....",
+    "...KKDDKKDK.....",
+    "..KKDDDDDDKK....",
+    "..KKDDDDDDKK....",
+    "..KKDDKKDDKK....",
+    "...KKDDDDDKK....",
+    "...KKDKKDKKK....",
+    "...KKDKKDKKK....",
+    "...KKMKKMKKK....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
+  ],
+  player_cleric: [
+    ".....KKKKK......",
+    "....KWWWWWK.....",
+    "...KWYYYYYWK....",
+    "...KWKKKKKWK....",
+    "...KWWWWWWWK....",
+    "....KKGGKKK.....",
+    "...KGGWWGGK.....",
+    "..KGGWWWWGGK....",
+    "..KGGWWWWGGK....",
+    "..KGGDDDDGGK....",
+    "...KDDDDDDDK....",
+    "...KWWKKWWK.....",
+    "...KWWKKWWK.....",
+    "...KGGKKGGK.....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
+  ],
+  player_sylph: [
+    ".....KKKKK......",
+    "....KAAAAAK.....",
+    "...KAAEEEYAK....",
+    "...KASSSSAAK....",
+    "...KWWWWWWAK....",
+    "....KKDDKKK.....",
+    "...KSSOOSSK.....",
+    "..KSSOOOOOSSK...",
+    "..KSSOOOOOSSK...",
+    "..KSSDDDDSSK....",
+    "...KSDDDDSK.....",
+    "...KAAKKAAK.....",
+    "...KAAKKAAK.....",
+    "...KSSKKSSK.....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
+  ],
+  player_malakar: [
+    ".....KKKKK......",
+    "....KPPPPPK.....",
+    "...KPVCCCVPK....",
+    "...KPVKKKVPK....",
+    "...KWWWWWWPK....",
+    "....KKDDKKK.....",
+    "...KDDVVDDK.....",
+    "..KDDVVVVDDK....",
+    "..KDDVVVVDDK....",
+    "..KDDDDDDDDK....",
+    "...KPDDDDPK.....",
+    "...KPPKKPPK.....",
+    "...KPPKKPPK.....",
+    "...KPPKKPPK.....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
+  ],
 
-  // 1. 박쥐 (Bat) 16x16
+  // [일반 몬스터 15종]
   bat: [
     "................",
     "V..............V",
@@ -175,8 +256,6 @@ const SPRITES = {
     "................",
     "................"
   ],
-
-  // 2. 슬라임 (Slime) 16x16
   slime: [
     "................",
     "................",
@@ -195,8 +274,24 @@ const SPRITES = {
     "....KKKKKKKK....",
     "................"
   ],
-
-  // 3. 좀비 (Zombie) 16x16
+  miniSlime: [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    ".....KKKKK......",
+    "...KKAAAAAKK....",
+    "..KAAAAAAAAAAK..",
+    ".KAAAWAAAWAAAAK.",
+    ".KAAYKAAYKAAAAK.",
+    ".KAAYKAAYKAAAAK.",
+    ".KAAAAAAAAAAAAK.",
+    ".KASSSSSSSSSSAK.",
+    "..KKKKKKKKKKKK..",
+    "................"
+  ],
   zombie: [
     ".....KKKKK......",
     "....KSSZZSKK....",
@@ -215,8 +310,6 @@ const SPRITES = {
     "...KDKKKKDK.....",
     "....KK..KK......"
   ],
-
-  // 4. 해골 (Skeleton) 16x16
   skeleton: [
     ".....KKKKK......",
     "....KWWWWWK.....",
@@ -235,8 +328,6 @@ const SPRITES = {
     "....KWWKKWWK....",
     ".....KK..KK....."
   ],
-
-  // 5. 고블린 (Goblin) 16x16
   goblin: [
     "A..............A",
     "KA............AK",
@@ -248,271 +339,249 @@ const SPRITES = {
     "...KSAAAAAASK...",
     "....KKSAAKK.....",
     "...KDDMMMMDDK...",
-    "..KDMMWMMMMDK...",
-    "..KDDMMMMMMDK...",
-    "...KDDDDDDDDK...",
-    "....KSAKKSAK....",
-    "....KSAKKSAK....",
-    ".....KK..KK....."
+    "..KDDMMMMMMDDK..",
+    "..KDDDKKDKDDK...",
+    "..KSSKKKKSSK....",
+    "...KK....KK.....",
+    "................",
+    "................"
   ],
-
-  // 6. 유령 (Ghost) 16x16
   ghost: [
-    ".....KKKKK......",
-    "....KTTTTTTK....",
-    "...KTTBTTBTTK...",
-    "..KTTWTTTTWTK...",
-    "..KTWWTTTTWWTK..",
-    "..KTTKKTTKKTTK..",
+    "......KKKK......",
+    "....KKTTTTKK....",
+    "...KTTWWWWTTK...",
+    "..KTTWTTTTWTTK..",
+    "..KTWTCKTCKTWTK.",
+    ".KTTWKKTTKKWTTK.",
+    ".KTTWWTTTTWWTTK.",
+    ".KTTTTTTTTTTTTK.",
     "..KTTTTTTTTTTK..",
-    "..KTTTTTTTTTTK..",
-    "...KTTBBBBTTK...",
     "...KTTTTTTTTK...",
     "....KTTTTTTK....",
-    ".....KTTTTK.....",
-    "....KTTTTTTK....",
-    "...KTT.KTT.TK...",
-    "...KT..KT...K...",
-    "....K...K......."
+    "...KTTTTTTTTK...",
+    "..KTTKTTKTTKTTK.",
+    "..KTK.KTK.KTK.K.",
+    "...K...K...K....",
+    "................"
   ],
-
-  // 7. 가고일 (Gargoyle) 16x16
   gargoyle: [
-    "Z..............Z",
-    "KZ............KZ",
-    "KZZK........KZZK",
-    "KZZZZKKKKZZZZK..",
-    ".KZZZZZZZZZZK...",
-    "..KZZYYCCYYZK...",
-    "..KZZYYKKYYZK...",
-    "...KZZZZZZZZK...",
-    "...KZZWKKWZZK...",
-    "..KZZZWWWWZZZK..",
-    ".KZZKKZZZZKKZZK.",
-    "KZK.KZZZZZZK.KZK",
-    "KK..KZZZZZZK..KK",
-    "....KZZKKZZK....",
-    "...KZZKKKZZK....",
-    "....KK....KK...."
+    "K..............K",
+    "KK............KK",
+    "KZK..........KZK",
+    "KZZKK......KKZZK",
+    ".KZZZKKKKKKZZZK.",
+    "..KZZZHWWZHZZK..",
+    "...KZZHWWZHZZK..",
+    "...KZZZCCZZZK...",
+    "....KZZZZZZK....",
+    "...KZZMKKMZZK...",
+    "..KZZMMKKMMZZK..",
+    "..KZMMKKKKMMZK..",
+    ".KKZKK....KKZKK.",
+    ".KK..........KK.",
+    "................",
+    "................"
   ],
-
-  // 8. 흑마술사 (Cultist) 16x16
   cultist: [
     ".....KKKKK......",
     "....KRRRRRK.....",
-    "...KRRRRRRRK....",
-    "...KRKYYKYYRK...",
-    "...KRKKKKKKRK...",
-    "....KRRRRRRK....",
-    "V..KRRCCCCRRK...",
-    "VK.KRCCCCCRRK...",
-    "VVKKRCCCCCCRK...",
-    ".VKRRCRRRCCRK...",
-    "..KRRCRRRCCRK...",
-    "...KRRRRRRRK....",
-    "...KRRRRRRRK....",
+    "...KRRCCCRRK....",
+    "...KRCYYYCRK....",
+    "...KRCYYYCRK....",
+    "....KKRRRKK.....",
+    "...KRRDDDRRK....",
+    "..KRRDDDDDDRK...",
+    "..KRRDDPPDDDRK..",
+    "..KRRDPPPPDDRK..",
+    "...KRRDDDDRRK...",
     "...KRRKKKRRK....",
-    "...KDK...KDK....",
-    "....KK...KK....."
+    "...KRRKKKRRK....",
+    "...KRR...KRRK...",
+    "..KKR.....RKK...",
+    "................"
   ],
-
-  // 9. 암살자 (Assassin) 16x16
   assassin: [
     ".....KKKKK......",
-    "....KDDDDKK.....",
-    "...KDLLDDKKK....",
-    "...KDYYKYYKK....",
-    "...KDDDDDDDK....",
-    "....KKDDDDK.....",
-    "L...KDDDDDK...L.",
-    "LK..KDDLLDDK..KL",
-    "LLKKDDLLLLDKKLL.",
-    ".LKKDDDDDDDDKL..",
-    "...KDDDDDDDK....",
-    "...KDDDDDDDK....",
-    "...KDDDKKDDK....",
-    "...KLLK.KLLK....",
-    "...KDK...KDK....",
-    "....KK...KK....."
+    "....KKDDDKK.....",
+    "...KKDCCCDKK....",
+    "...KKCYWYCDKK...",
+    "...KKDCCCDKK....",
+    "....KKDDKKK.....",
+    "...KMDDDDDMK....",
+    "..KMDDDDDDDMK...",
+    "..KMDDKKKKDMMK..",
+    "..KMDDKKKKDMMK..",
+    "...KMDDDDMMK....",
+    "...KMMKKMMK.....",
+    "...KMMKKMMK.....",
+    "...KLLKKLLK.....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
   ],
-
-  // 10. 골렘 (Golem) 16x16
   golem: [
-    "....KKKKKKKK....",
-    "...KZZZZZZZZK...",
-    "..KZZHWZZWHZZK..",
-    "..KZZCCZZCCZZK..",
-    "..KZZKKZZKKZZK..",
+    "...KKKKKKKKKK...",
     "..KZZZZZZZZZZK..",
-    ".KZZZZCCCCZZZZK.",
-    "KZZZZZCCCCZZZZZK",
-    "KZZKKZCCCCZKKZZK",
-    "KZZKZZZZZZZZKZZK",
-    "KZZKZZHWWHZZKZZK",
-    ".KKKZZZZZZZZKKK.",
-    "...KZZZZZZZZK...",
+    ".KZZZHWWWWZHZZK.",
+    ".KZZHWKYYKWHZZK.",
+    ".KZZHWKYYKWHZZK.",
+    ".KZZZHWWWWZHZZK.",
+    "..KZZZZZZZZZZK..",
+    "KZZKKZZZZZZKKZZK",
+    "KZZHZZZZZZZZHZZK",
+    "KZZHZZZZZZZZHZZK",
+    "KZZKKZZZZZZKKZZK",
+    ".KK.KZZKKZZK.KK.",
+    "....KZZKKZZK....",
+    "....KZZKKZZK....",
     "...KZZZKKZZZK...",
-    "...KZZKKKKZZK...",
-    "...KKK....KKK..."
+    "...KKKK..KKKK..."
   ],
-
-  // 11. 타락한 마도사 (Dark Mage) 16x16
   darkMage: [
     ".....KKKKK......",
-    "....KPPVPK......",
-    "...KPVVVPKK.....",
-    "...KPYKKYKK.....",
-    "...KPVVVPKK.....",
-    "....KPPPK.......",
-    "Y..KPVVVVPK...Y.",
-    "YK.KPVCCVPK..KY.",
-    "YYKKPVCCVPK.KYY.",
-    ".YKKPVVVVPKKYY..",
-    "...KPVVVVPKK....",
-    "...KPVVVVPK.....",
-    "...KPVKKVPK.....",
-    "...KPPK.KPPK....",
-    "...KPK...KPK....",
-    "....KK...KK....."
-  ],
-
-  // 12. 핏빛 사냥개 (Blood Hound) 16x16
-  bloodHound: [
-    "........KKKK....",
-    ".......KRRRRK...",
-    "......KRCYYCK...",
-    "....KKKRRRRCK...",
-    "...KCCCCRRRRK...",
-    "..KCRRRRRRRRKK..",
-    "..KRRRRRRRRRRRK.",
-    ".KRRRRRRRRRRRRRK",
-    ".KRRRRRRRRRRRRK.",
-    ".KRRRRRRRRRRRK..",
-    "..KRRKKKRRRRK...",
-    "..KRK...KRRK....",
-    "..KRK...KRK.....",
-    ".KKKK..KKKK.....",
-    "................",
-    "................"
-  ],
-
-  // 13. 망령 군단 (Wraith Swarm) 16x16
-  wraithSwarm: [
-    ".....KKKKK......",
-    "....KTTTTTK.....",
-    "...KTTVVVTTK....",
-    "...KTYKKTYTK....",
-    "...KTTVVVTTK....",
-    "....KTTTTTK.....",
-    "...KTTVVVTTK....",
-    "..KTTVWWVTTK....",
-    ".KTTVWWWWVTTK...",
-    ".KTTVWWWWVTTK...",
-    "..KTTVVVTTK.....",
-    "...KTTTTTK......",
-    "....KTKTTK......",
-    ".....K.K........",
-    "................",
-    "................"
-  ],
-
-  // 14. 심연의 거인 (Abyss Titan) 16x16
-  abyssTitan: [
-    "...KKKKKKKKKK...",
-    "..KDDDDDDDDDDDK..",
-    ".KDDKYYDDYYKDDK.",
-    ".KDDDDDDDDDDDDK.",
-    ".KDDMMDDDDMMDDK.",
-    "KKDDMMDDDDMMDDKK",
-    "KDDDDDDDDDDDDDDK",
-    "KDDDDDDDDDDDDDDK",
-    "KDDDDMMMMMMDDDDK",
-    ".KDDMMKKKKMMDDK.",
-    ".KDDDDK..KDDDDK.",
-    "..KDDDK..KDDDK..",
-    "..KDDDK..KDDDK..",
-    "..KMMDK..KDMMK..",
-    "..KKKKK..KKKKK..",
-    "................"
-  ],
-
-  // 5종 보스 (각각 16x16 또는 대형 렌더링)
-  boss_boar: [
-    ".......KKKKKK...",
-    "......KEOOOOEK..",
-    ".....KEOYWWYOEK.",
-    "....KEOOCCCCCOEK",
-    "...KEOOCCCCCOEK.",
-    "..KWKKEEEOEEEKWK",
-    "..KWWEEOOOOEEWWK",
-    ".KWWWEEOOOOEEWWW",
-    ".KWWEEOOOOOOEWWK",
-    "..KEEEOOOOOOEEEK",
-    "..KEEKKKKKKKEEEK",
-    "..KEEKOOOOOOKEEK",
-    "..KEKOOOOOOOOKEK",
-    "..KKKOOKKKKOOKKK",
-    "....KOKK..KOKK..",
-    "....KK....KK...."
-  ],
-
-  boss_void: [
-    ".....KKKKKK.....",
-    "....KPPPPPPK....",
-    "...KPPVVVVPPK...",
+    "....KPPVPPK.....",
     "...KPVVYYVVPK...",
-    "...KPVKKKKVPK...",
-    "....KPVVVVPK....",
-    "T..KPPVVVVPPK..T",
-    "TK.KPVVCCVVPK.KT",
-    "TTKKPVCCCCVPKKTT",
-    ".TKPPVCCCCVPPKT.",
-    "..KPPPVVVVPPPK..",
-    "..KPPPPVVPPPPK..",
-    "..KPPPPVVPPPPK..",
-    "...KPPKKKKPPK...",
+    "...KPVWWWWVPK...",
+    "...KPVCCCCVPK...",
+    "....KKPVPKK.....",
+    "...KDDDDDDDK....",
+    "..KDDVVVVVDDK...",
+    "..KDDVPPPVVDDK..",
+    "..KDDVPPPVVDDK..",
+    "...KDDDDDDKK....",
+    "...KPPKKPPK.....",
+    "...KPPKKPPK.....",
+    "...KPPKKPPK.....",
+    "...KDKKKKDK.....",
+    "....KK..KK......"
+  ],
+  bloodHound: [
+    "................",
     "....KK....KK....",
+    "...KOOK..KOOK...",
+    "..KOEEOKKOEEOK..",
+    ".KOEEEEEEEEEEOK.",
+    ".KOEEYWEEWYEEOK.",
+    ".KOEEYCEECYEEOK.",
+    "..KOEEEEEEEEOK..",
+    "...KOECCCCEOK...",
+    "....KKEEEEK.....",
+    "...KDDDDDDDDK...",
+    "..KDDDDDDDDDDK..",
+    "..KDDKKDDDKKDK..",
+    "..KDDK.KDDK.KK..",
+    "..KKK..KKK......",
     "................"
   ],
-
-  boss_eye: [
-    ".....KKKKKK.....",
-    "...KKCCCCCCKK...",
-    "..KCCWWWWWWCCK..",
-    ".KCWWWWWWWWWWCK.",
-    ".KCWWRRWWWRRWCK.",
-    "KCWWRPPRWPPRWWCK",
-    "KCWWPKKPWWKPWWCK",
-    "KCWWPKKPWWKPWWCK",
-    "KCWWRPPRWWPRWWCK",
-    ".KCWWWWWWWWWWCK.",
-    ".KCWWWWWWWWWWCK.",
-    "..KCCWWWWWWCCK..",
-    "...KKCCCCCCKK...",
-    "..KC.KKCCKK.CK..",
-    ".KC...KKKK...CK.",
-    "KK............KK"
+  wraithSwarm: [
+    ".KK..........KK.",
+    "KPPK........KPPK",
+    "KPVVK......KPVVK",
+    ".KPVVK....KPVVK.",
+    "..KPVVKKKKVVPPK.",
+    "...KPVCCVVPPK...",
+    "..KPVCCCCVVPPK..",
+    ".KPVCCYYCCVVPPK.",
+    ".KPVCCYYCCVVPPK.",
+    "..KPVCCCCVVPPK..",
+    "...KPVCCVVPPK...",
+    "..KPVVKKKKVVPPK.",
+    ".KPVVK....KPVVK.",
+    "KPVVK......KPVVK",
+    "KPPK........KPPK",
+    ".KK..........KK."
   ],
-
-  boss_colossus: [
-    "....KKKKKKKK....",
-    "...KDDDDDDDDK...",
-    "..KDDLLDDLLDDK..",
-    "..KDDYYDDYYDDK..",
-    "..KDDLLDDLLDDK..",
-    "..KDDDDDDDDDDK..",
-    ".KDDDDRRRRDDDDK.",
+  abyssTitan: [
+    "..KKKKKKKKKKKK..",
+    ".KDDDDDDDDDDDDK.",
+    "KDDDDDDDDDDDDDDK",
+    "KDDKYYYYYYYYKDDK",
+    "KDDKYYCCCCYYKDDK",
+    "KDDKYYCCCCYYKDDK",
+    "KDDDDDDDDDDDDDDK",
+    ".KDDDRRRRRRDDDK.",
+    ".KDDDRRRRRRDDDK.",
     "KDDDDRRRRRRDDDDK",
-    "KDDLLRRRRRRLLDDK",
-    "KDDLLRRRRRRLLDDK",
-    "KDDLLRRRRRRLLDDK",
-    ".KKKDDRRRRDDDKK.",
-    "...KDDDDDDDDK...",
-    "...KDDDKKDDDK...",
-    "...KLLKKKKLLK...",
-    "...KKK....KKK..."
+    "KDDDDRRRRRRDDDDK",
+    "KDDDDKKKKKKDDDDK",
+    ".KDDDK....KDDDK.",
+    ".KDDDK....KDDDK.",
+    "..KDDK....KDDK..",
+    "...KK......KK..."
   ],
 
+  // [보스 9종]
+  boss_boar: [
+    "................",
+    "..KK........KK..",
+    ".KOOK......KOOK.",
+    ".KOEEOKKKKOEEOK.",
+    "KOEEEEEEEEEEEEOK",
+    "KOEYYWEEEEEWYYOK",
+    "KOEYCWEEEEWCYYOK",
+    "KOECCCCCCCCCCEOK",
+    ".KOEWWCCCCWWEOK.",
+    "..KOEEEEEEEEOK..",
+    "...KOEEEEEEEOK..",
+    "..KDDDDDDDDDDK..",
+    ".KDDDKKKKKKDDDK.",
+    ".KDDK......KDDK.",
+    ".KKK........KKK.",
+    "................"
+  ],
+  boss_void: [
+    "....KKKKKKKK....",
+    "..KKPPVVVVPPKK..",
+    ".KPVVVYYYYVVVPK.",
+    ".KPVVYYYYYYVVPK.",
+    "KPVVYYCCCCYYVVPK",
+    "KPVVYCCCCCCYVVPK",
+    "KPVVYYCCCCYYVVPK",
+    "KPVVYYYYYYYYVVPK",
+    ".KPVVVYYYYVVVPK.",
+    "..KKPVVVVVVPKK..",
+    "...KKPVVVVPKK...",
+    "....KPVVVVPK....",
+    "...KPPVVVVPKK...",
+    "..KPP.KPPK.PPK..",
+    ".KK....KK...KKK.",
+    "................"
+  ],
+  boss_eye: [
+    "....KKKKKKKK....",
+    "..KKCCCCCCCCKK..",
+    ".KCCCCCCCCCCCCK.",
+    ".KCCCCWWWWCCCCK.",
+    "KCCCCWYYYYWCCCCK",
+    "KCCCWYKKKKYWCCCK",
+    "KCCCWYKKKKYWCCCK",
+    "KCCCCWYYYYWCCCCK",
+    "KCCCCWYYYYWCCCCK",
+    "KCCCWYKKKKYWCCCK",
+    "KCCCWYKKKKYWCCCK",
+    ".KCCCCWWWWCCCCK.",
+    ".KCCCCCCCCCCCCK.",
+    "..KKCCCCCCCCKK..",
+    "....KKKKKKKK....",
+    "................"
+  ],
+  boss_colossus: [
+    "..KKKKKKKKKKKK..",
+    ".KDDDDDDDDDDDDK.",
+    "KDDLLDDDDDDLLDDK",
+    "KDDLLDDDDDDLLDDK",
+    "KDDLLDDDDDDLLDDK",
+    "KDDYYDDDDDDYYDDK",
+    "KDDYYDDDDDDYYDDK",
+    ".KDDDDDDDDDDDDK.",
+    "..KDDDRRRRDDDK..",
+    ".KDDDDRRRRDDDDK.",
+    ".KDDDDRRRRDDDDK.",
+    "KDDDDDRRRRDDDDDK",
+    "KDDDDDKKKKDDDDDK",
+    ".KDDDK....KDDDK.",
+    "..KDDK....KDDK..",
+    "...KK......KK..."
+  ],
   boss_doom: [
     "C..............C",
     "KC............CK",
@@ -531,8 +600,6 @@ const SPRITES = {
     "..KRRKK..KKRRK..",
     "...KK......KK..."
   ],
-
-  // 12스테이지 보스: 심연의 리치 (Abyss Lich) 16x16
   boss_lich: [
     "....KGGYYGGK....",
     "...KGGYYYYGGK...",
@@ -551,8 +618,6 @@ const SPRITES = {
     "..KPK....KPK....",
     "...KK....KK....."
   ],
-
-  // 15스테이지 최종 진 보스: 죽음의 사신 (Grim Reaper) 16x16
   boss_reaper: [
     "..KKLLMMDDDKK...",
     ".KLLMMDDDKK..KK.",
@@ -571,8 +636,44 @@ const SPRITES = {
     ".........KDD....",
     "..........KK...."
   ],
+  boss_wyrm: [
+    "....KKKKKKKK....",
+    "...KPVVYYVVPK...",
+    "..KPVVYYYYVVPK..",
+    ".KPVYYYYYYYYVPK.",
+    ".KPVYYKKKKYYVPK.",
+    "KPVVYYKPPKYYVVPK",
+    "KPVVYYKPPKYYVVPK",
+    "KPVVYYKKKKYYVVPK",
+    "KPVVYYYYYYYYVVPK",
+    ".KPVVVYYYYVVVPK.",
+    "..KPPVVVVVVPPK..",
+    "...KKPPVVPPKK...",
+    "....KKKPPKKK....",
+    ".....KKPPKK.....",
+    "......KPPK......",
+    ".......KK......."
+  ],
+  boss_overlord: [
+    "..KK........KK..",
+    ".KYYK......KYYK.",
+    "KYYYYKKKKKKYYYYK",
+    "KYYYYKCCCCKYYYYK",
+    ".KYYKCWWWWCKYYK.",
+    "..KKCWWYYWWCKK..",
+    "...KCWWYYWWCK...",
+    "...KCWWWWWWCK...",
+    "..KKCCCDDCCCKK..",
+    ".KTTCCCCDDCCCKTK",
+    "KTTTCCCCCCCCCTTK",
+    "KTTKCCCCCCCCKTTK",
+    ".KK.KCCCCCCK.KK.",
+    "....KCCCCCCK....",
+    "...KDKKKKKKDK...",
+    "...KK......KK..."
+  ],
 
-  // 고딕 석판 던전 바닥 타일 16x16
+  // [바닥 타일]
   tile_floor: [
     "KKKKKKKKKKKKKKKK",
     "KDDDDDDDDDDDDDDM",
@@ -592,7 +693,49 @@ const SPRITES = {
     "KKKKKKKKKKKKKKKK"
   ],
 
-  // 12종 + 알파 카드 픽셀 아이콘 16x16
+  // ================= 기본 무기 아이콘 14종 (창의적 리디자인 적용) =================
+
+  // 1. 철검 (sword - 방랑기사 시그니처) : 웅장한 십자 가드와 넓은 강철 대검
+  icon_sword: [
+    "...............W",
+    "..............WW",
+    ".............WLL",
+    "............WLLM",
+    "...........WLLMD",
+    "..........WLLMD.",
+    ".........WLLMD..",
+    "........WLLMD...",
+    ".......WLLMD....",
+    "....KKKWLLMD....",
+    "..KGGYYYYGGK....",
+    ".KGYKMMMMKYGK...",
+    ".KK.KMMMMK.KK...",
+    "....KOOOOK......",
+    "....KOOOOK......",
+    ".....KGGK......."
+  ],
+
+  // 2. 도끼 (axe - 공용) : 묵직한 중세 양날 배틀액스
+  icon_axe: [
+    "...KK......KK...",
+    "..KWWK....KWWK..",
+    ".KWWLK....KLWWK.",
+    "KLMMDK....KDMMLL",
+    "KLMDK......KDMLK",
+    ".KKDKK....KKDKK.",
+    "...KKOOOOOOKK...",
+    "....KOOEEEOK....",
+    "....KOOEEEOK....",
+    "....KOOEEEOK....",
+    "...KKOOOOOOKK...",
+    ".KLMDK....KDMLK.",
+    "KLMMDK....KDMMLL",
+    ".KWWLK....KLWWK.",
+    "..KWWK....KWWK..",
+    "...KK......KK..."
+  ],
+
+  // 3. 단검 (dagger) : 투척용 날렵한 밸런스 비수
   icon_dagger: [
     "..............WW",
     ".............WLW",
@@ -612,751 +755,7 @@ const SPRITES = {
     "K..............."
   ],
 
-  icon_whip: [
-    "........KKKKKKKK",
-    ".....KKKLLLLLLLW",
-    "...KKLLLLMMMMMMW",
-    "..KLLMMMMDDDDDDW",
-    ".KLMMDDDDKKKKKKK",
-    "KLMDDDDKKK......",
-    "KMDDDKK.........",
-    "KMDDKK..........",
-    "KDDDKK..........",
-    "KKDDKK..........",
-    ".KKDDKK.........",
-    "..KKDDKK........",
-    "...KKDDKK.......",
-    "....KKDDKK......",
-    ".....KKDDKK.....",
-    "......KKKK......"
-  ],
-
-  icon_missile: [
-    ".......TT.......",
-    "......TWWTT.....",
-    ".....TWWWWTT....",
-    "....TWWBBWWTT...",
-    "...TWWBBBBWWTT..",
-    "..TWWBBBBBBWWTT.",
-    ".TWWBBBBBBBBWWTT",
-    ".TWWBBBBBBBBWWTT",
-    "..TWWBBBBBBWWTT.",
-    "...TWWBBBBWWTT..",
-    "....TTWWBBWWTT..",
-    ".....TTTWWTT....",
-    ".......TTTT.....",
-    "........TT......",
-    "........TT......",
-    ".........T......"
-  ],
-
-  icon_shotgun: [
-    "................",
-    "................",
-    "..........KKKKKK",
-    ".....KKKKKLLLLLL",
-    "..KKKDDDDDMMMMMM",
-    "KKDDDDDMMMMMMMMM",
-    "KDDDDMMMMMMMMKKK",
-    "KDDMMKKKKKKKK...",
-    "KDDKK...........",
-    "KDKK............",
-    "KDKK............",
-    "KK..............",
-    "................",
-    "................",
-    "................",
-    "................"
-  ],
-
-  icon_acid: [
-    "......KKKK......",
-    "......KWWK......",
-    "......KWWK......",
-    ".....KKKKKK.....",
-    "....KSSSSSSK....",
-    "...KSAAAAAASK...",
-    "..KSAAAAAAAASK..",
-    ".KSAAWWAAWWAAASK",
-    ".KSAAWWAAWWAAASK",
-    ".KSAAAAAAAAAAASK",
-    ".KSAAKKAAKKAAASK",
-    ".KSSAAKKKKAAAASK",
-    "..KSSSSSSSSSSK..",
-    "...KSSSSSSSSK...",
-    "....KKKKKKKK....",
-    "................"
-  ],
-
-  icon_holywater: [
-    "......KKKK......",
-    "......KWWK......",
-    "......KWWK......",
-    ".....KKKKKK.....",
-    "....KBBBBBBK....",
-    "...KBTITTTTBK...",
-    "..KBTITTTTTTBK..",
-    ".KBTITWWTTWWTBK.",
-    ".KBTITWWTTWWTBK.",
-    ".KBTIITTTTTTTBK.",
-    ".KBTTIKKTTKKTBK.",
-    ".KBBTIKKKKTTTBK.",
-    "..KBBBBBBBBBBK..",
-    "...KBBBBBBBBK...",
-    "....KKKKKKKK....",
-    "................"
-  ],
-
-  icon_holyshotgun: [
-    "....KKKKKKKK....",
-    "...KYYWWWWYYK...",
-    "..KYYWLLLLWYYK..",
-    ".KYYWLMKKMLWYYK.",
-    ".KYYWLKWWKLWYYK.",
-    ".KYYWLMKKMLWYYK.",
-    "..KYYWLLLLWYYK..",
-    "...KYYWWWWYYK...",
-    "....KKYYYYKK....",
-    ".....KYYYYK.....",
-    ".....KYYYYK.....",
-    ".....KYYEEK.....",
-    ".....KYYEEK.....",
-    "....KYYEEEKK....",
-    "...KKYYEEEEEKK..",
-    "................"
-  ],
-
-  proj_holypellet: [
-    "................",
-    "................",
-    "................",
-    "......KKKK......",
-    ".....KYYYYK.....",
-    "....KYYWWYYK....",
-    "...KYYWWWWYYK...",
-    "...KYYWWWWYYK...",
-    "...KYYWWWWYYK...",
-    "...KYYWWWWYYK...",
-    "....KYYWWYYK....",
-    ".....KYYYYK.....",
-    "......KKKK......",
-    "................",
-    "................",
-    "................"
-  ],
-
-  icon_armor: [
-    "..KKKKKKKKKKKK..",
-    ".KLLLLLLLLLLLLK.",
-    "KLMMMMMMMMMMMMLK",
-    "KLMDDDDDDDDDDMLK",
-    "KLMDDDKKKKDDDMLK",
-    "KLMDDKYYYYKDDMLK",
-    "KLMDDKYYYYKDDMLK",
-    "KLMDDDKKKKDDDMLK",
-    "KLMDDDDDDDDDDMLK",
-    ".KLMDDDDDDDDMLK.",
-    "..KLMDDDDDDMLK..",
-    "...KLMDDDDMLK...",
-    "....KLMDDMLK....",
-    ".....KLMDMLK....",
-    "......KLMLK.....",
-    ".......KKK......"
-  ],
-
-  icon_speed: [
-    "................",
-    "....KKKKKKKK....",
-    "...KWWWWWWWWK...",
-    "...KWKKKKKKWK...",
-    "...KWWWWWWWWK...",
-    "....KKKKKKKK....",
-    "....KLLLLLLK....",
-    "....KLLMMLLK....",
-    "....KMMDDMMK....",
-    "....KMMDDMMK....",
-    "...KMMDDDDMMKK..",
-    "..KMMDDDDDDMMMMK",
-    ".KMMDDDDDDDDMMMK",
-    "KMMDDDDDDDDDDMMK",
-    "KKKKKKKKKKKKKKKK",
-    "................"
-  ],
-
-  icon_atk: [
-    "..............WW",
-    ".............WLW",
-    "............WMMW",
-    "...........WMMW.",
-    "..........WMMW..",
-    ".........WMMW...",
-    "........WMMW....",
-    ".......WMMW.....",
-    "......WMMW......",
-    ".....WMMW.......",
-    "...KKKKW........",
-    "..KCCKKK........",
-    ".KCCKK..........",
-    ".KKK............",
-    "KR..............",
-    "K..............."
-  ],
-
-  icon_heal: [
-    "......KKKK......",
-    "......KWWK......",
-    "......KWWK......",
-    ".....KKKKKK.....",
-    "....KRRRRRRK....",
-    "...KRCCCCCCRK...",
-    "..KRCCCCCCCCRK..",
-    ".KRCCWWCCWWCCCRK",
-    ".KRCCWWCCWWCCCRK",
-    ".KRCCCCCCCCCCCRK",
-    ".KRCCCCCCCCCCCRK",
-    ".KRCCCCWWCCCCCRK",
-    "..KRRCCCCCCRRK..",
-    "...KRRRRRRRRK...",
-    "....KKKKKKKK....",
-    "................"
-  ],
-
-  icon_regen: [
-    "................",
-    "..KKKK....KKKK..",
-    ".KCCCCK..KCCCCK.",
-    "KCCCCCCKKCCCCCCK",
-    "KCCCCCCWWCCCCCCK",
-    "KCCCCCCCCCCCCCCK",
-    ".KCCCCCCCCCCCCK.",
-    "..KCCCCCCCCCCK..",
-    "...KCCCCCCCCK...",
-    "....KCCCCCCK....",
-    ".....KCCCCK.....",
-    "......KCCK......",
-    ".......KK.......",
-    "................",
-    "................",
-    "................"
-  ],
-
-  icon_hp: [
-    "......KKKK......",
-    "...KKKRRRRKKK...",
-    "..KRRCCCCCCRRK..",
-    ".KRCCCCCCCCCCRK.",
-    ".KRCCCCWWCCCCRK.",
-    "KRCCCCWWWWCCCCRK",
-    "KRCCCWWWWWWCCCRK",
-    "KRCCCCCCCCCCCCRK",
-    "KRCCCCCCCCCCCCRK",
-    ".KRCCCCCCCCCCRK.",
-    ".KRCCCCCCCCCCRK.",
-    "..KRRCCCCCCRRK..",
-    "...KKKRRRRKKK...",
-    "......KKKK......",
-    "................",
-    "................"
-  ],
-
-  icon_global_speed: [
-    ".............KK.",
-    "............KYYK",
-    "...........KYYK.",
-    "..........KYYK..",
-    ".........KYYK...",
-    "........KYYK....",
-    ".......KYYK.....",
-    "......KYYK......",
-    ".....KYYK.......",
-    "....KYYK........",
-    "...KYYK.........",
-    "..KYYK..........",
-    ".KYYK...........",
-    "KYYK............",
-    "KK..............",
-    "................"
-  ],
-
-  icon_proj_speed: [
-    "...............K",
-    ".............KYY",
-    "...........KYYYY",
-    ".........KYYTTTK",
-    ".......KYYTTTK..",
-    ".....KYYTTTK....",
-    "...KYYTTTK......",
-    ".KYYTTTK........",
-    "KYYTTK..........",
-    ".KTTK...........",
-    "..KK............",
-    "................",
-    "................",
-    "................",
-    "................",
-    "................"
-  ],
-
-  icon_proj_count: [
-    ".........K......",
-    ".......KYYK.....",
-    ".....KYYYYK.K...",
-    "...KYYTTTK.KYYK.",
-    ".KYYTTTK..KYYYYK",
-    "KYYTTK...KYYTTTK",
-    ".KTTK...KYYTTK..",
-    "..KK...KYYTTK...",
-    "......KYYTTK....",
-    ".....KYYTTK.....",
-    "....KYYTTK......",
-    "...KYYTTK.......",
-    "..KYYTTK........",
-    ".KYYTTK.........",
-    "KYYTTK..........",
-    "KKKK............"
-  ],
-
-  // 3종 특수 필드 드랍 아이템 (16x16)
-  item_magnet: [
-    "...KKKK..KKKK...",
-    "..KRRRRKKRRRRK..",
-    ".KRRRRRRRRRRRRK.",
-    ".KRRKKRRRRKKRRK.",
-    ".KRK..KRRK..KRK.",
-    ".KRK..KRRK..KRK.",
-    ".KRK..KRRK..KRK.",
-    ".KRK..KRRK..KRK.",
-    ".KWK..KWWK..KWK.",
-    ".KWK..KWWK..KWK.",
-    ".KLK..KLLK..KLK.",
-    ".KLK..KLLK..KLK.",
-    ".KMK..KMMK..KMK.",
-    ".KKK..KKKK..KKK.",
-    "................",
-    "................"
-  ],
-
-  item_bomb: [
-    "...........YYYY.",
-    "..........YYYYY.",
-    ".........KYYYYK.",
-    "........KWWKKK..",
-    ".......KWWK.....",
-    "......KKKKKK....",
-    "....KKDDDDDDKK..",
-    "...KDDDDDDDDDDK.",
-    "..KDDDDDDDDDDDDK",
-    ".KDDDWWDDDDDDDDD",
-    ".KDDDWWDDDDDDDDD",
-    ".KDDDDDDDDDDDDDD",
-    "..KDDDDDDDDDDDDK",
-    "...KDDDDDDDDDDK.",
-    "....KKDDDDDDKK..",
-    "......KKKKKK...."
-  ],
-
-  item_freeze: [
-    ".......TT.......",
-    "......TTTT......",
-    ".T.....TT.....T.",
-    ".TT....TT....TT.",
-    "..TT...TT...TT..",
-    "...TT..TT..TT...",
-    "....TTTTTTTT....",
-    "TTTTTTTWWTTTTTTT",
-    "TTTTTTTWWTTTTTTT",
-    "....TTTTTTTT....",
-    "...TT..TT..TT...",
-    "..TT...TT...TT..",
-    ".TT....TT....TT.",
-    ".T.....TT.....T.",
-    "......TTTT......",
-    ".......TT......."
-  ],
-
-  // 무기 공격 애니메이션 스프라이트 (단검 찌르기, 회전날, 총구 화염)
-  anim_dagger: [
-    "...............W",
-    "..............WL",
-    ".............WLM",
-    "............WLMD",
-    "...........WLMD.",
-    "..........WLMD..",
-    ".........WLMD...",
-    "........WLMD....",
-    ".......WLMD.....",
-    "......WLMD......",
-    ".....WLMD.......",
-    "...KKKKD........",
-    "..KGGKKK........",
-    ".KGGKK..........",
-    ".KKK............",
-    "KC.............."
-  ],
-
-  anim_sword: [
-    "...............W",
-    "..............WL",
-    ".............WLM",
-    "............WLMD",
-    "...........WLMD.",
-    "..........WLMD..",
-    ".........WLMD...",
-    "........WLMD....",
-    ".......WLMD.....",
-    "......WLMD......",
-    ".....WLMD.......",
-    "...KKKKD........",
-    "..KGGKKK........",
-    ".KGGKK..........",
-    ".KKK............",
-    "KC.............."
-  ],
-
-  anim_axe: [
-    ".......KKKKKK...",
-    ".....KKWWWLLLKK.",
-    "....KWWLLMMMMDKK",
-    "...KWLLMMMKKKKKK",
-    "..KWLMMMKK..KK..",
-    ".KWLMMKK....KO..",
-    ".KLLMKK....KOO..",
-    "KKMMKK....KOO...",
-    "KKKKK....KOO....",
-    "........KOO.....",
-    ".......KOO......",
-    "......KOO.......",
-    ".....KOO........",
-    "....KOO.........",
-    "...KKK..........",
-    "................"
-  ],
-
-  anim_bladewhip: [
-    "..............KK",
-    "...........KKKYY",
-    "........KKKYYWWL",
-    "......KKYYWWLMMD",
-    "....KKYYWWLMDDKK",
-    "..KKYYWWLMDDKK..",
-    ".KYYWWLMDDKKWWL.",
-    "KYYWLMDDKK.KKKK.",
-    "KYLMDDKKWWL.....",
-    "KLMDDKK.KKKK....",
-    ".KMDDKKWWL......",
-    "..KDDKK.KKKK....",
-    "...KDDKK........",
-    "....KDKK........",
-    ".....KKK........",
-    "......KK........"
-  ],
-
-  proj_dagger: [
-    "................",
-    "................",
-    "................",
-    "................",
-    "................",
-    ".......WW.......",
-    "......WLLW......",
-    ".....WLLMMW.....",
-    ".....WLLMMW.....",
-    "......KKKK......",
-    "......KGGK......",
-    "......KGGK......",
-    ".......KK.......",
-    "................",
-    "................",
-    "................"
-  ],
-
-  // 필드 장애물 스프라이트 (비파괴 돌기둥/바위, 고대 나무, 파괴가능 나무상자)
-  obstacle_tree: [
-    ".....KKSSSKK....",
-    "...KKSSAAASSKK..",
-    "..KSSAAAAAAASSK.",
-    ".KSSAAAGGGAAASSK",
-    ".KSSAAAGGAAAASSK",
-    ".KSSAAAAAAAAASSK",
-    "..KSSAAAAAAASSK.",
-    "...KKSSAAASSKK..",
-    ".....KKOOKK.....",
-    "....KKOOOKK.....",
-    "....KKOOOKK.....",
-    "....KKOODKK.....",
-    "....KKOODKK.....",
-    "...KKODDDKKK....",
-    "..KKODDDDDDKK...",
-    "................"
-  ],
-
-  obstacle_rock: [
-    ".....KKKKKK.....",
-    "....KZZZZZZK....",
-    "...KZHZZZZHZK...",
-    "..KZHWWZZZZHZK..",
-    "..KZHHZZZZZZZK..",
-    ".KZHHHHZZZZDDKK.",
-    ".KZHHZZZZZZDDDK.",
-    ".KZZZZZZZZDDDDK.",
-    ".KZZZZZZZDDDDDK.",
-    ".KZZZZZZZDDDDDK.",
-    ".KZZZZZZZDDDDDK.",
-    ".KZZZZZZDDDDDDK.",
-    "..KZDDDDDDDDDK..",
-    "..KKDDDDDDDDKK..",
-    "...KKKKKKKKKK...",
-    "................"
-  ],
-
-  obstacle_crate: [
-    "..KKKKKKKKKKKK..",
-    ".KGEEEEEEEEEEGK.",
-    ".KEGKKKKKKKKGEK.",
-    ".KEKOOOOOOOOKEKO",
-    ".KEKOEEOEEOOKEKO",
-    ".KEKOOEOEOOOKEKO",
-    ".KEKGGEEGGEEKEKO",
-    ".KEKOOEOEOOOKEKO",
-    ".KEKOEEOEEOOKEKO",
-    ".KEKOOOOOOOOKEKO",
-    ".KEGKKKKKKKKGEK.",
-    ".KGEEEEEEEEEEGK.",
-    "..KKKKKKKKKKKK..",
-    "................",
-    "................",
-    "................"
-  ],
-
-  icon_sword: [
-    "...............W",
-    "..............WL",
-    ".............WLM",
-    "............WLMD",
-    "...........WLMD.",
-    "..........WLMD..",
-    ".........WLMD...",
-    "........WLMD....",
-    ".......WLMD.....",
-    "......WLMD......",
-    ".....WLMD.......",
-    "...KKKKD........",
-    "..KGGKKK........",
-    ".KGGKK..........",
-    ".KKK............",
-    "KC.............."
-  ],
-
-  icon_axe: [
-    ".......KKKKKK...",
-    ".....KKWWWLLLKK.",
-    "....KWWLLMMMMDKK",
-    "...KWLLMMMKKKKKK",
-    "..KWLMMMKK..KK..",
-    ".KWLMMKK....KO..",
-    ".KLLMKK....KOO..",
-    "KKMMKK....KOO...",
-    "KKKKK....KOO....",
-    "........KOO.....",
-    ".......KOO......",
-    "......KOO.......",
-    ".....KOO........",
-    "....KOO.........",
-    "...KKK..........",
-    "................"
-  ],
-
-  anim_whip: [
-    "..............KK",
-    "...........KKKLL",
-    "........KKKLLMMD",
-    "......KKLLMMDDDK",
-    "....KKLLMMDDDKK.",
-    "..KKLLMMDDDKK...",
-    ".KLLMMDDDKK.....",
-    "KLLMMDDDKK......",
-    "KLLMMDDKK.......",
-    "KLLMDDKK........",
-    ".KLMDDKK........",
-    "..KMDDKK........",
-    "...KDDKK........",
-    "....KDKK........",
-    ".....KKK........",
-    "......KK........"
-  ],
-
-  anim_muzzle: [
-    ".......YY.......",
-    ".....YYYYYY.....",
-    "...YYYYCCCCCC...",
-    "..YYYCCCCCCCCYY.",
-    ".YYCCCCWWCCCCYY.",
-    ".YYCCCWWWWCCCYY.",
-    ".YYCCCWWWWCCCYY.",
-    "..YYCCCCCCCCYY..",
-    "...YYYCCCCYYYY..",
-    ".....YYYYYY.....",
-    ".......YY.......",
-    "................",
-    "................",
-    "................",
-    "................",
-    "................"
-  ],
-
-  icon_lightning: [
-    ".......KK.......",
-    "......KYYK......",
-    ".....KYYYYK.....",
-    "....KYYYYYK.....",
-    "...KYYYYYYK.....",
-    "..KYYYYYYYYK....",
-    "...KKKKYYYYK....",
-    "......KYYYYK....",
-    ".....KYYYYK.....",
-    "....KYYYYK......",
-    "...KYYYYK.......",
-    "..KYYYYK........",
-    ".KYYYYK.........",
-    "..KYYK..........",
-    "...KK...........",
-    "................"
-  ],
-
-  icon_firewand: [
-    ".......KK.......",
-    "......KYYK......",
-    ".....KYCCYK.....",
-    "....KYCCCCYK....",
-    "....KCCCCCCK....",
-    ".....KCRRCK.....",
-    "......KGGK......",
-    ".....KOGGK......",
-    "....KOOOGK......",
-    "...KOOOGK.......",
-    "..KOOOGK........",
-    ".KOOOGK.........",
-    "KOOOGK..........",
-    "KOGGK...........",
-    ".KKK............",
-    "................"
-  ],
-
-  icon_arcanesanctuary: [
-    "......KWWK......",
-    "....KKTTTTKK....",
-    "...KTTBBBBTTK...",
-    "..KTBBWWWWBBTK..",
-    ".KTBWWTTTTWWBTK.",
-    ".KTBWTTKKTTWBTK.",
-    "KTBWTTK..KTTWBTK",
-    "KTBWTTK..KTTWBTK",
-    "KTBWTTK..KTTWBTK",
-    ".KTBWTTKKTTWBTK.",
-    ".KTBWWTTTTWWBTK.",
-    "..KTBBWWWWBBTK..",
-    "...KTTBBBBTTK...",
-    "....KKTTTTKK....",
-    "......KWWK......",
-    "................"
-  ],
-
-  icon_plasmatempest: [
-    "......KYYK......",
-    "....KKYYYYKK....",
-    "...KYYVVVVYYK...",
-    "..KYVVRRRRVVYK..",
-    ".KYVRRCCCCRRVYK.",
-    ".KYVRCCCCCCRVYK.",
-    "KYVRCCWWWWCCRVYK",
-    "KYVRCCWWWWCCRVYK",
-    "KYVRCCWWWWCCRVYK",
-    ".KYVRCCCCCCRVYK.",
-    ".KYVRRCCCCRRVYK.",
-    "..KYVVRRRRVVYK..",
-    "...KYYVVVVYYK...",
-    "....KKYYYYKK....",
-    "......KYYK......",
-    "................"
-  ],
-
-  icon_clover: [
-    "....KK....KK....",
-    "...KAAK..KAAK...",
-    "..KAAAAKKAAGAK..",
-    "..KAAASSSAAGAK..",
-    "...KASSSSSSAK...",
-    ".KKKASSSSSSAKKK.",
-    "KAASSSSSSSSSSAAK",
-    "KAGASSSSSSSSAGAK",
-    "KAGASSSSSSSSAGAK",
-    "KAASSSSSSSSSSAAK",
-    ".KKKASSSSSSAKKK.",
-    "...KASSSSSSAK...",
-    "..KAAASSSAAGAK..",
-    "..KAAAAKKAAGAK..",
-    "...KAAK.KKAAK...",
-    "....KK...KOK...."
-  ],
-
-  icon_crown: [
-    "................",
-    "................",
-    "..KYK..KYK..KYK.",
-    "..KYYKKYYYYKKYYK",
-    ".KYYYYYYYYYYYYYK",
-    ".KYYCYYYBYYYCYYK",
-    ".KYYYYYYYYYYYYYK",
-    ".KGGGGGGGGGGGGGK",
-    "..KGGGGGGGGGGGK.",
-    "...KKKKKKKKKKK..",
-    "................",
-    "................",
-    "................",
-    "................",
-    "................",
-    "................"
-  ],
-
-  miniSlime: [
-    "................",
-    "................",
-    "................",
-    "................",
-    "................",
-    "................",
-    ".....KKKKK......",
-    "...KKAAAAAKK....",
-    "..KAAAAAAAAAAK..",
-    ".KAAAWAAAWAAAAK.",
-    ".KAAYKAAYKAAAAK.",
-    ".KAAYKAAYKAAAAK.",
-    ".KAAAAAAAAAAAAK.",
-    ".KASSSSSSSSSSAK.",
-    "..KKKKKKKKKKKK..",
-    "................"
-  ],
-
-  icon_sanctuary: [
-    "......KKKK......",
-    ".....KYYYYK.....",
-    "....KYWWWWYK....",
-    "...KYWKKKKWYK...",
-    "..KYWK.KK.KWYK..",
-    "..KYWKKWWKKWYK..",
-    ".KYWWKKWWKKWWYK.",
-    ".KYYWWWWWWWWYYK.",
-    ".KYYWWWWWWWWYYK.",
-    ".KYWWKKWWKKWWYK.",
-    "..KYWKKWWKKWYK..",
-    "..KYWK.KK.KWYK..",
-    "...KYWKKKKWYK...",
-    "....KYWWWWYK....",
-    ".....KYYYYK.....",
-    "......KKKK......"
-  ],
-
-  // 표창 (Shuriken) 아이콘 16x16
+  // 4. 표창 (shuriken - 공용) : 고속 회전 4방향 닌자 수리검
   icon_shuriken: [
     ".......KK.......",
     "......KLLK......",
@@ -1376,47 +775,229 @@ const SPRITES = {
     ".......KK......."
   ],
 
-  // 투사체 표창 (proj_shuriken) 16x16
-  proj_shuriken: [
-    ".......KK.......",
-    "......KWWK......",
-    ".....KLLLK......",
-    ".....KLMLK......",
-    "...KKKLMLKK.KK..",
-    "..KWWLMMDMKKWWK.",
-    ".KWWLMMDDDMLLWK.",
-    "KKLLMDDKKDDLLMKK",
-    "KKMLLDDKKDMMLLKK",
-    ".KWLLMDDDMLLWWK.",
-    ".KWWKKMDMLKKK...",
-    "..KK..KLMLK.....",
-    "......KLMLK.....",
-    "......KLLLK.....",
-    "......KWWK......",
-    ".......KK......."
+  // 5. 채찍 (whip - 공용) : 나선형으로 똬리를 튼 가죽 채찍
+  icon_whip: [
+    "....KKKKKKKK....",
+    "..KKEEEEEEEEKK..",
+    ".KEEEOOOOOOEEEK.",
+    "KEEEOOKKKKOOEEEK",
+    "KEEOOKEEEEKOOEEK",
+    "KEEOKEEEOEK.KOEK",
+    "KEEOKEEKKEE.KOEK",
+    "KEEOKEE.KEE.KOEK",
+    "KEEOKEE.KEEKOEEK",
+    "KEEOKEE.KKEOOEEK",
+    "KEEOKEE..KEEEEKK",
+    "KEEOKEE...KKKK..",
+    ".KEOKEE.........",
+    "..KKKOOO........",
+    "....KOEEK.......",
+    ".....KKKK......."
   ],
 
-  // 모닝스타 가시 철퇴 헤드 (anim_whip / anim_morningstar) 16x16
-  anim_whip: [
-    ".......KK.......",
-    "......KMMK......",
-    ".....KMDDMK.....",
-    "...KKKMDDMKKK...",
-    "..KMMKMDDMKMMK..",
-    ".KMDDMMWWMMDDK.",
-    ".KMDDMWWWWMDDK.",
-    "KKDDMWWKKWWDDMMK",
-    "KKDDMWWKKWWDDMMK",
-    ".KMDDMWWWWMDDK.",
-    ".KMDDMMWWMMDDK.",
-    "..KMMKMDDMKMMK..",
-    "...KKKMDDMKKK...",
-    ".....KMDDMK.....",
-    "......KMMK......",
-    ".......KK......."
+  // 6. 마법 화살 (missile - 공용) : 꼬리를 물고 유도 비행하는 비전 유성
+  icon_missile: [
+    "..............WW",
+    "............WTTW",
+    "...........WTTBW",
+    ".........KKWTTBK",
+    "........KTTWWTTK",
+    ".......KTTBBWWK.",
+    "......KTTBBTTK..",
+    ".....KTTBBTTK...",
+    "....KTTBBTTK....",
+    "...KTBBTTKK.....",
+    "..KTBBTTK.......",
+    ".KTBBTK.........",
+    "KTBBK...........",
+    "KKK.............",
+    "................",
+    "................"
   ],
 
-  // [진화 1] 천상의 성역 (heavenlySanctuary: 성역 + 성수) 아이콘
+  // 7. 산탄 총포 (shotgun - 공용) : 묵직한 더블 배럴 샷건 총포
+  icon_shotgun: [
+    "................",
+    "................",
+    "..........KKKKKK",
+    ".....KKKKKLLLLLL",
+    "..KKKDDDDDMMMMMM",
+    "KKDDDDDMMMMMMMMM",
+    "KDDDDMMMMMMMMKKK",
+    "KDDMMKKKKKKKK...",
+    "KDDKK...........",
+    "KDKK............",
+    "KDKK............",
+    "KK..............",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+
+  // 8. 성수 (holywater - 성직자 시그니처) : 성스러운 황금 성배(Holy Grail)
+  icon_holywater: [
+    "..KKKKKKKKKKKK..",
+    ".KGGYYYYYYYYGGK.",
+    ".KGYWWTWWTTWYGK.",
+    ".KGYWTTTTTTWYGK.",
+    "..KGYWTTTTWYGK..",
+    "...KGYWTTWYGK...",
+    "....KGGYYGGK....",
+    ".....KGYYGK.....",
+    "......KGGK......",
+    "......KGGK......",
+    ".....KGYYGK.....",
+    "....KGGYYGGK....",
+    "...KGYYYYYYGGK..",
+    "..KGGGGGGGGGGK..",
+    "..KKKKKKKKKKKK..",
+    "................"
+  ],
+
+  // 9. 성역 (sanctuary - 공용) : 360도 수호 룬 결계 진
+  icon_sanctuary: [
+    "......KKKK......",
+    ".....KYYYYK.....",
+    "....KYWWWWYK....",
+    "...KYWKKKKWYK...",
+    "..KYWK.KK.KWYK..",
+    "..KYWKKWWKKWYK..",
+    ".KYWWKKWWKKWWYK.",
+    ".KYYWWWWWWWWYYK.",
+    ".KYYWWWWWWWWYYK.",
+    ".KYWWKKWWKKWWYK.",
+    "..KYWKKWWKKWYK..",
+    "..KYWK.KK.KWYK..",
+    "...KYWKKKKWYK...",
+    "....KYWWWWYK....",
+    ".....KYYYYK.....",
+    "......KKKK......"
+  ],
+
+  // 10. 번개 반지 (lightning - 공용) : 벼락 룬 번개 심볼
+  icon_lightning: [
+    ".......KK.......",
+    "......KYYK......",
+    ".....KYYYYK.....",
+    "....KYYYYYK.....",
+    "...KYYYYYYK.....",
+    "..KYYYYYYYYK....",
+    "...KKKKYYYYK....",
+    "......KYYYYK....",
+    ".....KYYYYK.....",
+    "....KYYYYK......",
+    "...KYYYYK.......",
+    "..KYYYYK........",
+    ".KYYYYK.........",
+    "..KYYK..........",
+    "...KK...........",
+    "................"
+  ],
+
+  // 11. 불 지팡이 (firewand - 마도사 시그니처) : 타오르는 화염보주 지팡이
+  icon_firewand: [
+    ".......KK.......",
+    "......KYYK......",
+    ".....KYCCYK.....",
+    "....KYCCCCYK....",
+    "....KCCCCCCK....",
+    ".....KCRRCK.....",
+    "......KGGK......",
+    ".....KOGGK......",
+    "....KOOOGK......",
+    "...KOOOGK.......",
+    "..KOOOGK........",
+    ".KOOOGK.........",
+    "KOOOGK..........",
+    "KOGGK...........",
+    ".KKK............",
+    "................"
+  ],
+
+  // 12. 독비수 (poisondagger - 암살자 시그니처) : 독방울 맺힌 암살자의 맹독 곡도(쿠크리)
+  icon_poisondagger: [
+    "..............AA",
+    ".............AS.",
+    "............KAAK",
+    "...........KSAK.",
+    "..........KSSAK.",
+    ".....KK..KSAAK..",
+    "....KAAKKSAAK...",
+    "...KSSAAASAK....",
+    "...KSAAAAAK.....",
+    "..KKSSAAAK......",
+    ".KDDSAAAK.......",
+    "KDDDSSAASAK.....",
+    ".KDDKK...KAAK...",
+    "..KK......KSAK..",
+    "...........KAAK.",
+    "............KK.."
+  ],
+
+  // 13. 빙결 보주 (frostorb - 공용) : 눈꽃 얼음 결정이 각인된 차가운 수정구
+  icon_frostorb: [
+    ".....KKKKKK.....",
+    "...KKTTWWTTKK...",
+    "..KTTWWWWWWTTK..",
+    ".KTTW..WW..WTTK.",
+    ".KT.W.WWWW.W.TK.",
+    "KTWWWWWWWWWWWWTT",
+    "KT..WWWWWWWW..TK",
+    "KTWWWWWWWWWWWWTT",
+    "KTWWWWWWWWWWWWTT",
+    "KT..WWWWWWWW..TK",
+    "KTWWWWWWWWWWWWTT",
+    ".KT.W.WWWW.W.TK.",
+    ".KTTW..WW..WTTK.",
+    "..KTTWWWWWWTTK..",
+    "...KKTTWWTTKK...",
+    ".....KKKKKK....."
+  ],
+
+  // 14. 바람 활 (windbow - 실프 시그니처) : 바람 깃털이 달린 우아한 엘프 장궁
+  icon_windbow: [
+    "..............KK",
+    "............KKAA",
+    "..........KKAAAA",
+    "........KKSSAAKK",
+    ".......KSSAAKK..",
+    "......KSSAKK.W..",
+    ".....KSSAK..WW..",
+    "....KSSAK...WW..",
+    "...KSSAK....WW..",
+    "..KSSAK.....WW..",
+    ".KSSAK......WW..",
+    "KKAAK.......WW..",
+    "KAAK........WW..",
+    "KK..........KK..",
+    "................",
+    "................"
+  ],
+
+  // 15. 어둠의 보주 (shadoworb - 워록 시그니처) : 붉은 악마 눈동자와 심연의 블랙홀 오브
+  icon_shadoworb: [
+    ".....KKKKKK.....",
+    "...KKPPVVPPKK...",
+    "..KPPVVCCVVPPK..",
+    ".KPVVCCCCVVPPK..",
+    ".KPVCCYYCCVVPK..",
+    "KPVCCYYYYCCVVPKK",
+    "KPVCCYYYYCCVVPKK",
+    "KPVCCYYCCVVPKKKK",
+    "KPVVCCCCVVPPKKKK",
+    "KPVVCCCCVVPPKKKK",
+    "KPVVCCCCVVPPK...",
+    ".KPVVVVVVVVPK...",
+    ".KPPVVVVVVPPK...",
+    "..KKPPVVPPKK....",
+    "....KKKKKK......",
+    "................"
+  ],
+
+  // ================= 14대 2단계 진화 무기 아이콘 =================
+
+  // [진화 1] 천상의 성역 (heavenlySanctuary)
   icon_heavenlysanctuary: [
     "......KYYK......",
     ".....KYWWYK.....",
@@ -1436,7 +1017,7 @@ const SPRITES = {
     "......KYYK......"
   ],
 
-  // [진화 2] 모닝스타 선풍 (morningstarTempest: 채찍 + 표창) 아이콘
+  // [진화 2] 모닝스타 선풍 (morningstarTempest)
   icon_morningstartempest: [
     "...KK......KK...",
     "..KLLK....KLLK..",
@@ -1456,7 +1037,7 @@ const SPRITES = {
     "...KK......KK..."
   ],
 
-  // [진화 3] 멸망의 혜성 (apocalypseComet: 화염지팡이 + 마법화살) 아이콘
+  // [진화 3] 멸망의 혜성 (apocalypseComet)
   icon_apocalypsecomet: [
     "......KCCK......",
     "....KKCCCCKK....",
@@ -1476,7 +1057,7 @@ const SPRITES = {
     "......KCCK......"
   ],
 
-  // [진화 4] 학살자의 폭풍검 (slayerBladeStorm: 검 + 도끼) 아이콘
+  // [진화 4] 학살자의 폭풍검 (slayerBladeStorm)
   icon_slayerbladestorm: [
     "KLLK........KLLK",
     "KMLLK......KLLMK",
@@ -1496,7 +1077,7 @@ const SPRITES = {
     "KLLK........KLLK"
   ],
 
-  // [진화 5] 테슬라 뇌전포 (teslaShotgun: 산탄총 + 번개반지) 아이콘
+  // [진화 5] 테슬라 뇌전포 (teslaShotgun)
   icon_teslashotgun: [
     "....KK....KK....",
     "...KTTK..KTTK...",
@@ -1516,87 +1097,7 @@ const SPRITES = {
     "....KK....KK...."
   ],
 
-  // [신규 캐릭터 1] 화염 마도사 엘레나 (player_mage)
-  player_mage: [
-    ".....KKKKK......",
-    "....KRRRRRK.....",
-    "...KRRYYYRRK....",
-    "...KRPPPPRRK....",
-    "...KWWWWWWPK....",
-    "....KKDDKKK.....",
-    "...KPPCCPPK.....",
-    "..KPPCCCCPPK....",
-    "..KPPCCCCPPK....",
-    "..KPDDDDDPKK....",
-    "...KPDDDDPK.....",
-    "...KPPKKPPK.....",
-    "...KPPKKPPK.....",
-    "...KRRKKRRK.....",
-    "...KDKKKKDK.....",
-    "....KK..KK......"
-  ],
-
-  // [신규 캐릭터 2] 그림자 암살자 카인 (player_assassin)
-  player_assassin: [
-    ".....KKKKK......",
-    "....KKDDDKK.....",
-    "...KKDYYYDKK....",
-    "...KKKKKKKKK....",
-    "...KKCCCCCCK....",
-    "....KKDDKKK.....",
-    "...KKDDKKDK.....",
-    "..KKDDDDDDKK....",
-    "..KKDDDDDDKK....",
-    "..KKDDKKDDKK....",
-    "...KKDDDDDKK....",
-    "...KKDKKDKKK....",
-    "...KKDKKDKKK....",
-    "...KKMKKMKKK....",
-    "...KDKKKKDK.....",
-    "....KK..KK......"
-  ],
-
-  // [신규 기본 무기 1] 맹독 비수 아이콘 (icon_poisondagger)
-  icon_poisondagger: [
-    "............KK..",
-    "...........KSAK.",
-    "..........KSAK..",
-    ".........KSAK...",
-    "........KSAK....",
-    ".......KSAK.....",
-    "......KSAK......",
-    ".....KSAK.......",
-    "..KKKSAK........",
-    ".KDDSAK.........",
-    "KDDDSAK.........",
-    ".KDDKK..........",
-    "..KK.KK.........",
-    "......KK........",
-    ".......KK.......",
-    "........KK......"
-  ],
-
-  // [신규 기본 무기 2] 빙결 보주 아이콘 (icon_frostorb)
-  icon_frostorb: [
-    ".....KKKKKK.....",
-    "...KKTTWWTTKK...",
-    "..KTTWWWWWWTTK..",
-    ".KTWWTTBBTTWWTTK",
-    ".KTWWTBBBBTWWTTK",
-    "KTWWTTBBBBTTWWTT",
-    "KTTTTBBBBBBTTTTK",
-    "KTWWTTBBBBTTWWTT",
-    "KTWWTTBBBBTTWWTT",
-    "KTTTTBBBBBBTTTTK",
-    "KTWWTTBBBBTTWWTT",
-    ".KTWWTBBBBTWWTTK",
-    ".KTWWTTBBTTWWTTK",
-    "..KTTWWWWWWTTK..",
-    "...KKTTWWTTKK...",
-    ".....KKKKKK....."
-  ],
-
-  // [신규 진화 무기 6] 베놈 블리자드 아이콘 (icon_venomblizzard)
+  // [진화 6] 베놈 블리자드 (venomBlizzard)
   icon_venomblizzard: [
     ".....KKKKKK.....",
     "...KKSATTTASKK..",
@@ -1616,7 +1117,439 @@ const SPRITES = {
     ".....KKKKKK....."
   ],
 
-  // [신규 패시브 1] 흡혈의 송곳니 아이콘 (icon_vampire)
+  // [진화 7] 벼락검 (thunderBlade) : 지그재그 번개 검신과 뇌전 스파크
+  icon_thunderblade: [
+    "..............YY",
+    ".............YWK",
+    "...........KTTWK",
+    "..........KTTWKY",
+    "........KKTTWK..",
+    ".......KTTWWK...",
+    "......KTTWK.....",
+    "....KKTTWWK.....",
+    "...KTTWWK...YY..",
+    "..KTTWWK...KYYK.",
+    ".KTTWK......KK..",
+    ".KWWKGGKK.......",
+    "..KKGYYGGK......",
+    "...KGGKK........",
+    "....KMMK........",
+    ".....KK........."
+  ],
+
+  // [진화 8] 화염 도끼 (fireAxe) : 작열하는 불꽃의 버닝 배틀액스
+  icon_fireaxe: [
+    "...YY......YY...",
+    "..YCCY....YCCY..",
+    ".YCWWCY..YCWWCY.",
+    "KCCYYCK..KCYYCCK",
+    "KCRRCK....KCRRCC",
+    ".KKRKK....KKRKK.",
+    "...KKOOOOOOKK...",
+    "....KOOEEEOK....",
+    "....KOOEEEOK....",
+    "....KOOEEEOK....",
+    "...KKOOOOOOKK...",
+    ".KCRRCK....KCRRC",
+    "KCCYYCK..KCYYCCK",
+    ".YCWWCY..YCWWCY.",
+    "..YCCY....YCCY..",
+    "...YY......YY..."
+  ],
+
+  // [진화 9] 얼음 채찍 (frostWhip) : 고드름 얼음 가시가 돋친 프로스트 휩
+  icon_frostwhip: [
+    "....KKTTTTKK....",
+    "..KKTTWWWWTTKK..",
+    ".KTTWWTTTTWWTTK.",
+    "KTTWWTKKKKTTWWTK",
+    "KTWWTKTTTTKTTWTK",
+    "KTWWTKTTTWTK.KWT",
+    "KTWWTKTTKKTT.KWT",
+    "KTWWTKTT.KTT.KWT",
+    "KTWWTKTT.KTTKTWK",
+    "KTWWTKTT.KKTWWTT",
+    "KTWWTKTT..KTTTKK",
+    "KTWWTKTT...KKKK.",
+    ".KTWTKTT........",
+    "..KKKTTT........",
+    "....KTTWK.......",
+    ".....KKKK......."
+  ],
+
+  // [진화 10] 산탄 표창 (scatterShuriken) : 8방향 기계식 강철 산탄 수리검
+  icon_scattershuriken: [
+    ".......KK.......",
+    "...KK.KLLK.KK...",
+    "..KLLKMMMMKLLK..",
+    "...KMMWDDWMMK...",
+    ".KK.MWDKKDW.M.KK",
+    "KLLMWDKKKKDWMLLK",
+    "KMMMDDKKKKDDMMMK",
+    ".KWDDKKKKKKDDWK.",
+    ".KWDDKKKKKKDDWK.",
+    "KMMMDDKKKKDDMMMK",
+    "KLLMWDKKKKDWMLLK",
+    ".KK.MWDKKDW.M.KK",
+    "...KMMWDDWMMK...",
+    "..KLLKMMMMKLLK..",
+    "...KK.KLLK.KK...",
+    ".......KK......."
+  ],
+
+  // [진화 11] 신성 화살 (holyArrow) : 천사의 날개가 달린 빛의 화살
+  icon_holyarrow: [
+    "..............YY",
+    ".............YYW",
+    "............YYWW",
+    "...........YYWWT",
+    "..........YYWWTT",
+    ".........YYWWTT.",
+    "........YYWWTT..",
+    ".......YYWWTT...",
+    "......YYWWTT....",
+    ".....YYWWTT.....",
+    "...KKYYWWTT.....",
+    "..KWWYYWWTT.....",
+    ".KWWLKYTT.......",
+    "KWL...KTT.......",
+    "KL.....KT.......",
+    "K..............."
+  ],
+
+  // [진화 12] 역병 (plague) : 독골 해골 문양과 보라색 역병 결계
+  icon_plague: [
+    ".....KKKKKK.....",
+    "...KKSSSSSSKK...",
+    "..KSSAAPPPAASSK.",
+    ".KSAAPWKKWPAASK.",
+    ".KSAAPWWWWPAASK.",
+    "KSAAAPWKKWPAAASK",
+    "KSAAAPWWWWPAAASK",
+    "KSSAAAPPPPAAASSS",
+    "KSSAAAPPPPAAASSS",
+    "KSAAAKPKPKPKAAASK",
+    "KSAAAKKKKKKKAAASK",
+    ".KSAAAAAAAAAAASK.",
+    ".KSSAAAAAAAAASSK.",
+    "..KKSSSSSSSSKK..",
+    "....KKKKKKKK....",
+    "................"
+  ],
+
+  // [진화 13] 태풍의 눈 (cycloneBow) : 거대한 태풍 룬이 깃든 사이클론 보우
+  icon_cyclonebow: [
+    "..............TT",
+    "............TTAA",
+    "..........TTAAAA",
+    "........TTAAAATT",
+    "......TTAATT.WW.",
+    ".....TTAAT...WW.",
+    "....TTAAT....WW.",
+    "...TTAAT.TT..WW.",
+    "..TTAAT.TAAT.WW.",
+    ".TTAAT..TAAT.WW.",
+    "TTAAT....TT..WW.",
+    "TAAT.........WW.",
+    "TAAT.........WW.",
+    "TT...........TT.",
+    "................",
+    "................"
+  ],
+
+  // [진화 14] 황혼의 나선 (eclipseSpiral) : 태양과 달이 교차하는 일식 은하 나선
+  icon_eclipsespiral: [
+    ".......KK.......",
+    "....KKYYYYKK....",
+    "..KKYYWWWWYYKK..",
+    ".KYYYYPPPPYYYYK.",
+    "KYYYPPCCCCPPYYYK",
+    "KYYPPCCKKCCPPYYK",
+    "KYPPCCK..KCCPPYK",
+    "KPPCCK....KCCPPK",
+    "KPPCCK....KCCPPK",
+    "KYPPCCK..KCCPPYK",
+    "KYYPPCCKKCCPPYYK",
+    "KYYYPPCCCCPPYYYK",
+    ".KYYYYPPPPYYYYK.",
+    "..KKYYWWWWYYKK..",
+    "....KKYYYYKK....",
+    ".......KK......."
+  ],
+
+  // ================= 레거시 / 대체 아이콘 4종 =================
+  icon_acid: [
+    ".......AA.......",
+    ".....SS.AA......",
+    "......KKKK......",
+    "......KWWK......",
+    "......KWWK......",
+    ".....KKWWKK.....",
+    "....KSAAAASK....",
+    "...KSAAAAAAASK..",
+    "..KSAAAAAAAASK..",
+    ".KSAAWWAAWWAAASK",
+    ".KSAAWWAAWWAAASK",
+    "KSAAAAAAAAAAAAASK",
+    "KSSAAAKKKKAAASSSK",
+    "KKSSSSSSSSSSSSSKK",
+    ".KKKKKKKKKKKKKK.",
+    "................"
+  ],
+  icon_holyshotgun: [
+    "....KKKKKKKK....",
+    "...KYYWWWWYYK...",
+    "..KYYWLLLLWYYK..",
+    ".KYYWLMKKMLWYYK.",
+    ".KYYWLKWWKLWYYK.",
+    ".KYYWLMKKMLWYYK.",
+    "..KYYWLLLLWYYK..",
+    "...KYYWWWWYYK...",
+    "....KKYYYYKK....",
+    ".....KYYYYK.....",
+    ".....KYYYYK.....",
+    ".....KYYEEK.....",
+    ".....KYYEEK.....",
+    "....KYYEEEKK....",
+    "...KKYYEEEEEKK..",
+    "................"
+  ],
+  icon_arcanesanctuary: [
+    "......KWWK......",
+    "....KKTTTTKK....",
+    "...KTTBBBBTTK...",
+    "..KTBBWWWWBBTK..",
+    ".KTBWWTTTTWWBTK.",
+    ".KTBWTTKKTTWBTK.",
+    "KTBWTTK..KTTWBTK",
+    "KTBWTTK..KTTWBTK",
+    "KTBWTTK..KTTWBTK",
+    ".KTBWTTKKTTWBTK.",
+    ".KTBWWTTTTWWBTK.",
+    "..KTBBWWWWBBTK..",
+    "...KTTBBBBTTK...",
+    "....KKTTTTKK....",
+    "......KWWK......",
+    "................"
+  ],
+  icon_plasmatempest: [
+    "......KYYK......",
+    "....KKYYYYKK....",
+    "...KYYVVVVYYK...",
+    "..KYVVRRRRVVYK..",
+    ".KYVRRCCCCRRVYK.",
+    ".KYVRCCCCCCRVYK.",
+    "KYVRCCWWWWCCRVYK",
+    "KYVRCCWWWWCCRVYK",
+    "KYVRCCWWWWCCRVYK",
+    ".KYVRCCCCCCRVYK.",
+    ".KYVRRCCCCRRVYK.",
+    "..KYVVRRRRVVYK..",
+    "...KYYVVVVYYK...",
+    "....KKYYYYKK....",
+    "......KYYK......",
+    "................"
+  ],
+
+  // ================= 패시브 스탯 아이콘 15종 =================
+  icon_armor: [
+    "..KKKKKKKKKKKK..",
+    ".KLLLLLLLLLLLLK.",
+    "KLMMMMMMMMMMMMLK",
+    "KLMDDDDDDDDDDMLK",
+    "KLMDDDKKKKDDDMLK",
+    "KLMDDKYYYYKDDMLK",
+    "KLMDDKYYYYKDDMLK",
+    "KLMDDDKKKKDDDMLK",
+    "KLMDDDDDDDDDDMLK",
+    ".KLMDDDDDDDDMLK.",
+    "..KLMDDDDDDMLK..",
+    "...KLMDDDDMLK...",
+    "....KLMDDMLK....",
+    ".....KLMDMLK....",
+    "......KLMLK.....",
+    ".......KKK......"
+  ],
+  icon_speed: [
+    "................",
+    "....KKKKKKKK....",
+    "...KWWWWWWWWK...",
+    "...KWKKKKKKWK...",
+    "...KWWWWWWWWK...",
+    "....KKKKKKKK....",
+    "....KLLLLLLK....",
+    "....KLLMMLLK....",
+    "....KMMDDMMK....",
+    "....KMMDDMMK....",
+    "...KMMDDDDMMKK..",
+    "..KMMDDDDDDMMMMK",
+    ".KMMDDDDDDDDMMMK",
+    "KMMDDDDDDDDDDMMK",
+    "KKKKKKKKKKKKKKKK",
+    "................"
+  ],
+  icon_atk: [
+    "..............WW",
+    ".............WLW",
+    "............WMMW",
+    "...........WMMW.",
+    "..........WMMW..",
+    ".........WMMW...",
+    "........WMMW....",
+    ".......WMMW.....",
+    "......WMMW......",
+    ".....WMMW.......",
+    "...KKKKW........",
+    "..KCCKKK........",
+    ".KCCKK..........",
+    ".KKK............",
+    "KR..............",
+    "K..............."
+  ],
+  icon_heal: [
+    "................",
+    "WW..KKKK..KKKK..",
+    "WL.KCCCCKKCCCCK.",
+    "W.KCCCCWWCCCCCCK",
+    "L.KCCCCCCCCCCCCK",
+    ".LKCCCCCCCCCCCCK",
+    "..LKCCCCCCCCCCK.",
+    "...LKCCCCCCCCK..",
+    "....KCCCCCCCCK..",
+    ".....KCCCCCCK.L.",
+    "......KCCCCK..LW",
+    ".......KCCK..LLW",
+    "........KK...LWW",
+    "............LWW.",
+    "................",
+    "................"
+  ],
+  icon_regen: [
+    "................",
+    "..KKKK....KKKK..",
+    ".KCCCCK..KCCCCK.",
+    "KCCCCCCKKCCCCCCK",
+    "KCCCCCCWWCCCCCCK",
+    "KCCCCCCCCCCCCCCK",
+    ".KCCCCCCCCCCCCK.",
+    "..KCCCCCCCCCCK..",
+    "...KCCCCCCCCK...",
+    "....KCCCCCCK....",
+    ".....KCCCCK.....",
+    "......KCCK......",
+    ".......KK.......",
+    "................",
+    "................",
+    "................"
+  ],
+  icon_hp: [
+    "......KKKK......",
+    "...KKKRRRRKKK...",
+    "..KRRCCCCCCRRK..",
+    ".KRCCCCCCCCCCRK.",
+    ".KRCCCCWWCCCCRK.",
+    "KRCCCCWWWWCCCCRK",
+    "KRCCCWWWWWWCCCRK",
+    "KRCCCCCCCCCCCCRK",
+    "KRCCCCCCCCCCCCRK",
+    ".KRCCCCCCCCCCRK.",
+    ".KRCCCCCCCCCCRK.",
+    "..KRRCCCCCCRRK..",
+    "...KKKRRRRKKK...",
+    "......KKKK......",
+    "................",
+    "................"
+  ],
+  icon_global_speed: [
+    ".............KK.",
+    "............KYYK",
+    "...........KYYK.",
+    "..........KYYK..",
+    ".........KYYK...",
+    "........KYYK....",
+    ".......KYYK.....",
+    "......KYYK......",
+    ".....KYYK.......",
+    "....KYYK........",
+    "...KYYK.........",
+    "..KYYK..........",
+    ".KYYK...........",
+    "KYYK............",
+    "KK..............",
+    "................"
+  ],
+  icon_proj_speed: [
+    "...............K",
+    ".............KYY",
+    "...........KYYYY",
+    ".........KYYTTTK",
+    ".......KYYTTTK..",
+    ".....KYYTTTK....",
+    "...KYYTTTK......",
+    ".KYYTTTK........",
+    "KYYTTK..........",
+    ".KTTK...........",
+    "..KK............",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  icon_proj_count: [
+    ".........K......",
+    ".......KYYK.....",
+    ".....KYYYYK.K...",
+    "...KYYTTTK.KYYK.",
+    ".KYYTTTK..KYYYYK",
+    "KYYTTK...KYYTTTK",
+    ".KTTK...KYYTTK..",
+    "..KK...KYYTTK...",
+    "......KYYTTK....",
+    ".....KYYTTK.....",
+    "....KYYTTK......",
+    "...KYYTTK.......",
+    "..KYYTTK........",
+    ".KYYTTK.........",
+    "KYYTTK..........",
+    "KKKK............"
+  ],
+  icon_clover: [
+    "....KK....KK....",
+    "...KAAK..KAAK...",
+    "..KAAAAKKAAGAK..",
+    "..KAAASSSAAGAK..",
+    "...KASSSSSSAK...",
+    ".KKKASSSSSSAKKK.",
+    "KAASSSSSSSSSSAAK",
+    "KAGASSSSSSSSAGAK",
+    "KAGASSSSSSSSAGAK",
+    "KAASSSSSSSSSSAAK",
+    ".KKKASSSSSSAKKK.",
+    "...KASSSSSSAK...",
+    "..KAAASSSAAGAK..",
+    "..KAAAAKKAAGAK..",
+    "...KAAK.KKAAK...",
+    "....KK...KOK...."
+  ],
+  icon_crown: [
+    "................",
+    "................",
+    "..KYK..KYK..KYK.",
+    "..KYYKKYYYYKKYYK",
+    ".KYYYYYYYYYYYYYK",
+    ".KYYCYYYBYYYCYYK",
+    ".KYYYYYYYYYYYYYK",
+    ".KGGGGGGGGGGGGGK",
+    "..KGGGGGGGGGGGK.",
+    "...KKKKKKKKKKK..",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
   icon_vampire: [
     "....KK....KK....",
     "...KRCCK..KRCCK...",
@@ -1635,8 +1568,6 @@ const SPRITES = {
     ".....KK..KK.....",
     "................"
   ],
-
-  // [신규 패시브 2] 빛의 성벽 방벽 쉴드 아이콘 (icon_shield)
   icon_shield: [
     "KKKKKKKKKKKKKKKK",
     "KTTTTTTTTTTTTTTK",
@@ -1655,45 +1586,317 @@ const SPRITES = {
     "......KTK.......",
     ".......K........"
   ],
-
-  // [신규 18 Stg 보스] 공허의 지네 (boss_wyrm)
-  boss_wyrm: [
-    "....KKKKKKKK....",
-    "...KPVVYYVVPK...",
-    "..KPVVYYYYVVPK..",
-    ".KPVYYYYYYYYVPK.",
-    ".KPVYYKKKKYYVPK.",
-    "KPVVYYKPPKYYVVPK",
-    "KPVVYYKPPKYYVVPK",
-    "KPVVYYKKKKYYVVPK",
-    "KPVVYYYYYYYYVVPK",
-    ".KPVVVYYYYVVVPK.",
-    "..KPPVVVVVVPPK..",
-    "...KKPPVVPPKK...",
-    "....KKKPPKKK....",
-    ".....KKPPKK.....",
-    "......KPPK......",
-    ".......KK......."
+  icon_crit_dmg: [
+    "................",
+    ".....KKKKKK.....",
+    "....KRRRRRRK....",
+    "...KRCCCCCCRK...",
+    "..KRCCWWWWCCRK..",
+    "..KRCWWCCWWCRK..",
+    "..KRCWWCCWWCRK..",
+    "..KRCCWWWWCCRK..",
+    "...KRCCWWCCRK...",
+    "....KRRWWRRK....",
+    ".....KKWWKK.....",
+    ".......WW.......",
+    ".....KKWWKK.....",
+    "....KRRWWRRK....",
+    ".....KKKKKK.....",
+    "................"
+  ],
+  icon_thorns: [
+    "K..............K",
+    "KK....KKKK....KK",
+    ".KK..KDDMMK..KK.",
+    "..KKKDDMMMMKKK..",
+    "...KDMMMMMMDDK..",
+    "..KDMMMDDDDMMDK.",
+    ".KDMMDDKKKKDDMMK",
+    ".KDMMDKWWKKDMMDK",
+    ".KDMMDKWWKKDMMDK",
+    ".KDMMDDKKKKDDMMK",
+    "..KDMMMDDDDMMDK.",
+    "...KDMMMMMMDDK..",
+    "..KKKDDMMMMKKK..",
+    ".KK..KDDMMK..KK.",
+    "KK....KKKK....KK",
+    "K..............K"
   ],
 
-  // [신규 20 Stg 진 최종 보스] 혼돈의 절대신 (boss_overlord)
-  boss_overlord: [
-    "..KK........KK..",
-    ".KYYK......KYYK.",
-    "KYYYYKKKKKKYYYYK",
-    "KYYYYKCCCCKYYYYK",
-    ".KYYKCWWWWCKYYK.",
-    "..KKCWWYYWWCKK..",
-    "...KCWWYYWWCK...",
-    "...KCWWWWWWCK...",
-    "..KKCCCDDCCCKK..",
-    ".KTTCCCCDDCCCKTK",
-    "KTTTCCCCCCCCCTTK",
-    "KTTKCCCCCCCCKTTK",
-    ".KK.KCCCCCCK.KK.",
-    "....KCCCCCCK....",
-    "...KDKKKKKKDK...",
-    "...KK......KK..."
+  // ================= 특수 필드 드랍 3종 =================
+  item_magnet: [
+    "...KKKK..KKKK...",
+    "..KRRRRKKRRRRK..",
+    ".KRRRRRRRRRRRRK.",
+    ".KRRKKRRRRKKRRK.",
+    ".KRK..KRRK..KRK.",
+    ".KRK..KRRK..KRK.",
+    ".KRK..KRRK..KRK.",
+    ".KRK..KRRK..KRK.",
+    ".KWK..KWWK..KWK.",
+    ".KWK..KWWK..KWK.",
+    ".KLK..KLLK..KLK.",
+    ".KLK..KLLK..KLK.",
+    ".KMK..KMMK..KMK.",
+    ".KKK..KKKK..KKK.",
+    "................",
+    "................"
+  ],
+  item_bomb: [
+    "...........YYYY.",
+    "..........YYYYY.",
+    ".........KYYYYK.",
+    "........KWWKKK..",
+    ".......KWWK.....",
+    "......KKKKKK....",
+    "....KKDDDDDDKK..",
+    "...KDDDDDDDDDDK.",
+    "..KDDDDDDDDDDDDK",
+    ".KDDDWWDDDDDDDDD",
+    ".KDDDWWDDDDDDDDD",
+    ".KDDDDDDDDDDDDDD",
+    "..KDDDDDDDDDDDDK",
+    "...KDDDDDDDDDDK.",
+    "....KKDDDDDDKK..",
+    "......KKKKKK...."
+  ],
+  item_freeze: [
+    ".......TT.......",
+    "......TTTT......",
+    ".T.....TT.....T.",
+    ".TT....TT....TT.",
+    "..TT...TT...TT..",
+    "...TT..TT..TT...",
+    "....TTTTTTTT....",
+    "TTTTTTTWWTTTTTTT",
+    "TTTTTTTWWTTTTTTT",
+    "....TTTTTTTT....",
+    "...TT..TT..TT...",
+    "..TT...TT...TT..",
+    ".TT....TT....TT.",
+    ".T.....TT.....T.",
+    "......TTTT......",
+    ".......TT......."
+  ],
+
+  // ================= 필드 장애물 3종 =================
+  obstacle_tree: [
+    ".....KKSSSKK....",
+    "...KKSSAAASSKK..",
+    "..KSSAAAAAAASSK.",
+    ".KSSAAAGGGAAASSK",
+    ".KSSAAAGGAAAASSK",
+    ".KSSAAAAAAAAASSK",
+    "..KSSAAAAAAASSK.",
+    "...KKSSAAASSKK..",
+    ".....KKOOKK.....",
+    "....KKOOOKK.....",
+    "....KKOOOKK.....",
+    "....KKOODKK.....",
+    "....KKOODKK.....",
+    "...KKODDDKKK....",
+    "..KKODDDDDDKK...",
+    "................"
+  ],
+  obstacle_rock: [
+    ".....KKKKKK.....",
+    "....KZZZZZZK....",
+    "...KZHZZZZHZK...",
+    "..KZHWWZZZZHZK..",
+    "..KZHHZZZZZZZK..",
+    ".KZHHHHZZZZDDKK.",
+    ".KZHHZZZZZZDDDK.",
+    ".KZZZZZZZZDDDDK.",
+    ".KZZZZZZZDDDDDK.",
+    ".KZZZZZZZDDDDDK.",
+    ".KZZZZZZZDDDDDK.",
+    ".KZZZZZZDDDDDDK.",
+    "..KZDDDDDDDDDK..",
+    "..KKDDDDDDDDKK..",
+    "...KKKKKKKKKK...",
+    "................"
+  ],
+  obstacle_crate: [
+    "..KKKKKKKKKKKK..",
+    ".KGEEEEEEEEEEGK.",
+    ".KEGKKKKKKKKGEK.",
+    ".KEKOOOOOOOOKEKO",
+    ".KEKOEEOEEOOKEKO",
+    ".KEKOOEOEOOOKEKO",
+    ".KEKGGEEGGEEKEKO",
+    ".KEKOOEOEOOOKEKO",
+    ".KEKOEEOEEOOKEKO",
+    ".KEKOOOOOOOOKEKO",
+    ".KEGKKKKKKKKGEK.",
+    ".KGEEEEEEEEEEGK.",
+    "..KKKKKKKKKKKK..",
+    "................",
+    "................",
+    "................"
+  ],
+
+  // ================= 공격 애니메이션 및 투사체 9종 =================
+  anim_sword: [
+    "...............W",
+    "..............WL",
+    ".............WLM",
+    "............WLMD",
+    "...........WLMD.",
+    "..........WLMD..",
+    ".........WLMD...",
+    "........WLMD....",
+    ".......WLMD.....",
+    "......WLMD......",
+    ".....WLMD.......",
+    "...KKKKD........",
+    "..KGGKKK........",
+    ".KGGKK..........",
+    ".KKK............",
+    "KC.............."
+  ],
+  anim_axe: [
+    ".......KKKKKK...",
+    ".....KKWWWLLLKK.",
+    "....KWWLLMMMMDKK",
+    "...KWLLMMMKKKKKK",
+    "..KWLMMMKK..KK..",
+    ".KWLMMKK....KO..",
+    ".KLLMKK....KOO..",
+    "KKMMKK....KOO...",
+    "KKKKK....KOO....",
+    "........KOO.....",
+    ".......KOO......",
+    "......KOO.......",
+    ".....KOO........",
+    "....KOO.........",
+    "...KKK..........",
+    "................"
+  ],
+  anim_dagger: [
+    "...............W",
+    "..............WL",
+    ".............WLM",
+    "............WLMD",
+    "...........WLMD.",
+    "..........WLMD..",
+    ".........WLMD...",
+    "........WLMD....",
+    ".......WLMD.....",
+    "......WLMD......",
+    ".....WLMD.......",
+    "...KKKKD........",
+    "..KGGKKK........",
+    ".KGGKK..........",
+    ".KKK............",
+    "KC.............."
+  ],
+  anim_whip: [
+    ".......KK.......",
+    "......KMMK......",
+    ".....KMDDMK.....",
+    "...KKKMDDMKKK...",
+    "..KMMKMDDMKMMK..",
+    ".KMDDMMWWMMDDK.",
+    ".KMDDMWWWWMDDK.",
+    "KKDDMWWKKWWDDMMK",
+    "KKDDMWWKKWWDDMMK",
+    ".KMDDMWWWWMDDK.",
+    ".KMDDMMWWMMDDK.",
+    "..KMMKMDDMKMMK..",
+    "...KKKMDDMKKK...",
+    ".....KMDDMK.....",
+    "......KMMK......",
+    ".......KK......."
+  ],
+  anim_bladewhip: [
+    "..............KK",
+    "...........KKKYY",
+    "........KKKYYWWL",
+    "......KKYYWWLMMD",
+    "....KKYYWWLMDDKK",
+    "..KKYYWWLMDDKK..",
+    ".KYYWWLMDDKKWWL.",
+    "KYYWLMDDKK.KKKK.",
+    "KYLMDDKKWWL.....",
+    "KLMDDKK.KKKK....",
+    ".KMDDKKWWL......",
+    "..KDDKK.KKKK....",
+    "...KDDKK........",
+    "....KDKK........",
+    ".....KKK........",
+    "......KK........"
+  ],
+  anim_muzzle: [
+    ".......YY.......",
+    ".....YYYYYY.....",
+    "...YYYYCCCCCC...",
+    "..YYYCCCCCCCCYY.",
+    ".YYCCCCWWCCCCYY.",
+    ".YYCCCWWWWCCCYY.",
+    ".YYCCCWWWWCCCYY.",
+    "..YYCCCCCCCCYY..",
+    "...YYYCCCCYYYY..",
+    ".....YYYYYY.....",
+    ".......YY.......",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................"
+  ],
+  proj_dagger: [
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    ".......WW.......",
+    "......WLLW......",
+    ".....WLLMMW.....",
+    ".....WLLMMW.....",
+    "......KKKK......",
+    "......KGGK......",
+    "......KGGK......",
+    ".......KK.......",
+    "................",
+    "................",
+    "................"
+  ],
+  proj_shuriken: [
+    ".......KK.......",
+    "......KWWK......",
+    ".....KLLLK......",
+    ".....KLMLK......",
+    "...KKKLMLKK.KK..",
+    "..KWWLMMDMKKWWK.",
+    ".KWWLMMDDDMLLWK.",
+    "KKLLMDDKKDDLLMKK",
+    "KKMLLDDKKDMMLLKK",
+    ".KWLLMDDDMLLWWK.",
+    ".KWWKKMDMLKKK...",
+    "..KK..KLMLK.....",
+    "......KLMLK.....",
+    "......KLLLK.....",
+    "......KWWK......",
+    ".......KK......."
+  ],
+  proj_holypellet: [
+    "................",
+    "................",
+    "................",
+    "......KKKK......",
+    ".....KYYYYK.....",
+    "....KYYWWYYK....",
+    "...KYYWWWWYYK...",
+    "...KYYWWWWYYK...",
+    "...KYYWWWWYYK...",
+    "...KYYWWWWYYK...",
+    "....KYYWWYYK....",
+    ".....KYYYYK.....",
+    "......KKKK......",
+    "................",
+    "................",
+    "................"
   ]
 };
 
@@ -1703,7 +1906,7 @@ let count = 0;
 
 for (const key in SPRITES) {
   const matrix = SPRITES[key];
-  const { width, height, buf } = renderMatrix(matrix, PALETTE, 2); // 32x32 픽셀
+  const { width, height, buf } = renderMatrix(matrix, PALETTE, 2);
   const pngData = createPNG(width, height, buf);
   const filePath = path.join(ASSETS_DIR, `${key}.png`);
   fs.writeFileSync(filePath, pngData);
