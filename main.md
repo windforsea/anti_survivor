@@ -24,12 +24,12 @@ vam/
 │   └── champion.js              # Vercel 배포 환경용 명예의 전당 REST API
 │
 ├── docs/                        # 도메인별 심층 명세 문서
-│   ├── character.md             # 4종 캐릭터(기사/마도사/암살자/해골성직자), 패시브, 영구 강화
-│   ├── weapons.md               # 12종 기본 무기 & 6대 진화 무기 상세 스펙 및 공격 공식
+│   ├── character.md             # 6종 캐릭터(기사/마도사/암살자/해골성직자/궁수/워록), 16종 패시브, 영구 강화
+│   ├── weapons.md               # 14종 기본 무기 & 14대 진화 무기 상세 스펙 및 공격 공식
 │   ├── enemies.md               # 15종 일반 몬스터 & 11종 보스 상세 AI, 스탯, 패턴
 │   ├── stages.md                # 25스테이지 웨이브 타임라인(총 18분 45초), 사신 강림
 │   ├── items.md                 # 필드 장애물(바위/나무/상자), 5종 드랍템, 경험치 보석
-│   ├── assets.md                # 79종 스프라이트 에셋 명세표
+│   ├── assets.md                # 87종 스프라이트 에셋 명세표
 │   └── system.md                # FNV-1a 보안 체크섬, 모듈 아키텍처, 무결성 검증
 │
 ├── js/                          # 클라이언트 코어 엔진 및 세분화 모듈군
@@ -41,7 +41,7 @@ vam/
 │   ├── waveManager.js           # WaveManager 클래스: 25단계 스테이지 타이머, 스폰 제어, 사신 트리거
 │   ├── saveManager.js           # SaveManager 클래스: FNV-1a 해시 체크섬 및 로컬 스토리지 입출력
 │   ├── audio.js                 # SoundEngine 클래스: Web Audio API 8비트 레트로 신디사이저 사운드
-│   ├── assets.js                # AssetManager 클래스: 79종 스프라이트 프리로더 및 매니페스트
+│   ├── assets.js                # AssetManager 클래스: 87종 스프라이트 프리로더 및 매니페스트
 │   ├── ui.js                    # UIManager 클래스: HUD 렌더링, 모달 제어, 조이스틱, XSS 살균
 │   │
 │   ├── enemies/                 # 👾 몬스터 및 보스 세분화 모듈
@@ -52,8 +52,8 @@ vam/
 │   │
 │   ├── weapons/                 # 🗡️ 무기 세분화 모듈
 │   │   ├── weaponRegistry.js    # 기본/진화 무기 설정 통합 레지스트리 매핑
-│   │   ├── basic/               # 12종 기본 무기 개별 설정 (sword, shotgun, frostOrb 등)
-│   │   └── evolutions/          # 12대 진화 무기 개별 설정 (heavenlySanctuary, thunderBlade, plague 등)
+│   │   ├── basic/               # 14종 기본 무기 개별 설정 (sword, shotgun, frostOrb, windBow, shadowOrb 등)
+│   │   └── evolutions/          # 14대 진화 무기 개별 설정 (heavenlySanctuary, cycloneBow, eclipseSpiral 등)
 │   │
 │   ├── cards/data/              # 🃏 카드 데이터 모듈
 │   │   ├── weaponCards.js       # 기본 무기 해금 카드 텍스트 및 메타데이터
@@ -67,7 +67,7 @@ vam/
 │   │
 │   └── ui/components/           # 🖥️ UI 모달 컴포넌트
 │       ├── lobby.js             # 로비 영구 강화 상점 & 명예의 전당 UI
-│       └── characterSelect.js   # 4종 캐릭터(기사, 마도사, 암살자, 해골성직자) 선택 모달
+│       └── characterSelect.js   # 6종 캐릭터(기사, 마도사, 암살자, 성직자, 궁수, 워록) 선택 모달
 │
 └── assets/sprites/              # 픽셀아트 스프라이트 PNG 파일 디렉토리
 ```
@@ -80,16 +80,16 @@ vam/
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
 | [`js/main.js`](js/main.js) | `Game` | 전체 게임 루프, 상태(로비/플레이/일시정지/승리/게임오버) 관리, 캔버스 렌더링 총괄 | `init()`, `start()`, `update(dt)`, `draw()`, `triggerBomb()` |
-| [`js/player.js`](js/player.js) | `Player` | 캐릭터 이동, 입력 제어, 무적 시간, 경험치 획득, 레벨업 요구량 계산, 부활 처리 | `update(dt)`, `gainExp(amt)`, `takeDamage(dmg)`, `checkIsAllUpgraded()` |
+| [`js/player.js`](js/player.js) | `Player` | 캐릭터 이동, 입력 제어, 무적 시간, 경험치 획득, 레벨업 요구량 계산, 부활 및 반사/반격 처리 | `update(dt)`, `gainExp(amt)`, `takeDamage(dmg)`, `checkIsAllUpgraded()` |
 | [`js/saveManager.js`](js/saveManager.js) | `SaveManager` | 유저 골드 및 영구 강화 스탯의 로컬 저장/로드, FNV-1a 해시 체크섬 검증 | `load()`, `save()`, `calculateChecksum(data)` |
 | [`js/waveManager.js`](js/waveManager.js) | `WaveManager` | 25스테이지(총 18분 45초) 타임라인 진행, 몬스터 스폰 주기, 사신 강림 트리거 | `update(dt)`, `nextStage()`, `spawnReaper()` |
 
 ### 2.2 무기 및 전투 시뮬레이션 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
-| [`js/weapons.js`](js/weapons.js) | `WeaponManager` | 무기 쿨다운 계산, 투사체 및 도트 장판 생성/업데이트/충돌 판정, 무기 해금/업그레이드 | `update(dt, enemies)`, `fireWeapon(w, enemies)`, `getCooldown(w)`, `getDamage(w)` |
-| `js/weapons/basic/` | 개별 설정 파일들 | 12종 기본 무기의 기본 쿨타임, 데미지, 투사체 수, 범위, 자동조준 여부 정의 | `sword.js`, `shotgun.js`, `frostOrb.js`, `holyWater.js` 등 |
-| `js/weapons/evolutions/` | 개별 설정 파일들 | 12대 진화 무기의 합성 조합 공식, 쿨다운, 기본 데미지, 2단계 메커니즘 정의 | `heavenlySanctuary.js`, `thunderBlade.js`, `plague.js` 등 12종 |
+| [`js/weapons.js`](js/weapons.js) | `WeaponManager` | 무기 쿨다운 계산, 투사체 및 도트 장판 생성/업데이트/충돌 판정, 적 투사체 요격 삭제, 무기 해금/업그레이드 | `update(dt, enemies)`, `fireWeapon(w, enemies)`, `getCooldown(w)`, `getDamage(w)` |
+| `js/weapons/basic/` | 개별 설정 파일들 | 14종 기본 무기의 기본 쿨타임, 데미지, 투사체 수, 범위, 자동조준 여부 정의 | `sword.js`, `shotgun.js`, `windBow.js`, `shadowOrb.js` 등 14종 |
+| `js/weapons/evolutions/` | 개별 설정 파일들 | 14대 진화 무기의 합성 조합 공식, 쿨다운, 기본 데미지, 2단계 메커니즘 정의 | `heavenlySanctuary.js`, `cycloneBow.js`, `eclipseSpiral.js` 등 14종 |
 
 ### 2.3 몬스터 및 보스 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |

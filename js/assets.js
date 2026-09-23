@@ -71,6 +71,8 @@ class AssetManager {
       player_mage: 'assets/sprites/player_mage.png',
       player_assassin: 'assets/sprites/player_assassin.png',
       player_cleric: 'assets/sprites/player_cleric.png',
+      player_sylph: 'assets/sprites/player_sylph.png',
+      player_malakar: 'assets/sprites/player_malakar.png',
 
       // 신규 무기 및 패시브 아이콘
       icon_poisondagger: 'assets/sprites/icon_poisondagger.png',
@@ -84,6 +86,12 @@ class AssetManager {
       icon_plague: 'assets/sprites/icon_plague.png',
       icon_vampire: 'assets/sprites/icon_vampire.png',
       icon_shield: 'assets/sprites/icon_shield.png',
+      icon_windbow: 'assets/sprites/icon_windbow.png',
+      icon_shadoworb: 'assets/sprites/icon_shadoworb.png',
+      icon_cyclonebow: 'assets/sprites/icon_cyclonebow.png',
+      icon_eclipsespiral: 'assets/sprites/icon_eclipsespiral.png',
+      icon_crit_dmg: 'assets/sprites/icon_crit_dmg.png',
+      icon_thorns: 'assets/sprites/icon_thorns.png',
 
       // 신규 보스 2종
       boss_wyrm: 'assets/sprites/boss_wyrm.png',

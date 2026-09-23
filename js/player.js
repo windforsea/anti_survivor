@@ -30,7 +30,7 @@ class Player {
       this.globalCooldownMult = 1.0;
       this.bonusProjSpeedMult = 1.0;
     } else if (characterType === 'cleric') {
-      // 신규 직업: 해골 성직자 (Mortis)
+      // 해골 성직자 (Mortis)
       this.spriteKey = 'player_cleric';
       this.charName = '해골 성직자';
       this.maxHp = 100;
@@ -45,6 +45,32 @@ class Player {
       this.reviveCount = 1;
       this.hpRegen = 0.6;                  // 신성한 기도: 초당 체력 회복 +0.6 HP/s
       this.bonusAreaMult = 1.15;           // 신성 구역: 공격 범위 +15%
+    } else if (characterType === 'sylph') {
+      // 신규 직업: 바람의 궁수 (Sylph) - 스나이퍼
+      this.spriteKey = 'player_sylph';
+      this.charName = '바람의 궁수';
+      this.maxHp = 90;
+      this.hp = 90;
+      this.baseSpeed = 240;
+      this.speed = 240;
+      this.armor = 0;
+      this.atkPowerMult = 1.0;
+      this.globalCooldownMult = 1.0;
+      this.bonusProjSpeedMult = 1.30;      // 투사체 속도 +30%
+      this.bonusAreaMult = 1.25;           // 사거리/시야 +25%
+    } else if (characterType === 'malakar') {
+      // 신규 직업: 심연의 워록 (Malakar) - 흡혈/반격형 흑마도사
+      this.spriteKey = 'player_malakar';
+      this.charName = '심연의 워록';
+      this.maxHp = 110;
+      this.hp = 110;
+      this.baseSpeed = 220;
+      this.speed = 220;
+      this.armor = 0;
+      this.atkPowerMult = 1.15;            // 기본 공격력 +15%
+      this.globalCooldownMult = 1.0;
+      this.bonusProjSpeedMult = 1.0;
+      this.vampireChance = 0.03;           // 기본 3% 흡혈 내장
     } else {
       // knight (기본)
       this.spriteKey = 'player';
@@ -58,6 +84,8 @@ class Player {
       this.globalCooldownMult = 1.0;
       this.bonusProjSpeedMult = 1.0;
     }
+
+    this.thornsPercent = 0.0;           // 응징의 가시 갑옷 반사 피해 비율 (stat_thorns)
 
     this.hpRegen = 0.0;                 // 초당 체력 재생
     this.baseMagnetRadius = characterType === 'assassin' ? 155 : 130;
@@ -237,6 +265,37 @@ class Player {
     sounds.playPlayerHurt();
     if (window.game && window.game.ui) {
       window.game.ui.triggerHaptic(35);
+    }
+
+    // [특성 1] 심연의 워록 피격 시 암흑 충격파 반격 (반경 140px 내 적들에게 50 광역 피해)
+    if (this.characterType === 'malakar' && window.game && window.game.enemies) {
+      const darkRadius = 140;
+      for (const e of window.game.enemies) {
+        if (e.isDead) continue;
+        const d = Math.hypot(e.x - this.x, e.y - this.y);
+        if (d <= darkRadius + e.radius) {
+          e.takeDamage(50, { x: (e.x - this.x) / (d || 1), y: (e.y - this.y) / (d || 1) }, 160);
+        }
+      }
+      if (window.game) {
+        window.game.addParticles(this.x, this.y, '#a855f7', 30);
+      }
+    }
+
+    // [특성 2] 응징의 가시 갑옷 (stat_thorns) 피격 시 주변 120px 적들에게 받은 피해의 N% 가시 반사
+    if (this.thornsPercent > 0 && window.game && window.game.enemies) {
+      const thornsDmg = Math.max(1, Math.round(actualDamage * this.thornsPercent));
+      const thornsRadius = 120;
+      for (const e of window.game.enemies) {
+        if (e.isDead) continue;
+        const d = Math.hypot(e.x - this.x, e.y - this.y);
+        if (d <= thornsRadius + e.radius) {
+          e.takeDamage(thornsDmg, { x: (e.x - this.x) / (d || 1), y: (e.y - this.y) / (d || 1) }, 140);
+        }
+      }
+      if (window.game) {
+        window.game.addParticles(this.x, this.y, '#22c55e', 25);
+      }
     }
 
     if (this.hp <= 0) {

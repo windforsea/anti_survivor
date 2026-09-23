@@ -183,7 +183,9 @@ class Game {
       knight: 'sword',
       mage: 'fireWand',
       assassin: 'poisonDagger',
-      cleric: 'holyWater'
+      cleric: 'holyWater',
+      sylph: 'windBow',
+      malakar: 'shadowOrb'
     };
     const weaponKey = startWeaponMap[charType] || 'sword';
     this.weaponManager.unlockWeapon(weaponKey);

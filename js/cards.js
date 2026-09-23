@@ -22,7 +22,7 @@ class CardManager {
 
   // 게임 시작 시 3종의 기본 무기 중 1개를 선택 (패시브 제외)
   generateStartingWeaponCards() {
-    const starterKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb'];
+    const starterKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb'];
     const weaponMeta = {
       sword: { name: '철검', icon: '🗡️', iconKey: 'icon_sword', desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.' },
       axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냅니다.' },
@@ -36,7 +36,9 @@ class CardManager {
       lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂아 반경 범위 피해를 입힙니다.' },
       fireWand: { name: '불 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 광역 피해를 입힙니다.' },
       poisonDagger: { name: '독비수', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 독비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.' },
-      frostOrb: { name: '빙결 보주', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동을 발산하여 감속시키고 피해를 입힙니다.' }
+      frostOrb: { name: '빙결 보주', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동을 발산하여 감속시키고 피해를 입힙니다.' },
+      windBow: { name: '바람 활', icon: '🏹💨', iconKey: 'icon_windbow', desc: '직선으로 쾌속 관통 바람 화살을 사격하여 적을 밀쳐냅니다.' },
+      shadowOrb: { name: '어둠의 보주', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '플레이어 주변을 공전하며 적에게 지속 암흑 피해를 입힙니다.' }
     };
 
     const shuffled = [...starterKeys].sort(() => 0.5 - Math.random());
@@ -66,7 +68,7 @@ class CardManager {
   generateCards() {
     const cardPool = [];
 
-    // 진화 링크 힌트 헬퍼: 12대 진화 조합 안내 (각 무기당 2개 진화 루트 지원)
+    // 진화 링크 힌트 헬퍼: 14대 진화 조합 안내 (각 무기당 2개 진화 루트 지원)
     const getEvolutionHint = (weaponKey) => {
       const evoList = [
         // 루트 1
@@ -82,7 +84,10 @@ class CardManager {
         { w1: 'whip', w2: 'frostOrb', evoId: 'frostWhip', evoName: '얼음채찍', evoIcon: '🪢❄️' },
         { w1: 'shuriken', w2: 'shotgun', evoId: 'scatterShuriken', evoName: '산탄표창', evoIcon: '🥷💥' },
         { w1: 'magicMissile', w2: 'holyWater', evoId: 'holyArrow', evoName: '신성화살', evoIcon: '🏹✨' },
-        { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪' }
+        { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪' },
+        // 루트 3 (신규 2종)
+        { w1: 'windBow', w2: 'shuriken', evoId: 'cycloneBow', evoName: '태풍의 눈', evoIcon: '🌀🏹' },
+        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨' }
       ];
 
       for (const evo of evoList) {
@@ -119,7 +124,7 @@ class CardManager {
 
     // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
-    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb'];
+    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb'];
 
     // 이미 진화에 소모되었거나 현재 보유 중인 진화 무기의 재료 무기는 카드 풀에서 영구 제외
     const evolvedMaterialPairs = {
@@ -134,7 +139,9 @@ class CardManager {
       frostWhip: ['whip', 'frostOrb'],
       scatterShuriken: ['shuriken', 'shotgun'],
       holyArrow: ['magicMissile', 'holyWater'],
-      plague: ['poisonDagger', 'sanctuary']
+      plague: ['poisonDagger', 'sanctuary'],
+      cycloneBow: ['windBow', 'shuriken', 'throwingDagger'],
+      eclipseSpiral: ['shadowOrb', 'magicMissile']
     };
 
     const isConsumedWeapon = (key) => {
@@ -169,14 +176,24 @@ class CardManager {
       fireWand: { name: '화염 지팡이', type: '원거리', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 폭발 화염구를 발사' },
       poisonDagger: { name: '맹독 비수', type: '원거리', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 맹독 비수를 쾌속 연사하며 피격된 적에게 중독 피해 부여' },
       frostOrb: { name: '빙결 보주', type: '원거리', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동 발산 및 감속' },
+      windBow: { name: '바람 활', type: '원거리', icon: '🏹💨', iconKey: 'icon_windbow', desc: '직선으로 쾌속 관통 바람 화살을 사격하여 적을 밀쳐냄' },
+      shadowOrb: { name: '어둠의 보주', type: '도트', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '플레이어 주변을 공전하며 적에게 지속 암흑 피해 부여' },
 
-      // 6대 진화 무기 메타
+      // 14대 진화 무기 메타
       heavenlySanctuary: { name: '천상의 성역', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 적 빙결(동결) 효과' },
       morningstarTempest: { name: '모닝스타 선풍', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '채찍 전후방 교차 타격 및 첫 적중 시 4방향 관통 표창 방출' },
       apocalypseComet: { name: '멸망의 혜성', type: '원거리', icon: '☄️🔥', iconKey: 'icon_apocalypsecomet', desc: '유도 화염 혜성 연사 및 헬파이어 연쇄 폭발' },
       slayerBladeStorm: { name: '학살자의 폭풍검', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_slayerbladestorm', desc: '초고속 상시 궤도 회전 대검·도끼 근접 방쇄 및 적 투사체 요격 삭제' },
       teslaShotgun: { name: '테슬라 뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '고전압 뇌전 산탄 일제 사격 및 체인 라이트닝·낙뢰 폭격' },
-      venomBlizzard: { name: '베놈 블리자드', type: '원거리', icon: '❄️🧪', iconKey: 'icon_venomblizzard', desc: '거대 서리독 구체 전진 파동 및 8방향 독성 얼음 파편 폭발 방출' }
+      venomBlizzard: { name: '베놈 블리자드', type: '원거리', icon: '❄️🧪', iconKey: 'icon_venomblizzard', desc: '거대 서리독 구체 전진 파동 및 8방향 독성 얼음 파편 폭발 방출' },
+      thunderBlade: { name: '벼락검', type: '근접', icon: '⚡⚔️', iconKey: 'icon_thunderblade', desc: '전방 강타 베기 및 타겟 적 벼락 강타' },
+      fireAxe: { name: '화염도끼', type: '근접', icon: '🪓🔥', iconKey: 'icon_fireaxe', desc: '360도 도끼 대회전 및 8방향 화염구 폭발' },
+      frostWhip: { name: '얼음채찍', type: '근접', icon: '❄️⛓️', iconKey: 'icon_frostwhip', desc: '전후방 냉기 채찍 타격 및 피격 적 1초 동결' },
+      scatterShuriken: { name: '산탄표창', type: '원거리', icon: '🎯💥', iconKey: 'icon_scattershuriken', desc: '부채꼴 5발 관통 표창 일제 사격' },
+      holyArrow: { name: '신성화살', type: '원거리', icon: '🏹✨', iconKey: 'icon_holyarrow', desc: '유도 신성 화살 사격 및 적중 위치 정화 장판 생성' },
+      plague: { name: '역병', type: '도트', icon: '☣️💀', iconKey: 'icon_plague', desc: '독기 결계 지속 중독 및 30초 주기 전체 화면 맹독 폭발' },
+      cycloneBow: { name: '태풍의 눈', type: '원거리', icon: '🌀🏹', iconKey: 'icon_cyclonebow', desc: '대형 관통 폭풍 화살을 사격하고 적들을 블랙홀처럼 중심 흡인' },
+      eclipseSpiral: { name: '황혼의 나선', type: '도트', icon: '🔮✨', iconKey: 'icon_eclipsespiral', desc: '3개 암흑 나선 보주가 회전하며 주기적으로 유도 공허 유령탄 난사' }
     };
 
     if (ownedWeaponsCount < 6) {
@@ -657,6 +674,80 @@ class CardManager {
       }
     }
 
+    // [진화 13] 태풍의 눈 = 바람 활(5Lv) + 표창(5Lv)
+    const wWindBow = this.weaponManager.weapons['windBow'];
+    const hasCycloneBow = !!this.weaponManager.weapons['cycloneBow'];
+    if (wWindBow && wShuriken && !hasCycloneBow) {
+      const windLv = this.weaponManager.getLevel(wWindBow);
+      const shurikenLv = this.weaponManager.getLevel(wShuriken);
+      if (windLv >= 5 && shurikenLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_cyclone_bow',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 태풍의 눈',
+          icon: '🌀🏹',
+          iconKey: 'icon_cyclonebow',
+          desc: '바람 활과 표창을 합성 진화합니다! 거대 폭풍 화살이 모든 적을 꿰뚫고 중심부로 블랙홀 흡인합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '바람 활(5Lv) + 표창(5Lv) 합성 -> [태풍의 눈 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('windBow');
+              this.weaponManager.consumedWeapons.add('shuriken');
+              this.weaponManager.consumedWeapons.add('throwingDagger');
+            }
+            delete this.weaponManager.weapons['windBow'];
+            delete this.weaponManager.weapons['shuriken'];
+            delete this.weaponManager.weapons['throwingDagger'];
+            this.weaponManager.unlockWeapon('cycloneBow');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#10b981', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#34d399', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 14] 황혼의 나선 = 어둠의 보주(5Lv) + 마법 화살(5Lv)
+    const wShadowOrb = this.weaponManager.weapons['shadowOrb'];
+    const hasEclipseSpiral = !!this.weaponManager.weapons['eclipseSpiral'];
+    if (wShadowOrb && wMissile && !hasEclipseSpiral) {
+      const shadowLv = this.weaponManager.getLevel(wShadowOrb);
+      const missileLv = this.weaponManager.getLevel(wMissile);
+      if (shadowLv >= 5 && missileLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_eclipse_spiral',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 황혼의 나선',
+          icon: '🔮✨',
+          iconKey: 'icon_eclipsespiral',
+          desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 3중 나선 보주가 회전하며 주기적으로 유도 공허 유령탄을 쏟아냅니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '어둠의 보주(5Lv) + 마법 화살(5Lv) 합성 -> [황혼의 나선 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('shadowOrb');
+              this.weaponManager.consumedWeapons.add('magicMissile');
+            }
+            delete this.weaponManager.weapons['shadowOrb'];
+            delete this.weaponManager.weapons['magicMissile'];
+            this.weaponManager.unlockWeapon('eclipseSpiral');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#a855f7', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#c084fc', 50);
+            }
+          }
+        });
+      }
+    }
+
     // 3. 보유 중인 무기별 강화 카드 (기본 무기 및 진화 무기 모두 1~5레벨 업그레이드 지원)
     for (const key in this.weaponManager.weapons) {
       const w = this.weaponManager.weapons[key];
@@ -782,6 +873,18 @@ class CardManager {
           } else if (key === 'venomBlizzard') {
             countDesc = `동시에 발사하는 서리독 구체 개수를 늘립니다.`;
             countEffect = '투사체 +1개';
+          } else if (key === 'windBow') {
+            countDesc = `동시에 사격하는 바람 화살 개수를 늘립니다.`;
+            countEffect = '투사체 +1개';
+          } else if (key === 'shadowOrb') {
+            countDesc = `플레이어 주위를 공전하는 어둠의 보주 개수를 늘립니다.`;
+            countEffect = '보주 +1개';
+          } else if (key === 'cycloneBow') {
+            countDesc = `동시에 사격하는 태풍의 눈 화살 개수를 늘립니다.`;
+            countEffect = '투사체 +1개';
+          } else if (key === 'eclipseSpiral') {
+            countDesc = `공전 나선 보주 개수 및 유도탄 방출 빈도를 늘립니다.`;
+            countEffect = '보주 +1개';
           }
         }
 
@@ -971,6 +1074,32 @@ class CardManager {
           }
           const curLv = (this.player.ownedPassives['stat_shield']?.level || 0) + 1;
           this.player.shieldCooldown = Math.max(8.0, 18.0 - (curLv - 1) * 2.5);
+        }
+      },
+      {
+        id: 'stat_crit_dmg',
+        title: '사신의 낫',
+        icon: '🗡️💀',
+        iconKey: 'icon_crit_dmg',
+        desc: '치명타 적중 시 입히는 치명타 피해량을 대폭 증가시킵니다.',
+        effectText: '치명타 피해량 +30%',
+        maxLevel: 5,
+        apply: () => {
+          const curLv = (this.player.ownedPassives['stat_crit_dmg']?.level || 0) + 1;
+          this.player.critDamageMult = 2.0 + curLv * 0.30;
+        }
+      },
+      {
+        id: 'stat_thorns',
+        title: '응징의 가시 갑옷',
+        icon: '🛡️🌵',
+        iconKey: 'icon_thorns',
+        desc: '피격 시 주변 적들에게 받은 피해를 가시 폭발로 강력하게 되돌려줍니다.',
+        effectText: '피해 반사 +100%',
+        maxLevel: 5,
+        apply: () => {
+          const curLv = (this.player.ownedPassives['stat_thorns']?.level || 0) + 1;
+          this.player.thornsPercent = curLv * 1.0;
         }
       }
     ];

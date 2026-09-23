@@ -59,7 +59,7 @@ class WeaponManager {
         icon: '🪓',
         desc: '플레이어 주변을 크게 원형으로 베어내며 적을 밀쳐냅니다.',
         baseCooldown: 1.10,
-        baseDamage: 55,
+        baseDamage: 62,     // 데미지형 한방 강화 (55 -> 62)
         baseCount: 1,
         baseArea: 1.0,
         speedLevel: 0,
@@ -218,7 +218,7 @@ class WeaponManager {
         iconSprite: 'icon_firewand',
         desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 주변 적들에게 화염 피해를 입힙니다.',
         baseCooldown: 1.00,
-        baseDamage: 36,
+        baseDamage: 42,     // 데미지형 한방 폭발 강화 (36 -> 42)
         baseCount: 1,
         baseArea: 1.0,
         cooldownLevel: 0,
@@ -487,6 +487,80 @@ class WeaponManager {
         cooldownTimer: 0
       },
 
+      // [기본 무기 13] 바람 활 (windBow)
+      windBow: {
+        id: 'windBow',
+        name: '바람 활',
+        icon: '🏹',
+        iconSprite: 'icon_windbow',
+        desc: '가장 가까운 적을 향해 날카로운 돌풍 화살을 쏘아 적들을 꿰뚫고 뒤로 밀쳐냅니다.',
+        baseCooldown: 0.60,
+        baseDamage: 32,
+        baseCount: 1,
+        baseArea: 1.0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [기본 무기 14] 어둠의 보주 (shadowOrb)
+      shadowOrb: {
+        id: 'shadowOrb',
+        name: '어둠의 보주',
+        icon: '🔮',
+        iconSprite: 'icon_shadoworb',
+        desc: '플레이어 주위를 나선 궤도로 회전하는 암흑 구체를 소환하여 접촉하는 적을 갈아냅니다.',
+        baseCooldown: 1.10,
+        baseDamage: 34,
+        baseCount: 2,
+        baseArea: 1.0,
+        orbitAngle: 0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 13] 태풍의 눈 (cycloneBow = 바람 활 5Lv + 표창 5Lv)
+      cycloneBow: {
+        id: 'cycloneBow',
+        name: '태풍의 눈',
+        icon: '🌀🏹',
+        iconSprite: 'icon_cyclonebow',
+        desc: '바람 활과 표창을 합성 진화합니다! 초대형 관통 회오리 화살을 발사하며, 착탄 위치에 주변 적들을 빨아들이는 블랙홀을 일으킵니다.',
+        baseCooldown: 0.65,
+        baseDamage: 48,
+        baseCount: 1,
+        baseArea: 1.25,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 14] 황혼의 나선 (eclipseSpiral = 어둠의 보주 5Lv + 마법 화살 5Lv)
+      eclipseSpiral: {
+        id: 'eclipseSpiral',
+        name: '황혼의 나선',
+        icon: '🌌🔮',
+        iconSprite: 'icon_eclipsespiral',
+        desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 3개의 거대 암흑 보주가 초고속 나선 궤도로 팽창하며 유도 유령탄을 연속 난사합니다.',
+        baseCooldown: 0.85,
+        baseDamage: 55,
+        baseCount: 3,
+        baseArea: 1.30,
+        orbitAngle: 0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
       // 이전 진화 무기 호환용
       spinningAxe: { id: 'slayerBladeStorm' },
       bladeWhip: { id: 'morningstarTempest' },
@@ -545,9 +619,12 @@ class WeaponManager {
 
   getCooldown(w) {
     const cdLevel = (w.cooldownLevel !== undefined) ? w.cooldownLevel : (w.speedLevel || 0);
-    const cooldownBonus = 1 + cdLevel * 0.15; // 레벨당 쿨다운 15% 단축 (기존 10%에서 5% 상향)
+    // 공속류 무기는 쿨감 카드 몰빵 시 초고속 연사 체감을 위해 레벨당 18% 단축 (일반 15%)
+    const isRapidType = ['sword', 'shuriken', 'poisonDagger', 'magicMissile', 'thunderBlade', 'scatterShuriken'].includes(w.id);
+    const cdRate = isRapidType ? 0.18 : 0.15;
+    const cooldownBonus = 1 + cdLevel * cdRate;
     const totalMult = this.player.globalCooldownMult * cooldownBonus;
-    return Math.max(0.10, w.baseCooldown / totalMult);
+    return Math.max(0.08, w.baseCooldown / totalMult);
   }
 
   getDamage(w) {
@@ -1250,6 +1327,17 @@ class WeaponManager {
           }
         }
       }
+
+      // [도끼 / 화염도끼 특수 기믹] 360도 원형 회전 베기 시 적 및 보스 투사체 요격 및 즉시 삭제
+      if (s.type === 'circle' && this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
+        for (let pIdx = this.game.bossProjectiles.length - 1; pIdx >= 0; pIdx--) {
+          const bp = this.game.bossProjectiles[pIdx];
+          const pDist = Math.hypot(bp.x - s.x, bp.y - s.y);
+          if (pDist <= s.radius + (bp.radius || 6)) {
+            this.game.bossProjectiles.splice(pIdx, 1);
+          }
+        }
+      }
     }
 
     // 2. 원거리 투사체 업데이트
@@ -1298,7 +1386,67 @@ class WeaponManager {
         }
       }
 
-      // 유도 로직 (마법 화살 & 멸망의 혜성 & 비전 미사일)
+      // 궤도 보주 (어둠의 보주 & 황혼의 나선) 위치 업데이트 및 유령탄 발사
+      if (p.type === 'shadowOrbProj' || p.type === 'eclipseOrbProj') {
+        p.orbitAngle = (p.orbitAngle || 0) + dt * (p.type === 'eclipseOrbProj' ? 3.8 : 2.8);
+        const curAngle = p.orbitAngle + (p.angleOffset || 0);
+        p.x = this.player.x + Math.cos(curAngle) * p.orbitRadius;
+        p.y = this.player.y + Math.sin(curAngle) * p.orbitRadius;
+
+        // 황혼의 나선 2단계: 0.35초마다 유도 유령탄 발사
+        if (p.type === 'eclipseOrbProj') {
+          p.fireTimer = (p.fireTimer || 0.35) - dt;
+          if (p.fireTimer <= 0) {
+            p.fireTimer = 0.35;
+            const tgt = this.getClosestEnemy(enemies);
+            if (tgt) {
+              const ang = Math.atan2(tgt.y - p.y, tgt.x - p.x);
+              this.projectiles.push({
+                type: 'voidGhostMissile',
+                x: p.x,
+                y: p.y,
+                vx: Math.cos(ang) * 450,
+                vy: Math.sin(ang) * 450,
+                radius: 6 * (p.area || 1.0),
+                damage: Math.round(p.damage * 0.55),
+                pierce: 1,
+                homing: true,
+                life: 1.5,
+                color: '#e879f9',
+                hitEnemies: new Set(),
+                hitObstacles: new Set()
+              });
+            }
+          }
+        }
+      }
+
+      // 태풍의 눈 (cycloneArrow) 2단계: 주변 적을 화살 중심으로 강력 흡인 (블랙홀)
+      if (p.type === 'cycloneArrow') {
+        const pullRadius = 140 * (p.area || 1.0);
+        for (const e of enemies) {
+          if (e.isDead) continue;
+          const ed = Math.hypot(p.x - e.x, p.y - e.y);
+          if (ed < pullRadius && ed > 10) {
+            const pullForce = (1 - ed / pullRadius) * 240 * dt;
+            e.x += ((p.x - e.x) / ed) * pullForce;
+            e.y += ((p.y - e.y) / ed) * pullForce;
+          }
+        }
+        if (window.game && Math.random() < 0.35) {
+          window.game.addParticles(p.x, p.y, '#6ee7b7', 2);
+        }
+      }
+
+      if (p.hitCooldowns) {
+        for (const [target, timer] of p.hitCooldowns.entries()) {
+          const next = timer - dt;
+          if (next <= 0 || target.isDead) p.hitCooldowns.delete(target);
+          else p.hitCooldowns.set(target, next);
+        }
+      }
+
+      // 유도 로직 (마법 화살 & 멸망의 혜성 & 비전 미사일 & 유도 유령탄)
       if (p.homing && enemies.length > 0) {
         let closest = null;
         let minDist = 550;
@@ -1328,13 +1476,17 @@ class WeaponManager {
 
       // 적 충돌 검사
       for (const enemy of enemies) {
-        if (enemy.isDead || p.hitEnemies.has(enemy)) continue;
+        if (enemy.isDead || (p.hitCooldowns ? p.hitCooldowns.has(enemy) : p.hitEnemies.has(enemy))) continue;
 
         const dist = Math.hypot(enemy.x - p.x, enemy.y - p.y);
         if (dist <= p.radius + enemy.radius) {
-          p.hitEnemies.add(enemy);
-          const kbDir = { x: p.vx / (Math.hypot(p.vx, p.vy) || 1), y: p.vy / (Math.hypot(p.vx, p.vy) || 1) };
-          enemy.takeDamage(p.damage, kbDir, p.knockbackForce);
+          if (p.hitCooldowns) {
+            p.hitCooldowns.set(enemy, 0.28);
+          } else {
+            p.hitEnemies.add(enemy);
+          }
+          const kbDir = { x: (p.vx || (enemy.x - p.x)) / (Math.hypot(p.vx || 1, p.vy || 1) || 1), y: (p.vy || (enemy.y - p.y)) / (Math.hypot(p.vx || 1, p.vy || 1) || 1) };
+          enemy.takeDamage(p.damage, kbDir, p.knockbackForce || 100);
           sounds.playHit();
 
           // 맹독 비수 및 독 파편 적중 시 중독 부여
@@ -1836,6 +1988,26 @@ class WeaponManager {
         this.executePlagueTick(w, enemies);
         break;
       }
+
+      case 'windBow': {
+        this.executeWindBow(w, enemies);
+        break;
+      }
+
+      case 'shadowOrb': {
+        this.executeShadowOrb(w, enemies);
+        break;
+      }
+
+      case 'cycloneBow': {
+        this.executeCycloneBow(w, enemies);
+        break;
+      }
+
+      case 'eclipseSpiral': {
+        this.executeEclipseSpiral(w, enemies);
+        break;
+      }
     }
   }
 
@@ -2208,6 +2380,125 @@ class WeaponManager {
           window.game.addParticles(rx, ry, k % 2 === 0 ? '#a855f7' : '#22c55e', 3);
         }
       }
+    }
+  }
+
+  // [기본 무기 13] 바람 활 (windBow): 초고속 관통 돌풍 화살 및 넉백
+  executeWindBow(w, enemies) {
+    sounds.playShoot();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const speed = 620 * projSpeedBonus;
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.12 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'windArrow',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 6 * area,
+        area: area,
+        damage: dmg,
+        pierce: 3 + (w.countLevel || 0),
+        knockbackForce: 220,
+        life: 0.85,
+        color: '#10b981',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // [기본 무기 14] 어둠의 보주 (shadowOrb): 나선 궤도 암흑 구체 소환
+  executeShadowOrb(w, enemies) {
+    sounds.playMagic();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+
+    for (let i = 0; i < count; i++) {
+      this.projectiles.push({
+        type: 'shadowOrbProj',
+        x: this.player.x,
+        y: this.player.y,
+        damage: dmg,
+        area: area,
+        angleOffset: (i * Math.PI * 2) / count,
+        orbitRadius: 78 * area,
+        orbitAngle: 0,
+        life: 3.5,
+        radius: 10 * area,
+        pierce: 999,
+        color: '#7e22ce',
+        hitCooldowns: new Map(),
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  }
+
+  // [신규 진화 13] 태풍의 눈 (cycloneBow = 바람 활 + 표창): 대형 회오리 화살 + 착탄 블랙홀
+  executeCycloneBow(w, enemies) {
+    sounds.playShoot();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 580 * projSpeedBonus;
+
+    this.projectiles.push({
+      type: 'cycloneArrow',
+      x: this.player.x,
+      y: this.player.y,
+      vx: Math.cos(baseAngle) * speed,
+      vy: Math.sin(baseAngle) * speed,
+      radius: 14 * area,
+      area: area,
+      damage: dmg,
+      pierce: 999,
+      knockbackForce: 190,
+      life: 0.95,
+      color: '#34d399',
+      hitCooldowns: new Map(),
+      hitEnemies: new Set(),
+      hitObstacles: new Set()
+    });
+  }
+
+  // [신규 진화 14] 황혼의 나선 (eclipseSpiral = 어둠의 보주 + 마법 화살): 나선 암흑구체 3개 + 유도탄 난사
+  executeEclipseSpiral(w, enemies) {
+    sounds.playMagic();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = 3;
+
+    for (let i = 0; i < count; i++) {
+      this.projectiles.push({
+        type: 'eclipseOrbProj',
+        x: this.player.x,
+        y: this.player.y,
+        damage: dmg,
+        area: area,
+        angleOffset: (i * Math.PI * 2) / count,
+        orbitRadius: 105 * area,
+        orbitAngle: 0,
+        life: 4.0,
+        radius: 13 * area,
+        pierce: 999,
+        color: '#c084fc',
+        fireTimer: 0.35,
+        hitCooldowns: new Map(),
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
     }
   }
 
@@ -2617,6 +2908,115 @@ class WeaponManager {
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'windArrow') {
+        // 바람 활 바람 화살 렌더링 (날렵한 청록색 화살)
+        const angle = Math.atan2(p.vy, p.vx);
+        const sz = Math.round(20 * projArea);
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(angle);
+        ctx.fillStyle = '#10b981';
+        ctx.shadowColor = '#34d399';
+        ctx.shadowBlur = 10;
+        ctx.fillRect(-sz / 2, -2, sz, 4);
+        // 화살촉
+        ctx.fillStyle = '#a7f3d0';
+        ctx.beginPath();
+        ctx.moveTo(sz / 2 + 4, 0);
+        ctx.lineTo(sz / 2 - 2, -4);
+        ctx.lineTo(sz / 2 - 2, 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      } else if (p.type === 'cycloneArrow') {
+        // [진화 7] 태풍의 눈 소용돌이 화살 렌더링 (대형 비취빛 화살 + 회전 소용돌이 링)
+        const angle = Math.atan2(p.vy, p.vx);
+        const sz = Math.round(30 * projArea);
+        const pulse = Math.sin(Date.now() * 0.015) * 5;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        // 외곽 소용돌이 흡인 링
+        ctx.strokeStyle = 'rgba(52, 211, 153, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(0, 0, (40 * projArea) + pulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.rotate(angle);
+        ctx.fillStyle = '#059669';
+        ctx.shadowColor = '#10b981';
+        ctx.shadowBlur = 18;
+        ctx.fillRect(-sz / 2, -4, sz, 8);
+        ctx.fillStyle = '#6ee7b7';
+        ctx.fillRect(-sz / 2 + 3, -2, sz - 6, 4);
+        // 대형 비취 촉
+        ctx.fillStyle = '#ecfdf5';
+        ctx.beginPath();
+        ctx.moveTo(sz / 2 + 8, 0);
+        ctx.lineTo(sz / 2 - 4, -7);
+        ctx.lineTo(sz / 2 - 4, 7);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      } else if (p.type === 'shadowOrbProj') {
+        // 어둠의 보주 렌더링 (심연의 보랏빛 궤도 구체)
+        const radius = p.radius;
+        ctx.fillStyle = '#7c3aed';
+        ctx.shadowColor = '#a855f7';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#c084fc';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'eclipseOrbProj') {
+        // [진화 8] 황혼의 나선 대형 암흑 보주 (보라-자주 펄스 + 심연 코어)
+        const radius = p.radius;
+        const pulse = Math.sin(Date.now() * 0.012) * 3;
+        ctx.strokeStyle = 'rgba(192, 132, 252, 0.6)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius + 4 + pulse, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#4c1d95';
+        ctx.shadowColor = '#9333ea';
+        ctx.shadowBlur = 20;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#a855f7';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.65, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#f3e8ff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'voidGhostMissile') {
+        // 황혼의 나선 공허 유령탄 (유도탄)
+        const radius = p.radius;
+        ctx.fillStyle = '#a855f7';
+        ctx.shadowColor = '#c084fc';
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#fdf4ff';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, radius * 0.45, 0, Math.PI * 2);
         ctx.fill();
       } else {
         // 일반 투사체 (마법 화살, 산탄)

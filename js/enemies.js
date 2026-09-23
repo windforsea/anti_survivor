@@ -247,7 +247,7 @@ const ENEMY_TYPES = {
   skeleton: { name: '해골', hp: 34, speed: 105, radius: 13, color: '#f1f5f9', exp: 4, damage: 10, isFlying: false },
   goblin: { name: '고블린', hp: 42, speed: 145, radius: 12, color: '#84cc16', exp: 5, damage: 9, isFlying: false },
   ghost: { name: '유령', hp: 60, speed: 115, radius: 15, color: '#38bdf8', exp: 6, damage: 11, alpha: 0.65, isFlying: true },
-  gargoyle: { name: '가고일', hp: 130, speed: 75, radius: 18, color: '#78716c', exp: 7, damage: 16, isFlying: true },
+  gargoyle: { name: '가고일', hp: 115, speed: 75, radius: 18, color: '#78716c', exp: 7, damage: 16, isFlying: true },
   cultist: { name: '흑마술사', hp: 100, speed: 95, radius: 14, color: '#dc2626', exp: 9, damage: 14, isRanged: true, isFlying: false },
   assassin: { name: '암살자', hp: 60, speed: 155, radius: 13, color: '#18181b', exp: 11, damage: 12, isFlying: false },
   golem: { name: '골렘', hp: 300, speed: 50, radius: 24, color: '#d97706', exp: 25, damage: 25, knockbackResist: 0.85, isFlying: false },

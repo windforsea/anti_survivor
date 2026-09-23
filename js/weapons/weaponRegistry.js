@@ -11,6 +11,8 @@ import { lightningRingWeaponConfig } from './basic/lightningRing.js';
 import { fireWandWeaponConfig } from './basic/fireWand.js';
 import { poisonDaggerWeaponConfig } from './basic/poisonDagger.js';
 import { frostOrbWeaponConfig } from './basic/frostOrb.js';
+import { windBowWeaponConfig } from './basic/windBow.js';
+import { shadowOrbWeaponConfig } from './basic/shadowOrb.js';
 import { heavenlySanctuaryWeaponConfig } from './evolutions/heavenlySanctuary.js';
 import { morningstarTempestWeaponConfig } from './evolutions/morningstarTempest.js';
 import { apocalypseCometWeaponConfig } from './evolutions/apocalypseComet.js';
@@ -23,6 +25,8 @@ import { frostWhipWeaponConfig } from './evolutions/frostWhip.js';
 import { scatterShurikenWeaponConfig } from './evolutions/scatterShuriken.js';
 import { holyArrowWeaponConfig } from './evolutions/holyArrow.js';
 import { plagueWeaponConfig } from './evolutions/plague.js';
+import { cycloneBowWeaponConfig } from './evolutions/cycloneBow.js';
+import { eclipseSpiralWeaponConfig } from './evolutions/eclipseSpiral.js';
 
 export const ALL_WEAPON_CONFIGS = {
   sword: swordWeaponConfig,
@@ -37,6 +41,8 @@ export const ALL_WEAPON_CONFIGS = {
   fireWand: fireWandWeaponConfig,
   poisonDagger: poisonDaggerWeaponConfig,
   frostOrb: frostOrbWeaponConfig,
+  windBow: windBowWeaponConfig,
+  shadowOrb: shadowOrbWeaponConfig,
   heavenlySanctuary: heavenlySanctuaryWeaponConfig,
   morningstarTempest: morningstarTempestWeaponConfig,
   apocalypseComet: apocalypseCometWeaponConfig,
@@ -49,6 +55,8 @@ export const ALL_WEAPON_CONFIGS = {
   scatterShuriken: scatterShurikenWeaponConfig,
   holyArrow: holyArrowWeaponConfig,
   plague: plagueWeaponConfig,
+  cycloneBow: cycloneBowWeaponConfig,
+  eclipseSpiral: eclipseSpiralWeaponConfig,
 };
 
 if (typeof window !== 'undefined') {

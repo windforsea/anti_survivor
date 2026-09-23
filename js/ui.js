@@ -352,6 +352,7 @@ class UIManager {
         const isEvolved = [
           'heavenlySanctuary', 'morningstarTempest', 'apocalypseComet', 'slayerBladeStorm', 'teslaShotgun', 'venomBlizzard',
           'thunderBlade', 'fireAxe', 'frostWhip', 'scatterShuriken', 'holyArrow', 'plague',
+          'cycloneBow', 'eclipseSpiral',
           'spinningAxe', 'bladeWhip', 'holyShotgun', 'arcaneSanctuary', 'plasmaTempest'
         ].includes(key);
         slot.className = `inv-icon inv-weapon ${isEvolved ? 'inv-evolution' : ''}`;
@@ -370,6 +371,8 @@ class UIManager {
         else if (key === 'fireWand') iconKey = 'icon_firewand';
         else if (key === 'poisonDagger') iconKey = 'icon_poisondagger';
         else if (key === 'frostOrb') iconKey = 'icon_frostorb';
+        else if (key === 'windBow') iconKey = 'icon_windbow';
+        else if (key === 'shadowOrb') iconKey = 'icon_shadoworb';
         else if (key === 'heavenlySanctuary') iconKey = 'icon_heavenlysanctuary';
         else if (key === 'morningstarTempest') iconKey = 'icon_morningstartempest';
         else if (key === 'apocalypseComet') iconKey = 'icon_apocalypsecomet';
@@ -382,6 +385,8 @@ class UIManager {
         else if (key === 'scatterShuriken') iconKey = 'icon_scattershuriken';
         else if (key === 'holyArrow') iconKey = 'icon_holyarrow';
         else if (key === 'plague') iconKey = 'icon_plague';
+        else if (key === 'cycloneBow') iconKey = 'icon_cyclonebow';
+        else if (key === 'eclipseSpiral') iconKey = 'icon_eclipsespiral';
         else if (key === 'arcaneSanctuary') iconKey = 'icon_arcanesanctuary';
         else if (key === 'plasmaTempest') iconKey = 'icon_plasmatempest';
 
