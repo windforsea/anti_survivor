@@ -420,6 +420,10 @@ class Enemy {
         this.color = '#ef4444';
         this.freezeTimer = 0;
         this.freezeCooldownTimer = 1.8;
+        this.kbX = 0; // 부활 시 잔여 넉백 완전 리셋
+        this.kbY = 0;
+        this.vx = 0;
+        this.vy = 0;
         sounds.playKill();
         if (window.game) {
           window.game.addParticles(this.x, this.y, '#ef4444', 18);
@@ -438,6 +442,17 @@ class Enemy {
       this.animTimer += dt * 2;
       return;
     }
+
+    if (this.slowTimer > 0) {
+      this.slowTimer -= dt;
+    }
+
+    this.animTimer += dt * 8;
+    if (this.hitFlashTimer > 0) this.hitFlashTimer -= dt;
+
+    // 넉백 감쇠 (마찰력 적용)
+    this.kbX *= Math.max(0, 1 - dt * 8);
+    this.kbY *= Math.max(0, 1 - dt * 8);
 
     // 플레이어를 향해 이동
     const dx = player.x - this.x;
@@ -463,12 +478,17 @@ class Enemy {
         moveDirY = (dy / dist) * 0.45 + (dx / dist) * 0.85;
       }
 
-      // 3. 유령 (ghost): 3.5초 주기 중 0.6초간만 위상 변이 (반투명 무적)
+      // 3. 유령 (ghost): 3.5초 주기 중 0.6초간만 위상 변이 (반투명 무적 영체화)
       else if (this.typeKey === 'ghost') {
         this.phaseTimer += dt;
         const cycle = this.phaseTimer % 3.5;
+        const prevPhased = this.isPhased;
         this.isPhased = cycle < 0.6;
         this.alpha = this.isPhased ? 0.20 : 0.70;
+        if (this.isPhased && !prevPhased) {
+          this.kbX = 0; // 무적 영체화 진입 시 잔여 넉백 즉시 리셋
+          this.kbY = 0;
+        }
       }
 
       // 4. 암살자 (assassin): 210px 근접 시 0.35초간 그림자 돌진 (Shadow Dash - 너프 적용)
@@ -537,21 +557,23 @@ class Enemy {
         }
       }
 
-      // 몬스터 간 간단한 분리(밀어내기) 처리
+      // 몬스터 간 간단한 분리(밀어내기) 처리 (유령 무적 위상 변이 상태이거나 뼈무덤 상태인 적은 통과)
       let sepX = 0;
       let sepY = 0;
-      let neighbors = 0;
-      for (const other of allEnemies) {
-        if (other === this || other.isDead) continue;
-        const ox = this.x - other.x;
-        const oy = this.y - other.y;
-        const odist = Math.hypot(ox, oy);
-        const minDist = this.radius + other.radius;
-        if (odist > 0 && odist < minDist) {
-          sepX += (ox / odist) * (minDist - odist);
-          sepY += (oy / odist) * (minDist - odist);
-          neighbors++;
-          if (neighbors > 5) break;
+      if (!this.isPhased && this.reviveState !== 1) {
+        let neighbors = 0;
+        for (const other of allEnemies) {
+          if (other === this || other.isDead || other.isPhased || other.reviveState === 1) continue;
+          const ox = this.x - other.x;
+          const oy = this.y - other.y;
+          const odist = Math.hypot(ox, oy);
+          const minDist = this.radius + other.radius;
+          if (odist > 0 && odist < minDist) {
+            sepX += (ox / odist) * (minDist - odist);
+            sepY += (oy / odist) * (minDist - odist);
+            neighbors++;
+            if (neighbors > 5) break;
+          }
         }
       }
 
