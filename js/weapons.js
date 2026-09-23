@@ -151,7 +151,7 @@ class WeaponManager {
       radius: 95 * area,
       damage: dmg,
       knockbackDir: null,
-      knockbackForce: 160,
+      knockbackForce: 110,
       life: 0.22,
       maxLife: 0.22,
       hitEnemies: new Set(),
@@ -1007,10 +1007,14 @@ class WeaponManager {
 
         if (inHitbox) {
           s.hitEnemies.add(enemy);
-          const kbDir = s.knockbackDir || {
-            x: (enemy.x - s.x) / (dist || 1),
-            y: (enemy.y - s.y) / (dist || 1)
-          };
+          let kbDir = s.knockbackDir;
+          if (!kbDir) {
+            if (dist > 1) {
+              kbDir = { x: (enemy.x - s.x) / dist, y: (enemy.y - s.y) / dist };
+            } else {
+              kbDir = { x: this.player.facing.x || 1, y: this.player.facing.y || 0 };
+            }
+          }
           enemy.takeDamage(s.damage, kbDir, s.knockbackForce);
           sounds.playHit();
 

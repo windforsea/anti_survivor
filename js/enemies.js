@@ -389,6 +389,24 @@ class Enemy {
   update(dt, player, allEnemies, enemyProjectiles) {
     if (this.isDead) return;
 
+    // 1. 피격 흰색 점멸(Hit Flash) 타이머 차감 (빙결/뼈무덤/상태이상과 무관하게 무조건 0.12초 뒤 원래 색 복귀 보장!)
+    if (this.hitFlashTimer > 0) {
+      this.hitFlashTimer -= dt;
+    }
+
+    // 2. 넉백 물리 마찰력 감쇠 및 최대 속도 클램프 (빙결 상태여도 물리 감쇠는 항상 작동하여 누적 폭발 방지)
+    this.kbX *= Math.max(0, 1 - dt * 10);
+    this.kbY *= Math.max(0, 1 - dt * 10);
+    const kbSpeed = Math.hypot(this.kbX, this.kbY);
+    const maxKb = 160;
+    if (kbSpeed > maxKb) {
+      this.kbX = (this.kbX / kbSpeed) * maxKb;
+      this.kbY = (this.kbY / kbSpeed) * maxKb;
+    }
+
+    // 플레이어를 향한 시선 방향 추적 (넉백으로 밀려나더라도 플레이어를 항상 똑바로 응시)
+    this.targetDirX = (player.x < this.x) ? -1 : 1;
+
     // 빙결 면역 쿨타임 차감
     if (this.freezeCooldownTimer > 0) {
       this.freezeCooldownTimer -= dt;
@@ -448,11 +466,6 @@ class Enemy {
     }
 
     this.animTimer += dt * 8;
-    if (this.hitFlashTimer > 0) this.hitFlashTimer -= dt;
-
-    // 넉백 감쇠 (마찰력 적용)
-    this.kbX *= Math.max(0, 1 - dt * 8);
-    this.kbY *= Math.max(0, 1 - dt * 8);
 
     // 플레이어를 향해 이동
     const dx = player.x - this.x;
@@ -615,6 +628,10 @@ class Enemy {
 
         this.x = newX;
         this.y = newY;
+        this.kbX = 0;
+        this.kbY = 0;
+        this.vx = 0;
+        this.vy = 0;
         this.offscreenTimer = 0;
       }
     } else {
@@ -676,7 +693,7 @@ class Enemy {
 
     const bob = Math.sin(this.animTimer) * 2;
     const isHit = this.hitFlashTimer > 0;
-    const facingX = (this.vx && Math.abs(this.vx) > 5) ? (this.vx < 0 ? -1 : 1) : 1;
+    const facingX = (this.targetDirX !== undefined) ? this.targetDirX : ((this.vx && Math.abs(this.vx) > 5) ? (this.vx < 0 ? -1 : 1) : 1);
     const spriteSize = Math.max(28, this.radius * 2.4);
 
     // 붉은 해골(부활 완료된 2차 해골) 판정
