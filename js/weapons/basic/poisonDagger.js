@@ -7,7 +7,7 @@ export const poisonDaggerWeaponConfig = {
   "name": "맹독 비수",
   "icon": "🗡️🧪",
   "iconSprite": "icon_poisondagger",
-  "baseCooldown": 0.38,
+  "baseCooldown": 0.48,
   "baseDamage": 18,
   "baseCount": 1,
   "baseArea": 1,

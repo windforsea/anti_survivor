@@ -21,7 +21,7 @@ Anti Survivors의 12종 기본 무기 스펙, 4대 강화 카드 옵션, 6대 �
 | **성역 (`sanctuary`)** | **도트** | [`sanctuary.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/sanctuary.js) | 90px 반경 | 28 (초당) | 1.00s | 결계 | 플레이어 중심 360도 원형 룬 결계로 상시 지속 피해 (0.8초 틱 주기, 넉백 삭제 0) |
 | **번개 반지 (`lightningRing`)** | **원거리** | [`lightningRing.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/lightningRing.js) | 48px 스플래시 | 42 | 1.10s | 1발 | 무작위 적 머리 위로 하늘에서 벼락을 내리꽂아 지면 폭발 피해 부여 |
 | **화염 지팡이 (`fireWand`)** | **원거리** | [`fireWand.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/fireWand.js) | 380px (폭발 65px) | 36 | 1.00s | 1발 | 적을 향해 화염구를 발사하며 착탄 시 폭발하여 광역 화염 피해 부여 |
-| **맹독 비수 (`poisonDagger`)** | **원거리/도트** | [`poisonDagger.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/poisonDagger.js) | 350px (관통) | 22 | 0.52s | 1발 | 가장 가까운 적을 향해 독단검을 던져(자동 조준) 관통 및 3초간 중독(초당 10 DPS) 부여 |
+| **맹독 비수 (`poisonDagger`)** | **원거리/도트** | [`poisonDagger.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/poisonDagger.js) | 350px (관통) | 18 | 0.48s | 1발 | 가장 가까운 적을 향해 독단검을 던져(자동 조준) 관통 및 3초간 중독(초당 10 DPS) 부여 |
 | **빙결 보주 (`frostOrb`)** | **원거리/군중제어** | [`frostOrb.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/frostOrb.js) | 400px (냉기 파동 반경 51px) | 30 | 1.20s | 1발 | 서리 보주가 서서히 비행하며 경로상의 적에게 지속 냉기 피해(반경 51px) 및 이동 속도 감속 부여 |
 
 ---

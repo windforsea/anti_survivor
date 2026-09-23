@@ -328,7 +328,7 @@ class WeaponManager {
         icon: '🗡️🧪',
         iconSprite: 'icon_poisondagger',
         desc: '바라보는 방향으로 독이 묻은 비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.',
-        baseCooldown: 0.38,
+        baseCooldown: 0.48,
         baseDamage: 18,
         baseCount: 1,
         baseArea: 1.0,
