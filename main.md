@@ -32,11 +32,13 @@ vam/
 │   ├── assets.md                # 94종 스프라이트 에셋 명세표
 │   └── system.md                # FNV-1a 보안 체크섬, 무결성 검증
 │
-├── js/                          # 🚀 고속 바닐라 JS 코어 런타임 (더미 파일 완전 제거)
+├── js/                          # 🚀 고속 바닐라 JS 코어 런타임 (모듈화 구조)
 │   ├── main.js                  # Game 클래스: 메인 루프, 입력 이벤트, 렌더링 파이프라인
 │   ├── player.js                # Player 클래스: 이동, 조작, 피격 판정, 레벨업/경험치 곡선, 공격 모션
+│   ├── weaponData.js            # WEAPON_CONFIGS: 14종 기본 무기 및 14대 진화 무기 스펙 데이터 테이블
 │   ├── weapons.js               # WeaponManager 클래스: 14종 기본/14종 진화 무기 엔진, 투사체 및 장판 시뮬레이션
-│   ├── enemies.js               # EnemyManager 클래스: 15종 몬스터/11종 보스 스폰, AI 행동, 충돌 판정, 빙결/넉백
+│   ├── enemies.js               # EnemyManager, Enemy 클래스: 15종 일반 몬스터 스폰, AI 행동, 충돌 판정, 빙결/넉백
+│   ├── bosses.js                # BossEnemy 클래스: 11종 보스 스펙, 넉백 면역 및 전방위 탄막 패턴 AI
 │   ├── cards.js                 # CardManager 클래스: 철검(sword) 전직업 공용화 및 타직업 시그니처 5종 차단 카드 풀, 진화 합성
 │   ├── waveManager.js           # WaveManager 클래스: 25단계 스테이지 타이머, 스폰 제어, 사신 강림
 │   ├── obstacles.js             # ObstacleManager 클래스: 필드 장애물(바위, 나무, 상자) 충돌 및 파괴
@@ -63,12 +65,14 @@ vam/
 ### 2.2 무기 및 전투 시뮬레이션 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
-| [`js/weapons.js`](js/weapons.js) | `WeaponManager` | 14종 기본 무기 및 14대 2단계 진화 무기 통합 관리, 쿨다운/데미지/사거리/투사체/도트 장판 시뮬레이션 | `update(dt, enemies)`, `fireWeapon(w, enemies)`, `getCooldown(w)`, `getDamage(w)` |
+| [`js/weaponData.js`](js/weaponData.js) | `WEAPON_CONFIGS` | 14종 기본 무기 및 14대 2단계 진화 무기 기본 스펙, 쿨다운, 피해량, 범위 데이터 정의 | `sword`, `axe`, `slayerBladeStorm`, `eclipseSpiral` 등 28종 스펙 |
+| [`js/weapons.js`](js/weapons.js) | `WeaponManager` | 14종 기본 무기 및 14대 진화 무기 발사, 쿨다운/데미지/투사체/도트 장판 시뮬레이션 및 캔버스 렌더링 | `update(dt, enemies)`, `fireWeapon(w, enemies)`, `getCooldown(w)`, `getDamage(w)` |
 
 ### 2.3 몬스터 및 보스 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
-| [`js/enemies.js`](js/enemies.js) | `EnemyManager`, `DamageNumber` | 15종 일반 몬스터 및 11종 보스 스폰/AI 행동/충돌 판정, 유령 무적/해골 부활 빙결 면역, 렉 없는 크리티컬 느낌표 표기 | `update(dt, player)`, `spawnEnemy(type)`, `checkCollisions()`, `draw()` |
+| [`js/enemies.js`](js/enemies.js) | `EnemyManager`, `Enemy`, `DamageNumber` | 15종 일반 몬스터 스폰/AI 행동/충돌 판정, 유령 무적/해골 부활 빙결 면역, 렉 없는 크리티컬 느낌표 표기 | `update(dt, player)`, `spawnEnemy(type)`, `checkCollisions()`, `draw()` |
+| [`js/bosses.js`](js/bosses.js) | `BossEnemy` | 11종 보스 스펙, 넉백 면역 판정, 11대 특수 탄막/돌진/소환/블랙홀 패턴 AI 및 체력바 렌더링 | `update(dt, player)`, `draw(ctx)`, `takeDamage(amount)` |
 
 ### 2.4 레벨업 카드, 장애물 및 UI 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
@@ -85,11 +89,11 @@ vam/
 
 * **캐릭터 스탯, 이동속도, 경험치 곡선, 부활, 공격 애니메이션을 변경할 때**:
   👉 [`js/player.js`](js/player.js) (`constructor`, `applyCharacterStats`, `triggerAttackAnim`)
-* **특정 기본/진화 무기의 데미지, 쿨타임, 투사체 수, 범위를 수정할 때**:
-  👉 [`js/weapons.js`](js/weapons.js) (`unlockWeapon`, `executeSwordSlash`, `executeThunderBlade`, `executeEclipseSpiral` 등)
-* **캐릭터별 타 직업 시그니처 무기 차단 및 레벨업 카드 출현을 수정할 때**:
-  👉 [`js/cards.js`](js/cards.js) (`CHARACTER_SIGNATURE_WEAPONS`, `getForbiddenWeaponsForClass`, `generateCards`)
-* **크리티컬 느낌표(!) 타격 표기 및 몬스터 빙결/넉백/스탯을 수정할 때**:
+* **특정 기본/진화 무기의 기본 스펙, 데미지, 쿨타임을 수정할 때**:
+  👉 [`js/weaponData.js`](js/weaponData.js) (스펙 정의) 및 [`js/weapons.js`](js/weapons.js) (공격 로직)
+* **보스 11종 탄막 패턴, 돌진, 소환, 넉백 면역을 수정할 때**:
+  👉 [`js/bosses.js`](js/bosses.js) (`BossEnemy`, `takeDamage`, `update`)
+* **일반 몬스터 빙결/넉백/스탯 및 크리티컬 느낌표(!)를 수정할 때**:
   👉 [`js/enemies.js`](js/enemies.js) (`DamageNumber`, `freeze`, `takeDamage`, `spawnEnemy`)
 * **스테이지 진행 시간, 몹 스폰량, 사신 강림 시점을 변경할 때**:
   👉 [`js/waveManager.js`](js/waveManager.js) (`stageConfigs`, `maxStage = 25`)
