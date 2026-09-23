@@ -64,24 +64,8 @@ const WEAPON_CONFIGS = {
         speedProjLevel: 0,
         cooldownTimer: 0
       },
-      // 구 단검 호환용 alias
-      throwingDagger: {
-        id: 'shuriken',
-        name: '표창',
-        icon: '🥷',
-        iconSprite: 'icon_shuriken',
-        desc: '가장 가까운 몬스터를 향해 고속 회전하며 다수의 적을 관통하는 표창을 던집니다.',
-        baseCooldown: 0.42,
-        baseDamage: 24,
-        baseCount: 1,
-        baseArea: 1.0,
-        cooldownLevel: 0,
-        damageLevel: 0,
-        countLevel: 0,
-        areaLevel: 0,
-        speedProjLevel: 0,
-        cooldownTimer: 0
-      },
+      // 구 단검 호환용 alias (중복 코드 제거)
+      throwingDagger: { id: 'shuriken' },
       magicMissile: {
         id: 'magicMissile',
         name: '마법 화살',
@@ -148,22 +132,8 @@ const WEAPON_CONFIGS = {
         areaLevel: 0,
         cooldownTimer: 0
       },
-      acidPool: {
-        id: 'holyWater',
-        name: '성수',
-        icon: '🧪',
-        iconSprite: 'icon_holywater',
-        desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.',
-        baseCooldown: 2.0,
-        baseDamage: 14,
-        baseCount: 1,
-        baseArea: 1.0,
-        cooldownLevel: 0,
-        damageLevel: 0,
-        countLevel: 0,
-        areaLevel: 0,
-        cooldownTimer: 0
-      },
+      // 구 산성웅덩이 호환용 alias (중복 코드 제거)
+      acidPool: { id: 'holyWater' },
       lightningRing: {
         id: 'lightningRing',
         name: '번개 반지',
@@ -389,7 +359,7 @@ const WEAPON_CONFIGS = {
         name: '얼음채찍',
         icon: '🪢❄️',
         iconSprite: 'icon_frostwhip',
-        desc: '전방과 후방을 교차 강타하며, 피격된 모든 적을 1초간 완전 빙결시킵니다.',
+        desc: '전방과 후방을 교차 강타하며, 피격된 적을 낮은 확률(8%)로 1초간 빙결시킵니다.',
         baseCooldown: 0.90,
         baseDamage: 52,
         baseCount: 2,
@@ -480,7 +450,7 @@ const WEAPON_CONFIGS = {
         name: '어둠의 보주',
         icon: '🔮',
         iconSprite: 'icon_shadoworb',
-        desc: '플레이어 주위를 나선 궤도로 회전하는 암흑 구체를 소환하여 접촉하는 적을 갈아냅니다.',
+        desc: '가장 가까운 적을 자율 추적하여 날아가 밀착 다단히트 피해를 입히며, 적이 없을 때는 플레이어를 호위합니다.',
         baseCooldown: 1.10,
         baseDamage: 34,
         baseCount: 2,
@@ -517,7 +487,7 @@ const WEAPON_CONFIGS = {
         name: '황혼의 나선',
         icon: '🌌🔮',
         iconSprite: 'icon_eclipsespiral',
-        desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 3개의 거대 암흑 보주가 초고속 나선 궤도로 팽창하며 유도 유령탄을 연속 난사합니다.',
+        desc: '3체의 황혼 사역마가 적을 자율 추적하여 밀착 다단히트하며, 주기적으로 8방향 관통 마법 화살을 일제 난사합니다.',
         baseCooldown: 0.85,
         baseDamage: 55,
         baseCount: 3,

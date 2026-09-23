@@ -96,7 +96,7 @@ class WeaponManager {
   getCount(w) {
     const extra = (w.countLevel || 0) + (this.player.bonusProjectiles || 0);
     if (w.id === 'shotgun' || w.id === 'teslaShotgun') {
-      return w.baseCount + extra * 2; // 산탄총포: 투사체 추가시마다 2발씩 추가
+      return w.baseCount + extra * 2; // 산탄총: 투사체 추가시마다 2발씩 추가
     }
     return w.baseCount + extra;
   }
@@ -198,7 +198,7 @@ class WeaponManager {
     });
   }
 
-  // [진화 1] 천상의 성역 (heavenlySanctuary): 초대형 결계 + 내부 성수 정화 도트 + 적 빙결(동결) 효과
+  // [진화 1] 생츄어리 (heavenlySanctuary): 초대형 결계 + 내부 성수 정화 도트 + 적 빙결(동결) 효과
   executeHeavenlySanctuaryTick(w, enemies) {
     const dmg = this.getDamage(w);
     const area = this.getArea(w);
@@ -234,7 +234,7 @@ class WeaponManager {
     }
   }
 
-  // [진화 2] 모닝스타 선풍 (morningstarTempest): 일반 채찍과 동일하게 휘두르며 첫 번째 타겟 적중 시 4방향 관통 표창 방출
+  // [진화 2] 모닝스타 (morningstarTempest): 일반 채찍과 동일하게 휘두르며 첫 번째 타겟 적중 시 4방향 관통 표창 방출
   executeMorningstarTempest(w, isBack = false, baseAngle = null) {
     sounds.playWhip();
     const dmg = this.getDamage(w);
@@ -277,7 +277,7 @@ class WeaponManager {
     });
   }
 
-  // 모닝스타 선풍: 첫 번째 타겟 적중 위치에서 4방향 관통 표창 발사
+  // 모닝스타: 첫 번째 타겟 적중 위치에서 4방향 관통 표창 발사
   triggerMorningstar4Shurikens(tx, ty, w) {
     sounds.playSlash();
     const dmg = Math.round(this.getDamage(w) * 0.75);
@@ -314,7 +314,7 @@ class WeaponManager {
     }
   }
 
-  // [진화 3] 멸망의 혜성 (apocalypseComet): 유도 고열 화염 혜성 연사 및 초대형 연쇄 폭발
+  // [진화 3] 메테오 (apocalypseComet): 유도 고열 화염 혜성 연사 및 초대형 연쇄 폭발
   executeApocalypseComet(w, enemies) {
     const count = this.getCount(w);
     const dmg = this.getDamage(w);
@@ -356,12 +356,12 @@ class WeaponManager {
     }
   }
 
-  // [진화 4] 학살자의 폭풍검 (slayerBladeStorm): 상시 회전 칼날은 update에서 처리 (검기 삭제)
+  // [진화 4] 폭풍검 (slayerBladeStorm): 상시 회전 칼날은 update에서 처리 (검기 삭제)
   executeSlayerBladeStorm(w, enemies) {
     // 검기 삭제 완료 - 상시 궤도 회전 대검/도끼로만 전투 수행
   }
 
-  // [진화 5] 테슬라 뇌전포 (teslaShotgun): 고전압 뇌전 산탄 + 체인 라이트닝 + 즉시 낙뢰 폭격
+  // [진화 5] 뇌전포 (teslaShotgun): 고전압 뇌전 산탄 + 체인 라이트닝 + 즉시 낙뢰 폭격
   executeTeslaShotgun(w, enemies) {
     sounds.playShotgun();
     sounds.playLightning();
@@ -515,7 +515,7 @@ class WeaponManager {
     sounds.playLightning();
   }
 
-  // 기본 무기 화염 지팡이 (fireWand)
+  // 기본 무기 불 지팡이 (fireWand)
   executeFireWand(w, enemies) {
     const count = this.getCount(w);
     const dmg = this.getDamage(w);
@@ -572,7 +572,7 @@ class WeaponManager {
       }
     }
 
-    // [진화 1] 천상의 성역 (heavenlySanctuary) 상시 성수 도트 결계 & 빙결
+    // [진화 1] 생츄어리 (heavenlySanctuary) 상시 성수 도트 결계 & 빙결
     const heavenly = this.weapons['heavenlySanctuary'] || this.weapons['holyShotgun'];
     if (heavenly) {
       heavenly.cooldownTimer -= dt;
@@ -615,7 +615,7 @@ class WeaponManager {
       }
     }
 
-    // [진화 2] 모닝스타 선풍 전후방 교차 연타 큐 처리
+    // [진화 2] 모닝스타 전후방 교차 연타 큐 처리
     if (this.bladeWhipStrikesQueue.length > 0) {
       this.bladeWhipStrikeTimer -= dt;
       if (this.bladeWhipStrikeTimer <= 0) {
@@ -626,7 +626,7 @@ class WeaponManager {
       }
     }
 
-    // [진화 4] 학살자의 폭풍검 (slayerBladeStorm) 상시 궤도 회전 타격
+    // [진화 4] 폭풍검 (slayerBladeStorm) 상시 궤도 회전 타격
     const bladeStorm = this.weapons['slayerBladeStorm'] || this.weapons['spinningAxe'];
     if (bladeStorm) {
       const projSpeedMult = (1 + (bladeStorm.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
@@ -1018,7 +1018,7 @@ class WeaponManager {
           enemy.takeDamage(s.damage, kbDir, s.knockbackForce);
           sounds.playHit();
 
-          // 모닝스타 선풍: 첫 번째 적중 시 적중 위치에서 4방향 관통 표창 방출
+          // 모닝스타: 첫 번째 적중 시 적중 위치에서 4방향 관통 표창 방출
           if (s.isMorningstarTempest && !s.shurikenSpawned) {
             s.shurikenSpawned = true;
             this.triggerMorningstar4Shurikens(enemy.x, enemy.y, s.weaponRef);
@@ -1047,7 +1047,7 @@ class WeaponManager {
           s.hitObstacles.add(obs);
           obs.takeDamage(s.damage, this.game);
 
-          // 모닝스타 선풍: 장애물에 첫 적중 시에도 4방향 관통 표창 방출
+          // 모닝스타: 장애물에 첫 적중 시에도 4방향 관통 표창 방출
           if (s.isMorningstarTempest && !s.shurikenSpawned) {
             s.shurikenSpawned = true;
             this.triggerMorningstar4Shurikens(obs.x, obs.y, s.weaponRef);
@@ -1089,7 +1089,7 @@ class WeaponManager {
         continue;
       }
 
-      // 빙결 보주 & 베놈 블리자드 보주 비행 중 주기적 냉기 파동 발산
+      // 빙결 보주 & 블리자드 보주 비행 중 주기적 냉기 파동 발산
       if (p.type === 'frostOrb' || p.type === 'venomBlizzardOrb') {
         p.pulseTimer = (p.pulseTimer || 0) - dt;
         if (p.pulseTimer <= 0) {
@@ -1140,7 +1140,7 @@ class WeaponManager {
         }
       }
 
-      // 유도 로직 (마법 화살 & 멸망의 혜성 & 비전 미사일 & 유도 유령탄)
+      // 유도 로직 (마법 화살 & 메테오 & 비전 미사일 & 유도 유령탄)
       if (p.homing && enemies.length > 0) {
         let closest = null;
         let minDist = 550;
@@ -1183,7 +1183,7 @@ class WeaponManager {
           enemy.takeDamage(p.damage, kbDir, p.knockbackForce || 100);
           sounds.playHit();
 
-          // 맹독 비수 및 독 파편 적중 시 중독 부여
+          // 독비수 및 독 파편 적중 시 중독 부여
           if (p.type === 'poisonDagger' || p.type === 'poisonShard') {
             enemy.poison(3.0, Math.round(p.damage * 0.45));
           }
@@ -1197,7 +1197,7 @@ class WeaponManager {
             }
           }
 
-          // 테슬라 뇌전탄 적중 시 체인 라이트닝 + 하늘 낙뢰
+          // 뇌전탄 적중 시 체인 라이트닝 + 하늘 낙뢰
           if (p.type === 'teslaPellet') {
             this.triggerTeslaStrike(p, enemy, enemies);
           }
@@ -1304,7 +1304,7 @@ class WeaponManager {
       maxLife: 0.16
     });
 
-    // 테슬라 뇌전포 낙뢰 착탄 고전압 스파크 파티클 연출
+    // 뇌전포 낙뢰 착탄 고전압 스파크 파티클 연출
     if (this.game && this.game.addParticles) {
       this.game.addParticles(tx, ty, '#38bdf8', 12);
       this.game.addParticles(tx, ty, '#ffffff', 8);
@@ -1479,7 +1479,7 @@ class WeaponManager {
         break;
       }
 
-      // [진화 2] 모닝스타 선풍 (morningstarTempest): 일반 채찍과 동일하게 자동 조준 및 교차 연타
+      // [진화 2] 모닝스타 (morningstarTempest): 일반 채찍과 동일하게 자동 조준 및 교차 연타
       case 'morningstarTempest':
       case 'bladeWhip': {
         const closestEnemy = this.getClosestEnemy(enemies);
@@ -1499,20 +1499,20 @@ class WeaponManager {
         break;
       }
 
-      // [진화 4] 학살자의 폭풍검 (slayerBladeStorm: 검기 삭제 완료 - 상시 궤도 회전만 동작)
+      // [진화 4] 폭풍검 (slayerBladeStorm: 검기 삭제 완료 - 상시 궤도 회전만 동작)
       case 'slayerBladeStorm':
       case 'spinningAxe': {
         break;
       }
 
-      // [진화 3] 멸망의 혜성 (apocalypseComet)
+      // [진화 3] 메테오 (apocalypseComet)
       case 'apocalypseComet':
       case 'arcaneSanctuary': {
         this.executeApocalypseComet(w, enemies);
         break;
       }
 
-      // [진화 5] 테슬라 뇌전포 (teslaShotgun)
+      // [진화 5] 뇌전포 (teslaShotgun)
       case 'teslaShotgun':
       case 'plasmaTempest':
       case 'holyShotgun': {
@@ -1520,7 +1520,7 @@ class WeaponManager {
         break;
       }
 
-      // [진화 1] 천상의 성역 (heavenlySanctuary)
+      // [진화 1] 생츄어리 (heavenlySanctuary)
       case 'heavenlySanctuary': {
         // 상시 오라 틱 및 충격파는 update()에서 처리
         this.executeHeavenlySanctuaryTick(w, enemies);
@@ -1562,7 +1562,7 @@ class WeaponManager {
       }
 
       case 'shotgun': {
-        // 산탄 총포: 가장 가까운 적을 향해 전방 부채꼴 산탄 (자동 조준)
+        // 산탄총: 가장 가까운 적을 향해 전방 부채꼴 산탄 (자동 조준)
         sounds.playShotgun();
         const closest = this.getClosestEnemy(enemies);
         const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
@@ -1705,7 +1705,7 @@ class WeaponManager {
     }
   }
 
-  // 11. 맹독 비수 (poisonDagger): 플레이어 조준 방향으로 쾌속 직진 비수 연사 및 중독
+  // 11. 독비수 (poisonDagger): 플레이어 조준 방향으로 쾌속 직진 비수 연사 및 중독
   executePoisonDagger(w, enemies) {
     sounds.playSlash();
     const dmg = this.getDamage(w);
@@ -1776,7 +1776,7 @@ class WeaponManager {
     }
   }
 
-  // [진화 6] 베놈 블리자드 (venomBlizzard: 추천안 C 2단계 원거리 발사형)
+  // [진화 6] 블리자드 (venomBlizzard: 2단계 원거리 발사형)
   executeVenomBlizzard(w, enemies) {
     sounds.playMagic();
     const dmg = this.getDamage(w);
@@ -1814,7 +1814,7 @@ class WeaponManager {
     }
   }
 
-  // 베놈 블리자드 2단계: 2초 후 폭발하여 8방향 독단검(poisonDagger) 발사
+  // 블리자드 2단계: 2초 후 폭발하여 8방향 독단검(poisonDagger) 발사
   triggerVenomBlizzardShards(x, y, area, damage) {
     sounds.playSlash();
     if (window.game) {
@@ -1963,7 +1963,7 @@ class WeaponManager {
     }
   }
 
-  // [신규 진화 9] 얼음채찍 (frostWhip): 전후방 교차 타격 + 1초 완전 빙결
+  // [신규 진화 9] 얼음채찍 (frostWhip): 전후방 교차 타격 + 8% 확률 1초 빙결
   executeFrostWhip(w, enemies) {
     sounds.playSlash();
     const dmg = this.getDamage(w);
@@ -1974,7 +1974,7 @@ class WeaponManager {
       baseAngle = Math.atan2(closest.y - this.player.y, closest.x - this.player.x);
     }
 
-    // 1단계 타격 + 2단계 완전 빙결
+    // 1단계 타격 + 2단계 8% 확률 빙결
     const strike = (angle) => {
       this.player.triggerAttackAnim('whip', angle, 0.15, { area, color: '#38bdf8' });
       for (const enemy of enemies) {
@@ -1986,7 +1986,9 @@ class WeaponManager {
           while (diff > Math.PI) diff = Math.abs(diff - Math.PI * 2);
           if (diff <= Math.PI * 0.40) {
             enemy.takeDamage(dmg, { x: Math.cos(angle), y: Math.sin(angle) }, 130);
-            enemy.freeze(1.0); // 1초 완전 빙결
+            if (Math.random() < 0.08) {
+              enemy.freeze(1.0); // 8% 확률 1초 빙결
+            }
           }
         }
       }
@@ -2243,7 +2245,7 @@ class WeaponManager {
       ctx.restore();
     }
 
-    // 0.1 [진화 1] 천상의 성역 (heavenlySanctuary) 초대형 황금빛+성수 결계 렌더링
+    // 0.1 [진화 1] 생츄어리 (heavenlySanctuary) 초대형 황금빛+성수 결계 렌더링
     const heavenly = this.weapons['heavenlySanctuary'] || this.weapons['holyShotgun'];
     if (heavenly) {
       const area = this.getArea(heavenly);
@@ -2413,7 +2415,7 @@ class WeaponManager {
           ctx.restore();
         }
       } else if (p.type === 'apocalypseComet') {
-        // [진화 3] 멸망의 혜성 고열 마도 혜성 렌더링
+        // [진화 3] 메테오 고열 마도 혜성 렌더링
         const radius = p.radius;
         ctx.fillStyle = '#ef4444';
         ctx.shadowColor = '#dc2626';
@@ -2432,7 +2434,7 @@ class WeaponManager {
         ctx.arc(p.x, p.y, radius * 0.40, 0, Math.PI * 2);
         ctx.fill();
       } else if (p.type === 'teslaPellet') {
-        // [진화 5] 테슬라 뇌전포 탄환 렌더링
+        // [진화 5] 뇌전포 탄환 렌더링
         const radius = p.radius;
         ctx.fillStyle = '#38bdf8';
         ctx.shadowColor = '#06b6d4';
@@ -2480,7 +2482,7 @@ class WeaponManager {
           ctx.fill();
         }
       } else if (p.type === 'fireball') {
-        // 화염 지팡이 폭발 화염구 렌더링
+        // 불 지팡이 폭발 화염구 렌더링
         const radius = p.radius;
         ctx.fillStyle = '#ef4444';
         ctx.shadowColor = '#f97316';
@@ -2508,7 +2510,7 @@ class WeaponManager {
         ctx.arc(p.x, p.y, radius * 0.5, 0, Math.PI * 2);
         ctx.fill();
       } else if (p.type === 'poisonDagger') {
-        // 맹독 비수 렌더링 (녹색 독성 안광 + 고속 직진 비수)
+        // 독비수 렌더링 (녹색 독성 안광 + 고속 직진 비수)
         const angle = Math.atan2(p.vy, p.vx);
         const sz = Math.round(18 * projArea);
         ctx.save();
@@ -2543,7 +2545,7 @@ class WeaponManager {
         ctx.arc(p.x, p.y, radius * 0.55, 0, Math.PI * 2);
         ctx.fill();
       } else if (p.type === 'venomBlizzardOrb') {
-        // [진화 6] 베놈 블리자드 보주 렌더링 (맹독 녹색 + 빙결 시안 회전 구체 + 광역 파동 링)
+        // [진화 6] 블리자드 보주 렌더링 (맹독 녹색 + 빙결 시안 회전 구체 + 광역 파동 링)
         const radius = p.radius;
         const pulse = Math.sin(Date.now() * 0.010) * 6;
         ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
@@ -2569,7 +2571,7 @@ class WeaponManager {
         ctx.arc(p.x, p.y, radius * 0.25, 0, Math.PI * 2);
         ctx.fill();
       } else if (p.type === 'poisonShard') {
-        // 베놈 블리자드 2단계 독성 얼음 파편 렌더링
+        // 블리자드 2단계 독성 얼음 파편 렌더링
         ctx.fillStyle = '#34d399';
         ctx.shadowColor = '#10b981';
         ctx.shadowBlur = 12;
@@ -2706,7 +2708,7 @@ class WeaponManager {
       ctx.restore();
     }
 
-    // 4. [진화 4] 학살자의 폭풍검 (slayerBladeStorm) 상시 궤도 회전 대검 & 도끼 렌더링
+    // 4. [진화 4] 폭풍검 (slayerBladeStorm) 상시 궤도 회전 대검 & 도끼 렌더링
     const bladeStorm = this.weapons['slayerBladeStorm'] || this.weapons['spinningAxe'];
     if (bladeStorm) {
       const area = this.getArea(bladeStorm);

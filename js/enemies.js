@@ -360,7 +360,7 @@ class Enemy {
     }
   }
 
-  // 빙결 및 감속 부여 (천상의 성역 등)
+  // 빙결 및 감속 부여 (생츄어리 등)
   freeze(duration = 1.5) {
     if (this.isDead) return;
     // 유령 무적(isPhased) 또는 해골 뼈무덤 상태(reviveState === 1), 또는 빙결 면역 쿨타임 중에는 빙결 무효화
