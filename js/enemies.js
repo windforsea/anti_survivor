@@ -1,15 +1,16 @@
 // 10종 일반 몬스터 & 5종 보스 AI 및 탄막/경험치 보석 시스템
 
 class DamageNumber {
-  constructor(x, y, damage, isCrit = false) {
+  constructor(x, y, damage, isCrit = false, isSuperCrit = false) {
     this.x = x + (Math.random() - 0.5) * 16;
     this.y = y - 10;
     this.damage = damage;
     this.isCrit = isCrit;
-    this.life = 0.6;
-    this.maxLife = 0.6;
-    this.vy = -60 - Math.random() * 30;
-    this.vx = (Math.random() - 0.5) * 40;
+    this.isSuperCrit = isSuperCrit;
+    this.life = 0.55;
+    this.maxLife = 0.55;
+    this.vy = -70 - Math.random() * 25;
+    this.vx = (Math.random() - 0.5) * 35;
   }
 
   update(dt) {
@@ -22,21 +23,30 @@ class DamageNumber {
     const alpha = Math.max(0, this.life / this.maxLife);
     ctx.save();
     ctx.globalAlpha = alpha;
-    if (this.isCrit) {
-      ctx.font = '900 18px sans-serif';
-      ctx.fillStyle = '#fde047';
-      ctx.shadowColor = '#ca8a04';
-      ctx.shadowBlur = 8;
+    if (this.isSuperCrit) {
+      // 사신의 낫(크리티컬 데미지 증가) 보유 시: 강력한 핏빛 느낌표 (!)
+      ctx.font = '900 22px sans-serif';
+      ctx.fillStyle = '#ef4444';
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = 3.5;
+      ctx.strokeText('!', this.x, this.y);
+      ctx.fillText('!', this.x, this.y);
+    } else if (this.isCrit) {
+      // 일반 크리티컬: 황금빛 느낌표 (!)
+      ctx.font = '900 18px sans-serif';
+      ctx.fillStyle = '#fde047';
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 3.0;
+      ctx.strokeText('!', this.x, this.y);
+      ctx.fillText('!', this.x, this.y);
     } else {
       ctx.font = 'bold 13px sans-serif';
       ctx.fillStyle = '#ffffff';
       ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2.5;
+      ctx.strokeText(this.damage, this.x, this.y);
+      ctx.fillText(this.damage, this.x, this.y);
     }
-    ctx.strokeText(this.damage, this.x, this.y);
-    ctx.fillText(this.damage, this.x, this.y);
     ctx.restore();
   }
 }
@@ -281,6 +291,7 @@ class Enemy {
 
     // 빙결 및 슬로우 상태
     this.freezeTimer = 0;
+    this.freezeCooldownTimer = 0;
     this.slowTimer = 0;
     this.slowMult = 1.0;
 
@@ -321,14 +332,16 @@ class Enemy {
     this.hp -= amount;
     this.hitFlashTimer = 0.12;
 
-    // 일반 데미지 표기는 프레임 최적화를 위해 생략하고, 크리티컬(치명타) 시에만 표기
+    // 일반 데미지 표기는 프레임 최적화를 위해 생략하고, 크리티컬(치명타) 시에만 느낌표(!) 표기
     if (isCrit && window.game && window.game.damageNumbers) {
-      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, true));
+      const isSuperCrit = !!(window.game.player && window.game.player.ownedPassives && window.game.player.ownedPassives['stat_crit_dmg']);
+      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, true, isSuperCrit));
     }
 
     if (knockbackDir && knockbackForce > 0) {
-      // 몬스터별 넉백 저항 적용 (좀비 80%, 골렘 85% 감쇄)
-      const effectiveForce = knockbackForce * (1 - this.knockbackResist);
+      // 몬스터별 넉백 저항 적용 (빙결된 적은 얼음 무게로 70% 추가 감쇄)
+      let effectiveForce = knockbackForce * (1 - this.knockbackResist);
+      if (this.freezeTimer > 0) effectiveForce *= 0.30;
       this.kbX += knockbackDir.x * effectiveForce;
       this.kbY += knockbackDir.y * effectiveForce;
     }
@@ -338,6 +351,7 @@ class Enemy {
       if (this.typeKey === 'skeleton' && this.reviveState === 0) {
         this.reviveState = 1;
         this.reviveTimer = 2.0;
+        this.freezeTimer = 0; // 뼈무덤 진입 시 기존 얼음 즉시 해제!
         this.hp = 0;
         return;
       }
@@ -349,6 +363,9 @@ class Enemy {
   // 빙결 및 감속 부여 (천상의 성역 등)
   freeze(duration = 1.5) {
     if (this.isDead) return;
+    // 유령 무적(isPhased) 또는 해골 뼈무덤 상태(reviveState === 1), 또는 빙결 면역 쿨타임 중에는 빙결 무효화
+    if (this.isPhased || this.reviveState === 1 || this.freezeCooldownTimer > 0) return;
+
     if (this.isBoss) {
       // 보스는 완전 정지 대신 40% 감속 1.0초
       this.slowTimer = 1.0;
@@ -372,6 +389,11 @@ class Enemy {
   update(dt, player, allEnemies, enemyProjectiles) {
     if (this.isDead) return;
 
+    // 빙결 면역 쿨타임 차감
+    if (this.freezeCooldownTimer > 0) {
+      this.freezeCooldownTimer -= dt;
+    }
+
     // 중독 도트 피해 처리
     if (this.poisonTimer > 0) {
       this.poisonTimer -= dt;
@@ -386,25 +408,7 @@ class Enemy {
       }
     }
 
-    // 빙결 상태 시 이동/공격 정지
-    if (this.freezeTimer > 0) {
-      this.freezeTimer -= dt;
-      this.animTimer += dt * 2;
-      return;
-    }
-
-    if (this.slowTimer > 0) {
-      this.slowTimer -= dt;
-    }
-
-    this.animTimer += dt * 8;
-    if (this.hitFlashTimer > 0) this.hitFlashTimer -= dt;
-
-    // 넉백 감쇠
-    this.kbX *= Math.max(0, 1 - dt * 8);
-    this.kbY *= Math.max(0, 1 - dt * 8);
-
-    // 해골 뼈무덤 부활 대기 처리
+    // 해골 뼈무덤 부활 대기 처리 (빙결 검사보다 먼저 실행하여 2초 후 부활 무조건 보장!)
     if (this.reviveState === 1) {
       this.reviveTimer -= dt;
       this.vx = 0;
@@ -414,12 +418,24 @@ class Enemy {
         this.hp = Math.round(this.maxHp * 0.35); // 35% 체력으로 부활 (약 12 HP)
         this.name = '붉은 해골';
         this.color = '#ef4444';
+        this.freezeTimer = 0;
+        this.freezeCooldownTimer = 1.8;
         sounds.playKill();
         if (window.game) {
           window.game.addParticles(this.x, this.y, '#ef4444', 18);
           window.game.addParticles(this.x, this.y, '#f87171', 12);
         }
       }
+      return;
+    }
+
+    // 빙결 상태 시 이동/공격 정지
+    if (this.freezeTimer > 0) {
+      this.freezeTimer -= dt;
+      if (this.freezeTimer <= 0) {
+        this.freezeCooldownTimer = 1.8; // 빙결 해제 후 1.8초간 재빙결 면역 쿨타임 부여!
+      }
+      this.animTimer += dt * 2;
       return;
     }
 
@@ -906,9 +922,10 @@ class BossEnemy extends Enemy {
     this.hp -= amount;
     this.hitFlashTimer = 0.12;
 
-    // 일반 데미지 표기는 프레임 최적화를 위해 생략하고, 크리티컬(치명타) 시에만 표기
+    // 일반 데미지 표기는 프레임 최적화를 위해 생략하고, 크리티컬(치명타) 시에만 느낌표(!) 표기
     if (isCrit && window.game && window.game.damageNumbers) {
-      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, true));
+      const isSuperCrit = !!(window.game.player && window.game.player.ownedPassives && window.game.player.ownedPassives['stat_crit_dmg']);
+      window.game.damageNumbers.push(new DamageNumber(this.x, this.y, amount, true, isSuperCrit));
     }
 
     // 넉백 면역 보스는 뒤로 밀리지 않음!

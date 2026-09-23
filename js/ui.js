@@ -555,9 +555,13 @@ class UIManager {
         const hintClass = card.evolutionHint.status === 'ready'
           ? 'hint-ready'
           : (card.evolutionHint.status === 'linked' ? 'hint-linked' : 'hint-tree');
+        let evoIconEl = `<span class="evo-icon">${card.evolutionHint.evoIcon}</span>`;
+        if (card.evolutionHint.evoIconKey && assets.manifest[card.evolutionHint.evoIconKey]) {
+          evoIconEl = `<img src="${assets.manifest[card.evolutionHint.evoIconKey]}" class="evo-pixel-icon" alt="${card.evolutionHint.evoName}">`;
+        }
         evoHintHtml = `
           <div class="card-evo-hint ${hintClass}">
-            <span class="evo-icon">${card.evolutionHint.evoIcon}</span>
+            ${evoIconEl}
             <span class="evo-text">${card.evolutionHint.text}</span>
           </div>
         `;

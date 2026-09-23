@@ -14,15 +14,27 @@ function formatStars(currentLevel, maxLevel) {
   return '★'.repeat(filled) + '☆'.repeat(empty);
 }
 
+// 6종 캐릭터별 고유 전용 무기 체계 (타 직업 무기 획득 불가)
+const CHARACTER_EXCLUSIVE_WEAPONS = {
+  knight: ['sword', 'axe', 'lightningRing'],
+  mage: ['fireWand', 'magicMissile', 'axe'],
+  assassin: ['poisonDagger', 'frostOrb', 'whip', 'shuriken'],
+  cleric: ['holyWater', 'sanctuary', 'magicMissile'],
+  sylph: ['windBow', 'shuriken', 'shotgun', 'lightningRing'],
+  malakar: ['shadowOrb', 'magicMissile', 'poisonDagger', 'sanctuary']
+};
+
 class CardManager {
   constructor(player, weaponManager) {
     this.player = player;
     this.weaponManager = weaponManager;
   }
 
-  // 게임 시작 시 3종의 기본 무기 중 1개를 선택 (패시브 제외)
+  // 게임 시작 시 해당 영웅의 전용 무기 중 3개를 선택
   generateStartingWeaponCards() {
-    const starterKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb'];
+    const charType = this.player.characterType || 'knight';
+    const allowed = CHARACTER_EXCLUSIVE_WEAPONS[charType] || ['sword', 'axe', 'lightningRing'];
+    const starterKeys = allowed;
     const weaponMeta = {
       sword: { name: '철검', icon: '🗡️', iconKey: 'icon_sword', desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.' },
       axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냅니다.' },
@@ -72,22 +84,22 @@ class CardManager {
     const getEvolutionHint = (weaponKey) => {
       const evoList = [
         // 루트 1
-        { w1: 'sanctuary', w2: 'holyWater', evoId: 'heavenlySanctuary', evoName: '생츄어리', evoIcon: '⛪✨' },
-        { w1: 'whip', w2: 'shuriken', evoId: 'morningstarTempest', evoName: '모닝스타', evoIcon: '⛓️🌪️' },
-        { w1: 'fireWand', w2: 'magicMissile', evoId: 'apocalypseComet', evoName: '메테오', evoIcon: '☄️🔥' },
-        { w1: 'sword', w2: 'axe', evoId: 'slayerBladeStorm', evoName: '폭풍검', evoIcon: '⚔️🌪️' },
-        { w1: 'shotgun', w2: 'lightningRing', evoId: 'teslaShotgun', evoName: '뇌전포', evoIcon: '⚡💥' },
-        { w1: 'poisonDagger', w2: 'frostOrb', evoId: 'venomBlizzard', evoName: '블리자드', evoIcon: '❄️🧪' },
+        { w1: 'sanctuary', w2: 'holyWater', evoId: 'heavenlySanctuary', evoName: '생츄어리', evoIcon: '⛪✨', evoIconKey: 'icon_heavenlysanctuary' },
+        { w1: 'whip', w2: 'shuriken', evoId: 'morningstarTempest', evoName: '모닝스타', evoIcon: '⛓️🌪️', evoIconKey: 'icon_morningstartempest' },
+        { w1: 'fireWand', w2: 'magicMissile', evoId: 'apocalypseComet', evoName: '메테오', evoIcon: '☄️🔥', evoIconKey: 'icon_apocalypsecomet' },
+        { w1: 'sword', w2: 'axe', evoId: 'slayerBladeStorm', evoName: '폭풍검', evoIcon: '⚔️🌪️', evoIconKey: 'icon_slayerbladestorm' },
+        { w1: 'shotgun', w2: 'lightningRing', evoId: 'teslaShotgun', evoName: '뇌전포', evoIcon: '⚡💥', evoIconKey: 'icon_teslashotgun' },
+        { w1: 'poisonDagger', w2: 'frostOrb', evoId: 'venomBlizzard', evoName: '블리자드', evoIcon: '❄️🧪', evoIconKey: 'icon_venomblizzard' },
         // 루트 2
-        { w1: 'sword', w2: 'lightningRing', evoId: 'thunderBlade', evoName: '벼락검', evoIcon: '⚡🗡️' },
-        { w1: 'axe', w2: 'fireWand', evoId: 'fireAxe', evoName: '화염도끼', evoIcon: '🪓🔥' },
-        { w1: 'whip', w2: 'frostOrb', evoId: 'frostWhip', evoName: '얼음채찍', evoIcon: '🪢❄️' },
-        { w1: 'shuriken', w2: 'shotgun', evoId: 'scatterShuriken', evoName: '산탄표창', evoIcon: '🥷💥' },
-        { w1: 'magicMissile', w2: 'holyWater', evoId: 'holyArrow', evoName: '신성화살', evoIcon: '🏹✨' },
-        { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪' },
+        { w1: 'sword', w2: 'lightningRing', evoId: 'thunderBlade', evoName: '벼락검', evoIcon: '⚡🗡️', evoIconKey: 'icon_thunderblade' },
+        { w1: 'axe', w2: 'fireWand', evoId: 'fireAxe', evoName: '화염도끼', evoIcon: '🪓🔥', evoIconKey: 'icon_fireaxe' },
+        { w1: 'whip', w2: 'frostOrb', evoId: 'frostWhip', evoName: '얼음채찍', evoIcon: '🪢❄️', evoIconKey: 'icon_frostwhip' },
+        { w1: 'shuriken', w2: 'shotgun', evoId: 'scatterShuriken', evoName: '산탄표창', evoIcon: '🥷💥', evoIconKey: 'icon_scattershuriken' },
+        { w1: 'magicMissile', w2: 'holyWater', evoId: 'holyArrow', evoName: '신성화살', evoIcon: '🏹✨', evoIconKey: 'icon_holyarrow' },
+        { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪', evoIconKey: 'icon_plague' },
         // 루트 3 (신규 2종)
-        { w1: 'windBow', w2: 'shuriken', evoId: 'cycloneBow', evoName: '태풍의 눈', evoIcon: '🌀🏹' },
-        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨' }
+        { w1: 'windBow', w2: 'shuriken', evoId: 'cycloneBow', evoName: '태풍의 눈', evoIcon: '🌀🏹', evoIconKey: 'icon_cyclonebow' },
+        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨', evoIconKey: 'icon_eclipsespiral' }
       ];
 
       for (const evo of evoList) {
@@ -108,6 +120,7 @@ class CardManager {
               status: 'ready',
               evoName: evo.evoName,
               evoIcon: evo.evoIcon,
+              evoIconKey: evo.evoIconKey,
               text: `✨ ${evo.evoName} (진화 가능)`
             };
           }
@@ -115,6 +128,7 @@ class CardManager {
             status: 'linked',
             evoName: evo.evoName,
             evoIcon: evo.evoIcon,
+            evoIconKey: evo.evoIconKey,
             text: evo.evoName
           };
         }
@@ -122,9 +136,11 @@ class CardManager {
       return null;
     };
 
-    // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한)
+    // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한, 직업 전용 무기만 등장)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
     const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb'];
+    const charType = this.player.characterType || 'knight';
+    const allowedWeapons = CHARACTER_EXCLUSIVE_WEAPONS[charType] || allWeaponKeys;
 
     // 이미 진화에 소모되었거나 현재 보유 중인 진화 무기의 재료 무기는 카드 풀에서 영구 제외
     const evolvedMaterialPairs = {
@@ -157,6 +173,7 @@ class CardManager {
     };
 
     const unownedWeapons = allWeaponKeys.filter(k => {
+      if (!allowedWeapons.includes(k)) return false; // 타 직업 무기 카드 풀에서 완벽 차단!
       if (k === 'shuriken' && (this.weaponManager.weapons['throwingDagger'] || isConsumedWeapon('throwingDagger'))) return false;
       return !this.weaponManager.weapons[k] && !isConsumedWeapon(k);
     });
@@ -992,7 +1009,7 @@ class CardManager {
         id: 'stat_area',
         title: '확장의 룬',
         icon: '🎯',
-        iconKey: 'icon_axe',
+        iconKey: 'icon_arcanesanctuary',
         desc: '공격 범위 및 크기를 확대합니다.',
         effectText: '공격 범위 +30%',
         maxLevel: 3,

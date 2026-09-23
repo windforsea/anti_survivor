@@ -497,6 +497,43 @@ class Player {
           ctx.drawImage(img, -size / 2, -size / 2, size, size);
           ctx.restore();
         }
+      } else if (anim.type === 'thunderBlade') {
+        // [벼락검] 원의 4분의 1 (90도 = Math.PI / 2) 전격 대검 회전 베기 렌더링
+        const sweepArc = anim.arc || (Math.PI / 2);
+        const startAngle = anim.angle - sweepArc / 2;
+        const curAngle = startAngle + progress * sweepArc;
+        const swordDist = (28 + Math.sin(progress * Math.PI) * 18) * Math.sqrt(area);
+        const px = this.x + Math.cos(curAngle) * swordDist;
+        const py = this.y + Math.sin(curAngle) * swordDist;
+
+        ctx.save();
+        // 1. 번개 전격 90도 부채꼴 검기 잔상 궤적
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = Math.round(4 * Math.sqrt(area));
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, swordDist + 12, startAngle, curAngle, false);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, swordDist + 8, startAngle, curAngle, false);
+        ctx.stroke();
+
+        // 2. 휘두르는 번개 대검 스프라이트
+        const img = assets.images['anim_sword'];
+        const size = Math.round(38 * area);
+        ctx.translate(px, py);
+        ctx.rotate(curAngle + Math.PI / 4);
+        ctx.imageSmoothingEnabled = false;
+        if (img && img.complete && img.naturalWidth > 0) {
+          ctx.drawImage(img, -size / 2, -size / 2, size, size);
+        } else {
+          ctx.fillStyle = '#facc15';
+          ctx.fillRect(-size / 2, -size / 2, size, size);
+        }
+        ctx.restore();
       } else if (anim.type === 'axe') {
         const orbitAngle = anim.startAngle + progress * Math.PI * 2.2;
         const orbitDist = 42 * area;

@@ -116,9 +116,13 @@ vam/
 * **특정 기본 무기의 데미지, 쿨타임, 투사체 수, 범위를 수정할 때**:
   👉 1차: [`js/weapons/basic/`](js/weapons/basic/) 내 해당 무기 모듈  
   👉 2차: [`js/weapons.js`](js/weapons.js) 내 `this.weapons` 초기값 및 실행 함수 (`execute...`)
-* **특정 진화 무기의 스펙이나 메커니즘을 수정할 때**:
-  👉 1차: [`js/weapons/evolutions/`](js/weapons/evolutions/) 내 해당 진화 무기 모듈  
-  👉 2차: [`js/weapons.js`](js/weapons.js) 내 진화 무기 발사 및 투사체 업데이트 로직
+* **캐릭터별 전용 무기 제한 및 레벨업 카드 출현을 수정할 때**:
+  👉 [`js/cards.js`](js/cards.js) (`CHARACTER_EXCLUSIVE_WEAPONS`)
+* **특정 진화 무기(벼락검 90도 회전 베기, 황혼의 나선 등)의 스펙이나 메커니즘을 수정할 때**:
+  👉 1차: [`js/weapons.js`](js/weapons.js) (`executeThunderBlade`, `executeEclipseSpiral`)  
+  👉 2차: [`js/player.js`](js/player.js) (`triggerAttackAnim`, 공격 애니메이션 렌더링)
+* **크리티컬 느낌표(!) 타격 표기 및 몬스터 빙결/넉백을 수정할 때**:
+  👉 [`js/enemies.js`](js/enemies.js) (`DamageNumber`, `freeze`, `takeDamage`)
 * **일반 몬스터의 스탯이나 AI 패턴을 수정할 때**:
   👉 [`js/enemies/monsters/`](js/enemies/monsters/) 내 해당 몬스터 JS 파일
 * **보스 몬스터의 스탯, 기믹 패턴 주기, 탄막을 수정할 때**:

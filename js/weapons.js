@@ -43,6 +43,7 @@ class WeaponManager {
         id: 'sword',
         name: '철검',
         icon: '🗡️',
+        iconSprite: 'icon_sword',
         desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.',
         baseCooldown: 0.45, // 0.45초 쿨다운으로 경쾌한 슬래시
         baseDamage: 20,     // 공격력 상향 (16 -> 20, 슬라임 및 잡몹 1~2타 처치)
@@ -57,6 +58,7 @@ class WeaponManager {
         id: 'axe',
         name: '도끼',
         icon: '🪓',
+        iconSprite: 'icon_axe',
         desc: '플레이어 주변을 크게 원형으로 베어내며 적을 밀쳐냅니다.',
         baseCooldown: 1.10,
         baseDamage: 62,     // 데미지형 한방 강화 (55 -> 62)
@@ -122,6 +124,7 @@ class WeaponManager {
         id: 'magicMissile',
         name: '마법 화살',
         icon: '🔮',
+        iconSprite: 'icon_missile',
         desc: '가장 가까운 적을 조준하여 빠른 속도로 유도 마법탄을 발사합니다.',
         baseCooldown: 0.55,
         baseDamage: 25,
@@ -138,6 +141,7 @@ class WeaponManager {
         id: 'shotgun',
         name: '산탄총',
         icon: '💥',
+        iconSprite: 'icon_shotgun',
         desc: '바라보는 방향으로 전방 부채꼴 형태로 여러 발의 산탄을 일제히 사격합니다.',
         baseCooldown: 1.30,
         baseDamage: 32,
@@ -154,6 +158,7 @@ class WeaponManager {
         id: 'holyWater',
         name: '성수',
         icon: '🧪',
+        iconSprite: 'icon_holywater',
         desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.',
         baseCooldown: 2.0,
         baseDamage: 14,
@@ -169,6 +174,7 @@ class WeaponManager {
         id: 'sanctuary',
         name: '성역',
         icon: '⛪',
+        iconSprite: 'icon_sanctuary',
         desc: '플레이어 중심 360도 원형 결계로 적들에게 매초 지속 도트 피해를 입힙니다.',
         baseCooldown: 1.0,
         baseDamage: 28,
@@ -184,6 +190,7 @@ class WeaponManager {
         id: 'holyWater',
         name: '성수',
         icon: '🧪',
+        iconSprite: 'icon_holywater',
         desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.',
         baseCooldown: 2.0,
         baseDamage: 14,
@@ -1393,11 +1400,11 @@ class WeaponManager {
         p.x = this.player.x + Math.cos(curAngle) * p.orbitRadius;
         p.y = this.player.y + Math.sin(curAngle) * p.orbitRadius;
 
-        // 황혼의 나선 2단계: 0.35초마다 유도 유령탄 발사
+        // 황혼의 나선 2단계: 0.70초마다 유도 유령탄 발사 (초당 과다 난사 방지)
         if (p.type === 'eclipseOrbProj') {
-          p.fireTimer = (p.fireTimer || 0.35) - dt;
+          p.fireTimer = (p.fireTimer || 0.70) - dt;
           if (p.fireTimer <= 0) {
-            p.fireTimer = 0.35;
+            p.fireTimer = 0.70;
             const tgt = this.getClosestEnemy(enemies);
             if (tgt) {
               const ang = Math.atan2(tgt.y - p.y, tgt.x - p.x);
@@ -2150,20 +2157,22 @@ class WeaponManager {
     }
   }
 
-  // [신규 진화 7] 벼락검 (thunderBlade): 전방 강력 베기 + 타겟 위치 벼락 낙뢰
+  // [신규 진화 7] 벼락검 (thunderBlade): 원의 4분의 1(90도) 전방 번개 대검 회전 베기 + 타겟 위치 벼락 낙뢰
   executeThunderBlade(w, enemies) {
     sounds.playSlash();
     const dmg = this.getDamage(w);
     const area = this.getArea(w);
-    const range = 110 * area;
+    const range = 115 * area;
     const closestEnemy = this.getClosestEnemy(enemies);
     let targetAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
     if (closestEnemy) {
       targetAngle = Math.atan2(closestEnemy.y - this.player.y, closestEnemy.x - this.player.x);
     }
-    this.player.triggerAttackAnim('slash', targetAngle, 0.12, { area: area * 1.25, color: '#facc15' });
+    // 원의 4분의 1 (90도 = Math.PI / 2) 호를 그리며 번개 대검 회전 베기 애니메이션 트리거
+    this.player.triggerAttackAnim('thunderBlade', targetAngle, 0.16, { arc: Math.PI / 2, range, area: area * 1.35, color: '#facc15' });
 
     let hitTarget = null;
+    const halfArc = Math.PI / 4; // 좌우 45도씩 총 90도(원의 1/4)
     for (const enemy of enemies) {
       if (enemy.isDead) continue;
       const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
@@ -2171,9 +2180,9 @@ class WeaponManager {
         const angleToEnemy = Math.atan2(enemy.y - this.player.y, enemy.x - this.player.x);
         let diff = Math.abs(angleToEnemy - targetAngle);
         while (diff > Math.PI) diff = Math.abs(diff - Math.PI * 2);
-        if (diff <= Math.PI * 0.45) {
+        if (diff <= halfArc) {
           const kbDir = { x: Math.cos(targetAngle), y: Math.sin(targetAngle) };
-          enemy.takeDamage(dmg, kbDir, 160);
+          enemy.takeDamage(dmg, kbDir, 170);
           if (!hitTarget) hitTarget = enemy;
         }
       }
@@ -2185,10 +2194,10 @@ class WeaponManager {
       sounds.playThunder();
       const lx = lightningTarget.x;
       const ly = lightningTarget.y;
-      const strikeDmg = Math.round(dmg * 1.3);
+      const strikeDmg = Math.round(dmg * 1.35);
       for (const e of enemies) {
         if (e.isDead) continue;
-        if (Math.hypot(e.x - lx, e.y - ly) <= 70 * area + e.radius) {
+        if (Math.hypot(e.x - lx, e.y - ly) <= 75 * area + e.radius) {
           e.takeDamage(strikeDmg, null, 80);
         }
       }
@@ -2416,12 +2425,15 @@ class WeaponManager {
     }
   }
 
-  // [기본 무기 14] 어둠의 보주 (shadowOrb): 나선 궤도 암흑 구체 소환
+  // [기본 무기 14] 어둠의 보주 (shadowOrb): 나선 궤도 암흑 구체 소환 (중첩 무한 증식 방지)
   executeShadowOrb(w, enemies) {
     sounds.playMagic();
     const dmg = this.getDamage(w);
     const area = this.getArea(w);
     const count = this.getCount(w);
+
+    // 기존 어둠의 보주 투사체 정리 (중첩 증식 방지)
+    this.projectiles = this.projectiles.filter(p => p.type !== 'shadowOrbProj');
 
     for (let i = 0; i < count; i++) {
       this.projectiles.push({
@@ -2473,12 +2485,15 @@ class WeaponManager {
     });
   }
 
-  // [신규 진화 14] 황혼의 나선 (eclipseSpiral = 어둠의 보주 + 마법 화살): 나선 암흑구체 3개 + 유도탄 난사
+  // [신규 진화 14] 황혼의 나선 (eclipseSpiral = 어둠의 보주 + 마법 화살): 나선 암흑구체 3개 고정 + 0.7초 주기 유령탄
   executeEclipseSpiral(w, enemies) {
     sounds.playMagic();
     const dmg = this.getDamage(w);
     const area = this.getArea(w);
     const count = 3;
+
+    // 기존 황혼의 나선 보주 정리 (12개 이상 무한 증식 및 렉 차단)
+    this.projectiles = this.projectiles.filter(p => p.type !== 'eclipseOrbProj');
 
     for (let i = 0; i < count; i++) {
       this.projectiles.push({
@@ -2494,7 +2509,7 @@ class WeaponManager {
         radius: 13 * area,
         pierce: 999,
         color: '#c084fc',
-        fireTimer: 0.35,
+        fireTimer: 0.70,
         hitCooldowns: new Map(),
         hitEnemies: new Set(),
         hitObstacles: new Set()
