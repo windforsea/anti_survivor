@@ -14,15 +14,21 @@ function formatStars(currentLevel, maxLevel) {
   return '★'.repeat(filled) + '☆'.repeat(empty);
 }
 
-// 6종 캐릭터별 고유 전용 무기 체계 (타 직업 무기 획득 불가)
-const CHARACTER_EXCLUSIVE_WEAPONS = {
-  knight: ['sword', 'axe', 'lightningRing'],
-  mage: ['fireWand', 'magicMissile', 'axe'],
-  assassin: ['poisonDagger', 'frostOrb', 'whip', 'shuriken'],
-  cleric: ['holyWater', 'sanctuary', 'magicMissile'],
-  sylph: ['windBow', 'shuriken', 'shotgun', 'lightningRing'],
-  malakar: ['shadowOrb', 'magicMissile', 'poisonDagger', 'sanctuary']
+// 6종 캐릭터별 고유 시그니처 무기 체계 (타 직업의 시그니처 무기는 절대 등장하지 않음)
+const CHARACTER_SIGNATURE_WEAPONS = {
+  knight: 'sword',          // 방랑기사: 철검
+  mage: 'fireWand',         // 마도사: 불 지팡이
+  assassin: 'poisonDagger', // 암살자: 독비수
+  cleric: 'holyWater',      // 성직자: 성수
+  sylph: 'windBow',         // 바람 궁수: 바람 활
+  malakar: 'shadowOrb'      // 흑마법사: 어둠의 보주
 };
+
+// 해당 캐릭터가 사용할 수 없는 타 직업 시그니처 무기 목록 반환 (블랙리스트)
+function getForbiddenWeaponsForClass(charType) {
+  const mySig = CHARACTER_SIGNATURE_WEAPONS[charType] || 'sword';
+  return Object.values(CHARACTER_SIGNATURE_WEAPONS).filter(sig => sig !== mySig);
+}
 
 class CardManager {
   constructor(player, weaponManager) {
@@ -33,8 +39,9 @@ class CardManager {
   // 게임 시작 시 해당 영웅의 전용 무기 중 3개를 선택
   generateStartingWeaponCards() {
     const charType = this.player.characterType || 'knight';
-    const allowed = CHARACTER_EXCLUSIVE_WEAPONS[charType] || ['sword', 'axe', 'lightningRing'];
-    const starterKeys = allowed;
+    const forbidden = getForbiddenWeaponsForClass(charType);
+    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb'];
+    const starterKeys = allWeaponKeys.filter(k => !forbidden.includes(k));
     const weaponMeta = {
       sword: { name: '철검', icon: '🗡️', iconKey: 'icon_sword', desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.' },
       axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냅니다.' },
@@ -136,11 +143,11 @@ class CardManager {
       return null;
     };
 
-    // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한, 직업 전용 무기만 등장)
+    // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한, 타 직업 시그니처 5종 차단, 공용 8종 허용)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
     const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb'];
     const charType = this.player.characterType || 'knight';
-    const allowedWeapons = CHARACTER_EXCLUSIVE_WEAPONS[charType] || allWeaponKeys;
+    const forbiddenWeapons = getForbiddenWeaponsForClass(charType);
 
     // 이미 진화에 소모되었거나 현재 보유 중인 진화 무기의 재료 무기는 카드 풀에서 영구 제외
     const evolvedMaterialPairs = {
@@ -173,7 +180,7 @@ class CardManager {
     };
 
     const unownedWeapons = allWeaponKeys.filter(k => {
-      if (!allowedWeapons.includes(k)) return false; // 타 직업 무기 카드 풀에서 완벽 차단!
+      if (forbiddenWeapons.includes(k)) return false; // 타 직업 시그니처 무기 5종 차단!
       if (k === 'shuriken' && (this.weaponManager.weapons['throwingDagger'] || isConsumedWeapon('throwingDagger'))) return false;
       return !this.weaponManager.weapons[k] && !isConsumedWeapon(k);
     });
