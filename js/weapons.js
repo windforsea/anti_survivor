@@ -365,11 +365,11 @@ class WeaponManager {
         name: '베놈 블리자드',
         icon: '❄️🧪',
         iconSprite: 'icon_venomblizzard',
-        desc: '거대한 서리독 구체를 전방으로 발사합니다. 구체는 전진하며 초당 2회 냉기 파동을 방출하고, 수명 종료 시 8방향으로 독성 얼음 파편을 폭발 방출합니다.',
+        desc: '서리독 구체를 전방으로 발사합니다. 구체는 전진하며 초당 2회 냉기 파동(반경 51px)을 방출하고, 발사 4초 후 폭발하여 8방향으로 독단검을 일제 사격합니다.',
         baseCooldown: 1.80,
         baseDamage: 45,
         baseCount: 1,
-        baseArea: 1.25,
+        baseArea: 1.0,
         cooldownLevel: 0,
         damageLevel: 0,
         countLevel: 0,
@@ -1168,7 +1168,7 @@ class WeaponManager {
         p.pulseTimer = (p.pulseTimer || 0) - dt;
         if (p.pulseTimer <= 0) {
           p.pulseTimer = p.type === 'venomBlizzardOrb' ? 0.30 : 0.35;
-          const pulseRadius = (p.type === 'venomBlizzardOrb' ? 125 : 51) * (p.area || 1.0);
+          const pulseRadius = 51 * (p.area || 1.0);
           for (const enemy of enemies) {
             if (enemy.isDead) continue;
             const dist = Math.hypot(enemy.x - p.x, enemy.y - p.y);
@@ -1781,13 +1781,13 @@ class WeaponManager {
         y: this.player.y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
-        radius: 20 * area,
+        radius: 8.5 * area,
         area: area,
         damage: dmg,
         pierce: 9999,
         knockbackForce: 60,
         pulseTimer: 0,
-        life: 2.8,
+        life: 4.0,
         color: '#10b981',
         hitEnemies: new Set(),
         hitObstacles: new Set()
@@ -1795,30 +1795,30 @@ class WeaponManager {
     }
   }
 
-  // 베놈 블리자드 2단계: 8방향 서리독 파편 폭발
+  // 베놈 블리자드 2단계: 4초 후 폭발하여 8방향 독단검(poisonDagger) 발사
   triggerVenomBlizzardShards(x, y, area, damage) {
     sounds.playSlash();
     if (window.game) {
-      window.game.addParticles(x, y, '#10b981', 25);
-      window.game.addParticles(x, y, '#38bdf8', 25);
+      window.game.addParticles(x, y, '#10b981', 30);
+      window.game.addParticles(x, y, '#38bdf8', 30);
     }
-    const shardSpeed = 460;
-    const shardDmg = Math.round(damage * 1.35);
+    const daggerSpeed = 520;
+    const daggerDmg = Math.round(damage * 1.35);
     for (let i = 0; i < 8; i++) {
       const angle = (i / 8) * Math.PI * 2;
       this.projectiles.push({
-        type: 'poisonShard',
+        type: 'poisonDagger',
         x: x,
         y: y,
-        vx: Math.cos(angle) * shardSpeed,
-        vy: Math.sin(angle) * shardSpeed,
-        radius: 6 * area,
+        vx: Math.cos(angle) * daggerSpeed,
+        vy: Math.sin(angle) * daggerSpeed,
+        radius: 7 * area,
         area: area,
-        damage: shardDmg,
+        damage: daggerDmg,
         pierce: 3,
         knockbackForce: 130,
-        life: 0.55,
-        color: '#34d399',
+        life: 0.70,
+        color: '#22c55e',
         hitEnemies: new Set(),
         hitObstacles: new Set()
       });
@@ -2168,7 +2168,7 @@ class WeaponManager {
         ctx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, (125 * projArea) + pulse, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, (51 * projArea) + pulse, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.fillStyle = '#10b981';

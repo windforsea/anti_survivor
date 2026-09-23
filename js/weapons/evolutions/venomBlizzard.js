@@ -10,9 +10,9 @@ export const venomBlizzardWeaponConfig = {
   "baseCooldown": 1.8,
   "baseDamage": 45,
   "baseCount": 1,
-  "baseArea": 1.25,
+  "baseArea": 1.0,
   "autoAim": true,
-  "desc": "맹독 비수(5Lv) + 빙결 보주(5Lv) 합성. 가장 가까운 적을 향해 거대 서리독 구체 발사 및 8방향 파편 폭발"
+  "desc": "맹독 비수(5Lv) + 빙결 보주(5Lv) 합성. 서리독 구체 발사 및 4초 후 폭발하여 8방향 독단검 일제 발사"
 };
 
 if (typeof window !== 'undefined') {
