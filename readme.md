@@ -54,7 +54,7 @@ Anti Survivors는 유지보수와 모듈 확장을 위해 상세 명세서를 �
 
 | 문서명 | 주요 내용 | 링크 |
 | :--- | :--- | :---: |
-| 🤖 **AI 에이전트 지침서** | 저장소 표준 규칙, main.md 우선 참조, 워크플로우, 코딩 4대 원칙 | [AGENTS.md](AGENTS.md) |
+| 🤖 **AI 에이전트 지침서** | 저장소 표준 규칙, main.md 우선 참조, 워크플로우 | [AGENTS.md](AGENTS.md) |
 | 🗺️ **AI 아키텍처 인덱스** | 전체 디렉토리 맵, 핵심 인터페이스 명세표, Fast Lookup 핀포인트 맵 | [main.md](main.md) |
 | 👤 **캐릭터 및 성장 체계** | 4종 영웅 스탯, 14종 패시브 장신구, 9종 영구 강화 상점 | [docs/character.md](docs/character.md) |
 | 🗡️ **무기 및 진화 체계** | 12종 기본 무기 스펙, 4대 강화 옵션, 6대 진화 무기 조합 공식 | [docs/weapons.md](docs/weapons.md) |
@@ -68,6 +68,3 @@ Anti Survivors는 유지보수와 모듈 확장을 위해 상세 명세서를 �
 
 ***기본 지침 (AI Working Rules)***  
 모든 AI는 기본 [AGENTS.md](AGENTS.md) 파일의 규칙에 따라 [main.md](main.md)를 확인하여 작업하도록 한다.
-
-**수정이나 작성, 변경 시 표준 워크플로우**:  
-`작업 지시 수신` ➔ `main.md 읽기` ➔ `작업 수행 (최소 침습적 수정)` ➔ `main.md 업데이트` ➔ `(사용자 요청 시에만) README.md 및 docs/ 업데이트`
