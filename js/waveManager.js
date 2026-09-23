@@ -4,7 +4,7 @@ class WaveManager {
   constructor(game) {
     this.game = game;
     this.currentStage = 1;
-    this.maxStage = 20;
+    this.maxStage = 25; // 총 25스테이지 확장 (18분 45초)
     this.stageDuration = 45.0; // 스테이지당 45초 (웨이브 템포 단축)
     this.stageTimeLeft = this.stageDuration;
     this.spawnTimer = 0;
@@ -14,7 +14,7 @@ class WaveManager {
     this.eventWaveTriggered = false;
     this.isStageClearing = false;
 
-    // 20개 스테이지별 몬스터 구성 및 기하급수 지옥 난이도 스케일링 설정
+    // 25개 스테이지별 몬스터 구성 및 기하급수 지옥 난이도 스케일링 설정
     this.stageConfigs = {
       1: { mobs: ['bat', 'slime'], interval: 0.8, batch: 2, hpScale: 1.0, boss: null },
       2: { mobs: ['slime', 'zombie'], interval: 0.7, batch: 2, hpScale: 1.15, bossTime: 22, bossStage: 2 },
@@ -32,12 +32,18 @@ class WaveManager {
       13: { mobs: ['wraithSwarm', 'bat', 'ghost'], interval: 0.20, batch: 8, hpScale: 15.0, boss: null }, // [망령 군단 대습격 8마리 스웜]
       14: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm'], interval: 0.18, batch: 6, hpScale: 18.5, boss: null }, // [심연 타이탄 방벽 + 원거리 포격]
       15: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'golem'], interval: 0.15, batch: 7, hpScale: 23.0, bossTime: 12, bossStage: 15 }, // [사신 강림]
-      // --- 16~20 Abyss Chaos 난이도 (20웨이브 확장) ---
+      // --- 16~20 Abyss Chaos 난이도 ---
       16: { mobs: ['darkMage', 'bloodHound', 'assassin', 'gargoyle'], interval: 0.16, batch: 6, hpScale: 20.0, boss: null },
       17: { mobs: ['wraithSwarm', 'ghost', 'cultist'], interval: 0.15, batch: 6, hpScale: 22.0, boss: null }, // [20s 망령 대군단 이벤트]
       18: { mobs: ['abyssTitan', 'golem', 'bloodHound'], interval: 0.14, batch: 7, hpScale: 25.0, bossTime: 20, bossStage: 18 }, // [공허의 지네 보스]
       19: { mobs: ['bat', 'slime', 'zombie', 'skeleton', 'goblin', 'ghost', 'gargoyle', 'cultist', 'assassin', 'golem', 'darkMage', 'bloodHound', 'wraithSwarm', 'abyssTitan'], interval: 0.12, batch: 7, hpScale: 28.0, boss: null }, // [전 몬스터 총출동 난전]
-      20: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'assassin'], interval: 0.12, batch: 8, hpScale: 30.0, bossTime: 12, bossStage: 20 } // [진 최종 결전: 혼돈의 절대신]
+      20: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'assassin'], interval: 0.12, batch: 8, hpScale: 30.0, bossTime: 12, bossStage: 20 }, // [혼돈의 절대신]
+      // --- 21~25 The Abyss Sovereign 난이도 (확장 구간) ---
+      21: { mobs: ['darkMage', 'cultist', 'bloodHound', 'assassin'], interval: 0.12, batch: 7, hpScale: 32.0, boss: null },
+      22: { mobs: ['abyssTitan', 'wraithSwarm', 'gargoyle'], interval: 0.11, batch: 8, hpScale: 34.0, boss: null },
+      23: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'golem'], interval: 0.11, batch: 8, hpScale: 36.0, boss: null },
+      24: { mobs: ['bat', 'slime', 'zombie', 'skeleton', 'goblin', 'ghost', 'gargoyle', 'cultist', 'assassin', 'golem', 'darkMage', 'bloodHound', 'wraithSwarm', 'abyssTitan'], interval: 0.10, batch: 9, hpScale: 38.0, boss: null },
+      25: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'assassin'], interval: 0.10, batch: 8, hpScale: 42.0, bossTime: 12, bossStage: 25 } // [진 최종 결전: 심연의 군주]
     };
   }
 

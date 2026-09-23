@@ -67,9 +67,10 @@ class AssetManager {
       icon_crown: 'assets/sprites/icon_crown.png',
       miniSlime: 'assets/sprites/miniSlime.png',
 
-      // 신규 캐릭터 2종
+      // 캐릭터 스프라이트
       player_mage: 'assets/sprites/player_mage.png',
       player_assassin: 'assets/sprites/player_assassin.png',
+      player_cleric: 'assets/sprites/player_cleric.png',
 
       // 신규 무기 및 패시브 아이콘
       icon_poisondagger: 'assets/sprites/icon_poisondagger.png',

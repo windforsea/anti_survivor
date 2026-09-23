@@ -133,7 +133,7 @@ class CardManager {
 
     // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
-    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand'];
+    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb'];
 
     // 이미 진화에 소모되었거나 현재 보유 중인 진화 무기의 재료 무기는 카드 풀에서 영구 제외
     const evolvedMaterialPairs = {
@@ -141,7 +141,8 @@ class CardManager {
       morningstarTempest: ['whip', 'shuriken', 'throwingDagger'],
       apocalypseComet: ['fireWand', 'magicMissile'],
       slayerBladeStorm: ['sword', 'axe'],
-      teslaShotgun: ['shotgun', 'lightningRing']
+      teslaShotgun: ['shotgun', 'lightningRing'],
+      venomBlizzard: ['poisonDagger', 'frostOrb']
     };
 
     const isConsumedWeapon = (key) => {
@@ -475,7 +476,7 @@ class CardManager {
         icon: '⏳',
         iconKey: meta.iconKey,
         desc: cdDesc,
-        effectText: '쿨타임 -10%',
+        effectText: '쿨타임 -15%',
         badge: `Lv.${nextLv}/5`,
         stars: formatStars(nextLv, 5),
         evolutionHint: evoHint,
@@ -661,9 +662,9 @@ class CardManager {
         icon: '⏳',
         iconKey: 'icon_global_speed',
         desc: '재사용 대기시간을 단축합니다.',
-        effectText: '쿨타임 감소 -15%',
+        effectText: '쿨타임 감소 -20%',
         maxLevel: 5,
-        apply: () => { this.player.globalCooldownMult *= 1.15; }
+        apply: () => { this.player.globalCooldownMult *= 1.20; }
       },
       {
         id: 'stat_magnet',

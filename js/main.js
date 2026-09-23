@@ -182,7 +182,8 @@ class Game {
     const startWeaponMap = {
       knight: 'sword',
       mage: 'fireWand',
-      assassin: 'poisonDagger'
+      assassin: 'poisonDagger',
+      cleric: 'holyWater'
     };
     const weaponKey = startWeaponMap[charType] || 'sword';
     this.weaponManager.unlockWeapon(weaponKey);
@@ -285,15 +286,19 @@ class Game {
       }
       this.addParticles(this.player.x, this.player.y, '#38bdf8', 20);
     } else if (type === 'bomb') {
-      // 폭탄(TNT): 전체 적 화면 폭발 플래시 및 광역 피해 (일반 몬스터 600, 보스는 최대 HP의 10% 또는 최대 250으로 제한)
+      // 폭탄(TNT): 플레이어 중심 화면 2/3 범위 내 적 광역 피해 (일반 몬스터 600, 보스는 최대 HP의 10% 또는 최대 250 제한)
       sounds.playShotgun();
       this.bombFlashTimer = 0.28;
+      const bombRadius = Math.min(this.canvas.width, this.canvas.height) * (2 / 3);
       for (const enemy of this.enemies) {
         if (enemy.isDead) continue;
-        const dmg = enemy.isBoss ? Math.min(250, Math.round(enemy.maxHp * 0.10)) : 600;
-        enemy.takeDamage(dmg, null, 0);
+        const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
+        if (dist <= bombRadius + enemy.radius) {
+          const dmg = enemy.isBoss ? Math.min(250, Math.round(enemy.maxHp * 0.10)) : 600;
+          enemy.takeDamage(dmg, null, 0);
+        }
       }
-      this.addParticles(this.player.x, this.player.y, '#ef4444', 28);
+      this.addParticles(this.player.x, this.player.y, '#ef4444', 36);
     } else if (type === 'freeze') {
       // 얼음(눈결정): 모든 적의 이동 및 공격 4.5초간 완전 정지
       sounds.playBossAlarm();

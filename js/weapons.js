@@ -237,7 +237,7 @@ class WeaponManager {
         icon: '⛪✨',
         iconSprite: 'icon_heavenlysanctuary',
         desc: '초대형 룬 결계를 형성하여 초고속 도트 피해를 입히며 낮은 확률로 적을 얼립니다.',
-        baseCooldown: 0.38, // 도트 틱 주기
+        baseCooldown: 0.80, // 도트 틱 주기 (0.8초)
         baseDamage: 36,
         baseCount: 1,
         baseArea: 1.40,
@@ -436,7 +436,7 @@ class WeaponManager {
 
   getCooldown(w) {
     const cdLevel = (w.cooldownLevel !== undefined) ? w.cooldownLevel : (w.speedLevel || 0);
-    const cooldownBonus = 1 + cdLevel * 0.10; // 레벨당 쿨다운 10% 단축 (도트 적용 주기 가속)
+    const cooldownBonus = 1 + cdLevel * 0.15; // 레벨당 쿨다운 15% 단축 (기존 10%에서 5% 상향)
     const totalMult = this.player.globalCooldownMult * cooldownBonus;
     return Math.max(0.10, w.baseCooldown / totalMult);
   }
@@ -447,7 +447,11 @@ class WeaponManager {
   }
 
   getCount(w) {
-    return w.baseCount + (w.countLevel || 0) + (this.player.bonusProjectiles || 0);
+    const extra = (w.countLevel || 0) + (this.player.bonusProjectiles || 0);
+    if (w.id === 'shotgun' || w.id === 'teslaShotgun') {
+      return w.baseCount + extra * 2; // 산탄총포: 투사체 추가시마다 2발씩 추가
+    }
+    return w.baseCount + extra;
   }
 
   getArea(w) {
@@ -559,11 +563,7 @@ class WeaponManager {
       if (enemy.isDead) continue;
       const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
       if (dist <= radius + enemy.radius) {
-        const kbDir = {
-          x: (enemy.x - this.player.x) / (dist || 1),
-          y: (enemy.y - this.player.y) / (dist || 1)
-        };
-        enemy.takeDamage(dmg, kbDir, 80);
+        enemy.takeDamage(dmg, null, 0);
         hitCount++;
 
         // 낮은 확률로 적 얼림(동결 1.5초, 보스는 40% 감속) 효과 부여 (약 5%)
@@ -777,11 +777,7 @@ class WeaponManager {
       if (enemy.isDead) continue;
       const dist = Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y);
       if (dist <= radius + enemy.radius) {
-        const kbDir = {
-          x: (enemy.x - this.player.x) / (dist || 1),
-          y: (enemy.y - this.player.y) / (dist || 1)
-        };
-        enemy.takeDamage(dmg, kbDir, 50);
+        enemy.takeDamage(dmg, null, 0);
         hitCount++;
       }
     }
@@ -1294,7 +1290,7 @@ class WeaponManager {
       pool.tickTimer -= dt;
 
       if (pool.tickTimer <= 0) {
-        pool.tickTimer = 0.45; // 0.45초마다 틱 피해
+        pool.tickTimer = 0.80; // 0.80초마다 틱 피해
         for (const enemy of enemies) {
           if (enemy.isDead) continue;
           const dist = Math.hypot(enemy.x - pool.x, enemy.y - pool.y);

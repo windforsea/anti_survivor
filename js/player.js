@@ -29,6 +29,22 @@ class Player {
       this.atkPowerMult = 1.0;
       this.globalCooldownMult = 1.0;
       this.bonusProjSpeedMult = 1.0;
+    } else if (characterType === 'cleric') {
+      // 신규 직업: 해골 성직자 (Mortis)
+      this.spriteKey = 'player_cleric';
+      this.charName = '해골 성직자';
+      this.maxHp = 100;
+      this.hp = 100;
+      this.baseSpeed = 215;
+      this.speed = 215;
+      this.armor = 0;
+      this.atkPowerMult = 1.0;
+      this.globalCooldownMult = 1.0;
+      this.bonusProjSpeedMult = 1.0;
+      this.hasRevive = true;               // 불사의 해골: 기본 1회 부활 내장
+      this.reviveCount = 1;
+      this.hpRegen = 0.6;                  // 신성한 기도: 초당 체력 회복 +0.6 HP/s
+      this.bonusAreaMult = 1.15;           // 신성 구역: 공격 범위 +15%
     } else {
       // knight (기본)
       this.spriteKey = 'player';
@@ -280,12 +296,40 @@ class Player {
     // 9. 부활 (1회 50% HP)
     if (upgrades.revive && upgrades.revive > 0) {
       this.hasRevive = true;
-      this.reviveCount = 1;
+      this.reviveCount = (this.reviveCount || 0) + 1;
     }
   }
 
-  // 10분 러닝타임에 최적화된 구간별 완만한 선형/티어드 경험치 요구량 곡선 (중후반 폭포 레벨업 방지)
+  // 모든 무기(6종 5Lv) 및 패시브(6종 MAX) 풀업 여부 검사
+  checkIsAllUpgraded() {
+    if (!window.game || !window.game.weaponManager) return false;
+    const wm = window.game.weaponManager;
+    const weapons = Object.values(wm.weapons || {});
+    if (weapons.length < 6) return false;
+    for (const w of weapons) {
+      if (wm.getLevel(w) < 5) return false;
+    }
+    const passives = Object.values(this.ownedPassives || {});
+    if (passives.length < 6) return false;
+    for (const p of passives) {
+      if (p.level < p.maxLevel) return false;
+    }
+    return true;
+  }
+
+  // 레벨업 요구 경험치 곡선 (풀업 이후에는 거듭제곱 곡선으로 급격히 증가하여 레벨업 둔화)
   getNextMaxExp(level) {
+    if (this.isFullyUpgraded || this.checkIsAllUpgraded()) {
+      if (!this.isFullyUpgraded) {
+        this.isFullyUpgraded = true;
+        this.fullUpgradeLevel = level;
+      }
+      const extraLv = Math.max(0, level - this.fullUpgradeLevel);
+      const baseAtFull = 2441 + Math.max(0, this.fullUpgradeLevel - 50) * 120;
+      // 풀업 이후: 레벨업 주기가 기하급수적으로 길어지도록 1.85 거듭제곱 곡선 적용
+      return Math.round(Math.max(2500, baseAtFull) + Math.pow(extraLv, 1.85) * 260);
+    }
+
     if (level < 15) {
       return 15 + (level - 1) * 14; // Lv.1: 15, Lv.5: 71, Lv.10: 141, Lv.15: 211
     } else if (level < 30) {

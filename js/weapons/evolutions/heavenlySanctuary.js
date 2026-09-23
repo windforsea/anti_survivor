@@ -7,7 +7,7 @@ export const heavenlySanctuaryWeaponConfig = {
   "name": "천상의 성역",
   "icon": "⛪✨",
   "iconSprite": "icon_heavenlysanctuary",
-  "baseCooldown": 0.38,
+  "baseCooldown": 0.80,
   "baseDamage": 36,
   "baseCount": 1,
   "baseArea": 1.35,

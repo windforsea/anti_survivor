@@ -723,8 +723,8 @@ class BossEnemy extends Enemy {
     super('golem', x, y, 1.0);
     this.isBoss = true;
     this.bossStage = bossStage;
-    // 공중 부유/비행형 보스는 장애물 무시 관통 (4: 그림자 마법사, 6: 혼돈의 눈, 12: 심연의 리치, 15: 종말의 사신, 18: 공허의 지네, 20: 혼돈의 절대신, 99: 진 붉은 사신)
-    this.isFlying = (bossStage === 4 || bossStage === 6 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20 || bossStage === 99);
+    // 공중 부유/비행형 보스는 장애물 무시 관통 (4: 그림자 마법사, 6: 혼돈의 눈, 12: 심연의 리치, 15: 종말의 사신, 18: 공허의 지네, 20: 혼돈의 절대신, 25: 심연의 군주, 99: 진 붉은 사신)
+    this.isFlying = (bossStage === 4 || bossStage === 6 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20 || bossStage === 25 || bossStage === 99);
 
     // 보스별 특화 설정
     if (bossStage === 2) {
@@ -738,8 +738,8 @@ class BossEnemy extends Enemy {
       this.damage = 32;
       this.exp = 150;
       
-      this.chargeCooldown = 4.0;
-      this.chargeTimer = 2.0;
+      this.chargeCooldown = 2.0; // 4.0 -> 2.0 (기믹 2배 가속)
+      this.chargeTimer = 1.0;
       this.isCharging = false;
       this.isAiming = false;
       this.aimTimer = 0;
@@ -755,8 +755,8 @@ class BossEnemy extends Enemy {
       this.damage = 38;
       this.exp = 250;
 
-      this.teleportCooldown = 4.5;
-      this.teleportTimer = 4.0;
+      this.teleportCooldown = 2.25; // 4.5 -> 2.25 (기믹 2배 가속)
+      this.teleportTimer = 2.0;
     } else if (bossStage === 6) {
       // 6스테이지 보스: 탄막형 베홀더 (Chaos Eye)
       this.name = '혼돈의 눈 (Chaos Eye)';
@@ -782,7 +782,7 @@ class BossEnemy extends Enemy {
       this.exp = 600;
       this.knockbackImmune = true; // 100% 넉백 무시!
 
-      this.stompTimer = 4.5;
+      this.stompTimer = 2.0; // 4.5 -> 2.0 (기믹 2배 가속)
     } else if (bossStage === 10) {
       // 10스테이지 최종 보스: 파멸의 군주 (Lord of Doom)
       this.name = '파멸의 군주 (Lord of Doom)';
@@ -796,8 +796,8 @@ class BossEnemy extends Enemy {
       this.knockbackImmune = true;
 
       this.phaseTimer = 0;
-      this.teleportTimer = 5.0;
-      this.chargeTimer = 3.5;
+      this.teleportTimer = 2.5; // 5.0 -> 2.5 (기믹 2배 가속)
+      this.chargeTimer = 2.0;
     } else if (bossStage === 12) {
       // 12스테이지 보스: 심연의 리치 (Abyss Lich)
       this.name = '심연의 리치 (Abyss Lich)';
@@ -810,9 +810,9 @@ class BossEnemy extends Enemy {
       this.exp = 1600;
       this.knockbackImmune = true;
 
-      this.teleportCooldown = 4.0;
-      this.teleportTimer = 3.5;
-      this.frostNovaTimer = 2.0;
+      this.teleportCooldown = 2.0; // 4.0 -> 2.0 (기믹 2배 가속)
+      this.teleportTimer = 1.8;
+      this.frostNovaTimer = 0.9;  // 2.0 -> 0.9 (기믹 2배 가속)
     } else if (bossStage === 15) {
       // 15스테이지 종말의 보스: 종말의 사신 (Grim Reaper)
       this.name = '종말의 사신 (Grim Reaper)';
@@ -826,8 +826,8 @@ class BossEnemy extends Enemy {
       this.knockbackImmune = true;
 
       this.phaseTimer = 0;
-      this.teleportTimer = 4.2;
-      this.scytheChargeTimer = 3.0;
+      this.teleportTimer = 2.25; // 4.5 -> 2.25 (기믹 2배 가속)
+      this.scytheChargeTimer = 2.0; // 4.0 -> 2.0
       this.isCharging = false;
       this.chargeDuration = 0;
       this.chargeDir = { x: 1, y: 0 };
@@ -844,11 +844,11 @@ class BossEnemy extends Enemy {
       this.knockbackImmune = true;
 
       this.wyrmZigTimer = 0;
-      this.wyrmSpitTimer = 2.0;
+      this.wyrmSpitTimer = 0.95; // 1.9 -> 0.95 (기믹 2배 가속)
     } else if (bossStage === 20) {
-      // 20스테이지 진 최종 보스: 혼돈의 절대신 (Chaos Overlord)
+      // 20스테이지 진 보스: 혼돈의 절대신 (Chaos Overlord)
       this.name = '혼돈의 절대신 (Chaos Overlord)';
-      this.maxHp = 68000; // 120000 -> 68000 (플레이어 최종 DPS로 적정 시간 내 격파 가능하게 밸런싱)
+      this.maxHp = 68000;
       this.hp = this.maxHp;
       this.radius = 52;
       this.color = '#e11d48'; // 절대 크림슨
@@ -858,8 +858,23 @@ class BossEnemy extends Enemy {
       this.knockbackImmune = true;
 
       this.phaseTimer = 0;
-      this.teleportTimer = 3.8;
-      this.beamTimer = 2.5;
+      this.teleportTimer = 1.9; // 3.8 -> 1.9 (기믹 2배 가속)
+      this.beamTimer = 1.2;     // 2.4 -> 1.2 (기믹 2배 가속)
+    } else if (bossStage === 25) {
+      // 25스테이지 진 최종 보스: 심연의 군주 (Abyss Sovereign)
+      this.name = '심연의 군주 (Abyss Sovereign)';
+      this.maxHp = 95000;
+      this.hp = this.maxHp;
+      this.radius = 54;
+      this.color = '#4c1d95'; // 깊은 심연 보라
+      this.speed = 130;
+      this.damage = 135;
+      this.exp = 15000;
+      this.knockbackImmune = true;
+
+      this.phaseTimer = 0;
+      this.sovereignWaveTimer = 1.5;
+      this.sovereignWarpTimer = 2.2;
     } else if (bossStage === 99) {
       // 엔드게임 특수 보스: 진 붉은 사신 (The Red Death)
       this.name = '진 붉은 사신 (The Red Death)';
@@ -874,7 +889,7 @@ class BossEnemy extends Enemy {
       this.isFlying = true;
       this.isRedReaper = true;
 
-      this.scytheTimer = 0.8;
+      this.scytheTimer = 0.4; // 0.8 -> 0.4 (기믹 2배 가속)
     }
   }
 
@@ -931,7 +946,7 @@ class BossEnemy extends Enemy {
           // 돌진 발동!
           this.isAiming = false;
           this.isCharging = true;
-          this.chargeDuration = 1.0;
+          this.chargeDuration = 0.6;
           sounds.playBossCharge();
         }
       } else if (this.isCharging) {
@@ -944,9 +959,9 @@ class BossEnemy extends Enemy {
         }
       } else {
         if (this.chargeTimer <= 0) {
-          // 1.0초간 조준선 표시 후 대기
+          // 0.5초간 조준선 표시 후 대기 (기존 1.0초에서 2배 가속)
           this.isAiming = true;
-          this.aimTimer = 1.0;
+          this.aimTimer = 0.5;
           const len = Math.hypot(dx, dy) || 1;
           this.chargeDir = { x: dx / len, y: dy / len };
           this.vx = 0;
@@ -992,7 +1007,7 @@ class BossEnemy extends Enemy {
       // [탄막형 베홀더]
       this.bulletTimer -= dt;
       if (this.bulletTimer <= 0) {
-        this.bulletTimer = 0.22; // 0.22초마다 나선형 탄막 회전 방출
+        this.bulletTimer = 0.11; // 0.11초마다 나선형 탄막 회전 방출 (기존 0.22초에서 2배 가속)
         this.bulletSpiralAngle += 0.35;
         for (let s = 0; s < 3; s++) {
           const curAngle = this.bulletSpiralAngle + (s * (Math.PI * 2 / 3));
@@ -1013,7 +1028,7 @@ class BossEnemy extends Enemy {
       // [넉백면역형 불멸의 골렘 + 지진 충격파]
       this.stompTimer -= dt;
       if (this.stompTimer <= 0) {
-        this.stompTimer = 4.0;
+        this.stompTimer = 2.0; // 2.0초마다 지진 충격파 (기존 4.0초에서 2배 가속)
         sounds.playBossStomp();
         // 16방향 지진 파동 발사
         for (let i = 0; i < 16; i++) {
@@ -1037,9 +1052,9 @@ class BossEnemy extends Enemy {
       this.phaseTimer += dt;
       this.teleportTimer -= dt;
 
-      // 상시 나선형 탄막 방출
-      if (Math.floor(this.phaseTimer * 4) % 2 === 0 && Math.random() < 0.3) {
-        const bAngle = this.phaseTimer * 2.5;
+      // 상시 나선형 탄막 방출 (2배 가속)
+      if (Math.floor(this.phaseTimer * 8) % 2 === 0 && Math.random() < 0.35) {
+        const bAngle = this.phaseTimer * 2.8;
         bossProjectiles.push(new BossProjectile(
           this.x, this.y,
           Math.cos(bAngle) * 280, Math.sin(bAngle) * 280,
@@ -1047,9 +1062,9 @@ class BossEnemy extends Enemy {
         ));
       }
 
-      // 주기적 순간이동 및 12방향 탄막 폭발
+      // 주기적 순간이동 및 12방향 탄막 폭발 (2.5초 주기)
       if (this.teleportTimer <= 0) {
-        this.teleportTimer = 5.0;
+        this.teleportTimer = 2.5; // 기존 5.0s -> 2.5s
         sounds.playBossTeleport();
         const angle = Math.random() * Math.PI * 2;
         this.x = player.x + Math.cos(angle) * 220;
@@ -1074,9 +1089,9 @@ class BossEnemy extends Enemy {
       this.teleportTimer -= dt;
       this.frostNovaTimer -= dt;
 
-      // 주기적 3갈래 한기 탄환 발사
+      // 주기적 3갈래 한기 탄환 발사 (0.9초 주기)
       if (this.frostNovaTimer <= 0) {
-        this.frostNovaTimer = 1.8;
+        this.frostNovaTimer = 0.9; // 1.8 -> 0.9
         const baseAngle = Math.atan2(dy, dx);
         for (let i = -1; i <= 1; i++) {
           const shotAngle = baseAngle + (i * 0.28);
@@ -1088,9 +1103,9 @@ class BossEnemy extends Enemy {
         }
       }
 
-      // 4초마다 순간이동 + 10방향 심연의 얼음 파동 방출
+      // 2초마다 순간이동 + 10방향 심연의 얼음 파동 방출 (2.0초 주기)
       if (this.teleportTimer <= 0) {
-        this.teleportTimer = this.teleportCooldown;
+        this.teleportTimer = this.teleportCooldown; // 2.0
         sounds.playBossTeleport();
         const angle = Math.random() * Math.PI * 2;
         this.x = player.x + Math.cos(angle) * 210;
@@ -1116,9 +1131,9 @@ class BossEnemy extends Enemy {
       this.teleportTimer -= dt;
       this.scytheChargeTimer -= dt;
 
-      // 상시 4방향 고속 회전 암흑 탄환 방출
-      if (Math.floor(this.phaseTimer * 5) % 2 === 0 && Math.random() < 0.4) {
-        const spiralBase = this.phaseTimer * 3.2;
+      // 상시 4방향 고속 회전 암흑 탄환 방출 (2배 가속)
+      if (Math.floor(this.phaseTimer * 10) % 2 === 0 && Math.random() < 0.45) {
+        const spiralBase = this.phaseTimer * 3.5;
         for (let s = 0; s < 4; s++) {
           const sAngle = spiralBase + (s * Math.PI / 2);
           bossProjectiles.push(new BossProjectile(
@@ -1138,20 +1153,20 @@ class BossEnemy extends Enemy {
           this.isCharging = false;
         }
       } else {
-        // 4초마다 고속 참격 돌진 감행
+        // 2초마다 고속 참격 돌진 감행 (기존 4.0초에서 2배 가속)
         if (this.scytheChargeTimer <= 0) {
-          this.scytheChargeTimer = 4.0;
+          this.scytheChargeTimer = 2.0;
           sounds.playBossCharge();
           this.isCharging = true;
-          this.chargeDuration = 0.75;
+          this.chargeDuration = 0.65;
           if (dist > 0.1) {
             this.chargeDir = { x: dx / dist, y: dy / dist };
           }
         }
 
-        // 4.5초마다 플레이어 근처 순간이동 + 14방향 사신의 절망 폭발
+        // 2.25초마다 플레이어 근처 순간이동 + 14방향 사신의 절망 폭발 (기존 4.5초에서 2배 가속)
         if (this.teleportTimer <= 0) {
-          this.teleportTimer = 4.5;
+          this.teleportTimer = 2.25;
           sounds.playBossTeleport();
           const angle = Math.random() * Math.PI * 2;
           this.x = player.x + Math.cos(angle) * 190;
@@ -1184,9 +1199,9 @@ class BossEnemy extends Enemy {
       this.vx = Math.cos(targetAngle) * this.speed + Math.cos(perpAngle) * wave;
       this.vy = Math.sin(targetAngle) * this.speed + Math.sin(perpAngle) * wave;
 
-      // 2초마다 5갈래 공허 침 탄환 발사
+      // 0.95초마다 5갈래 공허 침 탄환 발사 (기존 1.9초에서 2배 가속)
       if (this.wyrmSpitTimer <= 0) {
-        this.wyrmSpitTimer = 1.9;
+        this.wyrmSpitTimer = 0.95;
         sounds.playBossCharge();
         const baseA = Math.atan2(dy, dx);
         for (let i = -2; i <= 2; i++) {
@@ -1199,14 +1214,14 @@ class BossEnemy extends Enemy {
         }
       }
     } else if (this.bossStage === 20) {
-      // [20스테이지 진 최종 보스: 혼돈의 절대신 - 16방향 나선 탄막 + 빔 레이저 + 텔레포트 절망 폭발]
+      // [20스테이지 진 보스: 혼돈의 절대신 - 16방향 나선 탄막 + 빔 레이저 + 텔레포트 절망 폭발]
       this.phaseTimer += dt;
       this.teleportTimer -= dt;
       this.beamTimer -= dt;
 
       // 1. 상시 16방향 초고속 나선 탄막
-      if (Math.floor(this.phaseTimer * 6) % 2 === 0 && Math.random() < 0.45) {
-        const spiralBase = this.phaseTimer * 3.5;
+      if (Math.floor(this.phaseTimer * 10) % 2 === 0 && Math.random() < 0.5) {
+        const spiralBase = this.phaseTimer * 3.8;
         for (let s = 0; s < 4; s++) {
           const sAngle = spiralBase + (s * Math.PI / 2);
           bossProjectiles.push(new BossProjectile(
@@ -1217,9 +1232,9 @@ class BossEnemy extends Enemy {
         }
       }
 
-      // 2. 2.5초마다 플레이어 방향 3연사 고속 혼돈 빔 탄환
+      // 2. 1.2초마다 플레이어 방향 3연사 고속 혼돈 빔 탄환 (기존 2.4초에서 2배 가속)
       if (this.beamTimer <= 0) {
-        this.beamTimer = 2.4;
+        this.beamTimer = 1.2;
         const beamAngle = Math.atan2(dy, dx);
         for (let b = 0; b < 3; b++) {
           setTimeout(() => {
@@ -1230,13 +1245,13 @@ class BossEnemy extends Enemy {
                 11, '#fde047', 50
               ));
             }
-          }, b * 140);
+          }, b * 110);
         }
       }
 
-      // 3. 3.8초마다 순간이동 + 16방향 혼돈 폭발
+      // 3. 1.9초마다 순간이동 + 16방향 혼돈 폭발 (기존 3.8초에서 2배 가속)
       if (this.teleportTimer <= 0) {
-        this.teleportTimer = 3.8;
+        this.teleportTimer = 1.9;
         sounds.playBossTeleport();
         const a = Math.random() * Math.PI * 2;
         this.x = player.x + Math.cos(a) * 220;
@@ -1248,6 +1263,59 @@ class BossEnemy extends Enemy {
             this.x, this.y,
             Math.cos(burstA) * 340, Math.sin(burstA) * 340,
             10, '#e11d48', 48
+          ));
+        }
+      }
+
+      if (dist > 0.1) {
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+      }
+    } else if (this.bossStage === 25) {
+      // [25스테이지 진 최종 보스: 심연의 군주 (Abyss Sovereign) - 공간 왜곡 텔레포트 + 5연속 암흑 파동]
+      this.phaseTimer += dt;
+      this.sovereignWaveTimer -= dt;
+      this.sovereignWarpTimer -= dt;
+
+      // 1. 상시 나선형 심연 탄막
+      if (Math.floor(this.phaseTimer * 8) % 2 === 0 && Math.random() < 0.45) {
+        const sAngle = this.phaseTimer * 3.2;
+        bossProjectiles.push(new BossProjectile(
+          this.x, this.y,
+          Math.cos(sAngle) * 320, Math.sin(sAngle) * 320,
+          10, '#a855f7', 48
+        ));
+      }
+
+      // 2. 1.2초마다 5갈래 심연의 암흑 파동 발사
+      if (this.sovereignWaveTimer <= 0) {
+        this.sovereignWaveTimer = 1.2;
+        sounds.playBossCharge();
+        const baseA = Math.atan2(dy, dx);
+        for (let i = -2; i <= 2; i++) {
+          const shotA = baseA + (i * 0.20);
+          bossProjectiles.push(new BossProjectile(
+            this.x, this.y,
+            Math.cos(shotA) * 330, Math.sin(shotA) * 330,
+            11, '#6366f1', 52
+          ));
+        }
+      }
+
+      // 3. 2.0초마다 공간 왜곡 순간이동 + 18방향 심연 폭발
+      if (this.sovereignWarpTimer <= 0) {
+        this.sovereignWarpTimer = 2.0;
+        sounds.playBossTeleport();
+        const a = Math.random() * Math.PI * 2;
+        this.x = player.x + Math.cos(a) * 230;
+        this.y = player.y + Math.sin(a) * 230;
+
+        for (let i = 0; i < 18; i++) {
+          const burstA = (i / 18) * Math.PI * 2;
+          bossProjectiles.push(new BossProjectile(
+            this.x, this.y,
+            Math.cos(burstA) * 350, Math.sin(burstA) * 350,
+            11, '#4c1d95', 55
           ));
         }
       }
