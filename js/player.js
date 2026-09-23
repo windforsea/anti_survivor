@@ -85,7 +85,7 @@ class Player {
       this.bonusProjSpeedMult = 1.0;
     }
 
-    this.thornsPercent = 0.0;           // 응징의 가시 갑옷 반사 피해 비율 (stat_thorns)
+    this.thornsPercent = 0.0;           // 가시갑옷 반사 피해 비율 (stat_thorns)
 
     this.hpRegen = 0.0;                 // 초당 체력 재생
     this.baseMagnetRadius = characterType === 'assassin' ? 155 : 130;
@@ -282,7 +282,7 @@ class Player {
       }
     }
 
-    // [특성 2] 응징의 가시 갑옷 (stat_thorns) 피격 시 주변 120px 적들에게 받은 피해의 N% 가시 반사
+    // [특성 2] 가시갑옷 (stat_thorns) 피격 시 주변 120px 적들에게 받은 피해의 N% 가시 반사
     if (this.thornsPercent > 0 && window.game && window.game.enemies) {
       const thornsDmg = Math.max(1, Math.round(actualDamage * this.thornsPercent));
       const thornsRadius = 120;

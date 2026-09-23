@@ -1,12 +1,7 @@
-// 레벨업 카드 시스템: 무기 강화, 신규 무기 해금, 진화 무기 합성, 캐릭터 패시브 강화
-// 1. 캐릭터 패시브 스탯은 최대 6종만 인벤토리에 장착 가능 (각 5강 제한, 범위 3강, 투사체 2강)
+// 레벨업 카드 시스템: 무기 강화, 신규 무기 해금, 14대 진화 무기 합성, 16종 캐릭터 패시브 강화
+// 1. 캐릭터 패시브 스탯은 최대 6종만 인벤토리에 장착 가능 (각 5강 제한)
 // 2. 무기 슬롯 최대 6개 제한 (각 무기 총 5레벨 MAX 제한)
-// 3. 5대 정통 진화 무기 체계:
-//    - 천상의 성역 (heavenlySanctuary) = 성역 (sanctuary 5렙) + 성수 (holyWater 5렙)
-//    - 모닝스타 선풍 (morningstarTempest) = 모닝스타 채찍 (whip 5렙) + 표창 (shuriken 5렙)
-//    - 멸망의 혜성 (apocalypseComet) = 화염 지팡이 (fireWand 5렙) + 마법 화살 (magicMissile 5렙)
-//    - 학살자의 폭풍검 (slayerBladeStorm) = 일반 검 (sword 5렙) + 도끼 (axe 5렙)
-//    - 테슬라 뇌전포 (teslaShotgun) = 산탄 총포 (shotgun 5렙) + 번개 반지 (lightningRing 5렙)
+// 3. 14대 정통 진화 무기 체계: 성역+성수, 채찍+표창, 불지팡이+마법화살, 검+도끼, 산탄총+번개반지, 독비수+빙결보주 등 14종
 
 function formatStars(currentLevel, maxLevel) {
   const filled = Math.min(currentLevel, maxLevel);
@@ -947,7 +942,7 @@ class CardManager {
       },
       {
         id: 'stat_speed',
-        title: '바람의 장화',
+        title: '장화',
         icon: '👟',
         iconKey: 'icon_speed',
         desc: '이동 속도를 증가시킵니다.',
@@ -1114,7 +1109,7 @@ class CardManager {
       },
       {
         id: 'stat_thorns',
-        title: '응징의 가시 갑옷',
+        title: '가시갑옷',
         icon: '🛡️🌵',
         iconKey: 'icon_thorns',
         desc: '피격 시 주변 적들에게 받은 피해를 가시 폭발로 강력하게 되돌려줍니다.',

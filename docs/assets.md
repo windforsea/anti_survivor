@@ -89,7 +89,7 @@ assets/sprites/
 
 #### [패시브 및 스탯 아이콘]
 - `icon_armor.png`: 철벽 갑옷 (방어력/피해경감)
-- `icon_speed.png`: 바람의 장화 (이동 속도)
+- `icon_speed.png`: 장화 (이동 속도)
 - `icon_atk.png`: 피의 계약 (공격력)
 - `icon_regen.png`: 재생의 반지 (체력 재생)
 - `icon_hp.png`: 거인의 심장 (최대 체력)
