@@ -13,7 +13,7 @@ js/
 ├── 📄 main.js             # 게임 엔진 루프(requestAnimationFrame), 우주 부유섬 맵 및 엔티티 총괄 관리
 ├── 📄 player.js           # 플레이어 엔티티(스탯, 이동, 피격/무적, 치명타, 픽업 범위)
 ├── 📄 saveManager.js      # FNV-1a 해시 체크섬 기반 세이브 무결성 검증 및 위변조 방지
-├── 📄 waveManager.js      # 웨이브 스케줄러: 20단계 웨이브 타임라인, 스폰 계수, 20초 돌발 대습격 이벤트
+├── 📄 waveManager.js      # 웨이브 스케줄러: 25단계 웨이브 타임라인(총 18분 45초), 스폰 계수, 사신 강림 트리거
 ├── 📄 audio.js            # 사운드 엔진: Web Audio API 기반 8비트 레트로 신디사이저
 ├── 📄 assets.js           # 에셋 로더: 79종 스프라이트 이미지 프리로더 및 캔버스 렌더링 헬퍼
 ├── 📄 ui.js               # UI 매니저: HUD, 인게임 UI, 모바일 가상 조이스틱, XSS 방어
@@ -22,10 +22,10 @@ js/
 ├── 📄 cards.js            # 레벨업 카드 시스템: 분할된 카드 데이터(`CardData`) 연동
 │
 ├── 📂 enemies/            # 👾 몬스터/보스 세분화 도메인
-│   ├── 📄 enemyRegistry.js # 일반 몬스터(15종)/보스(10종) 통합 레지스트리 매핑
+│   ├── 📄 enemyRegistry.js # 일반 몬스터(15종)/보스(11종) 통합 레지스트리 매핑
 │   ├── 📄 projectiles.js   # 적 투사체(암흑구체, 맹독탄, 레이저) 발사/이동/판정 엔진
 │   ├── 📂 monsters/       # 15종 개별 일반 몬스터 스탯 및 AI (bat.js, slime.js, assassin.js 등)
-│   └── 📂 bosses/         # 10종 개별 보스 스탯 및 전투 패턴 (direBoar.js, grimReaper.js 등)
+│   └── 📂 bosses/         # 10종 개별 보스 스탯 및 전투 패턴 (direBoar.js, grimReaper.js 등) + 25Stg 심연의 군주
 │
 ├── 📂 weapons/            # 🗡️ 무기 세분화 도메인
 │   ├── 📄 weaponRegistry.js # 기본 무기(12종)/진화 무기(6종) 통합 레지스트리 매핑
@@ -41,8 +41,8 @@ js/
 │   └── 📄 obstacles.js    # 청크 안전 스폰, 바위/나무 지형 충돌, 파괴 상자
 │
 └── 📂 ui/components/      # 🖥️ UI 컴포넌트 세분화 도메인
-    ├── 📄 lobby.js        # 로비 영구 강화 상점 & 명예의 전당 (1~3위 + 최근 유저)
-    └── 📄 characterSelect.js # 기사, 마도사, 암살자 영웅 선택 카드 모달
+    ├── 📄 lobby.js        # 로비 영구 강화 상점 & 명예의 전당 (1~3위 닉네임, 시간, 직업)
+    └── 📄 characterSelect.js # 기사, 마도사, 암살자, 해골 성직자 영웅 선택 카드 모달
 ```
 
 ### 3중 하위 호환 레지스트리 패턴 (Registry Pattern)
