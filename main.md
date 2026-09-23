@@ -53,7 +53,7 @@ vam/
 │   ├── weapons/                 # 🗡️ 무기 세분화 모듈
 │   │   ├── weaponRegistry.js    # 기본/진화 무기 설정 통합 레지스트리 매핑
 │   │   ├── basic/               # 12종 기본 무기 개별 설정 (sword, shotgun, frostOrb 등)
-│   │   └── evolutions/          # 6대 진화 무기 개별 설정 (venomBlizzard, heavenlySanctuary 등)
+│   │   └── evolutions/          # 12대 진화 무기 개별 설정 (heavenlySanctuary, thunderBlade, plague 등)
 │   │
 │   ├── cards/data/              # 🃏 카드 데이터 모듈
 │   │   ├── weaponCards.js       # 기본 무기 해금 카드 텍스트 및 메타데이터
@@ -89,7 +89,7 @@ vam/
 | :--- | :--- | :--- | :--- |
 | [`js/weapons.js`](js/weapons.js) | `WeaponManager` | 무기 쿨다운 계산, 투사체 및 도트 장판 생성/업데이트/충돌 판정, 무기 해금/업그레이드 | `update(dt, enemies)`, `fireWeapon(w, enemies)`, `getCooldown(w)`, `getDamage(w)` |
 | `js/weapons/basic/` | 개별 설정 파일들 | 12종 기본 무기의 기본 쿨타임, 데미지, 투사체 수, 범위, 자동조준 여부 정의 | `sword.js`, `shotgun.js`, `frostOrb.js`, `holyWater.js` 등 |
-| `js/weapons/evolutions/` | 개별 설정 파일들 | 6대 진화 무기의 합성 조합 공식, 쿨다운, 기본 데미지, 특수 메커니즘 정의 | `venomBlizzard.js`, `heavenlySanctuary.js`, `slayerBladeStorm.js` 등 |
+| `js/weapons/evolutions/` | 개별 설정 파일들 | 12대 진화 무기의 합성 조합 공식, 쿨다운, 기본 데미지, 2단계 메커니즘 정의 | `heavenlySanctuary.js`, `thunderBlade.js`, `plague.js` 등 12종 |
 
 ### 2.3 몬스터 및 보스 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
