@@ -54,7 +54,6 @@
             <span class="champion-tag">최근 클리어 챔피언</span>
             <span class="champion-name" id="champName">전설의 서바이버</span>
           </div>
-          <p class="champion-quote" id="champQuote">"어둠은 영원하지 않다. 끝까지 살아남아라!"</p>
         </div>
       </div>
     </div>
@@ -138,6 +137,23 @@
             </div>
             <button class="char-select-btn" data-char="assassin">출격하기</button>
           </div>
+
+          <!-- 4. 해골 성직자 모티스 -->
+          <div class="char-card" data-char="cleric">
+            <div class="char-card-badge holy" style="background: linear-gradient(135deg, #7c3aed, #c084fc); border: 1px solid #e9d5ff;">UNDEAD / HOLY</div>
+            <div class="char-avatar-box">
+              <img src="assets/sprites/player_cleric.png" alt="해골 성직자" class="char-pixel-img">
+            </div>
+            <h3 class="char-name">해골 성직자 (Mortis)</h3>
+            <p class="char-desc">불사의 저주를 딛고 성스러운 권능으로 전장을 정화하는 사제</p>
+            <div class="char-stats-list">
+              <div class="char-stat-row"><span class="stat-lbl">불사의 해골</span><span class="stat-val buff">기본 부활 1회 내장</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">체력 재생</span><span class="stat-val buff">+0.6 HP/s</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">공격 범위</span><span class="stat-val buff">+15%</span></div>
+              <div class="char-stat-row"><span class="stat-lbl">시작 무기</span><span class="stat-val highlight">🧪 성수</span></div>
+            </div>
+            <button class="char-select-btn" data-char="cleric">출격하기</button>
+          </div>
         </div>
 
         <div class="char-select-footer">
@@ -207,13 +223,12 @@
           <!-- 최종 기록 -->
         </div>
 
-        <!-- 최종 보스 퇴치 시 닉네임 및 한마디 작성 폼 -->
+        <!-- 최종 보스 퇴치 시 닉네임 작성 폼 -->
         <div class="champion-input-section" id="championInputSection">
           <p class="champion-input-title">👑 명예의 전당 등록 👑</p>
-          <p class="champion-input-desc">챔피언의 승리 한마디를 남기면 다른 유저들에게 노출됩니다!</p>
+          <p class="champion-input-desc">승리 기록을 명예의 전당에 영구 등록합니다!</p>
           <div class="champion-form">
             <input type="text" id="championNameInput" placeholder="닉네임 (최대 10자)" maxlength="10">
-            <input type="text" id="championQuoteInput" placeholder="승리의 한마디 (최대 35자)" maxlength="35">
             <button id="championSubmitBtn" class="champ-submit-btn">명예의 전당 등록</button>
           </div>
           <div id="championSubmitSuccess" class="champ-success-msg hidden">✨ 명예의 전당에 성공적으로 등록되었습니다! ✨</div>

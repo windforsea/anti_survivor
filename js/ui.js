@@ -678,14 +678,13 @@ class UIManager {
     this.lastVictoryStats = stats;
     this.victoryStats.innerHTML = `
       <div class="stat-row"><span>클리어 시간</span><strong>${stats.time}</strong></div>
-      <div class="stat-row"><span>달성 스테이지</span><strong>Stage 20 (Chaos All Clear)</strong></div>
+      <div class="stat-row"><span>달성 스테이지</span><strong>Stage 25 (Abyss All Clear)</strong></div>
       <div class="stat-row"><span>최종 레벨</span><strong>Lv. ${stats.level}</strong></div>
       <div class="stat-row"><span>처치한 마물</span><strong>${stats.kills} 마리</strong></div>
       <div class="stat-row"><span>획득 금화</span><strong style="color: #facc15;">🪙 +${stats.gold || 0} G</strong></div>
     `;
     if (this.championSubmitSuccess) this.championSubmitSuccess.classList.add('hidden');
     if (this.championNameInput) this.championNameInput.value = '';
-    if (this.championQuoteInput) this.championQuoteInput.value = '';
     this.victoryModal.classList.remove('hidden');
     sounds.playVictory();
   }
@@ -697,7 +696,7 @@ class UIManager {
   // 명예의 전당 챔피언 배너 노출 (사망 시, 로비 복귀 시 - 최근 클리어 유저)
   async showChampionBanner() {
     if (!this.championBanner) return;
-    let champ = { name: '전설의 서바이버', quote: '어둠은 영원하지 않다. 끝까지 살아남아라!' };
+    let champ = { name: '전설의 서바이버', clearTime: '18:45' };
 
     // 1. 서버 공용 API 호출 시도
     try {
@@ -719,8 +718,7 @@ class UIManager {
       } catch (e) {}
     }
 
-    if (this.champName) this.champName.textContent = champ.name || '무명의 영웅';
-    if (this.champQuote) this.champQuote.textContent = `"${champ.quote || '승리를 향해 나아가라!'}"`;
+    if (this.champName) this.champName.textContent = `${champ.name || '무명의 영웅'} [${champ.clearTime || '18:45'}]`;
 
     this.championBanner.classList.remove('hidden');
     if (this.champBannerTimer) clearTimeout(this.champBannerTimer);
@@ -732,13 +730,11 @@ class UIManager {
   // 최종 보스 클리어 시 챔피언 등록 핸들러 (서버 영구 파일 저장 및 로컬 백업)
   async handleChampionSubmit() {
     const rawName = (this.championNameInput ? this.championNameInput.value.trim() : '') || '익명의 챔피언';
-    const rawQuote = (this.championQuoteInput ? this.championQuoteInput.value.trim() : '') || '모든 시련을 이겨냈다!';
     const name = this.sanitizeText(rawName);
-    const quote = this.sanitizeText(rawQuote);
 
     const stats = this.lastVictoryStats || {
-      time: '14:30',
-      timeSeconds: 870,
+      time: '18:45',
+      timeSeconds: 1125,
       level: 30,
       kills: 500,
       hero: (this.game && this.game.player ? this.game.player.characterType : 'knight')
@@ -746,9 +742,8 @@ class UIManager {
 
     const newRecord = {
       name,
-      quote,
       clearTime: stats.time,
-      timeSeconds: stats.timeSeconds || 900,
+      timeSeconds: stats.timeSeconds || 1125,
       level: stats.level || 1,
       kills: stats.kills || 0,
       hero: stats.hero || 'knight',
@@ -788,6 +783,7 @@ class UIManager {
       this.championSubmitSuccess.classList.remove('hidden');
     }
     sounds.playLevelUp();
+    this.renderHallOfFame(serverResData || localData);
 
     // 0.8초 후 명예의 전당 모달을 즉시 열어 최신 순위(1~3위 및 최근 글) 확인
     setTimeout(() => {
@@ -854,30 +850,29 @@ class UIManager {
 
     if (this.hofRankList) {
       this.hofRankList.innerHTML = top3.map((rec, idx) => {
-        const heroName = rec.hero === 'mage' ? '화염 마도사' : rec.hero === 'assassin' ? '그림자 암살자' : '방랑 기사';
+        const heroName = rec.hero === 'mage' ? '화염 마도사' : rec.hero === 'assassin' ? '그림자 암살자' : rec.hero === 'cleric' ? '해골 성직자' : '방랑 기사';
         return `
           <div class="hof-card ${rankClasses[idx]}">
             <div class="hof-medal">${medals[idx]}</div>
             <div class="hof-info">
               <div class="hof-info-top">
                 <span class="hof-user-name">${rec.name || '익명'}</span>
-                <span class="hof-time-badge">⏱️ ${rec.clearTime || '15:00'}</span>
+                <span class="hof-time-badge">⏱️ ${rec.clearTime || '18:45'}</span>
               </div>
-              <p class="hof-quote">"${rec.quote || '승리는 나의 것!'}"</p>
-              <div class="hof-meta">Lv.${rec.level || 30} ${heroName} · ⚔️ ${rec.kills || 0}처치</div>
+              <div class="hof-meta" style="margin-top: 6px;">Lv.${rec.level || 30} ${heroName} · ⚔️ ${rec.kills || 0}처치</div>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    // 4번째 칸: 최근 클리어 유저의 외침
+    // 4번째 칸: 최근 클리어 유저 기록
     const recent = (data && data.recent)
       ? data.recent
       : (records[0] || defaultRecords[0]);
 
     if (this.hofRecentCard) {
-      const recentHero = recent.hero === 'mage' ? '화염 마도사' : recent.hero === 'assassin' ? '그림자 암살자' : '방랑 기사';
+      const recentHero = recent.hero === 'mage' ? '화염 마도사' : recent.hero === 'assassin' ? '그림자 암살자' : recent.hero === 'cleric' ? '해골 성직자' : '방랑 기사';
       const dateStr = recent.date ? new Date(recent.date).toLocaleDateString() : '최근';
 
       this.hofRecentCard.innerHTML = `
@@ -885,10 +880,9 @@ class UIManager {
         <div class="hof-info">
           <div class="hof-info-top">
             <span class="hof-user-name" style="color: #38bdf8;">${recent.name || '익명'} <small style="font-size: 11px; color: #94a3b8;">(${dateStr})</small></span>
-            <span class="hof-time-badge" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">⏱️ ${recent.clearTime || '15:00'}</span>
+            <span class="hof-time-badge" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">⏱️ ${recent.clearTime || '18:45'}</span>
           </div>
-          <p class="hof-quote" style="color: #e2e8f0; font-size: 13px;">"${recent.quote || '끝까지 살아남아라!'}"</p>
-          <div class="hof-meta" style="color: #0284c7;">Lv.${recent.level || 30} ${recentHero} · ⚔️ ${recent.kills || 0}처치</div>
+          <div class="hof-meta" style="color: #0284c7; margin-top: 6px;">Lv.${recent.level || 30} ${recentHero} · ⚔️ ${recent.kills || 0}처치</div>
         </div>
       `;
     }
