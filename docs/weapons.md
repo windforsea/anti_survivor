@@ -17,8 +17,8 @@ Anti Survivors의 12종 기본 무기 스펙, 4대 강화 카드 옵션, 6대 �
 | **표창 (`shuriken`)** | **원거리** | [`shuriken.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/shuriken.js) | 320px | 24 | 0.42s | 1발 | 가장 가까운 적을 향해 자전 회전하며 관통 비행하는 닌자 표창 투척 |
 | **마법 화살 (`magicMissile`)** | **원거리** | [`magicMissile.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/magicMissile.js) | 700px (화면 전체) | 25 | 0.55s | 1발 | 가장 가까운 적을 고속 유도 추적하는 마법 탄환 발사 |
 | **산탄 총포 (`shotgun`)** | **원거리** | [`shotgun.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/shotgun.js) | 280px | 32 | 1.30s | 3발 | 가장 가까운 적 방향 부채꼴로 산탄 일제 사격 (자동 조준) |
-| **성수 (`holyWater`)** | **도트** | [`holyWater.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/holyWater.js) | 60px 장판 반경 | 14 (틱당) | 2.00s | 1개 | 무작위 적 발밑에 지속 데미지를 입히는 성스러운 정화 장판 투척 |
-| **성역 (`sanctuary`)** | **도트** | [`sanctuary.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/sanctuary.js) | 90px 반경 | 28 (초당) | 1.00s | 결계 | 플레이어 중심 360도 원형 룬 결계로 상시 지속 피해 (쿨감 시 도트 틱 주기 가속) |
+| **성수 (`holyWater`)** | **도트** | [`holyWater.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/holyWater.js) | 60px 장판 반경 | 14 (틱당) | 2.00s | 1개 | 무작위 적 발밑에 지속 데미지를 입히는 성스러운 정화 장판 투척 (0.8초 틱 주기, 넉백 없음) |
+| **성역 (`sanctuary`)** | **도트** | [`sanctuary.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/sanctuary.js) | 90px 반경 | 28 (초당) | 1.00s | 결계 | 플레이어 중심 360도 원형 룬 결계로 상시 지속 피해 (0.8초 틱 주기, 넉백 삭제 0) |
 | **번개 반지 (`lightningRing`)** | **원거리** | [`lightningRing.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/lightningRing.js) | 48px 스플래시 | 42 | 1.10s | 1발 | 무작위 적 머리 위로 하늘에서 벼락을 내리꽂아 지면 폭발 피해 부여 |
 | **화염 지팡이 (`fireWand`)** | **원거리** | [`fireWand.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/fireWand.js) | 380px (폭발 65px) | 36 | 1.00s | 1발 | 적을 향해 화염구를 발사하며 착탄 시 폭발하여 광역 화염 피해 부여 |
 | **맹독 비수 (`poisonDagger`)** | **원거리/도트** | [`poisonDagger.js`](file:///g:/내%20드라이브/vam/js/weapons/basic/poisonDagger.js) | 350px (관통) | 22 | 0.52s | 1발 | 가장 가까운 적을 향해 독단검을 던져(자동 조준) 관통 및 3초간 중독(초당 10 DPS) 부여 |
@@ -31,10 +31,10 @@ Anti Survivors의 12종 기본 무기 스펙, 4대 강화 카드 옵션, 6대 �
 무기 레벨업 시 4대 옵션 카드 중 하나를 선택하여 무기를 강화할 수 있습니다.  
 (카드 데이터 수정: [`js/cards/data/weaponCards.js`](file:///g:/내%20드라이브/vam/js/cards/data/weaponCards.js), [`passiveCards.js`](file:///g:/내%20드라이브/vam/js/cards/data/passiveCards.js), [`evolutionCards.js`](file:///g:/내%20드라이브/vam/js/cards/data/evolutionCards.js))
 
-- **쿨타임 감소**: 무기 쿨타임 **-10%** (성역의 경우 도트 틱 주기 가속)
+- **쿨타임 감소**: 무기 쿨타임 **-15%** (성역의 경우 도트 틱 주기 가속)
 - **공격력 증가**: 무기 기본 피해량 **+30%**
 - **범위 증가**: 공격 판정 및 투사체/장판 크기 **+20%**
-- **투사체 / 연속공격**: 투사체 **+1개** (산탄총은 +2개) 또는 연속 공격 **+1회** 추가 (성역 계열 제외)
+- **투사체 / 연속공격**: 투사체 **+1개** (산탄총 계열은 투사체 증가 단위당 +2발씩) 또는 연속 공격 **+1회** 추가 (성역 계열 제외)
 
 ---
 
@@ -51,7 +51,7 @@ Anti Survivors의 12종 기본 무기 스펙, 4대 강화 카드 옵션, 6대 �
 
 | 진화 무기 | 타입 | 개별 모듈 파일 | 합성 조합 공식 | 기본 피해 | 쿨다운/주기 | 매커니즘 및 특수 고유 효과 |
 | :--- | :---: | :--- | :---: | :---: | :---: | :--- |
-| **천상의 성역 (`heavenlySanctuary`)** | **도트** | [`heavenlySanctuary.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/heavenlySanctuary.js) | **성역(5Lv) + 성수(5Lv)** | 36 | 0.38s | 플레이어 주위에 초대형 룬 결계(반경 135px)를 상시 형성하여 초고속 도트 피해를 입히며, 5% 확률로 적을 1.5초간 완전 빙결 (보스는 40% 감속) |
+| **천상의 성역 (`heavenlySanctuary`)** | **도트** | [`heavenlySanctuary.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/heavenlySanctuary.js) | **성역(5Lv) + 성수(5Lv)** | 36 | 0.80s | 플레이어 주위에 초대형 룬 결계(반경 135px)를 상시 형성하여 0.8초마다 도트 피해를 입히며 넉백 제거(0), 5% 확률로 적을 1.5초간 완전 빙결 (보스는 40% 감속) |
 | **모닝스타 선풍 (`morningstarTempest`)** | **원거리/근접** | [`morningstarTempest.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/morningstarTempest.js) | **채찍(5Lv) + 표창(5Lv)** | 52 | 0.95s (기본 2연타) | 자동 조준 전후방 교차 타격을 수행하며, 첫 번째 타겟 적중 지점에서 4방향 십자형 관통 표창을 폭쇄 방출 |
 | **멸망의 혜성 (`apocalypseComet`)** | **원거리** | [`apocalypseComet.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/apocalypseComet.js) | **화염 지팡이(5Lv) + 마법 화살(5Lv)** | 62 | 0.85s (기본 2발) | 적을 유도 추적하는 거대한 초고열 화염 혜성을 연속 발사하여 초대형 헬파이어 연쇄 폭발 발생 |
 | **학살자의 폭풍검 (`slayerBladeStorm`)** | **근접** | [`slayerBladeStorm.js`](file:///g:/내%20드라이브/vam/js/weapons/evolutions/slayerBladeStorm.js) | **철검(5Lv) + 도끼(5Lv)** | 56 | 0.50s (회전무기 4개) | 거대 대검과 도끼들이 플레이어 주위를 초고속 상시 궤도 회전하며 접근하는 모든 적을 갈아내고 강력한 넉백(240) 부여 + **적 투사체(일반몹 암흑탄 및 보스 탄막) 요격 및 무이펙트 즉시 삭제 (렉 방지 최적화)** |

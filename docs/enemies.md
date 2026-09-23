@@ -31,9 +31,9 @@ Anti Survivors의 15종 일반 몬스터 및 10종 보스의 상세 스탯, 고�
 
 ---
 
-## 👑 2. 특수 기믹 보스 (10종)
+## 👑 2. 특수 기믹 보스 (11종)
 
-보스는 짝수 및 주요 스테이지에 등장하며, 압도적인 체력과 고유한 공격 패턴을 가지고 있습니다.
+보스는 짝수 및 주요 스테이지에 등장하며, 압도적인 체력과 고유한 공격 패턴을 가지고 있습니다. (최근 밸런스 패치로 **모든 보스의 기믹 쿨타임 및 공격 주기가 2배 가속**되었습니다.)
 
 ### 보스 전투 공통 규칙
 - **보스 처치 보상**: 처치 시 **50G 대량 금화** 지급 + **1회 무료 보너스 업그레이드 카드 선택창** 즉시 오픈
@@ -43,13 +43,14 @@ Anti Survivors의 15종 일반 몬스터 및 10종 보스의 상세 스탯, 고�
 
 | 스테이지 | 보스명 | 개별 모듈 파일 | HP | 속도 | 접촉 피해 | EXP | 넉백 면역 | 전투 기믹 및 고유 공격 패턴 |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **2 Stg** | **돌진 맹수 (`Dire Boar`)** | [`direBoar.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/direBoar.js) | 1,600 | 100 | 32 | 150 | X | 4초 주기로 플레이어 위치 조준 후 순간 가속 붉은 궤적 돌진 |
-| **4 Stg** | **그림자 마법사 (`Void Sorcerer`)** | [`voidSorcerer.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/voidSorcerer.js) | 3,400 | 80 | 38 | 250 | X | 4.5초 주기 무작위 위치 순간이동 및 주기적 암흑 투사체 사격 |
-| **6 Stg** | **혼돈의 눈 (`Chaos Eye`)** | [`chaosEye.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/chaosEye.js) | 5,800 | 60 | 42 | 400 | X | 중심에서 나선형(Spiral)으로 끊임없이 붉은 탄막 방출 |
-| **8 Stg** | **불멸의 골렘 (`Ironclad Colossus`)** | [`ironcladColossus.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/ironcladColossus.js) | 9,800 | 70 | 52 | 600 | **면역** | 100% 넉백 무시. 4.5초 주기 대지 발구르기 지진파 광역 공격 |
-| **10 Stg** | **파멸의 군주 (`Lord of Doom`)** | [`lordOfDoom.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/lordOfDoom.js) | 18,000 | 110 | 60 | 1,000 | **면역** | 넉백 면역. 순간이동 + 조준 가속 돌진 + 전방위 8방향 탄막 복합 패턴 |
-| **12 Stg** | **심연의 리치 (`Abyss Lich`)** | [`abyssLich.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/abyssLich.js) | 26,000 | 95 | 68 | 1,600 | **면역** | 넉백 면역. 3갈래 한기 탄환 + 4초 주기 순간이동 직후 10방향 프로스트 노바 방출 |
-| **15 Stg** | **종말의 사신 (`Grim Reaper`)** | [`grimReaper.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/grimReaper.js) | 52,000 | 135 | 88 | 3,500 | **면역** | **중간 관문 보스**: 4방향 나선 암흑 참격 탄막 + 4.2초 주기 순간이동/14방향 절망 폭발 + 4초 주기 초고속 낫 돌진(속도 460) |
-| **18 Stg** | **공허의 지네 (`Void Wyrm`)** | [`voidWyrm.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/voidWyrm.js) | 75,000 | 145 | 96 | 5,000 | **면역** | **심연 관문 보스**: 지그재그 위빙 기동 + 3.2초 주기 5갈래 부채꼴 맹독 탄환 일제 사격 |
-| **20 Stg** | **혼돈의 절대신 (`Chaos Overlord`)** | [`chaosOverlord.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/chaosOverlord.js) | 68,000 | 125 | 110 | 8,000 | **면역** | **진 최종 보스**: 격파 시 대망의 게임 승리(VICTORY)! 16방향 혼돈 탄막 나선 방출 + 4초 주기 텔레포트 및 3연속 폭발 파동 + 전방위 레이저 빔 소환 |
-| **엔드게임** | **진 붉은 사신 (`The Red Death`)** | [`redDeath.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/redDeath.js) | 666,666 | 360 | 99,999 | 66,666 | **면역** | **엔드게임 재앙 보스**: 20스테이지 시간 만료 시 강림. 360 초고속 추격, 1방 즉사, 장애물 무시 관통 비행, 60초마다 추가 증원 |
+| **2 Stg** | **돌진 맹수 (`Dire Boar`)** | [`direBoar.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/direBoar.js) | 1,600 | 100 | 32 | 150 | X | 2초 주기로 플레이어 위치 조준 후 순간 가속 붉은 궤적 돌진 |
+| **4 Stg** | **그림자 마법사 (`Void Sorcerer`)** | [`voidSorcerer.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/voidSorcerer.js) | 3,400 | 80 | 38 | 250 | X | 2.25초 주기 무작위 순간이동 및 주기적 암흑 투사체 사격 |
+| **6 Stg** | **혼돈의 눈 (`Chaos Eye`)** | [`chaosEye.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/chaosEye.js) | 5,800 | 60 | 42 | 400 | X | 중심에서 나선형(Spiral)으로 2배 빠르게 붉은 탄막 방출 |
+| **8 Stg** | **불멸의 골렘 (`Ironclad Colossus`)** | [`ironcladColossus.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/ironcladColossus.js) | 9,800 | 70 | 52 | 600 | **면역** | 100% 넉백 무시. 2.25초 주기 대지 발구르기 지진파 광역 공격 |
+| **10 Stg** | **파멸의 군주 (`Lord of Doom`)** | [`lordOfDoom.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/lordOfDoom.js) | 18,000 | 110 | 60 | 1,000 | **면역** | 넉백 면역. 고속 순간이동 + 조준 가속 돌진 + 8방향 탄막 복합 패턴 |
+| **12 Stg** | **심연의 리치 (`Abyss Lich`)** | [`abyssLich.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/abyssLich.js) | 26,000 | 95 | 68 | 1,600 | **면역** | 넉백 면역. 3갈래 한기 탄환 + 2초 주기 순간이동 직후 10방향 프로스트 노바 방출 |
+| **15 Stg** | **종말의 사신 (`Grim Reaper`)** | [`grimReaper.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/grimReaper.js) | 52,000 | 135 | 88 | 3,500 | **면역** | **중간 관문 보스**: 4방향 나선 암흑 탄막 + 2.1초 주기 순간이동/14방향 절망 폭발 + 2초 주기 초고속 낫 돌진 |
+| **18 Stg** | **공허의 지네 (`Void Wyrm`)** | [`voidWyrm.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/voidWyrm.js) | 75,000 | 145 | 96 | 5,000 | **면역** | **심연 관문 보스**: 지그재그 위빙 기동 + 1.6초 주기 5갈래 부채꼴 맹독 탄환 난사 |
+| **20 Stg** | **혼돈의 절대신 (`Chaos Overlord`)** | [`chaosOverlord.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/chaosOverlord.js) | 68,000 | 125 | 110 | 8,000 | **면역** | **심연 전초 보스**: 16방향 혼돈 탄막 나선 방출 + 2초 주기 텔레포트 및 3연속 폭발 파동 + 전방위 레이저 빔 |
+| **25 Stg** | **심연의 군주 (`Abyss Sovereign`)** | `enemies.js` | 120,000 | 140 | 135 | 12,000 | **면역** | **진 최종 보스**: 격파 시 게임 승리(VICTORY)! 20방향 암흑 탄막 난사 + 2.2초 주기 심연 도약 강습 + 2.5초 주기 공허 레이저 빔 |
+| **엔드게임** | **진 붉은 사신 (`The Red Death`)** | [`redDeath.js`](file:///g:/내%20드라이브/vam/js/enemies/bosses/redDeath.js) | 666,666 | 360 | 99,999 | 66,666 | **면역** | **엔드게임 재앙 보스**: 25스테이지 시간 만료 시 강림. 360 초고속 추격, 1방 즉사, 장애물 무시 관통 비행, 60초마다 추가 증원 |
