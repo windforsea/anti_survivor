@@ -33,7 +33,7 @@ vam/
 ├── docs/                        # 도메인별 심층 명세 문서
 │   ├── character.md             # 6종 캐릭터(기사/마도사/암살자/해골성직자/궁수/워록), 16종 패시브, 영구 강화
 │   ├── weapons.md               # 14종 기본 무기 & 14대 진화 무기 상세 스펙 및 공격 공식
-│   ├── enemies.md               # 15종 일반 몬스터 & 11종 보스 상세 AI, 스탯, 패턴
+│   ├── enemies.md               # 15종 일반 몬스터 & 15종 보스 상세 AI, 스탯, 패턴
 │   ├── stages.md                # 25스테이지 웨이브 타임라인(총 18분 45초), 사신 강림
 │   ├── items.md                 # 필드 장애물(바위/나무/상자), 5종 드랍템, 경험치 보석
 │   ├── assets.md                # 94종 스프라이트 에셋 명세표
@@ -45,7 +45,7 @@ vam/
 │   ├── weaponData.js            # WEAPON_CONFIGS: 14종 기본 무기 및 14대 진화 무기 스펙 데이터 테이블
 │   ├── weapons.js               # WeaponManager 클래스: 14종 기본/14종 진화 무기 엔진, 투사체 및 장판 시뮬레이션
 │   ├── enemies.js               # EnemyManager, Enemy 클래스: 15종 일반 몬스터 스폰, AI 행동, 충돌 판정, 빙결/넉백
-│   ├── bosses.js                # BossEnemy 클래스: 11종 보스 스펙, 넉백 면역 및 전방위 탄막 패턴 AI
+│   ├── bosses.js                # BossEnemy 클래스: 15종 보스 스펙, 넉백 면역 및 전방위 탄막 패턴 AI
 │   ├── cards.js                 # CardManager 클래스: 철검(sword) 전직업 공용화 및 타직업 시그니처 5종 차단 카드 풀, 진화 합성
 │   ├── waveManager.js           # WaveManager 클래스: 25단계 스테이지 타이머, 스폰 제어, 사신 강림
 │   ├── obstacles.js             # ObstacleManager 클래스: 필드 장애물(바위, 나무, 상자) 충돌 및 파괴
@@ -79,7 +79,7 @@ vam/
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
 | [`js/enemies.js`](js/enemies.js) | `EnemyManager`, `Enemy`, `DamageNumber` | 15종 일반 몬스터 스폰/AI 행동/충돌 판정, 유령 무적/해골 부활 빙결 면역, 렉 없는 크리티컬 느낌표 표기 | `update(dt, player)`, `spawnEnemy(type)`, `checkCollisions()`, `draw()` |
-| [`js/bosses.js`](js/bosses.js) | `BossEnemy` | 11종 보스 스펙, 넉백 면역 판정, 11대 특수 탄막/돌진/소환/블랙홀 패턴 AI 및 체력바 렌더링 | `update(dt, player)`, `draw(ctx)`, `takeDamage(amount)` |
+| [`js/bosses.js`](js/bosses.js) | `BossEnemy` | 15종 보스 스펙, 넉백 면역 판정, 15대 특수 탄막/돌진/소환/블랙홀 패턴 AI 및 체력바 렌더링 | `update(dt, player)`, `draw(ctx)`, `takeDamage(amount)` |
 
 ### 2.4 레벨업 카드, 장애물 및 UI 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
@@ -98,7 +98,7 @@ vam/
   👉 [`js/player.js`](js/player.js) (`constructor`, `applyCharacterStats`, `triggerAttackAnim`)
 * **특정 기본/진화 무기의 기본 스펙, 데미지, 쿨타임을 수정할 때**:
   👉 [`js/weaponData.js`](js/weaponData.js) (스펙 정의) 및 [`js/weapons.js`](js/weapons.js) (공격 로직)
-* **보스 11종 탄막 패턴, 돌진, 소환, 넉백 면역을 수정할 때**:
+* **보스 15종 탄막 패턴, 돌진, 소환, 넉백 면역을 수정할 때**:
   👉 [`js/bosses.js`](js/bosses.js) (`BossEnemy`, `takeDamage`, `update`)
 * **일반 몬스터 빙결/넉백/스탯 및 크리티컬 느낌표(!)를 수정할 때**:
   👉 [`js/enemies.js`](js/enemies.js) (`DamageNumber`, `freeze`, `takeDamage`, `spawnEnemy`)

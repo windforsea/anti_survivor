@@ -116,7 +116,7 @@ class BossEnemy extends Enemy {
     } else if (bossStage === 18) {
       // 18스테이지 보스: 공허의 지네 (Void Wyrm)
       this.name = '공허의 지네 (Void Wyrm)';
-      this.maxHp = 75000;
+      this.maxHp = 48000;
       this.hp = this.maxHp;
       this.radius = 46;
       this.color = '#a855f7'; // 아케인 퍼플
@@ -135,7 +135,7 @@ class BossEnemy extends Enemy {
       this.radius = 52;
       this.color = '#e11d48'; // 절대 크림슨
       this.speed = 125;
-      this.damage = 120;
+      this.damage = 100;
       this.exp = 10000;
       this.knockbackImmune = true;
 
@@ -145,12 +145,12 @@ class BossEnemy extends Enemy {
     } else if (bossStage === 25) {
       // 25스테이지 진 최종 보스: 심연의 군주 (Abyss Sovereign)
       this.name = '심연의 군주 (Abyss Sovereign)';
-      this.maxHp = 95000;
+      this.maxHp = 88000;
       this.hp = this.maxHp;
       this.radius = 54;
       this.color = '#4c1d95'; // 깊은 심연 보라
       this.speed = 130;
-      this.damage = 135;
+      this.damage = 110;
       this.exp = 15000;
       this.knockbackImmune = true;
 
@@ -175,7 +175,7 @@ class BossEnemy extends Enemy {
     } else if (bossStage === 205) {
       // 월드 2 5스테이지 보스: 심해 대왕 문어 (Kraken Tentacle)
       this.name = '심해 대왕 문어 (Kraken)';
-      this.maxHp = 9500;
+      this.maxHp = 4200;
       this.hp = this.maxHp;
       this.radius = 34;
       this.color = '#0e7490';
@@ -190,7 +190,7 @@ class BossEnemy extends Enemy {
     } else if (bossStage === 210) {
       // 월드 2 10스테이지 보스: 강철 집게 타이탄 크랩 (Titan Crab)
       this.name = '강철 집게 타이탄 크랩 (Titan Crab)';
-      this.maxHp = 26000;
+      this.maxHp = 16000;
       this.hp = this.maxHp;
       this.radius = 38;
       this.color = '#f97316';
@@ -204,7 +204,7 @@ class BossEnemy extends Enemy {
     } else if (bossStage === 215) {
       // 월드 2 15스테이지 보스: 심해의 지배자 레비아탄 (Leviathan)
       this.name = '심해의 지배자 레비아탄 (Leviathan)';
-      this.maxHp = 68000;
+      this.maxHp = 38000;
       this.hp = this.maxHp;
       this.radius = 42;
       this.color = '#0284c7';
@@ -222,7 +222,7 @@ class BossEnemy extends Enemy {
     } else if (bossStage === 220) {
       // 월드 2 20스테이지 진 최종 보스: 심연의 고대신 다곤 (Abyssal God Dagon)
       this.name = '심연의 고대신 다곤 (Dagon)';
-      this.maxHp = 135000;
+      this.maxHp = 78000;
       this.hp = this.maxHp;
       this.radius = 48;
       this.color = '#0f766e';

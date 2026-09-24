@@ -29,14 +29,14 @@ class WaveManager {
       10: { mobs: ['gargoyle', 'cultist', 'assassin', 'golem'], interval: 0.24, batch: 5, hpScale: 8.50, bossTime: 12, bossStage: 10 },
       // --- 11~15 Hell 난이도 ---
       11: { mobs: ['bloodHound', 'assassin'], interval: 0.24, batch: 5, hpScale: 9.5, boss: null }, // [초고속 돌진 맹견 떼]
-      12: { mobs: ['darkMage', 'bloodHound', 'gargoyle'], interval: 0.22, batch: 5, hpScale: 12.0, bossTime: 22, bossStage: 12 }, // [원거리 마법 탄막 + 리치 보스]
+      12: { mobs: ['darkMage', 'bloodHound', 'gargoyle'], interval: 0.22, batch: 5, hpScale: 12.0, bossTime: 14, bossStage: 12 }, // [원거리 마법 탄막 + 리치 보스]
       13: { mobs: ['wraithSwarm', 'bat', 'ghost'], interval: 0.20, batch: 8, hpScale: 15.0, boss: null }, // [망령 군단 대습격 8마리 스웜]
       14: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm'], interval: 0.18, batch: 6, hpScale: 18.5, boss: null }, // [심연 타이탄 방벽 + 원거리 포격]
       15: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'golem'], interval: 0.15, batch: 7, hpScale: 23.0, bossTime: 12, bossStage: 15 }, // [사신 강림]
       // --- 16~20 Abyss Chaos 난이도 ---
       16: { mobs: ['darkMage', 'bloodHound', 'assassin', 'gargoyle'], interval: 0.16, batch: 6, hpScale: 20.0, boss: null },
       17: { mobs: ['wraithSwarm', 'ghost', 'cultist'], interval: 0.15, batch: 6, hpScale: 22.0, boss: null }, // [20s 망령 대군단 이벤트]
-      18: { mobs: ['abyssTitan', 'golem', 'bloodHound'], interval: 0.14, batch: 7, hpScale: 25.0, bossTime: 20, bossStage: 18 }, // [공허의 지네 보스]
+      18: { mobs: ['abyssTitan', 'golem', 'bloodHound'], interval: 0.14, batch: 7, hpScale: 25.0, bossTime: 12, bossStage: 18 }, // [공허의 지네 보스]
       19: { mobs: ['bat', 'slime', 'zombie', 'skeleton', 'goblin', 'ghost', 'gargoyle', 'cultist', 'assassin', 'golem', 'darkMage', 'bloodHound', 'wraithSwarm', 'abyssTitan'], interval: 0.12, batch: 7, hpScale: 28.0, boss: null }, // [전 몬스터 총출동 난전]
       20: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'assassin'], interval: 0.12, batch: 8, hpScale: 30.0, bossTime: 12, bossStage: 20 }, // [혼돈의 절대신]
       // --- 21~25 The Abyss Sovereign 난이도 (확장 구간) ---
@@ -53,22 +53,22 @@ class WaveManager {
       2: { mobs: ['jellyfish', 'hermitCrab'], interval: 0.7, batch: 2, hpScale: 1.15, boss: null },
       3: { mobs: ['hermitCrab', 'flyingFish', 'plankton'], interval: 0.6, batch: 3, hpScale: 1.6, boss: null },
       4: { mobs: ['flyingFish', 'seaLobster', 'hermitCrab'], interval: 0.55, batch: 6, hpScale: 1.85, boss: null },
-      5: { mobs: ['seaLobster', 'plankton', 'flyingFish'], interval: 0.5, batch: 3, hpScale: 2.3, bossTime: 18, bossStage: 205 }, // 1대 보스: 크라켄
+      5: { mobs: ['seaLobster', 'plankton', 'flyingFish'], interval: 0.5, batch: 3, hpScale: 2.3, bossTime: 14, bossStage: 205 }, // 1대 보스: 크라켄
       6: { mobs: ['seaLobster', 'stingray', 'hermitCrab'], interval: 0.45, batch: 4, hpScale: 3.4, boss: null },
       7: { mobs: ['stingray', 'coralGolem', 'seaLeech'], interval: 0.4, batch: 4, hpScale: 4.6, boss: null },
       8: { mobs: ['coralGolem', 'seaLeech', 'stingray'], interval: 0.35, batch: 8, hpScale: 5.5, boss: null },
       9: { mobs: ['coralGolem', 'seaLeech', 'anglerFish', 'ghostJelly'], interval: 0.28, batch: 5, hpScale: 6.8, boss: null },
-      10: { mobs: ['anglerFish', 'ghostJelly', 'coralGolem'], interval: 0.24, batch: 5, hpScale: 8.5, bossTime: 14, bossStage: 210 }, // 2대 보스: 타이탄 크랩
+      10: { mobs: ['anglerFish', 'ghostJelly', 'coralGolem'], interval: 0.24, batch: 5, hpScale: 8.5, bossTime: 12, bossStage: 210 }, // 2대 보스: 타이탄 크랩
       11: { mobs: ['deepShark', 'seaLeech', 'flyingFish'], interval: 0.24, batch: 5, hpScale: 10.0, boss: null },
       12: { mobs: ['deepShark', 'poisonRay', 'anglerFish'], interval: 0.22, batch: 5, hpScale: 12.5, boss: null },
       13: { mobs: ['poisonRay', 'deepShark', 'ghostJelly'], interval: 0.20, batch: 8, hpScale: 15.0, boss: null },
       14: { mobs: ['shadowEel', 'poisonRay', 'deepShark'], interval: 0.18, batch: 6, hpScale: 18.5, boss: null },
-      15: { mobs: ['shadowEel', 'deepShark', 'voidSeaSerpent'], interval: 0.16, batch: 6, hpScale: 23.0, bossTime: 14, bossStage: 215 }, // 3대 보스: 레비아탄
+      15: { mobs: ['shadowEel', 'deepShark', 'voidSeaSerpent'], interval: 0.16, batch: 6, hpScale: 23.0, bossTime: 12, bossStage: 215 }, // 3대 보스: 레비아탄
       16: { mobs: ['voidSeaSerpent', 'trilobite', 'shadowEel'], interval: 0.15, batch: 7, hpScale: 26.0, boss: null },
       17: { mobs: ['trilobite', 'voidSeaSerpent', 'stingray'], interval: 0.14, batch: 7, hpScale: 29.0, boss: null },
       18: { mobs: ['trilobite', 'voidSeaSerpent', 'deepShark', 'poisonRay'], interval: 0.13, batch: 7, hpScale: 33.0, boss: null },
       19: { mobs: ['plankton', 'jellyfish', 'hermitCrab', 'flyingFish', 'seaLobster', 'stingray', 'coralGolem', 'seaLeech', 'anglerFish', 'ghostJelly', 'deepShark', 'poisonRay', 'shadowEel', 'voidSeaSerpent', 'trilobite'], interval: 0.11, batch: 8, hpScale: 37.0, boss: null },
-      20: { mobs: ['voidSeaSerpent', 'trilobite', 'deepShark', 'shadowEel'], interval: 0.10, batch: 8, hpScale: 42.0, bossTime: 12, bossStage: 220 } // 최종 보스: 다곤
+      20: { mobs: ['voidSeaSerpent', 'trilobite', 'deepShark', 'shadowEel'], interval: 0.10, batch: 8, hpScale: 42.0, bossTime: 10, bossStage: 220 } // 최종 보스: 다곤
     };
 
     this.stageConfigs = this.world1StageConfigs;
