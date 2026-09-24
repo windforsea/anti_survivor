@@ -63,7 +63,7 @@ class Enemy {
     }
 
     this.hp -= amount;
-    this.hitFlashTimer = 0.12;
+    this.hitFlashTimer = 0.05;
 
     // 일반 데미지 표기는 프레임 최적화를 위해 생략하고, 크리티컬(치명타) 시에만 느낌표(!) 표기
     if (isCrit && window.game && window.game.damageNumbers) {
@@ -115,8 +115,10 @@ class Enemy {
   // 중독 효과 부여 (맹독 비수, 베놈 블리자드)
   poison(duration = 3.0, dps = 10) {
     if (this.isDead) return;
+    if (!this.poisonTimer || this.poisonTimer <= 0) this.poisonStacks = 0;
     this.poisonTimer = Math.max(this.poisonTimer || 0, duration);
     this.poisonDps = Math.max(this.poisonDps || 0, dps);
+    this.poisonStacks = Math.min(3, (this.poisonStacks || 0) + 1);
   }
 
   update(dt, player, allEnemies, enemyProjectiles) {
@@ -151,10 +153,11 @@ class Enemy {
       this.poisonTickTimer = (this.poisonTickTimer || 0) - dt;
       if (this.poisonTickTimer <= 0) {
         this.poisonTickTimer = 0.5;
-        const tickDmg = Math.max(1, Math.round((this.poisonDps || 10) * 0.5));
+        const stacks = this.poisonStacks || 1;
+        const tickDmg = Math.max(1, Math.round((this.poisonDps || 10) * 0.5 * stacks));
         this.takeDamage(tickDmg, null, 0, false);
         if (window.game) {
-          window.game.addParticles(this.x, this.y, '#22c55e', 3);
+          window.game.addParticles(this.x, this.y, '#22c55e', 2 + stacks);
         }
       }
     }
@@ -443,7 +446,8 @@ class Enemy {
     ctx.restore();
 
     ctx.save();
-    if (isRedSkeleton) {
+    if (!isHit) {
+      if (isRedSkeleton) {
       // 붉은 해골: 강렬한 핏빛 네온 아우라
       ctx.shadowColor = '#ef4444';
       ctx.shadowBlur = 18;
@@ -471,6 +475,7 @@ class Enemy {
     } else if (this.typeKey === 'deepShark' || this.typeKey === 'anglerFish') {
       ctx.shadowColor = '#0284c7';
       ctx.shadowBlur = 12;
+    }
     }
 
     // 다크 판타지 도트 스프라이트 렌더링

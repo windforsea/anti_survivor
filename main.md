@@ -97,7 +97,7 @@ vam/
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
 | [`js/enemyData.js`](js/enemyData.js) | `ENEMY_TYPES` | 월드 1(15종) 및 월드 2(15종) 일반 몬스터의 스탯, 색상, 스프라이트 매핑 테이블 | `ENEMY_TYPES.world1`, `ENEMY_TYPES.world2` |
-| [`js/enemies.js`](js/enemies.js) | `EnemyManager`, `Enemy` | 몬스터 스폰 주기 관리, AI 이동/추적, 플레이어 및 무기 충돌 판정, 상태이상(빙결/넉백) | `update(dt, player)`, `spawnEnemy(type)`, `checkCollisions()`, `draw()` |
+| [`js/enemies.js`](js/enemies.js) | `EnemyManager`, `Enemy` | 몬스터 스폰 주기 관리, AI 이동/추적, 플레이어 및 무기 충돌 판정, 상태이상(빙결/기절/감속/중독 3중첩) 및 피격 최적화 | `update(dt, player)`, `spawnEnemy(type)`, `checkCollisions()`, `draw()` |
 | [`js/bosses.js`](js/bosses.js) | `BossEnemy` | 15종 보스 스펙, 넉백 면역 판정, 15대 특수 탄막/돌진/소환/블랙홀 패턴 AI 및 체력바 렌더링 | `update(dt, player)`, `draw(ctx)`, `takeDamage(amount)` |
 | [`js/dropItems.js`](js/dropItems.js) | `DamageNumber`, `ExpGem`, `PickupItem`, `BossProjectile` | 몬스터 사망 드랍 보석, 필드 아이템(포션/폭탄/자석/치킨), 보스 탄막, 크리티컬 데미지 텍스트 | `DamageNumber`, `ExpGem`, `PickupItem`, `BossProjectile` |
 
@@ -155,6 +155,8 @@ vam/
   👉 `.agents/skills/anti-balance-simulator/` (`node .agents/skills/anti-balance-simulator/scripts/simulate_balance.js`)
 * **스킬 추천, 효율(ROI) 산출, 호출 통계 대시보드 조회 및 미사용 스킬을 정리할 때**:
   👉 `.agents/skills/anti-skill-lifecycle/` (`node .agents/skills/anti-skill-lifecycle/scripts/track_skill.js report`)
+* **상태이상(빙결, 기절, 중독 3중첩, 감속) 시스템 및 피격 최적화를 감사할 때**:
+  👉 `.agents/skills/anti-status-engine/` (`node .agents/skills/anti-status-engine/scripts/audit_status.js`)
 
 ---
 

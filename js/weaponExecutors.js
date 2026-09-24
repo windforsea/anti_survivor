@@ -388,6 +388,7 @@ WeaponManager.prototype.executeLightningStrike = function(w, enemies) {
             y: (e.y - ty) / (d || 1)
           };
           e.takeDamage(dmg, kbDir, 160);
+          if (Math.random() < 0.25) e.freeze(0.4);
         }
       }
 
@@ -476,6 +477,8 @@ WeaponManager.prototype.triggerTeslaStrike = function(p, hitEnemy, enemies) {
       this.game.addParticles(tx, ty, '#ffffff', 8);
     }
 
+    if (Math.random() < 0.25) hitEnemy.freeze(0.4);
+
     // 2. 주변 적 2~3마리 체인 라이트닝 감전
     let chained = 0;
     for (const other of enemies) {
@@ -483,6 +486,7 @@ WeaponManager.prototype.triggerTeslaStrike = function(p, hitEnemy, enemies) {
       const d = Math.hypot(other.x - tx, other.y - ty);
       if (d < 160) {
         other.takeDamage(Math.round(p.damage * 0.7), null, 80);
+        if (Math.random() < 0.25) other.freeze(0.4);
         if (this.game && this.game.addParticles) {
           this.game.addParticles(other.x, other.y, '#38bdf8', 6);
           this.game.addParticles(other.x, other.y, '#ffffff', 4);
@@ -670,7 +674,7 @@ WeaponManager.prototype.executeVenomBlizzard = function(w, enemies) {
 WeaponManager.prototype.triggerVenomBlizzardShards = function(x, y, area, damage) {
     sounds.playSlash();
     if (window.game) {
-      window.game.addParticles(x, y, '#10b981', 30);
+      window.game.addParticles(x, y, '#ffffff', 30);
       window.game.addParticles(x, y, '#38bdf8', 30);
     }
     const daggerSpeed = 520;
@@ -678,7 +682,7 @@ WeaponManager.prototype.triggerVenomBlizzardShards = function(x, y, area, damage
     for (let i = 0; i < 8; i++) {
       const angle = (i / 8) * Math.PI * 2;
       this.projectiles.push({
-        type: 'poisonDagger',
+        type: 'frostDagger',
         x: x,
         y: y,
         vx: Math.cos(angle) * daggerSpeed,
@@ -689,12 +693,42 @@ WeaponManager.prototype.triggerVenomBlizzardShards = function(x, y, area, damage
         pierce: 3,
         knockbackForce: 130,
         life: 0.70,
-        color: '#22c55e',
+        color: '#38bdf8',
         hitEnemies: new Set(),
         hitObstacles: new Set()
       });
     }
   }
+
+  // 섀도우 차크람 2단계: 피격 및 회귀 시 8방향 맹독 독화살(poisonShard) 폭쇄 방출
+WeaponManager.prototype.triggerShadowVortexShards = function(x, y, area, damage) {
+    sounds.playSlash();
+    if (window.game) {
+      window.game.addParticles(x, y, '#10b981', 25);
+      window.game.addParticles(x, y, '#6366f1', 25);
+    }
+    const shardSpeed = 520;
+    const shardDmg = Math.round(damage * 1.35);
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      this.projectiles.push({
+        type: 'poisonShard',
+        x: x,
+        y: y,
+        vx: Math.cos(angle) * shardSpeed,
+        vy: Math.sin(angle) * shardSpeed,
+        radius: 7 * area,
+        area: area,
+        damage: shardDmg,
+        pierce: 3,
+        knockbackForce: 130,
+        life: 0.70,
+        color: '#22c55e',
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  };
 
   // [신규 진화 7] 벼락검 (thunderBlade): 원의 4분의 1(90도) 전방 번개 대검 회전 베기 + 타겟 위치 벼락 낙뢰
 WeaponManager.prototype.executeThunderBlade = function(w, enemies) {
@@ -722,6 +756,7 @@ WeaponManager.prototype.executeThunderBlade = function(w, enemies) {
         if (diff <= halfArc) {
           const kbDir = { x: Math.cos(targetAngle), y: Math.sin(targetAngle) };
           enemy.takeDamage(dmg, kbDir, 170);
+          if (Math.random() < 0.30) enemy.freeze(0.5);
           if (!hitTarget) hitTarget = enemy;
         }
       }
@@ -738,6 +773,7 @@ WeaponManager.prototype.executeThunderBlade = function(w, enemies) {
         if (e.isDead) continue;
         if (Math.hypot(e.x - lx, e.y - ly) <= 75 * area + e.radius) {
           e.takeDamage(strikeDmg, null, 80);
+          if (Math.random() < 0.30) e.freeze(0.5);
         }
       }
       if (window.game) {

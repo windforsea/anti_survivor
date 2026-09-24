@@ -814,11 +814,19 @@ class WeaponManager {
           sounds.playHit();
 
           // 독비수 및 독 파편 적중 시 중독 부여
+          if (p.type === 'frostDagger') {
+            enemy.slowTimer = Math.max(enemy.slowTimer || 0, 1.0);
+            enemy.slowMult = 0.60;
+            if (window.game) {
+              window.game.addParticles(enemy.x, enemy.y, '#38bdf8', 6);
+              window.game.addParticles(enemy.x, enemy.y, '#ffffff', 4);
+            }
+          }
           if (p.type === 'poisonDagger' || p.type === 'poisonShard' || p.type === 'shadowVortex') {
             enemy.poison(3.0, Math.round(p.damage * 0.45));
           }
           if (p.type === 'shadowVortex') {
-            this.triggerVenomBlizzardShards(enemy.x, enemy.y, p.area, Math.round(p.damage * 0.5));
+            this.triggerShadowVortexShards(enemy.x, enemy.y, p.area, Math.round(p.damage * 0.5));
           }
 
           if (p.splashRadius > 0) {

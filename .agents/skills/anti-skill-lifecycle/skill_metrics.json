@@ -1,6 +1,6 @@
 {
-  "totalCalls": 16,
-  "lastUpdated": "2026-09-24T12:10:42.601Z",
+  "totalCalls": 17,
+  "lastUpdated": "2026-09-24T13:19:52.419Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -111,6 +111,18 @@
         {
           "timestamp": "2026-09-24T02:48:10.954Z",
           "reason": "스킬 업데이트 필요 여부 점검"
+        }
+      ]
+    },
+    "anti-status-engine": {
+      "name": "anti-status-engine",
+      "callCount": 1,
+      "createdAt": "2026-09-24T13:19:52.418Z",
+      "lastUsedAt": "2026-09-24T13:19:52.419Z",
+      "callHistory": [
+        {
+          "timestamp": "2026-09-24T13:19:52.419Z",
+          "reason": "상태이상 엔진 신설 및 무결성 감사"
         }
       ]
     }
