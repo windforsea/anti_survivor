@@ -2146,28 +2146,33 @@ class WeaponManager {
     sounds.playShoot();
     const dmg = this.getDamage(w);
     const area = this.getArea(w);
+    const count = this.getCount(w);
     const closest = this.getClosestEnemy(enemies);
     const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
     const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
     const speed = 580 * projSpeedBonus;
 
-    this.projectiles.push({
-      type: 'cycloneArrow',
-      x: this.player.x,
-      y: this.player.y,
-      vx: Math.cos(baseAngle) * speed,
-      vy: Math.sin(baseAngle) * speed,
-      radius: 14 * area,
-      area: area,
-      damage: dmg,
-      pierce: 999,
-      knockbackForce: 190,
-      life: 0.95,
-      color: '#34d399',
-      hitCooldowns: new Map(),
-      hitEnemies: new Set(),
-      hitObstacles: new Set()
-    });
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.12 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'cycloneArrow',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 14 * area,
+        area: area,
+        damage: dmg,
+        pierce: 999,
+        knockbackForce: 190,
+        life: 0.95,
+        color: '#34d399',
+        hitCooldowns: new Map(),
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
   }
 
   // [신규 진화 14] 황혼의 나선 (eclipseSpiral = 어둠의 보주 + 마법 화살): 자율 추적 사역마 3체 + 미사일 소환 (update 루프에서 상시 구동)
