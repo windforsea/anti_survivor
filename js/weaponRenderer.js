@@ -213,7 +213,26 @@ WeaponManager.prototype.draw = function(ctx) {
       ctx.restore();
     }
 
-    // 2. 근접 베기 렌더링: 투명 인디케이터(부채꼴/원형 선) 완전 제거 (순수 무기 휘두르기 스프라이트 연출만 표시)
+    // 2. 근접 베기 렌더링: 화염 기둥/인페르노 폭발 이펙트 연출
+    for (const s of this.slashes) {
+      if (s.isFlamePillar || s.isInferno) {
+        const prog = 1 - (s.life / s.maxLife);
+        const alpha = Math.min(1.0, s.life / 0.15);
+        ctx.save();
+        ctx.fillStyle = s.isInferno ? `rgba(239, 68, 68, ${0.6 * alpha})` : `rgba(249, 115, 22, ${0.5 * alpha})`;
+        ctx.shadowColor = s.isInferno ? '#dc2626' : '#f97316';
+        ctx.shadowBlur = 18;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius * Math.min(1.0, prog * 1.5), 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(254, 240, 138, ${0.8 * alpha})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius * 0.4 * Math.min(1.0, prog * 1.5), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
 
     // 3. 투사체 렌더링 (범위 증가 시 투사체 크기도 비례 확대)
     for (const p of this.projectiles) {
@@ -439,7 +458,7 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.strokeStyle = `rgba(52, 211, 153, ${0.45 * growthProg})`;
         ctx.lineWidth = 1.5 + growthProg * 1.5;
         ctx.beginPath();
-        ctx.arc(0, 0, (50 * projArea * growthProg) + (pulse * growthProg), 0, Math.PI * 2);
+        ctx.arc(0, 0, (75 * projArea * growthProg) + (pulse * growthProg), 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.rotate(angle);
@@ -516,6 +535,51 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.fillStyle = '#fdf4ff';
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius * 0.45, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'chakram' || p.type === 'shadowVortex') {
+        const isVortex = p.type === 'shadowVortex';
+        const r = p.radius;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotAngle || 0);
+        ctx.fillStyle = isVortex ? '#4c1d95' : '#475569';
+        ctx.shadowColor = isVortex ? '#a855f7' : '#94a3b8';
+        ctx.shadowBlur = isVortex ? 16 : 10;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = isVortex ? '#22c55e' : '#f8fafc';
+        for (let b = 0; b < 4; b++) {
+          ctx.rotate(Math.PI / 2);
+          ctx.fillRect(-r * 0.2, -r * 1.3, r * 0.4, r * 0.6);
+        }
+        ctx.restore();
+      } else if (p.type === 'holyCross' || p.type === 'divineJudgement') {
+        const isDivine = p.type === 'divineJudgement';
+        const r = p.radius;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotAngle || 0);
+        ctx.fillStyle = isDivine ? '#facc15' : '#fef08a';
+        ctx.shadowColor = isDivine ? '#eab308' : '#ffffff';
+        ctx.shadowBlur = isDivine ? 20 : 12;
+        ctx.fillRect(-r * 0.25, -r, r * 0.5, r * 2);
+        ctx.fillRect(-r * 0.75, -r * 0.4, r * 1.5, r * 0.5);
+        ctx.restore();
+      } else if (p.type === 'lavaPool') {
+        const alpha = Math.min(1.0, p.life / 0.5);
+        const pulse = Math.sin(Date.now() * 0.012) * 4;
+        ctx.fillStyle = `rgba(239, 68, 68, ${0.45 * alpha})`;
+        ctx.shadowColor = '#f97316';
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius + pulse, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(250, 204, 21, ${0.55 * alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius * 0.6, 0, Math.PI * 2);
         ctx.fill();
       } else {
         // 일반 투사체 (마법 화살, 산탄)

@@ -97,7 +97,7 @@ while ((match = evoPairRegex.exec(cardsContent)) !== null) {
     errorCount++;
   }
 }
-console.log(`✨ 14대 진화 무기 쌍 ${evoCount}종 정상 검증 완료.`);
+console.log(`✨ 17대 진화 무기 쌍 ${evoCount}종 정상 검증 완료.`);
 
 console.log(`\n========================================`);
 console.log(`검사 완료: 에러 ${errorCount}건, 경고 ${warningCount}건`);

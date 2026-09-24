@@ -371,7 +371,7 @@ class WeaponManager {
     if (eclipseSpiral) {
       const projSpeedMult = (1 + (eclipseSpiral.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
       const orbSpeed = 520 * projSpeedMult;
-      const count = 3; // 진화 시 항상 3체
+      const count = this.getCount(eclipseSpiral);
       const dmg = this.getDamage(eclipseSpiral);
       const orbRadius = 18 * this.getArea(eclipseSpiral);
       const hitInterval = 0.20; // 0.20초 초고속 다단히트
@@ -384,8 +384,8 @@ class WeaponManager {
           y: this.player.y + (Math.random() - 0.5) * 40,
           target: null,
           hitTimer: 0,
-          missileTimer: 0.6 * idx, // 3체 0.6초 교차 엇박자 발사
-          hoverAngle: (idx * Math.PI * 2) / 3,
+          missileTimer: (1.8 / Math.max(1, count)) * idx,
+          hoverAngle: (idx * Math.PI * 2) / Math.max(1, count),
           trail: []
         });
       }
@@ -461,8 +461,8 @@ class WeaponManager {
         } else {
           // 호위 선회
           fam.hoverAngle = (fam.hoverAngle || 0) + 3.0 * dt;
-          const targetX = this.player.x + Math.cos(fam.hoverAngle + (i * Math.PI * 2) / 3) * 60;
-          const targetY = this.player.y + Math.sin(fam.hoverAngle + (i * Math.PI * 2) / 3) * 60;
+          const targetX = this.player.x + Math.cos(fam.hoverAngle + (i * Math.PI * 2) / count) * 60;
+          const targetY = this.player.y + Math.sin(fam.hoverAngle + (i * Math.PI * 2) / count) * 60;
           const dx = targetX - fam.x;
           const dy = targetY - fam.y;
           const dist = Math.hypot(dx, dy);
@@ -660,7 +660,49 @@ class WeaponManager {
           p.exploded = true;
           this.triggerVenomBlizzardShards(p.x, p.y, p.area, p.damage);
         }
+        if (p.type === 'holyCross' && !p.exploded) {
+          p.exploded = true;
+          this.triggerHolyCrossBurst(p, enemies, obstacles);
+        }
+        if (p.type === 'divineJudgement' && !p.exploded) {
+          p.exploded = true;
+          this.triggerDivineJudgementStrike(p, enemies, obstacles);
+        }
         this.projectiles.splice(i, 1);
+        continue;
+      }
+
+      if (p.type === 'chakram' || p.type === 'shadowVortex' || p.type === 'holyCross' || p.type === 'divineJudgement') {
+        p.rotAngle = (p.rotAngle || 0) + dt * 26;
+      }
+
+      // 차크람 및 섀도우 차크람 부메랑 회귀
+      if ((p.type === 'chakram' || p.type === 'shadowVortex') && p.life <= (p.maxLife || 1.1) * 0.55) {
+        p.returning = true;
+        const dx = this.player.x - p.x;
+        const dy = this.player.y - p.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 28) {
+          this.projectiles.splice(i, 1);
+          continue;
+        }
+        const retSpd = (p.initialSpeed || 520) * 1.15;
+        p.vx = (dx / dist) * retSpd;
+        p.vy = (dy / dist) * retSpd;
+      }
+
+      // 인페르노 용암 장판 (lavaPool) 지속 도트 데미지
+      if (p.type === 'lavaPool') {
+        p.tickTimer = (p.tickTimer || 0) - dt;
+        if (p.tickTimer <= 0) {
+          p.tickTimer = 0.40;
+          for (const enemy of enemies) {
+            if (enemy.isDead) continue;
+            if (Math.hypot(enemy.x - p.x, enemy.y - p.y) <= p.radius + enemy.radius) {
+              enemy.takeDamage(p.damage, null, 0);
+            }
+          }
+        }
         continue;
       }
 
@@ -700,7 +742,7 @@ class WeaponManager {
         if (elapsed > safeDelay) {
           growthProg = Math.min(1.0, (elapsed - safeDelay) / growthDuration);
         }
-        const maxPullRadius = 150 * (p.area || 1.0);
+        const maxPullRadius = 225 * (p.area || 1.0);
         const pullRadius = maxPullRadius * growthProg;
         p.currentPullRadius = pullRadius;
         p.growthProg = growthProg;
@@ -709,7 +751,7 @@ class WeaponManager {
           if (e.isDead) continue;
           const ed = Math.hypot(p.x - e.x, p.y - e.y);
           if (ed < pullRadius && ed > 10) {
-            const pullForce = (1 - ed / pullRadius) * 240 * dt;
+            const pullForce = (1 - ed / pullRadius) * 320 * dt;
             e.x += ((p.x - e.x) / ed) * pullForce;
             e.y += ((p.y - e.y) / ed) * pullForce;
           }
@@ -772,8 +814,11 @@ class WeaponManager {
           sounds.playHit();
 
           // 독비수 및 독 파편 적중 시 중독 부여
-          if (p.type === 'poisonDagger' || p.type === 'poisonShard') {
+          if (p.type === 'poisonDagger' || p.type === 'poisonShard' || p.type === 'shadowVortex') {
             enemy.poison(3.0, Math.round(p.damage * 0.45));
+          }
+          if (p.type === 'shadowVortex') {
+            this.triggerVenomBlizzardShards(enemy.x, enemy.y, p.area, Math.round(p.damage * 0.5));
           }
 
           if (p.splashRadius > 0) {
@@ -1180,6 +1225,35 @@ class WeaponManager {
         this.executeEclipseSpiral(w, enemies);
         break;
       }
+
+      case 'flamePillar': {
+        this.executeFlamePillar(w, enemies);
+        break;
+      }
+
+      case 'chakram': {
+        this.executeChakram(w, enemies);
+        break;
+      }
+
+      case 'holyCross': {
+        this.executeHolyCross(w, enemies);
+        break;
+      }
+
+      case 'infernoCataclysm': {
+        this.executeInfernoCataclysm(w, enemies);
+        break;
+      }
+
+      case 'shadowVortex': {
+        this.executeShadowVortex(w, enemies);
+        break;
+      }
+
+      case 'divineJudgement': {
+        this.executeDivineJudgement(w, enemies);
+      }
     }
   }
 
@@ -1209,5 +1283,45 @@ class WeaponManager {
     }
     if (candidates.length === 0) return null;
     return candidates[Math.floor(Math.random() * candidates.length)];
+  }
+
+  triggerHolyCrossBurst(p, enemies, obstacles) {
+    sounds.playMagic();
+    const area = p.area || 1.0;
+    const burstRadius = 80 * area;
+    for (const enemy of enemies) {
+      if (enemy.isDead) continue;
+      if (Math.hypot(enemy.x - p.x, enemy.y - p.y) <= burstRadius + enemy.radius) {
+        enemy.takeDamage(Math.round(p.damage * 0.9), null, 100);
+      }
+    }
+    if (window.game && window.game.addParticles) {
+      window.game.addParticles(p.x, p.y, '#fef08a', 16);
+      window.game.addParticles(p.x, p.y, '#ffffff', 8);
+    }
+  }
+
+  triggerDivineJudgementStrike(p, enemies, obstacles) {
+    sounds.playThunder();
+    const area = p.area || 1.0;
+    const strikeRadius = 110 * area;
+    const strikeDmg = Math.round(p.damage * 1.4);
+
+    for (const enemy of enemies) {
+      if (enemy.isDead) continue;
+      const dist = Math.hypot(enemy.x - p.x, enemy.y - p.y);
+      if (dist <= strikeRadius + enemy.radius) {
+        enemy.takeDamage(strikeDmg, null, 140);
+        // 30% 확률로 0.5초 기절(스턴)
+        if (Math.random() < 0.30) {
+          enemy.freeze(0.5);
+        }
+      }
+    }
+    if (window.game && window.game.addParticles) {
+      window.game.addParticles(p.x, p.y, '#facc15', 24);
+      window.game.addParticles(p.x, p.y, '#ffffff', 14);
+      window.game.addParticles(p.x, p.y, '#38bdf8', 10);
+    }
   }
 }

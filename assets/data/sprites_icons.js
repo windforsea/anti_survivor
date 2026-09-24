@@ -927,5 +927,125 @@ module.exports = {
     ".KK..KDDMMK..KK.",
     "KK....KKKK....KK",
     "K..............K"
+  ],
+  // ================= 신규 무기 및 진화 무기 아이콘 6종 =================
+  // 1. 화염 기둥 (flamePillar - 마도사 고유)
+  icon_flamepillar: [
+    "......KYYK......",
+    ".....KYYYYK.....",
+    "....KYYCCYYK....",
+    "...KYCCCCCCYK...",
+    "...KCCCRRCCCK...",
+    "..KCCRRRRCCK....",
+    "..KCCRRRRCCK....",
+    "..KCCCRRCCCK....",
+    "...KYCCCCCCYK...",
+    "...KYYCCCCYYK...",
+    "....KYYEEYYK....",
+    "....KEEEEEEK....",
+    "...KEEEEEEEEK...",
+    "..KEEKKKKKKEEK..",
+    ".KKKK......KKKK.",
+    "................"
+  ],
+
+  // 2. 차크람 (chakram - 암살자 고유)
+  icon_chakram: [
+    "......KKKK......",
+    "...KKKLLLLKKK...",
+    "..KLMMWWWWMMLLK.",
+    ".KLMWWKKKKWWMLK.",
+    ".KLMWKK..KKWMLK.",
+    "KLMWK......KWMLK",
+    "KLMWK......KWMLK",
+    "KLMWK......KWMLK",
+    "KLMWK......KWMLK",
+    "KLMWK......KWMLK",
+    ".KLMWKK..KKWMLK.",
+    ".KLMWWKKKKWWMLK.",
+    "..KLMMWWWWMMLLK.",
+    "...KKKLLLLKKK...",
+    "......KKKK......",
+    "................"
+  ],
+
+  // 3. 십자가 (holyCross - 성직자 고유)
+  icon_holycross: [
+    "......KWWK......",
+    "......KWWK......",
+    "......KYYK......",
+    "......KYYK......",
+    "..KKKKKYYKKKKK..",
+    ".KWWYYYYYYYYWWK.",
+    ".KWWYYYYYYYYWWK.",
+    "..KKKKKYYKKKKK..",
+    "......KYYK......",
+    "......KYYK......",
+    "......KYYK......",
+    "......KYYK......",
+    "......KYYK......",
+    ".....KKYYKK.....",
+    "....KGGYYGGK....",
+    ".....KKKKKK....."
+  ],
+
+  // 4. 인페르노 (infernoCataclysm - 진화)
+  icon_infernocataclysm: [
+    ".....KYYYYK.....",
+    "....KYYWWYYK....",
+    "...KYWWCCWWYK...",
+    "...KCCCCRRCCK...",
+    "..KCCCRRRRCCCK..",
+    "..KCRRRRRRRRCK..",
+    ".KCCRRRRRRRRCCK.",
+    ".KCCCRRRRRRCCCK.",
+    "..KCCCCRRCCCCK..",
+    "...KYCCCCCCYK...",
+    "...KYYEEYYK.....",
+    "..KEEEEEEEEEEK..",
+    ".KEERRRRRRRREEK.",
+    "KEERRRRRRRRRREEK",
+    ".KKKKKKKKKKKKKK.",
+    "................"
+  ],
+
+  // 5. 섀도우 차크람 (shadowVortex - 진화)
+  icon_shadowvortex: [
+    "......KKKK......",
+    "...KKKJJJJKKK...",
+    "..KJJAAWWAAJJK..",
+    ".KJAVVKKKKVVAJK.",
+    ".KJAPKK..KKPAJK.",
+    "KJAPK......KPAJK",
+    "KJAPK......KPAJK",
+    "KJAPK......KPAJK",
+    "KJAPK......KPAJK",
+    "KJAPK......KPAJK",
+    ".KJAPKK..KKPAJK.",
+    ".KJAVVKKKKVVAJK.",
+    "..KJJAAWWAAJJK..",
+    "...KKKJJJJKKK...",
+    "......KKKK......",
+    "................"
+  ],
+
+  // 6. 저지먼트 (divineJudgement - 진화)
+  icon_divinejudgement: [
+    ".....KKWWKK.....",
+    "....KTWWWWTTK...",
+    ".....KKWWKK.....",
+    "......KYYK......",
+    "..KKKKKYYKKKKK..",
+    ".KTWWYYYYYYYYWWK",
+    ".KTWWYYYYYYYYWWK",
+    "..KKKKKYYKKKKK..",
+    "......KYYK......",
+    "......KYYK......",
+    ".....KTWWTT.....",
+    "......KYYK......",
+    "......KYYK......",
+    ".....KKYYKK.....",
+    "....KGGYYGGK....",
+    ".....KKKKKK....."
   ]
 };

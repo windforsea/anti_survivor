@@ -14,7 +14,7 @@ vam/
 ├── style.css                    # 다크 판타지 네온 레트로 UI 스타일시트
 ├── server.js                    # Node.js 경량 로컬 정적 서빙 & 랭킹 API 서버 (내장 모듈만 사용)
 ├── start_server.bat             # 원클릭 서버 실행 배치 파일
-├── generate_assets.js           # 순수 Node.js 113종 픽셀아트 PNG 스프라이트 빌더 (경량화 메인)
+├── generate_assets.js           # 순수 Node.js 119종 픽셀아트 PNG 스프라이트 빌더 (경량화 메인)
 ├── GEMINI.md                    # [루트] Antigravity 네이티브 프로젝트 표준 작업 규칙
 ├── AGENTS.md                    # [루트] 멀티 에이전트 공용 표준 지침
 ├── main.md                      # [본 문서] AI 아키텍처 인덱스 및 Fast Lookup 가이드
@@ -33,29 +33,29 @@ vam/
 │
 ├── docs/                        # 도메인별 심층 명세 문서
 │   ├── character.md             # 6종 캐릭터(기사/마도사/암살자/해골성직자/궁수/워록), 16종 패시브, 영구 강화
-│   ├── weapons.md               # 14종 기본 무기 & 14대 진화 무기 상세 스펙 및 공격 공식
+│   ├── weapons.md               # 17종 기본 무기 & 17대 진화 무기 상세 스펙 및 공격 공식
 │   ├── enemies.md               # 15종 일반 몬스터 & 15종 보스 상세 AI, 스탯, 패턴
 │   ├── stages.md                # 25스테이지 웨이브 타임라인(총 18분 45초), 사신 강림
 │   ├── items.md                 # 필드 장애물(바위/나무/상자), 5종 드랍템, 경험치 보석
-│   ├── assets.md                # 113종 스프라이트 에셋 명세표
+│   ├── assets.md                # 119종 스프라이트 에셋 명세표
 │   └── system.md                # FNV-1a 보안 체크섬, 무결성 검증
 │
 ├── assets/                      # 게임 에셋 데이터 및 생성된 스프라이트 이미지
-│   ├── data/                    # 113종 픽셀아트 도트 매트릭스 분할 데이터 (Node.js/CJS)
+│   ├── data/                    # 119종 픽셀아트 도트 매트릭스 분할 데이터 (Node.js/CJS)
 │   │   ├── sprites_heroes.js    # 영웅 6종 도트 매트릭스
 │   │   ├── sprites_enemies_w1.js# 월드 1 몬스터 15종 도트 매트릭스
 │   │   ├── sprites_enemies_w2.js# 월드 2 몬스터 15종 도트 매트릭스
 │   │   ├── sprites_bosses.js    # 보스 13종 도트 매트릭스
-│   │   ├── sprites_icons.js     # 무기/아이템/패시브 아이콘 48종 도트 매트릭스
+│   │   ├── sprites_icons.js     # 무기/아이템/패시브 아이콘 54종 도트 매트릭스
 │   │   └── sprites_misc.js      # 투사체, 이펙트, 기타 오브젝트 16종 도트 매트릭스
-│   └── sprites/                 # 113종 빌드된 픽셀아트 스프라이트 PNG 파일 디렉토리
+│   └── sprites/                 # 119종 빌드된 픽셀아트 스프라이트 PNG 파일 디렉토리
 │
 └── js/                          # 🚀 고속 바닐라 JS 코어 런타임 (모듈화 구조)
     ├── main.js                  # Game 클래스: 메인 루프, 입력 이벤트, 렌더링 파이프라인
     ├── player.js                # Player 클래스: 이동, 조작, 피격 판정, 레벨업/경험치 곡선, 공격 모션
-    ├── weaponData.js            # WEAPON_CONFIGS: 14종 기본 무기 및 14대 진화 무기 스펙 데이터 테이블
+    ├── weaponData.js            # WEAPON_CONFIGS: 17종 기본 무기 및 17대 진화 무기 스펙 데이터 테이블
     ├── weapons.js               # WeaponManager 클래스: 코어 스탯 계산, 쿨다운 관리, 무기 레벨업 제어
-    ├── weaponExecutors.js       # WeaponManager 발사 확장: 28종 기본/진화 무기별 발사 및 투사체 생성 로직
+    ├── weaponExecutors.js       # WeaponManager 발사 확장: 34종 기본/진화 무기별 발사 및 투사체 생성 로직
     ├── weaponRenderer.js        # WeaponManager 렌더러 확장: 투사체 및 무기 이펙트 캔버스 렌더링
     ├── enemyData.js             # ENEMY_TYPES: 월드 1(15종) 및 월드 2(15종) 일반 몬스터 스펙 테이블
     ├── enemies.js               # EnemyManager, Enemy 클래스: 몬스터 스폰, AI 행동, 충돌 판정, 빙결/넉백
@@ -66,7 +66,7 @@ vam/
     ├── obstacles.js             # ObstacleManager 클래스: 필드 장애물(바위, 나무, 상자) 충돌 및 파괴
     ├── saveManager.js           # SaveManager 클래스: FNV-1a 해시 체크섬 및 로컬 스토리지 입출력
     ├── audio.js                 # SoundEngine 클래스: Web Audio API 8비트 레트로 신디사이저 사운드
-    ├── assets.js                # AssetManager 클래스: 113종 스프라이트 프리로더 및 매니페스트
+    ├── assets.js                # AssetManager 클래스: 119종 스프라이트 프리로더 및 매니페스트
     ├── ui.js                    # UIManager 클래스: HUD 렌더링, 공용 모달 제어, 전체화면
     ├── lobby.js                 # UIManager 로비 확장: 로비 화면, 영구 강화 상점, 캐릭터/월드 선택
     ├── ranking.js               # UIManager 랭킹 확장: 명예의 전당 랭킹 모달 렌더링
@@ -88,10 +88,10 @@ vam/
 ### 2.2 무기 및 전투 시뮬레이션 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
-| [`js/weaponData.js`](js/weaponData.js) | `WEAPON_CONFIGS` | 14종 기본 무기 및 14대 2단계 진화 무기 기본 스펙, 쿨다운, 피해량, 범위 데이터 정의 | `sword`, `axe`, `slayerBladeStorm`, `eclipseSpiral` 등 28종 스펙 |
+| [`js/weaponData.js`](js/weaponData.js) | `WEAPON_CONFIGS` | 17종 기본 무기 및 17대 2단계 진화 무기 기본 스펙, 쿨다운, 피해량, 범위 데이터 정의 | `sword`, `axe`, `slayerBladeStorm`, `eclipseSpiral`, `divineJudgement` 등 34종 스펙 |
 | [`js/weapons.js`](js/weapons.js) | `WeaponManager` | 무기 코어: 스탯 계산 공식(getCount, getDamage, getArea 등), 쿨다운 관리, 레벨업 | `update(dt, enemies)`, `fireWeapon(w, enemies)`, `getCooldown(w)`, `getDamage(w)` |
-| [`js/weaponExecutors.js`](js/weaponExecutors.js) | `WeaponManager` 프로토타입 확장 | 28종 기본/진화 무기별 실제 발사 로직 및 투사체 인스턴스 생성 | `executeSword()`, `executeAxe()`, `executeEclipseSpiral()` 등 28종 실행기 |
-| [`js/weaponRenderer.js`](js/weaponRenderer.js) | `WeaponManager` 프로토타입 확장 | 28종 무기의 캔버스 2D 투사체 및 특수 이펙트 렌더링 | `drawWeapons(ctx, player)` |
+| [`js/weaponExecutors.js`](js/weaponExecutors.js) | `WeaponManager` 프로토타입 확장 | 34종 기본/진화 무기별 실제 발사 로직 및 투사체 인스턴스 생성 | `executeSword()`, `executeAxe()`, `executeEclipseSpiral()`, `executeDivineJudgement()` 등 34종 실행기 |
+| [`js/weaponRenderer.js`](js/weaponRenderer.js) | `WeaponManager` 프로토타입 확장 | 34종 무기의 캔버스 2D 투사체 및 특수 이펙트 렌더링 | `drawWeapons(ctx, player)` |
 
 ### 2.3 몬스터 및 보스 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
@@ -104,7 +104,7 @@ vam/
 ### 2.4 레벨업 카드, 장애물 및 UI 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
-| [`js/cards.js`](js/cards.js) | `CardManager` | 철검(sword) 전직업 공용화, 타 직업 시그니처 무기 5종 차단(Blacklist), 14대 진화 합성 힌트 및 카드 추첨 | `generateCards()`, `generateStartingWeaponCards()`, `getForbiddenWeaponsForClass()` |
+| [`js/cards.js`](js/cards.js) | `CardManager` | 철검(sword) 전직업 공용화, 타 직업 시그니처 무기 차단(Blacklist), 17대 진화 합성 힌트 및 카드 추첨 | `generateCards()`, `generateStartingWeaponCards()`, `getForbiddenWeaponsForClass()` |
 | [`js/obstacles.js`](js/obstacles.js) | `ObstacleManager` | 3종 필드 장애물(바위, 고대나무, 나무상자) 배치 및 충돌/파괴/아이템 드랍 | `update(dt, player)`, `draw(ctx, player)` |
 | [`js/ui.js`](js/ui.js) | `UIManager` | HUD(체력, 경험치, 타이머), 레벨업 카드 모달, 일시정지 창, 게임오버/승리 모달, 전체화면 | `showLevelUpModal(cards)`, `showGameOverModal()`, `togglePause()`, `initFullscreen()` |
 | [`js/lobby.js`](js/lobby.js) | `UIManager` 프로토타입 확장 | 로비 화면 모달, 영구 강화 상점(골드 구매/환불), 캐릭터 및 월드 선택 창 | `renderPermanentShop()`, `openCharacterSelectModal()`, `selectWorld()` |
@@ -122,7 +122,7 @@ vam/
 * **특정 기본/진화 무기의 기본 스펙(데미지, 쿨다운, 범위 등)을 수정할 때**:
   👉 [`js/weaponData.js`](js/weaponData.js) (스펙 정의) 및 [`js/weapons.js`](js/weapons.js) (공식 계산)
 * **특정 기본/진화 무기의 발사 형태나 투사체 동작을 수정할 때**:
-  👉 [`js/weaponExecutors.js`](js/weaponExecutors.js) (28종 무기 발사 로직)
+  👉 [`js/weaponExecutors.js`](js/weaponExecutors.js) (34종 무기 발사 로직)
 * **무기 투사체나 공격 이펙트의 캔버스 그래픽을 수정할 때**:
   👉 [`js/weaponRenderer.js`](js/weaponRenderer.js) (`drawWeapons`)
 * **일반 몬스터의 스펙(HP, 속도, 공격력, 색상)을 수정할 때**:

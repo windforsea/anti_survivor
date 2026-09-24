@@ -500,6 +500,114 @@ const WEAPON_CONFIGS = {
         cooldownTimer: 0
       },
 
+      // [기본 무기 15] 화염 기둥 (flamePillar - 화염 마도사 시그니처)
+      flamePillar: {
+        id: 'flamePillar',
+        name: '화염 기둥',
+        icon: '🌋🔥',
+        iconSprite: 'icon_flamepillar',
+        desc: '가장 가까운 적 발밑에서 거대한 지옥 화염 기둥을 솟구치게 하여 폭발 피해를 입힙니다.',
+        baseCooldown: 1.10,
+        baseDamage: 44,
+        baseCount: 1,
+        baseArea: 1.0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [기본 무기 16] 차크람 (chakram - 그림자 암살자 시그니처)
+      chakram: {
+        id: 'chakram',
+        name: '차크람',
+        icon: '💫🗡️',
+        iconSprite: 'icon_chakram',
+        desc: '날카로운 톱날 원반을 던져 적들을 관통한 뒤 플레이어에게 되돌아오며 2중 피해를 입힙니다.',
+        baseCooldown: 0.80,
+        baseDamage: 34,
+        baseCount: 1,
+        baseArea: 1.0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [기본 무기 17] 십자가 (holyCross - 해골 성직자 시그니처)
+      holyCross: {
+        id: 'holyCross',
+        name: '십자가',
+        icon: '✝️✨',
+        iconSprite: 'icon_holycross',
+        desc: '신성한 빛의 십자가를 투척하여 비행 후 상하좌우 4방향으로 십자 성광을 발산하며 폭발합니다.',
+        baseCooldown: 1.00,
+        baseDamage: 38,
+        baseCount: 1,
+        baseArea: 1.0,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 15] 인페르노 (infernoCataclysm = 화염 기둥 5Lv + 불 지팡이 5Lv)
+      infernoCataclysm: {
+        id: 'infernoCataclysm',
+        name: '인페르노',
+        icon: '🌋☄️',
+        iconSprite: 'icon_infernocataclysm',
+        desc: '화염 기둥과 불 지팡이가 융합하여 적 위치에 4개의 초대형 화염 분화구를 연속 폭발시키고 헬파이어 용암 장판을 남깁니다.',
+        baseCooldown: 1.05,
+        baseDamage: 65,
+        baseCount: 4,
+        baseArea: 1.30,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 16] 섀도우 차크람 (shadowVortex = 차크람 5Lv + 독비수 5Lv)
+      shadowVortex: {
+        id: 'shadowVortex',
+        name: '섀도우 차크람',
+        icon: '🌀🗡️',
+        iconSprite: 'icon_shadowvortex',
+        desc: '차크람과 독비수가 융합하여 초대형 암흑 맹독 차크람이 2회 왕복 회귀하며 적중 시 6방향 맹독 파편을 사방 폭쇄합니다.',
+        baseCooldown: 0.75,
+        baseDamage: 48,
+        baseCount: 1,
+        baseArea: 1.25,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
+      // [신규 진화 17] 저지먼트 (divineJudgement = 십자가 5Lv + 성수 5Lv)
+      divineJudgement: {
+        id: 'divineJudgement',
+        name: '저지먼트',
+        icon: '✝️⚡',
+        iconSprite: 'icon_divinejudgement',
+        desc: '십자가와 성수가 융합하여 거대 대천사 십자가를 투척하고, 착탄 시 심판의 성광 기둥 낙뢰와 함께 30% 확률로 0.5초 기절시킵니다.',
+        baseCooldown: 1.15,
+        baseDamage: 58,
+        baseCount: 1,
+        baseArea: 1.35,
+        cooldownLevel: 0,
+        damageLevel: 0,
+        countLevel: 0,
+        areaLevel: 0,
+        cooldownTimer: 0
+      },
+
       // 이전 진화 무기 호환용
       spinningAxe: { id: 'slayerBladeStorm' },
       bladeWhip: { id: 'morningstarTempest' },

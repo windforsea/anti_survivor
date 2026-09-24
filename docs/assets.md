@@ -1,6 +1,6 @@
 # 🎨 에셋 및 스프라이트 명세 (Assets & Sprites)
 
-Anti Survivors의 113종 다크 판타지 도트 픽셀 아트 스프라이트 리소스 및 생성기(`generate_assets.js`) 가이드입니다.
+Anti Survivors의 119종 다크 판타지 도트 픽셀 아트 스프라이트 리소스 및 생성기(`generate_assets.js`) 가이드입니다.
 
 ---
 
@@ -13,16 +13,16 @@ assets/sprites/
 ├── 👤 플레이어 (6종)
 ├── 👾 일반 몬스터 (30종: 월드 1 15종 + 월드 2 15종) + 분열체 (1종)
 ├── 👑 보스 몬스터 (13종: 월드 1 9종 + 월드 2 4종)
-├── 🎴 무기/패시브 카드 아이콘 (48종)
+├── 🎴 무기/패시브 카드 아이콘 (54종)
 ├── 📦 필드 아이템 & 장애물 (6종)
 ├── 💥 공격 이펙트 & 투사체 (8종)
 └── 🧱 배경 지형 타일 (1종)
-총 113종 스프라이트
+총 119종 스프라이트
 ```
 
 ---
 
-## 📑 113종 스프라이트 분류 명세표
+## 📑 119종 스프라이트 분류 명세표
 
 ### 1. 플레이어 & 몬스터 스프라이트 (27종)
 
@@ -31,6 +31,9 @@ assets/sprites/
 | `player.png` | 플레이어: 방랑 기사 | 망토와 강철 갑옷을 두른 균형형 전사 |
 | `player_mage.png` | 플레이어: 화염 마도사 | 진홍빛 로브와 마법봉을 든 원소 마도학자 |
 | `player_assassin.png` | 플레이어: 그림자 암살자 | 흑단 가면에 쌍단검을 든 고속 암살자 |
+| `player_cleric.png` | 플레이어: 해골 성직자 | 보랏빛 사제 로브와 불사의 해골 성직자 |
+| `player_sylph.png` | 플레이어: 바람의 궁수 | 비취빛 망토와 초고속 바람 활을 든 명사수 |
+| `player_malakar.png` | 플레이어: 심연의 워록 | 암흑 오라와 공전하는 보주를 다루는 흑마법사 |
 | `bat.png` | 박쥐 | 보랏빛 날개를 펄럭이는 공중 박쥐 |
 | `slime.png` | 슬라임 | 녹색 반투명 젤리형 지상 몬스터 |
 | `miniSlime.png` | 아기 슬라임 | 슬라임 처치 시 2마리로 분열되는 소형체 |
@@ -77,9 +80,9 @@ assets/sprites/
 
 ---
 
-### 2. 카드 및 인벤토리 아이콘 스프라이트 (38종)
+### 2. 카드 및 인벤토리 아이콘 스프라이트 (54종)
 
-#### [기본 무기 아이콘]
+#### [기본 무기 아이콘 17종]
 - `icon_sword.png`: 철검
 - `icon_axe.png`: 도끼
 - `icon_whip.png`: 채찍
@@ -90,21 +93,32 @@ assets/sprites/
 - `icon_sanctuary.png`: 성역
 - `icon_lightning.png`: 번개 반지
 - `icon_firewand.png`: 화염 지팡이
-- `icon_poisondagger.png`: 맹독 비수 (신규)
-- `icon_frostorb.png`: 빙결 보주 (신규)
-- `icon_dagger.png`: 투척 단검 (예비/특수)
-- `icon_acid.png`: 부식성 산액 (예비/특수)
-- `icon_holyshotgun.png`: 성스러운 산탄 (예비/특수)
+- `icon_poisondagger.png`: 맹독 비수
+- `icon_frostorb.png`: 빙결 보주
+- `icon_windbow.png`: 바람 활
+- `icon_shadoworb.png`: 어둠의 보주
+- `icon_flamepillar.png`: 화염 기둥 (신규)
+- `icon_chakram.png`: 차크람 (신규)
+- `icon_holycross.png`: 십자가 (신규)
 
-#### [진화 무기 아이콘]
-- `icon_heavenlysanctuary.png`: 천상의 성역 (성역 + 성수)
-- `icon_morningstartempest.png`: 모닝스타 선풍 (채찍 + 표창)
-- `icon_apocalypsecomet.png`: 멸망의 혜성 (화염 지팡이 + 마법 화살)
-- `icon_slayerbladestorm.png`: 학살자의 폭풍검 (철검 + 도끼)
-- `icon_teslashotgun.png`: 테슬라 뇌전포 (산탄 총포 + 번개 반지)
-- `icon_venomblizzard.png`: 베놈 블리자드 (맹독 비수 + 빙결 보주, 신규)
-- `icon_arcanesanctuary.png`: 비전 성역 (파생/바리에이션)
-- `icon_plasmatempest.png`: 플라즈마 선풍 (파생/바리에이션)
+#### [진화 무기 아이콘 17종]
+- `icon_heavenlysanctuary.png`: 생츄어리 (성역 + 성수)
+- `icon_morningstartempest.png`: 모닝스타 (채찍 + 표창)
+- `icon_apocalypsecomet.png`: 메테오 (불 지팡이 + 마법 화살)
+- `icon_slayerbladestorm.png`: 폭풍검 (철검 + 도끼)
+- `icon_teslashotgun.png`: 뇌전포 (산탄총 + 번개 반지)
+- `icon_venomblizzard.png`: 블리자드 (독비수 + 빙결 보주)
+- `icon_thunderblade.png`: 벼락검 (철검 + 번개 반지)
+- `icon_fireaxe.png`: 화염도끼 (도끼 + 불 지팡이)
+- `icon_frostwhip.png`: 얼음채찍 (채찍 + 빙결 보주)
+- `icon_scattershuriken.png`: 산탄표창 (표창 + 산탄총)
+- `icon_holyarrow.png`: 신성화살 (마법 화살 + 성수)
+- `icon_plague.png`: 역병 (독비수 + 성역)
+- `icon_cyclonebow.png`: 태풍의 눈 (바람 활 + 표창)
+- `icon_eclipsespiral.png`: 황혼의 나선 (어둠의 보주 + 마법 화살)
+- `icon_infernocataclysm.png`: 인페르노 (화염 기둥 + 불 지팡이, 신규)
+- `icon_shadowvortex.png`: 섀도우 차크람 (차크람 + 독비수, 신규)
+- `icon_divinejudgement.png`: 저지먼트 (십자가 + 성수, 신규)
 
 #### [패시브 및 스탯 아이콘]
 - `icon_armor.png`: 철벽 갑옷 (방어력/피해경감)
@@ -118,8 +132,10 @@ assets/sprites/
 - `icon_proj_count.png`: 복제의 오브 (투사체/연속공격 수량)
 - `icon_clover.png`: 행운의 클로버 (치명타/드랍률)
 - `icon_crown.png`: 지혜의 왕관 (경험치 보너스)
-- `icon_vampire.png`: 흡혈의 송곳니 (흡혈 패시브, 신규)
-- `icon_shield.png`: 빛의 성벽 (방벽 보호막 패시브, 신규)
+- `icon_vampire.png`: 흡혈의 송곳니 (흡혈 패시브)
+- `icon_shield.png`: 빛의 성벽 (방벽 보호막 패시브)
+- `icon_crit_dmg.png`: 사신의 낫 (치명타 피해 증폭 패시브)
+- `icon_thorns.png`: 가시 갑옷 (반사 피해 패시브)
 
 ---
 
@@ -155,12 +171,12 @@ assets/sprites/
 
 ## 🛠️ 순수 Node.js 픽셀 아트 생성 빌더 (`generate_assets.js`)
 
-본 프로젝트는 외부 그래픽 툴이나 무거운 빌드 체인 없이, **순수 Node.js 내장 모듈(`fs`, `zlib`)만으로 70종 픽셀 아트 PNG 바이너리를 즉시 생성**하는 독자적인 렌더러 스크립트를 내장하고 있습니다.
+본 프로젝트는 외부 그래픽 툴이나 무거운 빌드 체인 없이, **순수 Node.js 내장 모듈(`fs`, `zlib`)만으로 119종 픽셀 아트 PNG 바이너리를 즉시 생성**하는 독자적인 렌더러 스크립트를 내장하고 있습니다.
 
 ### 에셋 재생성 방법
 스프라이트를 새로 생성하거나 픽셀 데이터를 초기화해야 할 경우 터미널에서 다음 명령어를 실행합니다:
 ```bash
 node generate_assets.js
 ```
-- 실행 시 `assets/sprites/` 디렉토리가 생성되고 70종의 PNG 파일이 0.5초 이내에 자동 빌드됩니다.
+- 실행 시 `assets/sprites/` 디렉토리에 119종의 PNG 파일이 0.5초 이내에 자동 빌드됩니다.
 - PNG 청크(IHDR, IDAT, IEND)와 Deflate 압축을 표준 규격대로 직접 조립하므로 100% 브라우저 호환성을 가집니다.

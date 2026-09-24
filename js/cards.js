@@ -11,11 +11,11 @@ function formatStars(currentLevel, maxLevel) {
 
 // 5종 캐릭터별 고유 시그니처 무기 체계 (철검은 전 직업 공용 무기로 전환되어 모든 캐릭터 사용 가능)
 const CHARACTER_SIGNATURE_WEAPONS = {
-  mage: 'fireWand',         // 마도사: 불 지팡이
-  assassin: 'poisonDagger', // 암살자: 독비수
-  cleric: 'holyWater',      // 성직자: 성수
-  sylph: 'windBow',         // 바람 궁수: 바람 활
-  malakar: 'shadowOrb'      // 흑마법사: 어둠의 보주
+  mage: 'flamePillar',        // 마도사: 화염 기둥 (불 지팡이 공용화)
+  assassin: 'chakram',        // 암살자: 차크람 (독비수 공용화)
+  cleric: 'holyCross',        // 성직자: 십자가 (성수 공용화)
+  sylph: 'windBow',           // 바람 궁수: 바람 활
+  malakar: 'shadowOrb'        // 흑마법사: 어둠의 보주
 };
 
 // 해당 캐릭터가 사용할 수 없는 타 직업 시그니처 무기 목록 반환 (블랙리스트)
@@ -34,7 +34,7 @@ class CardManager {
   generateStartingWeaponCards() {
     const charType = this.player.characterType || 'knight';
     const forbidden = getForbiddenWeaponsForClass(charType);
-    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb'];
+    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb', 'flamePillar', 'chakram', 'holyCross'];
     const starterKeys = allWeaponKeys.filter(k => !forbidden.includes(k));
     const weaponMeta = {
       sword: { name: '철검', icon: '🗡️', iconKey: 'icon_sword', desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.' },
@@ -51,7 +51,10 @@ class CardManager {
       poisonDagger: { name: '독비수', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 독비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.' },
       frostOrb: { name: '빙결 보주', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동을 발산하여 감속시키고 피해를 입힙니다.' },
       windBow: { name: '바람 활', icon: '🏹💨', iconKey: 'icon_windbow', desc: '직선으로 쾌속 관통 바람 화살을 사격하여 적을 밀쳐냅니다.' },
-      shadowOrb: { name: '어둠의 보주', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '플레이어 주변을 공전하며 적에게 지속 암흑 피해를 입힙니다.' }
+      shadowOrb: { name: '어둠의 보주', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '플레이어 주변을 공전하며 적에게 지속 암흑 피해를 입힙니다.' },
+      flamePillar: { name: '화염 기둥', icon: '🌋🔥', iconKey: 'icon_flamepillar', desc: '가장 가까운 적 발밑에서 거대한 지옥 화염 기둥을 솟구치게 하여 폭발 피해를 입힙니다.' },
+      chakram: { name: '차크람', icon: '💫🗡️', iconKey: 'icon_chakram', desc: '날카로운 톱날 원반을 던져 적들을 관통한 뒤 플레이어에게 되돌아오며 2중 피해를 입힙니다.' },
+      holyCross: { name: '십자가', icon: '✝️✨', iconKey: 'icon_holycross', desc: '신성한 빛의 십자가를 투척하여 상하좌우 4방향으로 십자 성광을 발산하며 폭발합니다.' }
     };
 
     const shuffled = [...starterKeys].sort(() => 0.5 - Math.random());
@@ -100,7 +103,11 @@ class CardManager {
         { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪', evoIconKey: 'icon_plague' },
         // 루트 3 (신규 2종)
         { w1: 'windBow', w2: 'shuriken', evoId: 'cycloneBow', evoName: '태풍의 눈', evoIcon: '🌀🏹', evoIconKey: 'icon_cyclonebow' },
-        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨', evoIconKey: 'icon_eclipsespiral' }
+        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨', evoIconKey: 'icon_eclipsespiral' },
+        // 루트 4 (신규 3종 시그니처 진화)
+        { w1: 'flamePillar', w2: 'fireWand', evoId: 'infernoCataclysm', evoName: '인페르노', evoIcon: '🌋☄️', evoIconKey: 'icon_infernocataclysm' },
+        { w1: 'chakram', w2: 'poisonDagger', evoId: 'shadowVortex', evoName: '섀도우 차크람', evoIcon: '🌀🗡️', evoIconKey: 'icon_shadowvortex' },
+        { w1: 'holyCross', w2: 'holyWater', evoId: 'divineJudgement', evoName: '저지먼트', evoIcon: '✝️⚡', evoIconKey: 'icon_divinejudgement' }
       ];
 
       for (const evo of evoList) {
@@ -139,7 +146,7 @@ class CardManager {
 
     // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한, 타 직업 시그니처 5종 차단, 공용 8종 허용)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
-    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb'];
+    const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb', 'flamePillar', 'chakram', 'holyCross'];
     const charType = this.player.characterType || 'knight';
     const forbiddenWeapons = getForbiddenWeaponsForClass(charType);
 
@@ -158,7 +165,10 @@ class CardManager {
       holyArrow: ['magicMissile', 'holyWater'],
       plague: ['poisonDagger', 'sanctuary'],
       cycloneBow: ['windBow', 'shuriken', 'throwingDagger'],
-      eclipseSpiral: ['shadowOrb', 'magicMissile']
+      eclipseSpiral: ['shadowOrb', 'magicMissile'],
+      infernoCataclysm: ['flamePillar', 'fireWand'],
+      shadowVortex: ['chakram', 'poisonDagger'],
+      divineJudgement: ['holyCross', 'holyWater']
     };
 
     const isConsumedWeapon = (key) => {
@@ -196,6 +206,9 @@ class CardManager {
       frostOrb: { name: '빙결 보주', type: '원거리', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동 발산 및 감속' },
       windBow: { name: '바람 활', type: '원거리', icon: '🏹💨', iconKey: 'icon_windbow', desc: '직선으로 쾌속 관통 바람 화살을 사격하여 적을 밀쳐냄' },
       shadowOrb: { name: '어둠의 보주', type: '소환', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '가장 가까운 적을 자율 추적하여 밀착 다단히트 및 호위' },
+      flamePillar: { name: '화염 기둥', type: '소환', icon: '🌋🔥', iconKey: 'icon_flamepillar', desc: '가장 가까운 적 발밑에서 지옥 화염 기둥을 분출시켜 폭발 피해를 입힘' },
+      chakram: { name: '차크람', type: '원거리', icon: '💫🗡️', iconKey: 'icon_chakram', desc: '날카로운 톱날 원반을 던져 적들을 관통한 뒤 되돌아오며 2중 피해를 입힘' },
+      holyCross: { name: '십자가', type: '원거리', icon: '✝️✨', iconKey: 'icon_holycross', desc: '신성한 빛의 십자가를 투척하여 상하좌우 4방향으로 십자 성광을 발산하며 폭발' },
 
       // 14대 진화 무기 메타
       heavenlySanctuary: { name: '생츄어리', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 적 빙결(동결) 효과' },
@@ -211,7 +224,10 @@ class CardManager {
       holyArrow: { name: '신성화살', type: '원거리', icon: '🏹✨', iconKey: 'icon_holyarrow', desc: '유도 신성 화살 사격 및 적중 위치 정화 장판 생성' },
       plague: { name: '역병', type: '도트', icon: '☣️💀', iconKey: 'icon_plague', desc: '독기 결계 지속 중독 및 30초 주기 전체 화면 맹독 폭발' },
       cycloneBow: { name: '태풍의 눈', type: '원거리', icon: '🌀🏹', iconKey: 'icon_cyclonebow', desc: '대형 관통 폭풍 화살을 사격하고 적들을 블랙홀처럼 중심 흡인' },
-      eclipseSpiral: { name: '황혼의 나선', type: '소환', icon: '🔮✨', iconKey: 'icon_eclipsespiral', desc: '3체 황혼 사역마 자율 추적 다단히트 및 8방향 관통 화살 난사' }
+      eclipseSpiral: { name: '황혼의 나선', type: '소환', icon: '🔮✨', iconKey: 'icon_eclipsespiral', desc: '황혼 사역마 자율 추적 다단히트 및 8방향 관통 화살 난사' },
+      infernoCataclysm: { name: '인페르노', type: '광역', icon: '🌋☄️', iconKey: 'icon_infernocataclysm', desc: '4개의 초대형 화염 분화구를 폭발시키고 헬파이어 용암 장판 생성' },
+      shadowVortex: { name: '섀도우 차크람', type: '복합', icon: '🌀🗡️', iconKey: 'icon_shadowvortex', desc: '초대형 암흑 차크람 왕복 회귀 및 적중 시 6방향 파편 폭쇄' },
+      divineJudgement: { name: '저지먼트', type: '성광', icon: '✝️⚡', iconKey: 'icon_divinejudgement', desc: '거대 대천사 십자가 착탄 시 심판 낙뢰 및 30% 확률 0.5초 기절' }
     };
 
     if (ownedWeaponsCount < 6) {
@@ -744,7 +760,7 @@ class CardManager {
           title: '[진화] 황혼의 나선',
           icon: '🔮✨',
           iconKey: 'icon_eclipsespiral',
-          desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 3체의 황혼 사역마가 자율 추적 다단히트하며 8방향 관통 화살을 일제 난사합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 황혼의 사역마가 자율 추적 다단히트하며(투사체 증가 시 사역마 수 증가) 8방향 관통 화살을 일제 난사합니다. (1Lv 획득, 슬롯 1칸 반환)',
           effectText: '어둠의 보주(5Lv) + 마법 화살(5Lv) 합성 -> [황혼의 나선 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -760,6 +776,117 @@ class CardManager {
             if (window.game) {
               window.game.addParticles(this.player.x, this.player.y, '#a855f7', 50);
               window.game.addParticles(this.player.x, this.player.y, '#c084fc', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 15] 인페르노 = 화염 기둥(5Lv) + 불 지팡이(5Lv)
+    const wFlamePillar = this.weaponManager.weapons['flamePillar'];
+    const wFireWand = this.weaponManager.weapons['fireWand'];
+    const hasInferno = !!this.weaponManager.weapons['infernoCataclysm'];
+    if (wFlamePillar && wFireWand && !hasInferno) {
+      const flameLv = this.weaponManager.getLevel(wFlamePillar);
+      const fireWandLv = this.weaponManager.getLevel(wFireWand);
+      if (flameLv >= 5 && fireWandLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_inferno_cataclysm',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 인페르노',
+          icon: '🌋🔥',
+          iconKey: 'icon_infernocataclysm',
+          desc: '화염 기둥과 불 지팡이를 합성 진화합니다! 거대 대재앙 화염 기둥이 폭발하며 지속 피해를 주는 용암 지대를 생성합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '화염 기둥(5Lv) + 불 지팡이(5Lv) 합성 -> [인페르노 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('flamePillar');
+              this.weaponManager.consumedWeapons.add('fireWand');
+            }
+            delete this.weaponManager.weapons['flamePillar'];
+            delete this.weaponManager.weapons['fireWand'];
+            this.weaponManager.unlockWeapon('infernoCataclysm');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#f97316', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#ef4444', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 16] 섀도우 차크람 = 차크람(5Lv) + 독비수(5Lv)
+    const wChakram = this.weaponManager.weapons['chakram'];
+    const wPoisonDagger = this.weaponManager.weapons['poisonDagger'];
+    const hasShadowVortex = !!this.weaponManager.weapons['shadowVortex'];
+    if (wChakram && wPoisonDagger && !hasShadowVortex) {
+      const chakramLv = this.weaponManager.getLevel(wChakram);
+      const poisonLv = this.weaponManager.getLevel(wPoisonDagger);
+      if (chakramLv >= 5 && poisonLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_shadow_vortex',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 섀도우 차크람',
+          icon: '💫☠️',
+          iconKey: 'icon_shadowvortex',
+          desc: '차크람과 독비수를 합성 진화합니다! 맹독 그림자 차크람이 궤적상의 모든 적을 중독 관통하며 사방으로 독화살을 흩뿌립니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '차크람(5Lv) + 독비수(5Lv) 합성 -> [섀도우 차크람 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('chakram');
+              this.weaponManager.consumedWeapons.add('poisonDagger');
+            }
+            delete this.weaponManager.weapons['chakram'];
+            delete this.weaponManager.weapons['poisonDagger'];
+            this.weaponManager.unlockWeapon('shadowVortex');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#10b981', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#6366f1', 50);
+            }
+          }
+        });
+      }
+    }
+
+    // [진화 17] 저지먼트 = 십자가(5Lv) + 성수(5Lv)
+    const wHolyCross = this.weaponManager.weapons['holyCross'];
+    const wHolyWater = this.weaponManager.weapons['holyWater'];
+    const hasDivineJudgement = !!this.weaponManager.weapons['divineJudgement'];
+    if (wHolyCross && wHolyWater && !hasDivineJudgement) {
+      const crossLv = this.weaponManager.getLevel(wHolyCross);
+      const waterLv = this.weaponManager.getLevel(wHolyWater);
+      if (crossLv >= 5 && waterLv >= 5) {
+        evolutionCards.push({
+          id: 'evolve_divine_judgement',
+          type: 'weapon_evolution',
+          category: 'evolution',
+          title: '[진화] 저지먼트',
+          icon: '✝️⚡',
+          iconKey: 'icon_divinejudgement',
+          desc: '십자가와 성수를 합성 진화합니다! 황금 신성 십자가가 적을 관통 후 최대 사거리에서 폭발하며 30% 확률로 0.5초 기절시키는 심판 낙뢰를 내리꽂습니다. (1Lv 획득, 슬롯 1칸 반환)',
+          effectText: '십자가(5Lv) + 성수(5Lv) 합성 -> [저지먼트 1Lv]',
+          badge: 'EVOLUTION',
+          stars: '★★★★★',
+          apply: () => {
+            if (this.weaponManager.consumedWeapons) {
+              this.weaponManager.consumedWeapons.add('holyCross');
+              this.weaponManager.consumedWeapons.add('holyWater');
+            }
+            delete this.weaponManager.weapons['holyCross'];
+            delete this.weaponManager.weapons['holyWater'];
+            this.weaponManager.unlockWeapon('divineJudgement');
+            sounds.playVictory();
+            if (window.game) {
+              window.game.addParticles(this.player.x, this.player.y, '#fbbf24', 50);
+              window.game.addParticles(this.player.x, this.player.y, '#e0e7ff', 50);
             }
           }
         });
@@ -901,8 +1028,26 @@ class CardManager {
             countDesc = `동시에 사격하는 태풍의 눈 화살 개수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'eclipseSpiral') {
-            countDesc = `공전 나선 보주 개수 및 유도탄 방출 빈도를 늘립니다.`;
-            countEffect = '보주 +1개';
+            countDesc = `자율 추적 다단히트하는 황혼의 사역마 개수를 늘립니다.`;
+            countEffect = '사역마 +1체';
+          } else if (key === 'flamePillar') {
+            countDesc = `동시에 분출하는 화염 기둥 개수를 늘립니다.`;
+            countEffect = '화염 기둥 +1개';
+          } else if (key === 'chakram') {
+            countDesc = `동시에 투척하는 회귀 차크람 개수를 늘립니다.`;
+            countEffect = '차크람 +1개';
+          } else if (key === 'holyCross') {
+            countDesc = `동시에 투척하는 회전 십자가 개수를 늘립니다.`;
+            countEffect = '십자가 +1개';
+          } else if (key === 'infernoCataclysm') {
+            countDesc = `동시에 분출하는 대재앙 용암 화염 기둥 개수를 늘립니다.`;
+            countEffect = '기둥 +1개';
+          } else if (key === 'shadowVortex') {
+            countDesc = `동시에 투척하는 맹독 섀도우 차크람 개수를 늘립니다.`;
+            countEffect = '차크람 +1개';
+          } else if (key === 'divineJudgement') {
+            countDesc = `동시에 투척하는 신성 십자가 및 심판 낙뢰 개수를 늘립니다.`;
+            countEffect = '십자가 +1개';
           }
         }
 

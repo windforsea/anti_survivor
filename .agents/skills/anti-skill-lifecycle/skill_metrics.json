@@ -1,6 +1,6 @@
 {
-  "totalCalls": 13,
-  "lastUpdated": "2026-09-24T11:09:17.871Z",
+  "totalCalls": 16,
+  "lastUpdated": "2026-09-24T12:10:42.601Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -20,10 +20,14 @@
     },
     "anti-content-pipeline": {
       "name": "anti-content-pipeline",
-      "callCount": 1,
+      "callCount": 2,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T02:47:12.035Z",
+      "lastUsedAt": "2026-09-24T11:48:02.431Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-24T11:48:02.432Z",
+          "reason": "신규 고유 무기 3종 및 진화 무기 파이프라인 참조"
+        },
         {
           "timestamp": "2026-09-24T02:47:12.035Z",
           "reason": "스킬 업데이트 필요 여부 점검"
@@ -32,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 4,
+      "callCount": 5,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T11:09:17.870Z",
+      "lastUsedAt": "2026-09-24T12:10:42.600Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-24T12:10:42.601Z",
+          "reason": "무기 로직 무결성 검사 실행 전 텔레메트리 기록"
+        },
         {
           "timestamp": "2026-09-24T11:09:17.871Z",
           "reason": "어둠의 보주 및 태풍의 눈 무기 로직 수정 후 정적 감사"
@@ -72,10 +80,14 @@
     },
     "pixel-sprite-builder": {
       "name": "pixel-sprite-builder",
-      "callCount": 3,
+      "callCount": 4,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T02:46:53.655Z",
+      "lastUsedAt": "2026-09-24T12:09:34.432Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-24T12:09:34.433Z",
+          "reason": "신규 무기 6종 아이콘 스프라이트 추가"
+        },
         {
           "timestamp": "2026-09-24T02:46:53.655Z",
           "reason": "스킬 업데이트 필요 여부 점검"

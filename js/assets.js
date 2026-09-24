@@ -114,6 +114,12 @@ class AssetManager {
       icon_shadoworb: 'assets/sprites/icon_shadoworb.png',
       icon_cyclonebow: 'assets/sprites/icon_cyclonebow.png',
       icon_eclipsespiral: 'assets/sprites/icon_eclipsespiral.png',
+      icon_flamepillar: 'assets/sprites/icon_flamepillar.png',
+      icon_chakram: 'assets/sprites/icon_chakram.png',
+      icon_holycross: 'assets/sprites/icon_holycross.png',
+      icon_infernocataclysm: 'assets/sprites/icon_infernocataclysm.png',
+      icon_shadowvortex: 'assets/sprites/icon_shadowvortex.png',
+      icon_divinejudgement: 'assets/sprites/icon_divinejudgement.png',
       icon_crit_dmg: 'assets/sprites/icon_crit_dmg.png',
       icon_thorns: 'assets/sprites/icon_thorns.png',
 

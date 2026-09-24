@@ -1002,7 +1002,7 @@ WeaponManager.prototype.executeCycloneBow = function(w, enemies) {
     const closest = this.getClosestEnemy(enemies);
     const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
     const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
-    const speed = 580 * projSpeedBonus;
+    const speed = 290 * projSpeedBonus;
 
     for (let i = 0; i < count; i++) {
       const spread = count > 1 ? (i - (count - 1) / 2) * 0.12 : 0;
@@ -1018,8 +1018,8 @@ WeaponManager.prototype.executeCycloneBow = function(w, enemies) {
         damage: dmg,
         pierce: 999,
         knockbackForce: 190,
-        life: 0.95,
-        maxLife: 0.95,
+        life: 1.4,
+        maxLife: 1.4,
         color: '#34d399',
         hitCooldowns: new Map(),
         hitEnemies: new Set(),
@@ -1031,4 +1031,251 @@ WeaponManager.prototype.executeCycloneBow = function(w, enemies) {
   // [신규 진화 14] 황혼의 나선 (eclipseSpiral = 어둠의 보주 + 마법 화살): 자율 추적 사역마 3체 + 미사일 소환 (update 루프에서 상시 구동)
 WeaponManager.prototype.executeEclipseSpiral = function(w, enemies) {
     // update() 루프에서 사역마(familiars)로 상시 동작
-  }
+  };
+
+  // [기본 무기 15] 화염 기둥 (flamePillar - 화염 마도사 시그니처)
+  WeaponManager.prototype.executeFlamePillar = function(w, enemies) {
+    sounds.playFire();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const radius = 75 * area;
+
+    const validEnemies = enemies.filter(e => !e.isDead && Math.hypot(e.x - this.player.x, e.y - this.player.y) <= 450);
+    validEnemies.sort((a, b) => Math.hypot(a.x - this.player.x, a.y - this.player.y) - Math.hypot(b.x - this.player.x, b.y - this.player.y));
+
+    for (let i = 0; i < count; i++) {
+      let targetX, targetY;
+      if (validEnemies[i]) {
+        targetX = validEnemies[i].x;
+        targetY = validEnemies[i].y;
+      } else {
+        const ang = Math.random() * Math.PI * 2;
+        const dist = 70 + Math.random() * 120;
+        targetX = this.player.x + Math.cos(ang) * dist;
+        targetY = this.player.y + Math.sin(ang) * dist;
+      }
+
+      this.slashes.push({
+        type: 'circle',
+        x: targetX,
+        y: targetY,
+        radius: radius,
+        damage: dmg,
+        knockbackDir: null,
+        knockbackForce: 130,
+        life: 0.28,
+        maxLife: 0.28,
+        isFlamePillar: true,
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+
+      if (window.game && window.game.addParticles) {
+        window.game.addParticles(targetX, targetY, '#f97316', 14);
+        window.game.addParticles(targetX, targetY, '#ef4444', 8);
+      }
+    }
+  };
+
+  // [기본 무기 16] 차크람 (chakram - 그림자 암살자 시그니처)
+  WeaponManager.prototype.executeChakram = function(w, enemies) {
+    sounds.playSlash();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 520 * projSpeedBonus;
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.16 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'chakram',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        initialSpeed: speed,
+        radius: 12 * area,
+        area: area,
+        damage: dmg,
+        pierce: 999,
+        knockbackForce: 130,
+        life: 1.1,
+        maxLife: 1.1,
+        rotAngle: 0,
+        returning: false,
+        hitCooldowns: new Map(),
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  };
+
+  // [기본 무기 17] 십자가 (holyCross - 해골 성직자 시그니처)
+  WeaponManager.prototype.executeHolyCross = function(w, enemies) {
+    sounds.playMagic();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 400 * projSpeedBonus;
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.20 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'holyCross',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 14 * area,
+        area: area,
+        damage: dmg,
+        pierce: 999,
+        knockbackForce: 150,
+        life: 0.90,
+        maxLife: 0.90,
+        rotAngle: 0,
+        hitCooldowns: new Map(),
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  };
+
+  // [신규 진화 15] 인페르노 (infernoCataclysm = 화염 기둥 + 불 지팡이)
+  WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
+    sounds.playFire();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = 4 + (this.getCount(w) - 1);
+    const radius = 95 * area;
+
+    const validEnemies = enemies.filter(e => !e.isDead && Math.hypot(e.x - this.player.x, e.y - this.player.y) <= 550);
+    validEnemies.sort(() => 0.5 - Math.random());
+
+    for (let i = 0; i < count; i++) {
+      let targetX, targetY;
+      if (validEnemies[i]) {
+        targetX = validEnemies[i].x;
+        targetY = validEnemies[i].y;
+      } else {
+        const ang = Math.random() * Math.PI * 2;
+        const dist = 60 + Math.random() * 180;
+        targetX = this.player.x + Math.cos(ang) * dist;
+        targetY = this.player.y + Math.sin(ang) * dist;
+      }
+
+      this.slashes.push({
+        type: 'circle',
+        x: targetX,
+        y: targetY,
+        radius: radius,
+        damage: dmg,
+        knockbackDir: null,
+        knockbackForce: 170,
+        life: 0.32,
+        maxLife: 0.32,
+        isInferno: true,
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+
+      this.projectiles.push({
+        type: 'lavaPool',
+        x: targetX,
+        y: targetY,
+        radius: radius * 0.8,
+        area: area,
+        damage: Math.round(dmg * 0.4),
+        life: 4.0,
+        maxLife: 4.0,
+        tickTimer: 0.4,
+        color: '#f97316'
+      });
+
+      if (window.game && window.game.addParticles) {
+        window.game.addParticles(targetX, targetY, '#ef4444', 18);
+        window.game.addParticles(targetX, targetY, '#facc15', 10);
+      }
+    }
+  };
+
+  // [신규 진화 16] 섀도우 차크람 (shadowVortex = 차크람 + 독비수)
+  WeaponManager.prototype.executeShadowVortex = function(w, enemies) {
+    sounds.playSlash();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 560 * projSpeedBonus;
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.18 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'shadowVortex',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        initialSpeed: speed,
+        radius: 18 * area,
+        area: area,
+        damage: dmg,
+        pierce: 999,
+        knockbackForce: 160,
+        life: 1.4,
+        maxLife: 1.4,
+        rotAngle: 0,
+        returning: false,
+        hitCooldowns: new Map(),
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  };
+
+  // [신규 진화 17] 저지먼트 (divineJudgement = 십자가 + 성수)
+  WeaponManager.prototype.executeDivineJudgement = function(w, enemies) {
+    sounds.playMagic();
+    const dmg = this.getDamage(w);
+    const area = this.getArea(w);
+    const count = this.getCount(w);
+    const closest = this.getClosestEnemy(enemies);
+    const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
+    const projSpeedBonus = (1 + (w.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
+    const speed = 440 * projSpeedBonus;
+
+    for (let i = 0; i < count; i++) {
+      const spread = count > 1 ? (i - (count - 1) / 2) * 0.22 : 0;
+      const angle = baseAngle + spread;
+      this.projectiles.push({
+        type: 'divineJudgement',
+        x: this.player.x,
+        y: this.player.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius: 20 * area,
+        area: area,
+        damage: dmg,
+        pierce: 999,
+        knockbackForce: 180,
+        life: 1.0,
+        maxLife: 1.0,
+        rotAngle: 0,
+        hitCooldowns: new Map(),
+        hitEnemies: new Set(),
+        hitObstacles: new Set()
+      });
+    }
+  };
