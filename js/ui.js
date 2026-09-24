@@ -75,7 +75,7 @@ class UIManager {
     this.pauseModal = document.getElementById('pauseModal');
     this.pauseToggleBtn = document.getElementById('pauseToggleBtn');
     this.resumeBtn = document.getElementById('resumeBtn');
-    this.pauseRestartBtn = document.getElementById('pauseRestartBtn');
+    this.pauseLobbyBtn = document.getElementById('pauseLobbyBtn') || document.getElementById('pauseRestartBtn');
 
     this.soundToggleBtn = document.getElementById('soundToggleBtn');
     this.fullscreenToggleBtn = document.getElementById('fullscreenToggleBtn');
@@ -201,10 +201,10 @@ class UIManager {
       });
     }
 
-    if (this.pauseRestartBtn) {
-      this.pauseRestartBtn.addEventListener('click', () => {
+    if (this.pauseLobbyBtn) {
+      this.pauseLobbyBtn.addEventListener('click', () => {
         this.hidePauseModal();
-        this.game.restart();
+        this.game.goToLobby();
       });
     }
 
