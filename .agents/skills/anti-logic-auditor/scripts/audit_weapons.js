@@ -7,6 +7,7 @@ const path = require('path');
 const rootDir = path.resolve(__dirname, '../../../../');
 const weaponDataFile = path.join(rootDir, 'js/weaponData.js');
 const weaponsFile = path.join(rootDir, 'js/weapons.js');
+const weaponExecutorsFile = path.join(rootDir, 'js/weaponExecutors.js');
 const cardsFile = path.join(rootDir, 'js/cards.js');
 
 console.log('🔍 [Anti Survivors] 전투 엔진 및 무기 정합성 감사 시작...\n');
@@ -17,7 +18,7 @@ if (!fs.existsSync(weaponDataFile) || !fs.existsSync(weaponsFile) || !fs.existsS
 }
 
 const weaponDataContent = fs.readFileSync(weaponDataFile, 'utf8');
-const weaponsContent = fs.readFileSync(weaponsFile, 'utf8');
+const weaponsContent = fs.readFileSync(weaponsFile, 'utf8') + (fs.existsSync(weaponExecutorsFile) ? '\n' + fs.readFileSync(weaponExecutorsFile, 'utf8') : '');
 const cardsContent = fs.readFileSync(cardsFile, 'utf8');
 
 // 1. WEAPON_CONFIGS의 고유 무기 ID 파싱 (중복 제거)
