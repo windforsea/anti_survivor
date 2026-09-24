@@ -1,0 +1,56 @@
+{
+  "totalCalls": 3,
+  "lastUpdated": "2026-09-24T02:11:42.743Z",
+  "skills": {
+    "anti-balance-simulator": {
+      "name": "anti-balance-simulator",
+      "callCount": 1,
+      "createdAt": "2026-09-24T02:11:19.357Z",
+      "lastUsedAt": "2026-09-24T02:11:23.180Z",
+      "callHistory": [
+        {
+          "timestamp": "2026-09-24T02:11:23.181Z",
+          "reason": "월드 1 및 2 보스 밸런스 패치 검증"
+        }
+      ]
+    },
+    "anti-content-pipeline": {
+      "name": "anti-content-pipeline",
+      "callCount": 0,
+      "createdAt": "2026-09-24T02:11:19.357Z",
+      "lastUsedAt": null,
+      "callHistory": []
+    },
+    "anti-logic-auditor": {
+      "name": "anti-logic-auditor",
+      "callCount": 0,
+      "createdAt": "2026-09-24T02:11:19.357Z",
+      "lastUsedAt": null,
+      "callHistory": []
+    },
+    "anti-world-architect": {
+      "name": "anti-world-architect",
+      "callCount": 1,
+      "createdAt": "2026-09-24T02:11:19.357Z",
+      "lastUsedAt": "2026-09-24T02:11:29.125Z",
+      "callHistory": [
+        {
+          "timestamp": "2026-09-24T02:11:29.126Z",
+          "reason": "월드 2 심해 대협곡 맵 및 보스 아키텍처 구축"
+        }
+      ]
+    },
+    "pixel-sprite-builder": {
+      "name": "pixel-sprite-builder",
+      "callCount": 1,
+      "createdAt": "2026-09-24T02:11:19.357Z",
+      "lastUsedAt": "2026-09-24T02:11:29.168Z",
+      "callHistory": [
+        {
+          "timestamp": "2026-09-24T02:11:29.169Z",
+          "reason": "월드 2 신규 몬스터 및 보스 스프라이트 제작"
+        }
+      ]
+    }
+  }
+}

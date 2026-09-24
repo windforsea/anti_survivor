@@ -15,12 +15,13 @@ vam/
 ├── server.js                    # Node.js 경량 로컬 정적 서빙 & 랭킹 API 서버 (내장 모듈만 사용)
 ├── start_server.bat             # 원클릭 서버 실행 배치 파일
 ├── generate_assets.js           # 순수 Node.js 94종 픽셀아트 PNG 스프라이트 빌더
-├── champion.json                # 명예의 전당 랭킹 데이터 (1~3위 닉네임, 시간, 직업)
-├── AGENTS.md                    # [루트] 깃허브 공용 AI 에이전트 표준 지침
+├── GEMINI.md                    # [루트] Antigravity 네이티브 프로젝트 표준 작업 규칙
+├── AGENTS.md                    # [루트] 멀티 에이전트 공용 표준 지침
 ├── main.md                      # [본 문서] AI 아키텍처 인덱스 및 Fast Lookup 가이드
 ├── readme.md                    # 프로젝트 소개, 실행법, 플레이 가이드 및 AI 워크플로우 요약
 │
 ├── .agents/skills/              # 🤖 Antigravity 프로젝트 전용 커스텀 스킬 (VCS 팀/PC 공유)
+│   ├── anti-skill-lifecycle/    # 스킬 발굴(ROI 산출), 호출 계측(Telemetry), 스캐폴딩 및 저사용 정리(Prune)
 │   ├── anti-content-pipeline/   # 신규 무기/진화/캐릭터/몬스터 추가 파이프라인
 │   ├── anti-logic-auditor/      # 전투 엔진 & 스탯 공식 정적 무결성 감사 스크립트
 │   ├── pixel-sprite-builder/    # Canvas 2D 픽셀아트 스프라이트 빌더 가이드
@@ -114,6 +115,8 @@ vam/
   👉 `.agents/skills/anti-world-architect/` (`node .agents/skills/anti-world-architect/scripts/scaffold_world.js`)
 * **스테이지 난이도 곡선 및 보스 처치 시간(TTK) 밸런스를 검증할 때**:
   👉 `.agents/skills/anti-balance-simulator/` (`node .agents/skills/anti-balance-simulator/scripts/simulate_balance.js`)
+* **스킬 추천, 효율(ROI) 산출, 호출 통계 대시보드 조회 및 미사용 스킬을 정리할 때**:
+  👉 `.agents/skills/anti-skill-lifecycle/` (`node .agents/skills/anti-skill-lifecycle/scripts/track_skill.js report`)
 
 ---
 
