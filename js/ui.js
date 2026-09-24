@@ -28,6 +28,10 @@ class UIManager {
     // 캐릭터 선택 모달
     this.characterSelectModal = document.getElementById('characterSelectModal');
     this.charSelectBackBtn = document.getElementById('charSelectBackBtn');
+    // 스테이지 선택 모달
+    this.stageSelectModal = document.getElementById('stageSelectModal');
+    this.stageSelectBackBtn = document.getElementById('stageSelectBackBtn');
+    this.selectedCharType = 'knight';
 
     // 명예의 전당 챔피언 배너
     this.championBanner = document.getElementById('championBanner');
@@ -249,8 +253,9 @@ class UIManager {
 
       const selectHero = () => {
         sounds.playLevelUp();
+        this.selectedCharType = charType;
         this.hideCharacterSelect();
-        this.game.startRunWithCharacter(charType);
+        this.showStageSelect();
       };
 
       if (btn) {
@@ -263,6 +268,38 @@ class UIManager {
         selectHero();
       });
     });
+    // 스테이지 선택 모달 뒤로가기 버튼 -> 영웅 선택 복귀
+    if (this.stageSelectBackBtn) {
+      this.stageSelectBackBtn.addEventListener('click', () => {
+        this.hideStageSelect();
+        this.showCharacterSelect();
+      });
+    }
+
+    // 스테이지 카드 및 출격 버튼 클릭 이벤트 바인딩
+    const stageCards = document.querySelectorAll('.stage-card');
+    stageCards.forEach(card => {
+      const worldNum = parseInt(card.getAttribute('data-world')) || 1;
+      const btn = card.querySelector('.stage-select-btn');
+
+      const selectStage = () => {
+        sounds.playLevelUp();
+        this.hideStageSelect();
+        const hero = this.selectedCharType || 'knight';
+        this.game.startRunWithCharacterAndStage(hero, worldNum);
+      };
+
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectStage();
+        });
+      }
+      card.addEventListener('click', () => {
+        selectStage();
+      });
+    });
+
 
     // 로비로 이동 버튼들
     if (this.gameOverLobbyBtn) {
@@ -941,6 +978,19 @@ class UIManager {
   hideCharacterSelect() {
     if (this.characterSelectModal) {
       this.characterSelectModal.classList.add('hidden');
+    }
+  }
+
+  // 스테이지(월드) 선택 모달 표시
+  showStageSelect() {
+    if (this.stageSelectModal) {
+      this.stageSelectModal.classList.remove('hidden');
+    }
+  }
+
+  hideStageSelect() {
+    if (this.stageSelectModal) {
+      this.stageSelectModal.classList.add('hidden');
     }
   }
 

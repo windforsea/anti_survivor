@@ -3,9 +3,10 @@
 class WaveManager {
   constructor(game) {
     this.game = game;
+    this.currentWorld = 1;
     this.currentStage = 1;
-    this.maxStage = 25; // 총 25스테이지 확장 (18분 45초)
-    this.stageDuration = 45.0; // 스테이지당 45초 (웨이브 템포 단축)
+    this.maxStage = 25;
+    this.stageDuration = 45.0;
     this.stageTimeLeft = this.stageDuration;
     this.spawnTimer = 0;
 
@@ -14,8 +15,8 @@ class WaveManager {
     this.eventWaveTriggered = false;
     this.isStageClearing = false;
 
-    // 25개 스테이지별 몬스터 구성 및 기하급수 지옥 난이도 스케일링 설정
-    this.stageConfigs = {
+    // 월드 1 (심연의 부유섬 25스테이지)
+    this.world1StageConfigs = {
       1: { mobs: ['bat', 'slime'], interval: 0.8, batch: 2, hpScale: 1.0, boss: null },
       2: { mobs: ['slime', 'zombie'], interval: 0.7, batch: 2, hpScale: 1.15, bossTime: 22, bossStage: 2 },
       3: { mobs: ['zombie', 'skeleton', 'goblin'], interval: 0.6, batch: 3, hpScale: 1.65, boss: null }, // [체력 점프 1구간 + 20s 박쥐떼 이벤트]
@@ -43,8 +44,46 @@ class WaveManager {
       22: { mobs: ['abyssTitan', 'wraithSwarm', 'gargoyle'], interval: 0.11, batch: 8, hpScale: 34.0, boss: null },
       23: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'golem'], interval: 0.11, batch: 8, hpScale: 36.0, boss: null },
       24: { mobs: ['bat', 'slime', 'zombie', 'skeleton', 'goblin', 'ghost', 'gargoyle', 'cultist', 'assassin', 'golem', 'darkMage', 'bloodHound', 'wraithSwarm', 'abyssTitan'], interval: 0.10, batch: 9, hpScale: 38.0, boss: null },
-      25: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'assassin'], interval: 0.10, batch: 8, hpScale: 42.0, bossTime: 12, bossStage: 25 } // [진 최종 결전: 심연의 군주]
+      25: { mobs: ['abyssTitan', 'darkMage', 'bloodHound', 'wraithSwarm', 'assassin'], interval: 0.10, batch: 8, hpScale: 42.0, bossTime: 12, bossStage: 25 }
     };
+
+    // 월드 2 (심해 대협곡 20스테이지)
+    this.world2StageConfigs = {
+      1: { mobs: ['plankton', 'jellyfish'], interval: 0.8, batch: 2, hpScale: 1.0, boss: null },
+      2: { mobs: ['jellyfish', 'hermitCrab'], interval: 0.7, batch: 2, hpScale: 1.15, boss: null },
+      3: { mobs: ['hermitCrab', 'flyingFish', 'plankton'], interval: 0.6, batch: 3, hpScale: 1.6, boss: null },
+      4: { mobs: ['flyingFish', 'seaLobster', 'hermitCrab'], interval: 0.55, batch: 6, hpScale: 1.85, boss: null },
+      5: { mobs: ['seaLobster', 'plankton', 'flyingFish'], interval: 0.5, batch: 3, hpScale: 2.3, bossTime: 18, bossStage: 205 }, // 1대 보스: 크라켄
+      6: { mobs: ['seaLobster', 'stingray', 'hermitCrab'], interval: 0.45, batch: 4, hpScale: 3.4, boss: null },
+      7: { mobs: ['stingray', 'coralGolem', 'seaLeech'], interval: 0.4, batch: 4, hpScale: 4.6, boss: null },
+      8: { mobs: ['coralGolem', 'seaLeech', 'stingray'], interval: 0.35, batch: 8, hpScale: 5.5, boss: null },
+      9: { mobs: ['coralGolem', 'seaLeech', 'anglerFish', 'ghostJelly'], interval: 0.28, batch: 5, hpScale: 6.8, boss: null },
+      10: { mobs: ['anglerFish', 'ghostJelly', 'coralGolem'], interval: 0.24, batch: 5, hpScale: 8.5, bossTime: 14, bossStage: 210 }, // 2대 보스: 타이탄 크랩
+      11: { mobs: ['deepShark', 'seaLeech', 'flyingFish'], interval: 0.24, batch: 5, hpScale: 10.0, boss: null },
+      12: { mobs: ['deepShark', 'poisonRay', 'anglerFish'], interval: 0.22, batch: 5, hpScale: 12.5, boss: null },
+      13: { mobs: ['poisonRay', 'deepShark', 'ghostJelly'], interval: 0.20, batch: 8, hpScale: 15.0, boss: null },
+      14: { mobs: ['shadowEel', 'poisonRay', 'deepShark'], interval: 0.18, batch: 6, hpScale: 18.5, boss: null },
+      15: { mobs: ['shadowEel', 'deepShark', 'voidSeaSerpent'], interval: 0.16, batch: 6, hpScale: 23.0, bossTime: 14, bossStage: 215 }, // 3대 보스: 레비아탄
+      16: { mobs: ['voidSeaSerpent', 'trilobite', 'shadowEel'], interval: 0.15, batch: 7, hpScale: 26.0, boss: null },
+      17: { mobs: ['trilobite', 'voidSeaSerpent', 'stingray'], interval: 0.14, batch: 7, hpScale: 29.0, boss: null },
+      18: { mobs: ['trilobite', 'voidSeaSerpent', 'deepShark', 'poisonRay'], interval: 0.13, batch: 7, hpScale: 33.0, boss: null },
+      19: { mobs: ['plankton', 'jellyfish', 'hermitCrab', 'flyingFish', 'seaLobster', 'stingray', 'coralGolem', 'seaLeech', 'anglerFish', 'ghostJelly', 'deepShark', 'poisonRay', 'shadowEel', 'voidSeaSerpent', 'trilobite'], interval: 0.11, batch: 8, hpScale: 37.0, boss: null },
+      20: { mobs: ['voidSeaSerpent', 'trilobite', 'deepShark', 'shadowEel'], interval: 0.10, batch: 8, hpScale: 42.0, bossTime: 12, bossStage: 220 } // 최종 보스: 다곤
+    };
+
+    this.stageConfigs = this.world1StageConfigs;
+  }
+
+  setWorld(worldNum = 1) {
+    this.currentWorld = worldNum;
+    if (worldNum === 2) {
+      this.maxStage = 20;
+      this.stageConfigs = this.world2StageConfigs;
+    } else {
+      this.maxStage = 25;
+      this.stageConfigs = this.world1StageConfigs;
+    }
+    this.reset();
   }
 
   reset() {
@@ -95,6 +134,21 @@ class WaveManager {
 
     // 돌발 이벤트 웨이브 검사
     if (!this.eventWaveTriggered && elapsed >= 20) {
+      if (this.currentWorld === 2) {
+        if (this.currentStage === 3) {
+          this.eventWaveTriggered = true;
+          this.triggerEventWave('🌊 [돌발 웨이브] 청록 해파리 무리의 집단 발광!', 'jellyfish', 26, config.hpScale);
+        } else if (this.currentStage === 8) {
+          this.eventWaveTriggered = true;
+          this.triggerEventWave('🦀 [돌발 웨이브] 뿔소라게 떼의 바닥 행진!', 'hermitCrab', 24, config.hpScale);
+        } else if (this.currentStage === 13) {
+          this.eventWaveTriggered = true;
+          this.triggerEventWave('🦈 [돌발 웨이브] 메갈로돈 상어 떼의 피의 추격!', 'deepShark', 20, config.hpScale);
+        } else if (this.currentStage === 17) {
+          this.eventWaveTriggered = true;
+          this.triggerEventWave('⚡ [돌발 웨이브] 심연 전기 가오리의 번개 폭풍!', 'stingray', 22, config.hpScale);
+        }
+      } else {
       if (this.currentStage === 3) {
         this.eventWaveTriggered = true;
         this.triggerEventWave('🦇 [돌발 웨이브] 박쥐 떼의 공중 대습격!', 'bat', 24, config.hpScale);
@@ -109,6 +163,7 @@ class WaveManager {
         this.triggerEventWave('🌌 [돌발 웨이브] 원혼과 망령 군단의 대습격!', 'wraithSwarm', 22, config.hpScale);
       }
     }
+  }
 
     // 일반 몬스터 스폰 루프
     this.spawnTimer -= dt;
@@ -154,7 +209,9 @@ class WaveManager {
     const viewWidth = this.game.canvas.width;
     const viewHeight = this.game.canvas.height;
     const spawnDistance = Math.max(viewWidth, viewHeight) / 2 + 100;
-    const islandBound = 1540;
+    const bounds = (this.game && this.game.getWorldBoundaries) ? this.game.getWorldBoundaries() : { boundW: 1540, boundH: 1540 };
+    const boundW = bounds.boundW - 40;
+    const boundH = bounds.boundH - 40;
 
     for (let i = 0; i < count; i++) {
       let mobKey = mobs[Math.floor(Math.random() * mobs.length)];
@@ -190,15 +247,15 @@ class WaveManager {
         let targetY = player.y + Math.sin(angle) * dist;
 
         // 부유섬 지면 내부로 위치 제한
-        targetX = Math.max(-islandBound, Math.min(islandBound, targetX));
-        targetY = Math.max(-islandBound, Math.min(islandBound, targetY));
+        targetX = Math.max(-boundW, Math.min(boundW, targetX));
+        targetY = Math.max(-boundH, Math.min(boundH, targetY));
 
         // 플레이어와 너무 가깝게 클램핑된 경우 안전 거리(최소 260px) 유지 재보정
         const d = Math.hypot(targetX - player.x, targetY - player.y);
         if (d < 260) {
           const escapeAngle = Math.atan2(targetY - player.y, targetX - player.x) || angle;
-          targetX = Math.max(-islandBound, Math.min(islandBound, player.x + Math.cos(escapeAngle) * 320));
-          targetY = Math.max(-islandBound, Math.min(islandBound, player.y + Math.sin(escapeAngle) * 320));
+          targetX = Math.max(-boundW, Math.min(boundW, player.x + Math.cos(escapeAngle) * 320));
+          targetY = Math.max(-boundH, Math.min(boundH, player.y + Math.sin(escapeAngle) * 320));
         }
 
         x = targetX;
@@ -219,10 +276,12 @@ class WaveManager {
     let y = player.y + Math.sin(angle) * dist;
 
     // 보스가 공중형/자유비행(4, 12, 15, 18, 20)이 아닌 경우 부유섬 내부로 보정
-    const isFlyingBoss = (bossStage === 4 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20);
+    const isFlyingBoss = (bossStage === 4 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20 || bossStage === 205 || bossStage === 215 || bossStage === 220);
     if (!isFlyingBoss) {
-      x = Math.max(-1500, Math.min(1500, x));
-      y = Math.max(-1500, Math.min(1500, y));
+      const bW = (this.game && this.game.getWorldBoundaries) ? this.game.getWorldBoundaries().boundW - 60 : 1500;
+      const bH = (this.game && this.game.getWorldBoundaries) ? this.game.getWorldBoundaries().boundH - 60 : 1500;
+      x = Math.max(-bW, Math.min(bW, x));
+      y = Math.max(-bH, Math.min(bH, y));
     }
 
     const boss = new BossEnemy(bossStage, x, y);

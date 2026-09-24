@@ -1716,6 +1716,197 @@ body, #gameContainer, canvas {
   color: #ffffff;
 }
 
+/* ================= 스테이지(월드) 선택 모달 스타일 ================= */
+.stage-select-box {
+  max-width: 860px;
+  width: 95%;
+  background: rgba(15, 23, 42, 0.96);
+  border: 2px solid #0284c7;
+  box-shadow: 0 0 35px rgba(2, 132, 199, 0.4), inset 0 0 25px rgba(15, 23, 42, 0.8);
+  padding: 24px 20px;
+}
+
+.stage-select-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.stage-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.stage-card {
+  position: relative;
+  background: rgba(30, 41, 59, 0.8);
+  border: 2px solid #475569;
+  border-radius: 14px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stage-card:hover {
+  transform: translateY(-6px);
+  border-color: #38bdf8;
+  box-shadow: 0 10px 24px rgba(56, 189, 248, 0.35);
+  background: rgba(30, 41, 59, 0.98);
+}
+
+.stage-card[data-world="2"]:hover {
+  border-color: #06b6d4;
+  box-shadow: 0 10px 24px rgba(6, 182, 212, 0.45);
+}
+
+.stage-card-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+.stage-card-badge.cosmic {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border: 1px solid #a855f7;
+}
+
+.stage-card-badge.ocean {
+  background: rgba(6, 182, 212, 0.2);
+  color: #22d3ee;
+  border: 1px solid #06b6d4;
+  animation: oceanPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes oceanPulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(6, 182, 212, 0.4); }
+  50% { box-shadow: 0 0 14px rgba(6, 182, 212, 0.9); }
+}
+
+.stage-avatar-box {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.5);
+}
+
+.stage-avatar-box.cosmic-box {
+  background: radial-gradient(circle, #3b0764 0%, #1e1b4b 100%);
+  border: 2px solid #a855f7;
+}
+
+.stage-avatar-box.ocean-box {
+  background: radial-gradient(circle, #083344 0%, #0c4a6e 100%);
+  border: 2px solid #06b6d4;
+}
+
+.stage-icon {
+  font-size: 34px;
+}
+
+.stage-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0 0 4px;
+}
+
+.stage-type-tag {
+  font-size: 12px;
+  color: #a855f7;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.stage-type-tag.ocean-tag {
+  color: #38bdf8;
+}
+
+.stage-desc {
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 0 0 14px;
+  line-height: 1.4;
+  word-break: keep-all;
+  min-height: 48px;
+}
+
+.stage-info-list {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.stage-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.stage-info-row span {
+  color: #64748b;
+}
+
+.stage-info-row strong {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.stage-select-btn {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+  transition: all 0.2s ease;
+}
+
+.stage-select-btn:hover {
+  background: linear-gradient(135deg, #9333ea 0%, #818cf8 100%);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.6);
+  transform: translateY(-2px);
+}
+
+.stage-select-btn.ocean-btn {
+  background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
+}
+
+.stage-select-btn.ocean-btn:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #14b8a6 100%);
+  box-shadow: 0 6px 18px rgba(6, 182, 212, 0.6);
+}
+
+.stage-select-footer {
+  display: flex;
+  justify-content: center;
+}
+
+
 /* ============================================================
    📱 모바일 전용 반응형 & UI 컴팩트 최적화 (@media max-width: 768px)
    ============================================================ */
@@ -2083,6 +2274,40 @@ body, #gameContainer, canvas {
 
   .result-title {
     font-size: 24px;
+  }
+
+  /* 8. 스테이지 선택 모달 모바일 최적화 */
+  .stage-select-box {
+    padding: 14px;
+    max-height: 92vh;
+    max-height: 92dvh;
+  }
+
+  .stage-cards-grid {
+    grid-template-columns: 1fr;
+    max-height: 52vh;
+    max-height: 52dvh;
+    overflow-y: auto;
+    gap: 10px;
+  }
+
+  .stage-card {
+    padding: 12px 10px;
+  }
+
+  .stage-avatar-box {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 6px;
+  }
+
+  .stage-icon {
+    font-size: 26px;
+  }
+
+  .stage-desc {
+    min-height: auto;
+    margin-bottom: 8px;
   }
 }
 

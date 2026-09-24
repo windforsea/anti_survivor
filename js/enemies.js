@@ -70,15 +70,13 @@ class ExpGem {
 
     // 자석 반경 내 접근 시 또는 전체 흡수 자석 발동 시 가속 흡수
     if (this.magnetized || dist < player.magnetRadius) {
-      const speed = this.magnetized ? 750 : (420 + (1 - dist / player.magnetRadius) * 480);
+      const speed = this.magnetized ? 780 : (440 + (1 - dist / player.magnetRadius) * 480);
       this.vx = (dx / (dist || 1)) * speed;
       this.vy = (dy / (dist || 1)) * speed;
       this.x += this.vx * dt;
       this.y += this.vy * dt;
-    }
-
-    // 장애물 내부 끼임 방지 (장애물 밖으로 밀어냄)
-    if (window.game && window.game.obstacleManager) {
+    } else if (window.game && window.game.obstacleManager) {
+      // 🛡️ [버그 수정]: 바닥에 정지해 있을 때만 장애물 내부 끼임 방지 (흡인 중에는 관통 흡수)
       for (const obs of window.game.obstacleManager.obstacles) {
         if (obs.isDead) continue;
         const od = Math.hypot(this.x - obs.x, this.y - obs.y);
@@ -266,7 +264,24 @@ const ENEMY_TYPES = {
   darkMage: { name: '타락한 마도사', hp: 140, speed: 95, radius: 14, color: '#7e22ce', exp: 12, damage: 16, isRanged: true, isFlying: true },
   bloodHound: { name: '핏빛 사냥개', hp: 110, speed: 210, radius: 12, color: '#dc2626', exp: 10, damage: 18, knockbackResist: 0.35, isFlying: false }, // 속도 완화 (275 -> 210)
   wraithSwarm: { name: '망령 군단', hp: 55, speed: 145, radius: 11, color: '#06b6d4', exp: 5, damage: 12, alpha: 0.70, isFlying: true },
-  abyssTitan: { name: '심연의 거인', hp: 450, speed: 55, radius: 28, color: '#1e1b4b', exp: 28, damage: 32, knockbackResist: 0.70, isFlying: false } // HP(650->450) 및 넉백저항(0.92->0.70) 완화
+  abyssTitan: { name: '심연의 거인', hp: 450, speed: 55, radius: 28, color: '#1e1b4b', exp: 28, damage: 32, knockbackResist: 0.70, isFlying: false },
+
+  // [월드 2: 심해 대협곡 전용 해양 마물 15종]
+  plankton: { name: '발광 플랑크톤', hp: 9, speed: 155, radius: 8, color: '#67e8f9', exp: 2, damage: 5, isFlying: true },
+  jellyfish: { name: '청록 해파리', hp: 18, speed: 80, radius: 12, color: '#22d3ee', exp: 3, damage: 8, alpha: 0.75, isFlying: true },
+  hermitCrab: { name: '뿔소라게', hp: 42, speed: 70, radius: 14, color: '#f97316', exp: 4, damage: 10, knockbackResist: 0.55, isFlying: false },
+  flyingFish: { name: '심해 날치', hp: 15, speed: 200, radius: 10, color: '#38bdf8', exp: 3, damage: 7, isFlying: true },
+  seaLobster: { name: '갑주 가재', hp: 58, speed: 95, radius: 15, color: '#ef4444', exp: 5, damage: 12, knockbackResist: 0.40, isFlying: false },
+  stingray: { name: '전기 가오리', hp: 50, speed: 135, radius: 14, color: '#eab308', exp: 5, damage: 11, isFlying: true },
+  coralGolem: { name: '산호 골렘', hp: 260, speed: 48, radius: 24, color: '#14b8a6', exp: 22, damage: 24, knockbackResist: 0.80, isFlying: false },
+  seaLeech: { name: '심해 거머리', hp: 35, speed: 160, radius: 11, color: '#881337', exp: 4, damage: 9, isFlying: false },
+  anglerFish: { name: '심해 아귀', hp: 95, speed: 105, radius: 16, color: '#0f766e', exp: 8, damage: 15, isFlying: true },
+  ghostJelly: { name: '유령 해파리', hp: 75, speed: 95, radius: 15, color: '#a5f3fc', exp: 7, damage: 13, alpha: 0.60, isFlying: true },
+  deepShark: { name: '메갈로돈 상어', hp: 175, speed: 175, radius: 20, color: '#1e293b', exp: 14, damage: 22, knockbackResist: 0.50, isFlying: true },
+  poisonRay: { name: '독침 가오리', hp: 110, speed: 90, radius: 15, color: '#a855f7', exp: 10, damage: 15, isRanged: true, isFlying: true },
+  shadowEel: { name: '심연 그림자장어', hp: 120, speed: 195, radius: 13, color: '#0369a1', exp: 11, damage: 18, isFlying: true },
+  voidSeaSerpent: { name: '공허 바다뱀', hp: 380, speed: 85, radius: 26, color: '#090d16', exp: 26, damage: 30, knockbackResist: 0.70, isFlying: true },
+  trilobite: { name: '고대 삼엽충', hp: 440, speed: 55, radius: 25, color: '#78350f', exp: 27, damage: 28, knockbackResist: 0.85, isFlying: false },
 };
 
 class Enemy {
@@ -543,7 +558,7 @@ class Enemy {
         if (!this.shootTimer) this.shootTimer = 1.0 + Math.random() * 1.5;
         this.shootTimer -= dt;
 
-        const idealDist = this.typeKey === 'cultist' ? 310 : 280;
+        const idealDist = (this.typeKey === 'cultist' || this.typeKey === 'poisonRay') ? 310 : 280;
         if (dist < idealDist - 40) {
           moveDirX = -dx / dist;
           moveDirY = -dy / dist;
@@ -558,7 +573,7 @@ class Enemy {
 
         // 사거리 내 플레이어에게 암흑/저주 탄환 조준 발사
         if (this.shootTimer <= 0) {
-          this.shootTimer = this.typeKey === 'cultist' ? 5.2 : 2.2; // 교단사제 발사 주기 2배 지연 (2.6s -> 5.2s)
+          this.shootTimer = (this.typeKey === 'cultist' || this.typeKey === 'poisonRay') ? 3.5 : 2.2; // 교단사제 발사 주기 2배 지연 (2.6s -> 5.2s)
           if (enemyProjectiles && dist < 550) {
             const bulletSpeed = this.typeKey === 'cultist' ? 190 : 240;
             const bulletColor = this.typeKey === 'cultist' ? '#ef4444' : '#c026d3';
@@ -622,9 +637,11 @@ class Enemy {
         let newX = player.x + Math.cos(respawnAngle) * respawnDist;
         let newY = player.y + Math.sin(respawnAngle) * respawnDist;
 
-        // 전장 경계 내부(-1560 ~ 1560)로 안전하게 클램프
-        newX = Math.max(-1560, Math.min(1560, newX));
-        newY = Math.max(-1560, Math.min(1560, newY));
+        // 전장 경계 내부로 안전하게 클램프
+        const bW = (window.game && window.game.getWorldBoundaries) ? window.game.getWorldBoundaries().boundW - 30 : 1550;
+        const bH = (window.game && window.game.getWorldBoundaries) ? window.game.getWorldBoundaries().boundH - 30 : 1550;
+        newX = Math.max(-bW, Math.min(bW, newX));
+        newY = Math.max(-bH, Math.min(bH, newY));
 
         this.x = newX;
         this.y = newY;
@@ -746,12 +763,51 @@ class Enemy {
 
     if (!drawn) {
       ctx.save();
-      ctx.translate(this.x, this.y);
+      ctx.translate(this.x, this.y + bob);
       ctx.fillStyle = isHit ? '#ffffff' : (isRedSkeleton ? '#ef4444' : this.color);
       ctx.globalAlpha = this.alpha;
-      ctx.beginPath();
-      ctx.arc(0, bob, this.radius, 0, Math.PI * 2);
-      ctx.fill();
+
+      // 해양 생물 특화 절차적 렌더링
+      if (this.typeKey === 'jellyfish' || this.typeKey === 'ghostJelly') {
+        // 해파리: 돔형 반투명 갓 + 하늘거리는 촉수
+        ctx.beginPath();
+        ctx.arc(0, -2, this.radius, Math.PI, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 1.5;
+        for (let t = -this.radius + 3; t <= this.radius - 3; t += 4) {
+          ctx.beginPath();
+          ctx.moveTo(t, -2);
+          ctx.quadraticCurveTo(t + Math.sin(this.animTimer * 4 + t) * 4, this.radius * 0.8, t, this.radius * 1.3);
+          ctx.stroke();
+        }
+      } else if (this.typeKey === 'hermitCrab' || this.typeKey === 'seaLobster') {
+        // 게/가재: 원형 껍질 + 집게발 2개
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.arc(-this.radius * 0.9, -4, 4.5, 0, Math.PI * 2);
+        ctx.arc(this.radius * 0.9, -4, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (this.typeKey === 'deepShark' || this.typeKey === 'flyingFish') {
+        // 상어/어류: 타원형 유선형 몸체 + 꼬리지느러미
+        ctx.beginPath();
+        ctx.ellipse(0, 0, this.radius * 1.25, this.radius * 0.75, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(-facingX * this.radius * 1.2, 0);
+        ctx.lineTo(-facingX * (this.radius * 1.6), -this.radius * 0.6);
+        ctx.lineTo(-facingX * (this.radius * 1.6), this.radius * 0.6);
+        ctx.closePath();
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
       ctx.restore();
     }
 

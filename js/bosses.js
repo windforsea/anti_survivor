@@ -6,7 +6,7 @@ class BossEnemy extends Enemy {
     this.isBoss = true;
     this.bossStage = bossStage;
     // 공중 부유/비행형 보스는 장애물 무시 관통 (4: 그림자 마법사, 6: 혼돈의 눈, 12: 심연의 리치, 15: 종말의 사신, 18: 공허의 지네, 20: 혼돈의 절대신, 25: 심연의 군주, 99: 진 붉은 사신)
-    this.isFlying = (bossStage === 4 || bossStage === 6 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20 || bossStage === 25 || bossStage === 99);
+    this.isFlying = (bossStage === 4 || bossStage === 6 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20 || bossStage === 25 || bossStage === 99 || bossStage === 205 || bossStage === 215 || bossStage === 220);
 
     // 보스별 특화 설정
     if (bossStage === 2) {
@@ -157,7 +157,7 @@ class BossEnemy extends Enemy {
       this.phaseTimer = 0;
       this.sovereignWaveTimer = 1.5;
       this.sovereignWarpTimer = 2.2;
-    } else if (bossStage === 99) {
+    } else if (bossStage === 99 || bossStage === 205 || bossStage === 215 || bossStage === 220) {
       // 엔드게임 특수 보스: 진 붉은 사신 (The Red Death)
       this.name = '진 붉은 사신 (The Red Death)';
       this.maxHp = 666666;
@@ -172,6 +172,69 @@ class BossEnemy extends Enemy {
       this.isRedReaper = true;
 
       this.scytheTimer = 0.4; // 0.8 -> 0.4 (기믹 2배 가속)
+    } else if (bossStage === 205) {
+      // 월드 2 5스테이지 보스: 심해 대왕 문어 (Kraken Tentacle)
+      this.name = '심해 대왕 문어 (Kraken)';
+      this.maxHp = 9500;
+      this.hp = this.maxHp;
+      this.radius = 34;
+      this.color = '#0e7490';
+      this.speed = 105;
+      this.damage = 36;
+      this.exp = 450;
+      this.knockbackImmune = false;
+      this.isFlying = true;
+
+      this.whipTimer = 1.8;
+      this.inkTimer = 3.2;
+    } else if (bossStage === 210) {
+      // 월드 2 10스테이지 보스: 강철 집게 타이탄 크랩 (Titan Crab)
+      this.name = '강철 집게 타이탄 크랩 (Titan Crab)';
+      this.maxHp = 26000;
+      this.hp = this.maxHp;
+      this.radius = 38;
+      this.color = '#f97316';
+      this.speed = 75;
+      this.damage = 55;
+      this.exp = 1100;
+      this.knockbackImmune = true;
+
+      this.slamTimer = 2.2;
+      this.bubbleTimer = 1.4;
+    } else if (bossStage === 215) {
+      // 월드 2 15스테이지 보스: 심해의 지배자 레비아탄 (Leviathan)
+      this.name = '심해의 지배자 레비아탄 (Leviathan)';
+      this.maxHp = 68000;
+      this.hp = this.maxHp;
+      this.radius = 42;
+      this.color = '#0284c7';
+      this.speed = 135;
+      this.damage = 75;
+      this.exp = 3200;
+      this.knockbackImmune = true;
+      this.isFlying = true;
+
+      this.dashTimer = 2.5;
+      this.isDashing = false;
+      this.dashDuration = 0;
+      this.dashDir = { x: 1, y: 0 };
+      this.whirlpoolTimer = 3.0;
+    } else if (bossStage === 220) {
+      // 월드 2 20스테이지 진 최종 보스: 심연의 고대신 다곤 (Abyssal God Dagon)
+      this.name = '심연의 고대신 다곤 (Dagon)';
+      this.maxHp = 135000;
+      this.hp = this.maxHp;
+      this.radius = 48;
+      this.color = '#0f766e';
+      this.speed = 120;
+      this.damage = 95;
+      this.exp = 6500;
+      this.knockbackImmune = true;
+      this.isFlying = true;
+
+      this.tridentTimer = 1.2;
+      this.waveTimer = 2.8;
+      this.abyssOrbTimer = 4.2;
     }
   }
 
@@ -607,6 +670,164 @@ class BossEnemy extends Enemy {
         this.vx = (dx / dist) * this.speed;
         this.vy = (dy / dist) * this.speed;
       }
+    } else if (this.bossStage === 205) {
+      // [205: 크라켄 촉수 AI]
+      this.whipTimer -= dt;
+      this.inkTimer -= dt;
+
+      // 1. 촉수 채찍탄 (3발 부채꼴 고속 발사)
+      if (this.whipTimer <= 0) {
+        this.whipTimer = 1.8;
+        if (bossProjectiles && dist < 700) {
+          const baseAngle = Math.atan2(dy, dx);
+          const spread = [-0.25, 0, 0.25];
+          for (const s of spread) {
+            const angle = baseAngle + s;
+            const spd = 260;
+            bossProjectiles.push(new BossProjectile(this.x, this.y, Math.cos(angle) * spd, Math.sin(angle) * spd, 7, '#06b6d4', 22));
+          }
+          sounds.playMagic();
+        }
+      }
+
+      // 2. 먹물 분사 (6방향 원형 암흑 탄막)
+      if (this.inkTimer <= 0) {
+        this.inkTimer = 3.5;
+        if (bossProjectiles) {
+          for (let a = 0; a < Math.PI * 2; a += Math.PI / 3) {
+            bossProjectiles.push(new BossProjectile(this.x, this.y, Math.cos(a) * 180, Math.sin(a) * 180, 8, '#0f172a', 26));
+          }
+          sounds.playShotgun();
+        }
+      }
+
+      if (dist > 0.1) {
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+      }
+    } else if (this.bossStage === 210) {
+      // [210: 타이탄 크랩 AI]
+      this.slamTimer -= dt;
+      this.bubbleTimer -= dt;
+
+      // 1. 집게 내리치기 충격파 & 슬로우
+      if (this.slamTimer <= 0) {
+        this.slamTimer = 2.4;
+        sounds.playBossStomp();
+        if (window.game) {
+          window.game.addParticles(this.x, this.y, '#f97316', 20);
+        }
+        if (bossProjectiles) {
+          for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+            bossProjectiles.push(new BossProjectile(this.x, this.y, Math.cos(a) * 210, Math.sin(a) * 210, 8, '#fdba74', 28));
+          }
+        }
+        if (dist < 140) {
+          player.speed = player.baseSpeed * 0.55;
+          setTimeout(() => { if (player) player.speed = player.baseSpeed; }, 1400);
+        }
+      }
+
+      // 2. 유도 거품 탄환
+      if (this.bubbleTimer <= 0) {
+        this.bubbleTimer = 1.5;
+        if (bossProjectiles && dist < 650) {
+          const spd = 200;
+          bossProjectiles.push(new BossProjectile(this.x, this.y, (dx / (dist || 1)) * spd, (dy / (dist || 1)) * spd, 7, '#38bdf8', 20));
+          sounds.playMagic();
+        }
+      }
+
+      if (dist > 0.1) {
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+      }
+    } else if (this.bossStage === 215) {
+      // [215: 심해의 레비아탄 AI]
+      this.dashTimer -= dt;
+      this.whirlpoolTimer -= dt;
+
+      if (this.isDashing) {
+        this.dashDuration -= dt;
+        this.vx = this.dashDir.x * 540;
+        this.vy = this.dashDir.y * 540;
+        if (window.game && Math.random() < 0.6) {
+          window.game.addParticles(this.x, this.y, '#0284c7', 3);
+        }
+        if (this.dashDuration <= 0) {
+          this.isDashing = false;
+          this.dashTimer = 2.4;
+        }
+      } else if (this.dashTimer <= 0) {
+        this.isDashing = true;
+        this.dashDuration = 0.55;
+        const len = Math.hypot(dx, dy) || 1;
+        this.dashDir = { x: dx / len, y: dy / len };
+        sounds.playBossCharge();
+      } else {
+        if (dist > 0.1) {
+          this.vx = (dx / dist) * this.speed;
+          this.vy = (dy / dist) * this.speed;
+        }
+      }
+
+      if (this.whirlpoolTimer <= 0) {
+        this.whirlpoolTimer = 3.0;
+        if (bossProjectiles) {
+          const count = 12;
+          for (let i = 0; i < count; i++) {
+            const angle = (Math.PI * 2 / count) * i + this.animTimer;
+            const spd = 230;
+            bossProjectiles.push(new BossProjectile(this.x, this.y, Math.cos(angle) * spd, Math.sin(angle) * spd, 7, '#0ea5e9', 30));
+          }
+          sounds.playMagic();
+        }
+      }
+    } else if (this.bossStage === 220) {
+      // [220: 심연의 고대신 다곤 AI - 진 최종 보스]
+      this.tridentTimer -= dt;
+      this.waveTimer -= dt;
+      this.abyssOrbTimer -= dt;
+
+      // 1. 삼지창 번개 뇌격 (초고속 3갈래)
+      if (this.tridentTimer <= 0) {
+        this.tridentTimer = 1.3;
+        if (bossProjectiles && dist < 850) {
+          const baseAngle = Math.atan2(dy, dx);
+          const spread = [-0.2, 0, 0.2];
+          for (const s of spread) {
+            const a = baseAngle + s;
+            bossProjectiles.push(new BossProjectile(this.x, this.y, Math.cos(a) * 340, Math.sin(a) * 340, 7, '#2dd4bf', 34));
+          }
+          sounds.playLaser();
+        }
+      }
+
+      // 2. 조석 파도 광역 탄막 (16방향 확산)
+      if (this.waveTimer <= 0) {
+        this.waveTimer = 2.8;
+        if (bossProjectiles) {
+          for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
+            bossProjectiles.push(new BossProjectile(this.x, this.y, Math.cos(a) * 220, Math.sin(a) * 220, 8, '#06b6d4', 38));
+          }
+          sounds.playShotgun();
+        }
+      }
+
+      // 3. 심연의 소용돌이 구체
+      if (this.abyssOrbTimer <= 0) {
+        this.abyssOrbTimer = 4.2;
+        if (bossProjectiles && dist > 10) {
+          const spd = 160;
+          bossProjectiles.push(new BossProjectile(this.x, this.y, (dx / dist) * spd, (dy / dist) * spd, 14, '#134e4a', 50));
+          sounds.playMagic();
+        }
+      }
+
+      if (dist > 0.1) {
+        this.vx = (dx / dist) * this.speed;
+        this.vy = (dy / dist) * this.speed;
+      }
     } else if (this.bossStage === 99) {
       // [엔드게임 특수 보스: 진 붉은 사신 - 초고속 360 추격 + 넉백/지형 무시 + 주기적 사신의 낫 섬광]
       this.scytheTimer = (this.scytheTimer || 0.8) - dt;
@@ -639,6 +860,127 @@ class BossEnemy extends Enemy {
   }
 
   draw(ctx) {
+
+    // 월드 2 해양 보스 4종 전용 렌더링 (크라켄, 타이탄 크랩, 레비아탄, 다곤)
+    if (this.bossStage === 205) {
+      // 크라켄: 짙은 청록빛 거대 문어 머리 및 6개 꿈틀거리는 촉수
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.fillStyle = '#0e7490';
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.arc(0, -6, this.radius * 0.9, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#0891b2';
+      ctx.lineWidth = 5;
+      for (let i = -3; i <= 3; i++) {
+        if (i === 0) continue;
+        const wave = Math.sin(this.animTimer * 3 + i) * 12;
+        ctx.beginPath();
+        ctx.moveTo(i * 7, 8);
+        ctx.quadraticCurveTo(i * 12 + wave, 24, i * 8 + wave * 1.4, 38);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#fde047';
+      ctx.beginPath();
+      ctx.arc(-8, -4, 4, 0, Math.PI * 2);
+      ctx.arc(8, -4, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      return;
+    } else if (this.bossStage === 210) {
+      // 타이탄 크랩: 거대한 주황 강철 등껍질 + 양쪽 초대형 집게발
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.fillStyle = '#c2410c';
+      ctx.shadowColor = '#f97316';
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, this.radius * 1.1, this.radius * 0.85, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ea580c';
+      ctx.beginPath();
+      ctx.arc(-this.radius * 1.15, -12, 14, 0, Math.PI * 2);
+      ctx.arc(this.radius * 1.15, -12, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = '#fed7aa';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(-12, -8, 24, 16);
+      ctx.restore();
+      return;
+    } else if (this.bossStage === 215) {
+      // 레비아탄: 심해룡 유선형 푸른 몸체 + 지느러미 발광
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.fillStyle = '#0369a1';
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 24;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, this.radius * 1.3, this.radius * 0.7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.moveTo(-10, -this.radius * 0.6);
+      ctx.lineTo(0, -this.radius * 1.3);
+      ctx.lineTo(15, -this.radius * 0.6);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#67e8f9';
+      ctx.beginPath();
+      ctx.arc(14, -4, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      return;
+    } else if (this.bossStage === 220) {
+      // 다곤: 심연의 고대신 - 거대한 심해 군주, 신비로운 삼지창 및 에메랄드 왕관
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.fillStyle = '#115e59';
+      ctx.shadowColor = '#2dd4bf';
+      ctx.shadowBlur = 30;
+      ctx.beginPath();
+      ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#2dd4bf';
+      ctx.beginPath();
+      ctx.moveTo(-18, -this.radius + 4);
+      ctx.lineTo(-12, -this.radius - 12);
+      ctx.lineTo(0, -this.radius - 4);
+      ctx.lineTo(12, -this.radius - 12);
+      ctx.lineTo(18, -this.radius + 4);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = '#facc15';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(this.radius * 0.8, -this.radius * 1.2);
+      ctx.lineTo(this.radius * 0.8, this.radius * 1.1);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(this.radius * 0.5, -this.radius * 0.8);
+      ctx.lineTo(this.radius * 0.8, -this.radius * 1.3);
+      ctx.lineTo(this.radius * 1.1, -this.radius * 0.8);
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(-10, -4, 5, 0, Math.PI * 2);
+      ctx.arc(10, -4, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      return;
+    }
+
     // 돌진 조준선 (Stage 2 보스)
     if (this.isAiming) {
       ctx.save();
@@ -711,7 +1053,7 @@ class BossEnemy extends Enemy {
     ctx.translate(this.x, this.y);
 
     // 황금/사신 왕관 표식
-    ctx.fillStyle = this.bossStage === 99 ? '#ef4444' : '#fde047';
+    ctx.fillStyle = this.bossStage === 99 || bossStage === 205 || bossStage === 215 || bossStage === 220 ? '#ef4444' : '#fde047';
     ctx.beginPath();
     ctx.moveTo(-14, -this.radius - 4);
     ctx.lineTo(-7, -this.radius - 14);

@@ -23,8 +23,11 @@ class Game {
     this.damageNumbers = [];
     this.bossProjectiles = [];
     this.particles = [];
+    this.currentWorld = 1;
     this.cosmicStars = [];
-    this.initCosmicStars();
+    this.stardustStream = [];
+    this.underwaterBubbles = [];
+    this.initEnvironmentEffects(1);
 
     // 필드 상태 효과 (얼음 빙결, TNT 폭탄 플래시)
     this.freezeTimer = 0;
@@ -61,6 +64,54 @@ class Game {
       });
     }
   }
+  getWorldBoundaries() {
+    if (this.currentWorld === 2) {
+      return { boundW: 2950, boundH: 760 };
+    }
+    return { boundW: 1580, boundH: 1580 };
+  }
+
+  initEnvironmentEffects(worldNum = 1) {
+    if (worldNum === 2) {
+      this.initUnderwaterBubbles();
+    } else {
+      this.initCosmicStars();
+      this.initStardustStream();
+    }
+  }
+
+  // 월드 2 심해 기포 고정 객체 풀 (90개 고정 재사용으로 GC 렉 완벽 차단)
+  initUnderwaterBubbles() {
+    this.underwaterBubbles = [];
+    for (let i = 0; i < 90; i++) {
+      this.underwaterBubbles.push({
+        x: (Math.random() - 0.5) * 5900,
+        y: (Math.random() - 0.5) * 1520,
+        r: Math.random() * 3.5 + 1.2,
+        speed: 25 + Math.random() * 55,
+        alpha: 0.15 + Math.random() * 0.45,
+        phase: Math.random() * Math.PI * 2,
+        wobbleSpeed: 1.5 + Math.random() * 2.5
+      });
+    }
+  }
+
+  // 월드 1 우주 에테르 성운 먼지 스트림 풀 (40개 고정 재사용)
+  initStardustStream() {
+    this.stardustStream = [];
+    for (let i = 0; i < 40; i++) {
+      this.stardustStream.push({
+        x: (Math.random() - 0.5) * 3160,
+        y: (Math.random() - 0.5) * 3160,
+        r: Math.random() * 2.2 + 0.8,
+        vx: (Math.random() - 0.5) * 15,
+        vy: (Math.random() - 0.5) * 15,
+        alpha: 0.2 + Math.random() * 0.5,
+        color: Math.random() < 0.5 ? '#c084fc' : '#38bdf8'
+      });
+    }
+  }
+
 
   initCanvasResize() {
     const resize = () => {
@@ -123,8 +174,13 @@ class Game {
   }
 
   startRunWithCharacter(charType = 'knight') {
+    this.startRunWithCharacterAndStage(charType, this.currentWorld || 1);
+  }
+
+  startRunWithCharacterAndStage(charType = 'knight', worldNum = 1) {
+    this.currentWorld = worldNum;
     this.currentCharacter = charType;
-    this.restart(charType);
+    this.restart(charType, worldNum);
   }
 
   goToLobby() {
@@ -134,6 +190,7 @@ class Game {
       this.ui.hideVictory();
       this.ui.hidePauseModal();
       this.ui.hideCharacterSelect();
+      if (this.ui.hideStageSelect) this.ui.hideStageSelect();
       this.ui.showChampionBanner(); // 사망 또는 로비 진입 시 챔피언 배너 띄움
       this.ui.showLobby();
     }
@@ -150,8 +207,9 @@ class Game {
     }
   }
 
-  restart(charType = this.currentCharacter || 'knight') {
+  restart(charType = this.currentCharacter || 'knight', worldNum = this.currentWorld || 1) {
     this.currentCharacter = charType;
+    this.currentWorld = worldNum;
     this.gameState = 'PLAYING';
     this.totalElapsedTime = 0;
     this.enemies = [];
@@ -160,20 +218,25 @@ class Game {
     this.damageNumbers = [];
     this.bossProjectiles = [];
     this.particles = [];
-    this.initCosmicStars();
+    this.initEnvironmentEffects(worldNum);
     this.freezeTimer = 0;
     this.bombFlashTimer = 0;
 
     this.player = new Player(0, 0, charType);
     this.applyUpgradesFromSave(); // 영구 업그레이드 스탯 적용!
-    this.obstacleManager.reset();
+    this.obstacleManager.reset(worldNum);
     this.weaponManager = new WeaponManager(this.player, this);
     this.cardManager = new CardManager(this.player, this.weaponManager);
-    this.waveManager.reset();
+    if (this.waveManager.setWorld) {
+      this.waveManager.setWorld(worldNum);
+    } else {
+      this.waveManager.reset();
+    }
     if (this.ui) {
       this.ui.hidePauseModal();
       this.ui.hideLobby();
       this.ui.hideCharacterSelect();
+      if (this.ui.hideStageSelect) this.ui.hideStageSelect();
       this.ui.hideGameOver();
       this.ui.hideVictory();
     }
@@ -388,6 +451,19 @@ class Game {
   update(dt) {
     this.totalElapsedTime += dt;
 
+    // 심해 기포 파티클 풀 업데이트 (월드 2)
+    if (this.currentWorld === 2 && this.underwaterBubbles) {
+      for (const b of this.underwaterBubbles) {
+        b.y -= b.speed * dt;
+        b.phase += b.wobbleSpeed * dt;
+        b.x += Math.sin(b.phase) * 12 * dt;
+        if (b.y < -750) {
+          b.y = 750;
+          b.x = (Math.random() - 0.5) * 5900;
+        }
+      }
+    }
+
     // 0. 필드 장애물 청크 갱신 및 상태 업데이트
     this.obstacleManager.update(dt, this.player.x, this.player.y);
 
@@ -396,8 +472,7 @@ class Game {
     this.obstacleManager.resolveCollisions(this.player);
 
     // 전장 외곽 경계 충돌 (플레이어가 맵 끝에 걸려 밖으로 나가지 못하게 차단)
-    const boundW = 1580;
-    const boundH = 1580;
+    const { boundW, boundH } = this.getWorldBoundaries();
     this.player.x = Math.max(-boundW, Math.min(boundW, this.player.x));
     this.player.y = Math.max(-boundH, Math.min(boundH, this.player.y));
 
@@ -433,8 +508,8 @@ class Game {
 
       // 그라운드 몬스터는 부유섬 밖 우주로 나가지 못하도록 경계 제한 [-1580, 1580]
       if (!enemy.isFlying && !enemy.isBoss) {
-        enemy.x = Math.max(-1580, Math.min(1580, enemy.x));
-        enemy.y = Math.max(-1580, Math.min(1580, enemy.y));
+        enemy.x = Math.max(-boundW, Math.min(boundW, enemy.x));
+        enemy.y = Math.max(-boundH, Math.min(boundH, enemy.y));
       }
 
       if (enemy.isDead) {
@@ -453,8 +528,10 @@ class Game {
           }
         }
 
-        // 장애물 내부 겹침 방지 안전 스폰 위치 계산
-        const safePos = this.obstacleManager ? this.obstacleManager.getUnblockedPosition(enemy.x, enemy.y, 14) : { x: enemy.x, y: enemy.y };
+        // 공중 몬스터가 맵 밖에서 사망하더라도 보석은 플레이어가 먹을 수 있는 그라운드 테두리로 안전 낙하
+        const clampX = Math.max(-boundW + 40, Math.min(boundW - 40, enemy.x));
+        const clampY = Math.max(-boundH + 40, Math.min(boundH - 40, enemy.y));
+        const safePos = this.obstacleManager ? this.obstacleManager.getUnblockedPosition(clampX, clampY, 14) : { x: clampX, y: clampY };
 
         // 경험치 보석 드랍 (뒤 5종 마물은 대량 경험치 보석)
         this.expGems.push(new ExpGem(safePos.x, safePos.y, enemy.exp));
@@ -549,22 +626,25 @@ class Game {
     const width = this.canvas.width;
     const height = this.canvas.height;
 
-    // 배경 클리어 (심연 우주 암흑)
-    ctx.fillStyle = '#030308';
+    // 배경 클리어 (월드 1: 심연 우주 암흑, 월드 2: 심해 네이비)
+    ctx.fillStyle = this.currentWorld === 2 ? '#020813' : '#030308';
     ctx.fillRect(0, 0, width, height);
 
     ctx.save();
     // 카메라 좌표계 변환 (플레이어가 항상 중앙)
     ctx.translate(Math.round(width / 2 - this.camera.x), Math.round(height / 2 - this.camera.y));
 
-    // 0. 부유섬 외곽 광활한 우주 공간 및 성운 별빛 렌더링
-    this.renderCosmicSpace(ctx);
-
-    // 1. 부유섬 [-1600, 1600] 영역 격자 타일 지면 렌더링
-    this.renderFloorGrid(ctx);
-
-    // 2. 부유섬 외곽 절벽 및 고대 룬 결계 테두리선 렌더링
-    this.drawWorldBoundary(ctx);
+    if (this.currentWorld === 2) {
+      // 월드 2: 심해 협곡 공간, 해저 타일, 절벽 암벽 렌더링
+      this.renderDeepSeaSpace(ctx);
+      this.renderTrenchFloorGrid(ctx);
+      this.drawTrenchBoundary(ctx);
+    } else {
+      // 월드 1: 부유섬 외곽 광활한 우주 공간 및 성운 별빛, 지면, 결계선
+      this.renderCosmicSpace(ctx);
+      this.renderFloorGrid(ctx);
+      this.drawWorldBoundary(ctx);
+    }
 
     // 필드 장애물 (돌기둥, 나무 상자)
     this.obstacleManager.draw(ctx, this.camera, width, height);
@@ -768,6 +848,134 @@ class Game {
     }
     ctx.restore();
   }
+
+  // 월드 2 심해 협곡 외곽 수중 연출 및 기포 렌더링 (60fps 무렉)
+  renderDeepSeaSpace(ctx) {
+    ctx.save();
+
+    // 1. 심해 해류 광원 (부드러운 청록빛 수중 빛기둥)
+    const time = Date.now() * 0.001;
+    const lightGradients = [
+      { x: -1600, y: -400, r: 800, color: 'rgba(6, 182, 212, 0.06)' },
+      { x: 0, y: -500, r: 900, color: 'rgba(14, 165, 233, 0.07)' },
+      { x: 1800, y: -400, r: 800, color: 'rgba(20, 184, 166, 0.06)' }
+    ];
+    for (const lg of lightGradients) {
+      const grad = ctx.createRadialGradient(lg.x, lg.y, 0, lg.x, lg.y, lg.r);
+      grad.addColorStop(0, lg.color);
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(lg.x, lg.y, lg.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 2. 심해 기포 파티클 풀 렌더링 (순수 arc 렌더링으로 프레임 드랍 0%)
+    if (this.underwaterBubbles) {
+      ctx.strokeStyle = 'rgba(165, 243, 252, 0.6)';
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+      ctx.lineWidth = 1;
+      for (const b of this.underwaterBubbles) {
+        ctx.globalAlpha = b.alpha;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    ctx.globalAlpha = 1.0;
+    ctx.restore();
+  }
+
+  // 월드 2 심해 협곡 지면 격자 렌더링 (가로 6000 x 세로 1600)
+  renderTrenchFloorGrid(ctx) {
+    const tileSize = 64;
+    const boundW = 3000;
+    const boundH = 800;
+    const halfW = this.canvas.width / 2;
+    const halfH = this.canvas.height / 2;
+    const startX = Math.floor((this.camera.x - halfW) / tileSize) * tileSize;
+    const endX = this.camera.x + halfW + tileSize;
+    const startY = Math.floor((this.camera.y - halfH) / tileSize) * tileSize;
+    const endY = this.camera.y + halfH + tileSize;
+
+    const renderStartX = Math.max(-boundW, startX);
+    const renderEndX = Math.min(boundW, endX);
+    const renderStartY = Math.max(-boundH, startY);
+    const renderEndY = Math.min(boundH, endY);
+
+    if (renderStartX >= renderEndX || renderStartY >= renderEndY) return;
+
+    // 해저 모래 및 암반 짙은 청회색 바탕
+    ctx.fillStyle = '#061325';
+    ctx.fillRect(renderStartX, renderStartY, renderEndX - renderStartX, renderEndY - renderStartY);
+
+    // 해저 미세 격자선
+    ctx.strokeStyle = 'rgba(14, 116, 144, 0.22)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = renderStartX; x <= renderEndX; x += tileSize) {
+      ctx.moveTo(x, renderStartY);
+      ctx.lineTo(x, renderEndY);
+    }
+    for (let y = renderStartY; y <= renderEndY; y += tileSize) {
+      ctx.moveTo(renderStartX, y);
+      ctx.lineTo(renderEndX, y);
+    }
+    ctx.stroke();
+  }
+
+  // 월드 2 협곡 절벽 및 심해 경계선 렌더링
+  drawTrenchBoundary(ctx) {
+    const boundW = 3000;
+    const boundH = 800;
+    const time = Date.now() * 0.003;
+    const pulse = 0.55 + Math.sin(time) * 0.25;
+
+    ctx.save();
+    // 1. 상하단 해저 절벽 외곽 암흑 그림자
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)';
+    ctx.lineWidth = 22;
+    ctx.strokeRect(-boundW - 11, -boundH - 11, (boundW + 11) * 2, (boundH + 11) * 2);
+
+    // 2. 심해 협곡 청록색 발광 경계선
+    ctx.strokeStyle = `rgba(6, 182, 212, ${pulse})`;
+    ctx.lineWidth = 6;
+    ctx.shadowColor = '#22d3ee';
+    ctx.shadowBlur = 18;
+    ctx.strokeRect(-boundW, -boundH, boundW * 2, boundH * 2);
+
+    // 3. 내부 해양 네온 보조 라인
+    ctx.strokeStyle = `rgba(45, 212, 191, ${pulse * 0.7})`;
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 8;
+    ctx.strokeRect(-boundW + 14, -boundH + 14, (boundW - 14) * 2, (boundH - 14) * 2);
+
+    // 4. 협곡 모서리 및 거점 발광 산호 표식
+    const reefBeacons = [
+      [-boundW, -boundH], [boundW, -boundH],
+      [boundW, boundH], [-boundW, boundH],
+      [-1500, -boundH], [0, -boundH], [1500, -boundH],
+      [-1500, boundH], [0, boundH], [1500, boundH],
+      [-boundW, 0], [boundW, 0]
+    ];
+    for (const [cx, cy] of reefBeacons) {
+      ctx.fillStyle = '#06b6d4';
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 14;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
 }
 
 // 게임 기동 및 다크 판타지 에셋 로드

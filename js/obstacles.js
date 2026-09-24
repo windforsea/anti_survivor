@@ -4,10 +4,10 @@ class Obstacle {
   constructor(x, y, type = 'rock') {
     this.x = x;
     this.y = y;
-    this.type = type; // 'rock' (바위), 'tree' (고대 나무), 'crate' (파괴가능 나무상자)
+    this.type = type; // 'rock', 'tree', 'crate' (월드 1) / 'reefRock', 'seaKelp', 'sunkenChest' (월드 2)
     
-    if (this.type === 'rock' || this.type === 'tree') {
-      this.radius = 48; // 안부셔지는 장애물 크기 2배 (기존 24 -> 48)
+    if (this.type === 'rock' || this.type === 'tree' || this.type === 'reefRock' || this.type === 'seaKelp') {
+      this.radius = 48; // 비파괴 대형 장애물 (48px)
       this.isDestructible = false;
       this.hp = 999999;
       this.maxHp = 999999;
@@ -20,6 +20,7 @@ class Obstacle {
 
     this.isDead = false;
     this.hitFlashTimer = 0;
+    this.kelpWaveTimer = Math.random() * Math.PI * 2;
   }
 
   takeDamage(amount, game) {
@@ -108,7 +109,7 @@ class Obstacle {
     const img = assets.images[imgKey];
     const size = this.radius * 2.2;
 
-    if (img && img.complete && img.naturalWidth > 0) {
+    if (img && img.complete && img.naturalWidth > 0 && (this.type === 'rock' || this.type === 'tree' || this.type === 'crate')) {
       ctx.imageSmoothingEnabled = false;
 
       // 피격 플래시 (파괴형 상자만)
@@ -117,6 +118,72 @@ class Obstacle {
       }
 
       ctx.drawImage(img, this.x - size / 2, this.y - size / 2, size, size);
+      ctx.filter = 'none';
+    } else if (this.type === 'reefRock') {
+      // 🌊 [월드 2] 심해 산호 암초 바위 (비파괴형 대형 암석)
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // 산호 돌출부 및 발광 따개비
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.arc(this.x - 14, this.y - 12, 10, 0, Math.PI * 2);
+      ctx.arc(this.x + 16, this.y - 8, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#f43f5e'; // 핑크 산호 포인트
+      ctx.beginPath();
+      ctx.arc(this.x + 2, this.y + 12, 7, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (this.type === 'seaKelp') {
+      // 🌿 [월드 2] 거대 해초 숲 (비파괴형 대형 해초 기둥)
+      const time = Date.now() * 0.0025 + this.kelpWaveTimer;
+      const sway = Math.sin(time) * 12;
+
+      ctx.fillStyle = '#065f46';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y + 16, this.radius * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 물결치듯 흔들리는 해초 줄기들
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 8;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(this.x - 16, this.y + 20);
+      ctx.quadraticCurveTo(this.x - 8 + sway, this.y - 10, this.x - 14 + sway * 1.5, this.y - 42);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(this.x + 2, this.y + 22);
+      ctx.quadraticCurveTo(this.x + 12 + sway * 0.8, this.y - 15, this.x + 4 + sway * 1.8, this.y - 48);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(this.x + 18, this.y + 18);
+      ctx.quadraticCurveTo(this.x + 24 - sway, this.y - 8, this.x + 18 + sway, this.y - 36);
+      ctx.stroke();
+    } else if (this.type === 'sunkenChest') {
+      // 📦 [월드 2] 침몰선 보물상자 (파괴 가능한 궤짝)
+      if (this.hitFlashTimer > 0) {
+        ctx.filter = 'brightness(2.2) saturate(0.2)';
+      }
+      ctx.fillStyle = '#0f766e'; // 청록빛 침몰선 목재
+      ctx.fillRect(this.x - 18, this.y - 14, 36, 28);
+      ctx.strokeStyle = '#facc15'; // 금빛 쇠테두리
+      ctx.lineWidth = 2;
+      ctx.strokeRect(this.x - 18, this.y - 14, 36, 28);
+      ctx.fillStyle = '#fde047'; // 자물쇠
+      ctx.fillRect(this.x - 4, this.y - 2, 8, 8);
       ctx.filter = 'none';
     } else {
       // 폴백 드로잉
@@ -146,15 +213,25 @@ class ObstacleManager {
     this.obstacles = [];
   }
 
+  getBoundaries() {
+    // 월드 1: 사각 부유섬 (1520 x 1520 이내) / 월드 2: 가로 협곡 (2850 x 720 이내)
+    if (this.game && this.game.currentWorld === 2) {
+      return { boundW: 2850, boundH: 720 };
+    }
+    return { boundW: 1520, boundH: 1520 };
+  }
+
   update(dt, playerX, playerY) {
-    // 플레이어 주변 넓은 청크 확인 및 사전 생성 (전장 1600px 내부)
+    const { boundW, boundH } = this.getBoundaries();
     const currentChunkX = Math.floor(playerX / this.chunkSize);
     const currentChunkY = Math.floor(playerY / this.chunkSize);
 
     for (let cx = currentChunkX - 4; cx <= currentChunkX + 4; cx++) {
       for (let cy = currentChunkY - 4; cy <= currentChunkY + 4; cy++) {
-        // 전장 경계(-1600 ~ 1600) 내부 및 인접 청크만 생성
-        if (Math.abs(cx * this.chunkSize) > 1750 || Math.abs(cy * this.chunkSize) > 1750) continue;
+        // 전장 바운더리 벗어난 청크는 아예 생성 검사 제외
+        if (Math.abs(cx * this.chunkSize) > boundW + this.chunkSize || Math.abs(cy * this.chunkSize) > boundH + this.chunkSize) {
+          continue;
+        }
 
         const key = `${cx},${cy}`;
         if (!this.generatedChunks.has(key)) {
@@ -177,6 +254,8 @@ class ObstacleManager {
   generateChunk(cx, cy) {
     // 시작 지점(0,0 주변)은 안전 구역으로 장애물 최소화
     const isSpawnChunk = Math.abs(cx) <= 0 && Math.abs(cy) <= 0;
+    const { boundW, boundH } = this.getBoundaries();
+    const isWorld2 = this.game && this.game.currentWorld === 2;
     
     // 단순 의사난수 생성기 (청크 좌표 기반 결정론적)
     const seed = Math.abs(Math.sin(cx * 12.9898 + cy * 78.233) * 43758.5453) % 1;
@@ -193,18 +272,21 @@ class ObstacleManager {
       const ox = originX + 50 + subSeedX * (this.chunkSize - 100);
       const oy = originY + 50 + subSeedY * (this.chunkSize - 100);
 
+      // 🛡️ [핵심 버그 수정]: 맵 바운더리 밖으로 벗어나는 장애물 스폰 원천 차단!
+      if (Math.abs(ox) > boundW || Math.abs(oy) > boundH) continue;
+
       // 시작 플레이어 스폰 위치(0,0)와 150px 이상 거리 유지
       const distToCenter = Math.hypot(ox, oy);
       if (distToCenter < 140) continue;
 
-      // 부셔지는 장애물(나무 상자) 숫자를 반으로 축소 (약 20%만 상자 출현)
-      let type = 'rock';
+      // 월드별 장애물 타입 분기
+      let type = isWorld2 ? 'reefRock' : 'rock';
       if (typeSeed < 0.20) {
-        type = 'crate';
+        type = isWorld2 ? 'sunkenChest' : 'crate';
       } else if (typeSeed < 0.60) {
-        type = 'tree';
+        type = isWorld2 ? 'seaKelp' : 'tree';
       } else {
-        type = 'rock';
+        type = isWorld2 ? 'reefRock' : 'rock';
       }
       this.obstacles.push(new Obstacle(ox, oy, type));
     }
