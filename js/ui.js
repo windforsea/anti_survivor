@@ -405,6 +405,7 @@ class UIManager {
           'heavenlySanctuary', 'morningstarTempest', 'apocalypseComet', 'slayerBladeStorm', 'teslaShotgun', 'venomBlizzard',
           'thunderBlade', 'fireAxe', 'frostWhip', 'scatterShuriken', 'holyArrow', 'plague',
           'cycloneBow', 'eclipseSpiral',
+          'infernoCataclysm', 'shadowVortex', 'divineJudgement',
           'spinningAxe', 'bladeWhip', 'holyShotgun', 'arcaneSanctuary', 'plasmaTempest'
         ].includes(key);
         slot.className = `inv-icon inv-weapon ${isEvolved ? 'inv-evolution' : ''}`;
@@ -441,6 +442,12 @@ class UIManager {
         else if (key === 'eclipseSpiral') iconKey = 'icon_eclipsespiral';
         else if (key === 'arcaneSanctuary') iconKey = 'icon_arcanesanctuary';
         else if (key === 'plasmaTempest') iconKey = 'icon_plasmatempest';
+        else if (key === 'flamePillar') iconKey = 'icon_flamepillar';
+        else if (key === 'chakram') iconKey = 'icon_chakram';
+        else if (key === 'holyCross') iconKey = 'icon_holycross';
+        else if (key === 'infernoCataclysm') iconKey = 'icon_infernocataclysm';
+        else if (key === 'shadowVortex') iconKey = 'icon_shadowvortex';
+        else if (key === 'divineJudgement') iconKey = 'icon_divinejudgement';
 
         const imgSrc = assets.manifest[iconKey];
         const iconHtml = imgSrc ? `<img src="${imgSrc}" class="inv-img" alt="${w.name}">` : `<span>${w.icon}</span>`;

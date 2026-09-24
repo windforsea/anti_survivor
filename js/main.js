@@ -244,9 +244,9 @@ class Game {
     // 선택된 캐릭터의 전용 시그니처 시작 무기 지급
     const startWeaponMap = {
       knight: 'sword',
-      mage: 'fireWand',
-      assassin: 'poisonDagger',
-      cleric: 'holyWater',
+      mage: 'flamePillar',
+      assassin: 'chakram',
+      cleric: 'holyCross',
       sylph: 'windBow',
       malakar: 'shadowOrb'
     };

@@ -858,7 +858,6 @@ class CardManager {
 
     // [진화 17] 저지먼트 = 십자가(5Lv) + 성수(5Lv)
     const wHolyCross = this.weaponManager.weapons['holyCross'];
-    const wHolyWater = this.weaponManager.weapons['holyWater'];
     const hasDivineJudgement = !!this.weaponManager.weapons['divineJudgement'];
     if (wHolyCross && wHolyWater && !hasDivineJudgement) {
       const crossLv = this.weaponManager.getLevel(wHolyCross);
