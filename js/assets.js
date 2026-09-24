@@ -205,8 +205,12 @@ class AssetManager {
       ctx.scale(-1, 1);
     }
 
-    // 픽셀 보간 끄기 (선명한 도트 유지)
-    ctx.imageSmoothingEnabled = false;
+    // 고해상도 수묵화풍 스프라이트(영웅 6종)는 부드러운 고품질 붓선 보간 적용, 레트로 도트 에셋은 픽셀 유지
+    const isSumieHero = key.startsWith('player');
+    ctx.imageSmoothingEnabled = isSumieHero;
+    if (isSumieHero) {
+      ctx.imageSmoothingQuality = 'high';
+    }
 
     const half = size / 2;
     ctx.drawImage(img, -half, -half, size, size);

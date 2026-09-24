@@ -1,6 +1,6 @@
 {
-  "totalCalls": 19,
-  "lastUpdated": "2026-09-24T14:20:56.758Z",
+  "totalCalls": 20,
+  "lastUpdated": "2026-09-24T14:32:50.108Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 7,
+      "callCount": 8,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T14:20:56.757Z",
+      "lastUsedAt": "2026-09-24T14:32:50.107Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-24T14:32:50.108Z",
+          "reason": "영웅 6종 수묵화 리메이크 정적 감사"
+        },
         {
           "timestamp": "2026-09-24T14:20:56.758Z",
           "reason": "수묵화풍 검기 궤적 및 먹물방울 치명타 반영 후 전투 무결성 검증"
