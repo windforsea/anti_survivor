@@ -157,7 +157,7 @@ class BossEnemy extends Enemy {
       this.phaseTimer = 0;
       this.sovereignWaveTimer = 1.5;
       this.sovereignWarpTimer = 2.2;
-    } else if (bossStage === 99 || bossStage === 205 || bossStage === 215 || bossStage === 220) {
+    } else if (bossStage === 99) {
       // 엔드게임 특수 보스: 진 붉은 사신 (The Red Death)
       this.name = '진 붉은 사신 (The Red Death)';
       this.maxHp = 666666;
@@ -1053,7 +1053,7 @@ class BossEnemy extends Enemy {
     ctx.translate(this.x, this.y);
 
     // 황금/사신 왕관 표식
-    ctx.fillStyle = this.bossStage === 99 || bossStage === 205 || bossStage === 215 || bossStage === 220 ? '#ef4444' : '#fde047';
+    ctx.fillStyle = this.bossStage === 99 ? '#ef4444' : '#fde047';
     ctx.beginPath();
     ctx.moveTo(-14, -this.radius - 4);
     ctx.lineTo(-7, -this.radius - 14);
