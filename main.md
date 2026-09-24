@@ -20,6 +20,11 @@ vam/
 ├── main.md                      # [본 문서] AI 아키텍처 인덱스 및 Fast Lookup 가이드
 ├── readme.md                    # 프로젝트 소개, 실행법, 플레이 가이드 및 AI 워크플로우 요약
 │
+├── .agents/skills/              # 🤖 Antigravity 프로젝트 전용 커스텀 스킬 (VCS 팀/PC 공유)
+│   ├── anti-content-pipeline/   # 신규 무기/진화/캐릭터/몬스터 추가 파이프라인
+│   ├── anti-logic-auditor/      # 전투 엔진 & 스탯 공식 정적 무결성 감사 스크립트
+│   └── pixel-sprite-builder/    # Canvas 2D 픽셀아트 스프라이트 빌더 가이드
+│
 ├── api/                         # Vercel Serverless Function
 │   └── champion.js              # Vercel 배포 환경용 명예의 전당 REST API
 │
