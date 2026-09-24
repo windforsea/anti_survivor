@@ -6,16 +6,25 @@ class Obstacle {
     this.y = y;
     this.type = type; // 'rock', 'tree', 'crate' (월드 1) / 'reefRock', 'seaKelp', 'sunkenChest' (월드 2)
     
-    if (this.type === 'rock' || this.type === 'tree' || this.type === 'reefRock' || this.type === 'seaKelp') {
+    if (this.type === 'rock' || this.type === 'tree' || this.type === 'reefRock') {
       this.radius = 48; // 비파괴 대형 장애물 (48px)
       this.isDestructible = false;
       this.hp = 999999;
       this.maxHp = 999999;
+      this.isPassable = false;
+    } else if (this.type === 'seaKelp') {
+      // 🌿 거대 해초: 물풀이므로 플레이어와 마물이 헤엄쳐 통과 가능 (끼임 완벽 방지)
+      this.radius = 28;
+      this.isDestructible = false;
+      this.hp = 999999;
+      this.maxHp = 999999;
+      this.isPassable = true;
     } else {
       this.radius = 20;
       this.isDestructible = true;
       this.maxHp = 22;
       this.hp = 22;
+      this.isPassable = false;
     }
 
     this.isDead = false;
@@ -214,9 +223,9 @@ class ObstacleManager {
   }
 
   getBoundaries() {
-    // 월드 1: 사각 부유섬 (1520 x 1520 이내) / 월드 2: 가로 협곡 (2850 x 720 이내)
+    // 월드 1: 사각 부유섬 (1520 x 1520 이내) / 월드 2: 가로 협곡 (2850 x 1050 이내)
     if (this.game && this.game.currentWorld === 2) {
-      return { boundW: 2850, boundH: 720 };
+      return { boundW: 2850, boundH: 1050 };
     }
     return { boundW: 1520, boundH: 1520 };
   }
@@ -297,7 +306,7 @@ class ObstacleManager {
     if (entity.isFlying) return; // 공중 비행 엔티티는 장애물 통과
 
     for (const obs of this.obstacles) {
-      if (obs.isDead) continue;
+      if (obs.isDead || obs.isPassable) continue;
       const minDist = obs.radius + entity.radius;
       const dx = entity.x - obs.x;
       const dy = entity.y - obs.y;

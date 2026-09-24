@@ -217,10 +217,12 @@ class Player {
     }
     this.shieldAngle += dt * 2.5;
 
-    // 우주 부유섬 낭떠러지 밖으로 추락하지 않도록 바닥 테두리 엄격 제한
-    const bound = 1560;
-    this.x = Math.max(-bound, Math.min(bound, this.x));
-    this.y = Math.max(-bound, Math.min(bound, this.y));
+    // 전장 외곽 낭떠러지/협곡 벽 밖으로 추락하지 않도록 동적 테두리 제한
+    const bounds = (window.game && window.game.getWorldBoundaries) ? window.game.getWorldBoundaries() : { boundW: 1560, boundH: 1560 };
+    const bW = (bounds.boundW || 1580) - 20;
+    const bH = (bounds.boundH || 1580) - 20;
+    this.x = Math.max(-bW, Math.min(bW, this.x));
+    this.y = Math.max(-bH, Math.min(bH, this.y));
   }
 
   // 몬스터 처치 시 호출 (흡혈 패시브 연동)
