@@ -476,42 +476,59 @@ class Player {
       const progress = Math.max(0, Math.min(1, 1 - (anim.timer / anim.duration)));
       const area = anim.area || 1.0;
 
-      if (anim.type === 'sword' || anim.type === 'dagger') {
-        const thrustDist = (16 + Math.sin(progress * Math.PI) * 30) * Math.sqrt(area);
-        const px = this.x + Math.cos(anim.angle) * thrustDist;
-        const py = this.y + Math.sin(anim.angle) * thrustDist;
-        const spriteKey = anim.type === 'sword' ? 'anim_sword' : 'anim_dagger';
-        const img = assets.images[spriteKey] || assets.images['anim_dagger'];
-        const size = Math.round(30 * area);
-        // [수묵화 서예 붓글씨 검기 궤적 - 흑백 대비 강화]
+      if (anim.type === 'sword') {
+        // ⚔️ [철검]: 정통 서예 부채꼴 회전 베기(휘두르기) 모션 & 흑백 서예 검기 궤적
+        const sweepArc = 2.0; // 약 115도 호를 그리며 시원하게 베어 넘김
+        const startAngle = anim.angle - sweepArc / 2;
+        const curAngle = startAngle + progress * sweepArc;
+        const swordDist = (28 + Math.sin(progress * Math.PI) * 16) * Math.sqrt(area);
+        const slashRadius = swordDist + 12;
+
+        const px = this.x + Math.cos(curAngle) * swordDist;
+        const py = this.y + Math.sin(curAngle) * swordDist;
+        const img = assets.images['anim_sword'];
+        const size = Math.round(34 * area);
+
+        // 1. [서예 붓글씨 호 궤적] - 외곽 짙은 송연묵 거친 붓선
         ctx.save();
-        const slashRadius = (46 + Math.sin(progress * Math.PI) * 26) * Math.sqrt(area);
-        const arcSpread = 1.7;
-        const curSwingAngle = anim.angle - arcSpread / 2 + progress * arcSpread;
-        
-        // 1. 외곽 짙은 송연묵 거친 붓터치 궤적 (두께 8px)
         ctx.strokeStyle = '#020204';
-        ctx.lineWidth = Math.round(8 * Math.sqrt(area) * (1 - progress * 0.4));
+        ctx.lineWidth = Math.round(9 * Math.sqrt(area) * (1 - progress * 0.4));
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.arc(this.x, this.y, slashRadius, anim.angle - arcSpread / 2, curSwingAngle, false);
+        ctx.arc(this.x, this.y, slashRadius, startAngle, curAngle, false);
         ctx.stroke();
 
-        // 2. 어두운 배경에서도 번뜩이는 은백색 서예 칼날 비백(飛白) 림 (두께 3.5px)
+        // 2. 중심 번뜩이는 은백색 칼날 비백(飛白) 림 (3.5px)
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = Math.max(2, Math.round(3.5 * Math.sqrt(area) * (1 - progress * 0.3)));
         ctx.beginPath();
-        ctx.arc(this.x, this.y, slashRadius - 1.5, anim.angle - arcSpread / 2, curSwingAngle, false);
+        ctx.arc(this.x, this.y, slashRadius - 1.5, startAngle, curAngle, false);
         ctx.stroke();
 
-        // 3. 찰나의 검기 안쪽 옥빛 잔상
+        // 3. 찰나의 옥빛 잔상
         ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, slashRadius - 4, anim.angle - arcSpread / 2, curSwingAngle, false);
+        ctx.arc(this.x, this.y, slashRadius - 4, startAngle, curAngle, false);
         ctx.stroke();
         ctx.restore();
 
+        // 4. [칼 자체의 회전 휘두르기 모션] - 칼끝이 베는 궤적을 따라 회전
+        if (img && img.complete && img.naturalWidth > 0) {
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(curAngle + Math.PI / 4 + 0.35);
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(img, -size / 2, -size / 2, size, size);
+          ctx.restore();
+        }
+      } else if (anim.type === 'dagger') {
+        // 🗡️ [단검]: 전방 찌르기 모션
+        const thrustDist = (16 + Math.sin(progress * Math.PI) * 30) * Math.sqrt(area);
+        const px = this.x + Math.cos(anim.angle) * thrustDist;
+        const py = this.y + Math.sin(anim.angle) * thrustDist;
+        const img = assets.images['anim_dagger'];
+        const size = Math.round(26 * area);
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.save();
           ctx.translate(px, py);
