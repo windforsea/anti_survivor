@@ -14,7 +14,7 @@ vam/
 ├── style.css                    # 다크 판타지 네온 레트로 UI 스타일시트
 ├── server.js                    # Node.js 경량 로컬 정적 서빙 & 랭킹 API 서버 (내장 모듈만 사용)
 ├── start_server.bat             # 원클릭 서버 실행 배치 파일
-├── generate_assets.js           # 순수 Node.js 113종 픽셀아트 PNG 스프라이트 빌더
+├── generate_assets.js           # 순수 Node.js 113종 픽셀아트 PNG 스프라이트 빌더 (경량화 메인)
 ├── GEMINI.md                    # [루트] Antigravity 네이티브 프로젝트 표준 작업 규칙
 ├── AGENTS.md                    # [루트] 멀티 에이전트 공용 표준 지침
 ├── main.md                      # [본 문서] AI 아키텍처 인덱스 및 Fast Lookup 가이드
@@ -40,22 +40,37 @@ vam/
 │   ├── assets.md                # 113종 스프라이트 에셋 명세표
 │   └── system.md                # FNV-1a 보안 체크섬, 무결성 검증
 │
-├── js/                          # 🚀 고속 바닐라 JS 코어 런타임 (모듈화 구조)
-│   ├── main.js                  # Game 클래스: 메인 루프, 입력 이벤트, 렌더링 파이프라인
-│   ├── player.js                # Player 클래스: 이동, 조작, 피격 판정, 레벨업/경험치 곡선, 공격 모션
-│   ├── weaponData.js            # WEAPON_CONFIGS: 14종 기본 무기 및 14대 진화 무기 스펙 데이터 테이블
-│   ├── weapons.js               # WeaponManager 클래스: 14종 기본/14종 진화 무기 엔진, 투사체 및 장판 시뮬레이션
-│   ├── enemies.js               # EnemyManager, Enemy 클래스: 15종 일반 몬스터 스폰, AI 행동, 충돌 판정, 빙결/넉백
-│   ├── bosses.js                # BossEnemy 클래스: 15종 보스 스펙, 넉백 면역 및 전방위 탄막 패턴 AI
-│   ├── cards.js                 # CardManager 클래스: 철검(sword) 전직업 공용화 및 타직업 시그니처 5종 차단 카드 풀, 진화 합성
-│   ├── waveManager.js           # WaveManager 클래스: 25단계 스테이지 타이머, 스폰 제어, 사신 강림
-│   ├── obstacles.js             # ObstacleManager 클래스: 필드 장애물(바위, 나무, 상자) 충돌 및 파괴
-│   ├── saveManager.js           # SaveManager 클래스: FNV-1a 해시 체크섬 및 로컬 스토리지 입출력
-│   ├── audio.js                 # SoundEngine 클래스: Web Audio API 8비트 레트로 신디사이저 사운드
-│   ├── assets.js                # AssetManager 클래스: 113종 스프라이트 프리로더 및 매니페스트
-│   └── ui.js                    # UIManager 클래스: HUD 렌더링, 모달 제어, 조이스틱, XSS 살균
+├── assets/                      # 게임 에셋 데이터 및 생성된 스프라이트 이미지
+│   ├── data/                    # 113종 픽셀아트 도트 매트릭스 분할 데이터 (Node.js/CJS)
+│   │   ├── sprites_heroes.js    # 영웅 6종 도트 매트릭스
+│   │   ├── sprites_enemies_w1.js# 월드 1 몬스터 15종 도트 매트릭스
+│   │   ├── sprites_enemies_w2.js# 월드 2 몬스터 15종 도트 매트릭스
+│   │   ├── sprites_bosses.js    # 보스 13종 도트 매트릭스
+│   │   ├── sprites_icons.js     # 무기/아이템/패시브 아이콘 48종 도트 매트릭스
+│   │   └── sprites_misc.js      # 투사체, 이펙트, 기타 오브젝트 16종 도트 매트릭스
+│   └── sprites/                 # 113종 빌드된 픽셀아트 스프라이트 PNG 파일 디렉토리
 │
-└── assets/sprites/              # 113종 픽셀아트 스프라이트 PNG 파일 디렉토리
+└── js/                          # 🚀 고속 바닐라 JS 코어 런타임 (모듈화 구조)
+    ├── main.js                  # Game 클래스: 메인 루프, 입력 이벤트, 렌더링 파이프라인
+    ├── player.js                # Player 클래스: 이동, 조작, 피격 판정, 레벨업/경험치 곡선, 공격 모션
+    ├── weaponData.js            # WEAPON_CONFIGS: 14종 기본 무기 및 14대 진화 무기 스펙 데이터 테이블
+    ├── weapons.js               # WeaponManager 클래스: 코어 스탯 계산, 쿨다운 관리, 무기 레벨업 제어
+    ├── weaponExecutors.js       # WeaponManager 발사 확장: 28종 기본/진화 무기별 발사 및 투사체 생성 로직
+    ├── weaponRenderer.js        # WeaponManager 렌더러 확장: 투사체 및 무기 이펙트 캔버스 렌더링
+    ├── enemyData.js             # ENEMY_TYPES: 월드 1(15종) 및 월드 2(15종) 일반 몬스터 스펙 테이블
+    ├── enemies.js               # EnemyManager, Enemy 클래스: 몬스터 스폰, AI 행동, 충돌 판정, 빙결/넉백
+    ├── bosses.js                # BossEnemy 클래스: 15종 보스 스펙, 넉백 면역 및 전방위 탄막 패턴 AI
+    ├── dropItems.js             # DamageNumber, ExpGem, PickupItem, BossProjectile 독립 클래스
+    ├── cards.js                 # CardManager 클래스: 무기/패시브 추첨, 철검 공용화, 직업 제한, 진화 합성
+    ├── waveManager.js           # WaveManager 클래스: 25단계 스테이지 타이머, 스폰 제어, 사신 강림
+    ├── obstacles.js             # ObstacleManager 클래스: 필드 장애물(바위, 나무, 상자) 충돌 및 파괴
+    ├── saveManager.js           # SaveManager 클래스: FNV-1a 해시 체크섬 및 로컬 스토리지 입출력
+    ├── audio.js                 # SoundEngine 클래스: Web Audio API 8비트 레트로 신디사이저 사운드
+    ├── assets.js                # AssetManager 클래스: 113종 스프라이트 프리로더 및 매니페스트
+    ├── ui.js                    # UIManager 클래스: HUD 렌더링, 공용 모달 제어, 전체화면
+    ├── lobby.js                 # UIManager 로비 확장: 로비 화면, 영구 강화 상점, 캐릭터/월드 선택
+    ├── ranking.js               # UIManager 랭킹 확장: 명예의 전당 랭킹 모달 렌더링
+    └── joystick.js              # UIManager 조이스틱 확장: 모바일 터치 가상 조이스틱 이벤트 제어
 ```
 
 ---
@@ -65,7 +80,7 @@ vam/
 ### 2.1 코어 게임 루프 및 플레이어 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
-| [`js/main.js`](js/main.js) | `Game` | 전체 게임 루프, 상태(로비/플레이/일시정지/승리/게임오버) 관리, 캔버스 렌더링 총괄 | `init()`, `start()`, `update(dt)`, `draw()`, `triggerBomb()` |
+| [`js/main.js`](js/main.js) | `Game` | 전체 게임 루프, 상태(로비/플레이/일시정지/승리/게임오버) 관리, 캔버스 렌더링 총괄 | `init()`, `start()`, `update(dt)`, `draw()`, `triggerBomb()`, `goToLobby()` |
 | [`js/player.js`](js/player.js) | `Player` | 캐릭터 이동, 입력 제어, 무적 시간, 경험치 획득, 레벨업 요구량 계산, 부활 및 공격 모션 | `update(dt)`, `gainExp(amt)`, `takeDamage(dmg)`, `triggerAttackAnim()` |
 | [`js/saveManager.js`](js/saveManager.js) | `SaveManager` | 유저 골드 및 영구 강화 스탯의 로컬 저장/로드, FNV-1a 해시 체크섬 검증 | `load()`, `save()`, `calculateChecksum(data)` |
 | [`js/waveManager.js`](js/waveManager.js) | `WaveManager` | 25스테이지(총 18분 45초) 타임라인 진행, 몬스터 스폰 주기, 사신 강림 트리거 | `update(dt)`, `nextStage()`, `spawnReaper()` |
@@ -74,45 +89,68 @@ vam/
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
 | [`js/weaponData.js`](js/weaponData.js) | `WEAPON_CONFIGS` | 14종 기본 무기 및 14대 2단계 진화 무기 기본 스펙, 쿨다운, 피해량, 범위 데이터 정의 | `sword`, `axe`, `slayerBladeStorm`, `eclipseSpiral` 등 28종 스펙 |
-| [`js/weapons.js`](js/weapons.js) | `WeaponManager` | 14종 기본 무기 및 14대 진화 무기 발사, 쿨다운/데미지/투사체/도트 장판 시뮬레이션 및 캔버스 렌더링 | `update(dt, enemies)`, `fireWeapon(w, enemies)`, `getCooldown(w)`, `getDamage(w)` |
+| [`js/weapons.js`](js/weapons.js) | `WeaponManager` | 무기 코어: 스탯 계산 공식(getCount, getDamage, getArea 등), 쿨다운 관리, 레벨업 | `update(dt, enemies)`, `fireWeapon(w, enemies)`, `getCooldown(w)`, `getDamage(w)` |
+| [`js/weaponExecutors.js`](js/weaponExecutors.js) | `WeaponManager` 프로토타입 확장 | 28종 기본/진화 무기별 실제 발사 로직 및 투사체 인스턴스 생성 | `executeSword()`, `executeAxe()`, `executeEclipseSpiral()` 등 28종 실행기 |
+| [`js/weaponRenderer.js`](js/weaponRenderer.js) | `WeaponManager` 프로토타입 확장 | 28종 무기의 캔버스 2D 투사체 및 특수 이펙트 렌더링 | `drawWeapons(ctx, player)` |
 
 ### 2.3 몬스터 및 보스 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
-| [`js/enemies.js`](js/enemies.js) | `EnemyManager`, `Enemy`, `DamageNumber` | 15종 일반 몬스터 스폰/AI 행동/충돌 판정, 유령 무적/해골 부활 빙결 면역, 렉 없는 크리티컬 느낌표 표기 | `update(dt, player)`, `spawnEnemy(type)`, `checkCollisions()`, `draw()` |
+| [`js/enemyData.js`](js/enemyData.js) | `ENEMY_TYPES` | 월드 1(15종) 및 월드 2(15종) 일반 몬스터의 스탯, 색상, 스프라이트 매핑 테이블 | `ENEMY_TYPES.world1`, `ENEMY_TYPES.world2` |
+| [`js/enemies.js`](js/enemies.js) | `EnemyManager`, `Enemy` | 몬스터 스폰 주기 관리, AI 이동/추적, 플레이어 및 무기 충돌 판정, 상태이상(빙결/넉백) | `update(dt, player)`, `spawnEnemy(type)`, `checkCollisions()`, `draw()` |
 | [`js/bosses.js`](js/bosses.js) | `BossEnemy` | 15종 보스 스펙, 넉백 면역 판정, 15대 특수 탄막/돌진/소환/블랙홀 패턴 AI 및 체력바 렌더링 | `update(dt, player)`, `draw(ctx)`, `takeDamage(amount)` |
+| [`js/dropItems.js`](js/dropItems.js) | `DamageNumber`, `ExpGem`, `PickupItem`, `BossProjectile` | 몬스터 사망 드랍 보석, 필드 아이템(포션/폭탄/자석/치킨), 보스 탄막, 크리티컬 데미지 텍스트 | `DamageNumber`, `ExpGem`, `PickupItem`, `BossProjectile` |
 
 ### 2.4 레벨업 카드, 장애물 및 UI 레이어
 | 파일명 | 클래스/함수명 | 역할 및 책임 | 주요 메서드 / 프로퍼티 |
 | :--- | :--- | :--- | :--- |
 | [`js/cards.js`](js/cards.js) | `CardManager` | 철검(sword) 전직업 공용화, 타 직업 시그니처 무기 5종 차단(Blacklist), 14대 진화 합성 힌트 및 카드 추첨 | `generateCards()`, `generateStartingWeaponCards()`, `getForbiddenWeaponsForClass()` |
 | [`js/obstacles.js`](js/obstacles.js) | `ObstacleManager` | 3종 필드 장애물(바위, 고대나무, 나무상자) 배치 및 충돌/파괴/아이템 드랍 | `update(dt, player)`, `draw(ctx, player)` |
-| [`js/ui.js`](js/ui.js) | `UIManager` | 체력바, EXP 게이지, 타이머, 레벨업 카드 모달, 승리/패배 모달, 명예의 전당, 가상 조이스틱, 로비/HUD 듀얼 전체화면 | `showLevelUpModal(cards)`, `showGameOverModal()`, `renderHallOfFame()`, `initFullscreen()` |
+| [`js/ui.js`](js/ui.js) | `UIManager` | HUD(체력, 경험치, 타이머), 레벨업 카드 모달, 일시정지 창, 게임오버/승리 모달, 전체화면 | `showLevelUpModal(cards)`, `showGameOverModal()`, `togglePause()`, `initFullscreen()` |
+| [`js/lobby.js`](js/lobby.js) | `UIManager` 프로토타입 확장 | 로비 화면 모달, 영구 강화 상점(골드 구매/환불), 캐릭터 및 월드 선택 창 | `renderPermanentShop()`, `openCharacterSelectModal()`, `selectWorld()` |
+| [`js/ranking.js`](js/ranking.js) | `UIManager` 프로토타입 확장 | 명예의 전당 랭킹 조회 및 테이블 렌더링, 랭킹 모달 제어 | `renderHallOfFame()`, `closeHallOfFame()` |
+| [`js/joystick.js`](js/joystick.js) | `UIManager` 프로토타입 확장 | 모바일 및 터치 디바이스 가상 조이스틱 이벤트 리스너 및 렌더링 | `initJoystick()`, `updateJoystickPosition()` |
 
 ---
 
 ## 3. AI 작업 시 빠른 참조 맵 (Fast Lookup)
 
-어떤 기능을 수정해야 할 때 AI가 바로 열람하고 수정해야 하는 타겟 파일 경로입니다. (더미 파일이 제거되어 단일 파일로 즉시 수정 가능)
+어떤 기능을 수정해야 할 때 AI가 바로 열람하고 수정해야 하는 타겟 파일 경로입니다.
 
 * **캐릭터 스탯, 이동속도, 경험치 곡선, 부활, 공격 애니메이션을 변경할 때**:
   👉 [`js/player.js`](js/player.js) (`constructor`, `applyCharacterStats`, `triggerAttackAnim`)
-* **특정 기본/진화 무기의 기본 스펙, 데미지, 쿨타임을 수정할 때**:
-  👉 [`js/weaponData.js`](js/weaponData.js) (스펙 정의) 및 [`js/weapons.js`](js/weapons.js) (공격 로직)
+* **특정 기본/진화 무기의 기본 스펙(데미지, 쿨다운, 범위 등)을 수정할 때**:
+  👉 [`js/weaponData.js`](js/weaponData.js) (스펙 정의) 및 [`js/weapons.js`](js/weapons.js) (공식 계산)
+* **특정 기본/진화 무기의 발사 형태나 투사체 동작을 수정할 때**:
+  👉 [`js/weaponExecutors.js`](js/weaponExecutors.js) (28종 무기 발사 로직)
+* **무기 투사체나 공격 이펙트의 캔버스 그래픽을 수정할 때**:
+  👉 [`js/weaponRenderer.js`](js/weaponRenderer.js) (`drawWeapons`)
+* **일반 몬스터의 스펙(HP, 속도, 공격력, 색상)을 수정할 때**:
+  👉 [`js/enemyData.js`](js/enemyData.js) (`ENEMY_TYPES.world1`, `ENEMY_TYPES.world2`)
+* **일반 몬스터의 AI, 충돌 판정, 빙결/넉백 상태이상을 수정할 때**:
+  👉 [`js/enemies.js`](js/enemies.js) (`update`, `takeDamage`, `spawnEnemy`)
 * **보스 15종 탄막 패턴, 돌진, 소환, 넉백 면역을 수정할 때**:
   👉 [`js/bosses.js`](js/bosses.js) (`BossEnemy`, `takeDamage`, `update`)
-* **일반 몬스터 빙결/넉백/스탯 및 크리티컬 느낌표(!)를 수정할 때**:
-  👉 [`js/enemies.js`](js/enemies.js) (`DamageNumber`, `freeze`, `takeDamage`, `spawnEnemy`)
+* **보스 투사체, 드랍 아이템(보석, 포션 등), 데미지 텍스트를 수정할 때**:
+  👉 [`js/dropItems.js`](js/dropItems.js) (`BossProjectile`, `ExpGem`, `PickupItem`, `DamageNumber`)
 * **스테이지 진행 시간, 몹 스폰량, 사신 강림 시점을 변경할 때**:
   👉 [`js/waveManager.js`](js/waveManager.js) (`stageConfigs`, `maxStage = 25`)
-* **필드 장애물, 드랍 아이템(포션, 폭탄, 자석 등)의 수치나 효과를 수정할 때**:
-  👉 [`js/obstacles.js`](js/obstacles.js) 및 [`js/main.js`](js/main.js)
-* **HUD, 명예의 전당, 캐릭터 선택, 로비 강화 상점 UI를 수정할 때**:
+* **필드 장애물(바위, 나무, 상자)의 수치나 효과를 수정할 때**:
+  👉 [`js/obstacles.js`](js/obstacles.js)
+* **HUD, 레벨업 카드 선택, 일시정지 창을 수정할 때**:
   👉 [`js/ui.js`](js/ui.js), [`index.html`](index.html), [`style.css`](style.css)
-* **픽셀아트 스프라이트 디자인 및 생성을 수정할 때**:
-  👉 [`generate_assets.js`](generate_assets.js) (수정 후 `node generate_assets.js` 실행)
+* **로비 화면, 영구 강화 상점, 캐릭터/월드 선택창을 수정할 때**:
+  👉 [`js/lobby.js`](js/lobby.js)
+* **명예의 전당 랭킹 모달을 수정할 때**:
+  👉 [`js/ranking.js`](js/ranking.js)
+* **가상 조이스틱 터치 입력을 수정할 때**:
+  👉 [`js/joystick.js`](js/joystick.js)
+* **픽셀아트 스프라이트 디자인 및 도트 매트릭스를 수정할 때**:
+  👉 `assets/data/` 디렉토리 내 해당 파일 수정 후 `node generate_assets.js` 실행
 * **신규 월드(3, 4 등) 지형/장애물/보스/타임라인을 추가할 때**:
   👉 `.agents/skills/anti-world-architect/` (`node .agents/skills/anti-world-architect/scripts/scaffold_world.js`)
+* **전투 엔진 및 무기 공식 정합성을 감사할 때**:
+  👉 `.agents/skills/anti-logic-auditor/` (`node .agents/skills/anti-logic-auditor/scripts/audit_weapons.js`)
 * **스테이지 난이도 곡선 및 보스 처치 시간(TTK) 밸런스를 검증할 때**:
   👉 `.agents/skills/anti-balance-simulator/` (`node .agents/skills/anti-balance-simulator/scripts/simulate_balance.js`)
 * **스킬 추천, 효율(ROI) 산출, 호출 통계 대시보드 조회 및 미사용 스킬을 정리할 때**:
