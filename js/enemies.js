@@ -418,8 +418,6 @@ class Enemy {
 
       // 꿈틀대는 붉은 부활 안광
       ctx.fillStyle = '#ef4444';
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 6;
       ctx.beginPath();
       ctx.arc(shake - 2.5, 0, 1.6, 0, Math.PI * 2);
       ctx.arc(shake + 2.5, 0, 1.6, 0, Math.PI * 2);
@@ -438,45 +436,10 @@ class Enemy {
     const isRedSkeleton = (this.typeKey === 'skeleton' && this.reviveState === 2);
 
     // 그림자 (월드 좌표)
-    ctx.save();
     ctx.fillStyle = isRedSkeleton ? 'rgba(239, 68, 68, 0.45)' : 'rgba(0, 0, 0, 0.35)';
     ctx.beginPath();
     ctx.ellipse(this.x, this.y + this.radius - 2, this.radius * 0.85, this.radius * 0.35, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.restore();
-
-    ctx.save();
-    if (!isHit) {
-      if (isRedSkeleton) {
-      // 붉은 해골: 강렬한 핏빛 네온 아우라
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 18;
-    } else if (this.typeKey === 'plankton' || this.typeKey === 'jellyfish' || this.typeKey === 'ghostJelly') {
-      ctx.shadowColor = '#06b6d4';
-      ctx.shadowBlur = 12;
-    } else if (this.typeKey === 'stingray') {
-      ctx.shadowColor = '#eab308';
-      ctx.shadowBlur = 14;
-    } else if (this.typeKey === 'poisonRay') {
-      ctx.shadowColor = '#a855f7';
-      ctx.shadowBlur = 14;
-    } else if (this.typeKey === 'voidSeaSerpent' || this.typeKey === 'wraithSwarm' || this.typeKey === 'darkMage') {
-      ctx.shadowColor = '#c084fc';
-      ctx.shadowBlur = 14;
-    } else if (this.typeKey === 'ghost') {
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 10;
-    } else if (this.typeKey === 'bloodHound') {
-      ctx.shadowColor = '#dc2626';
-      ctx.shadowBlur = 12;
-    } else if (this.typeKey === 'slime' || this.typeKey === 'miniSlime') {
-      ctx.shadowColor = '#22c55e';
-      ctx.shadowBlur = 8;
-    } else if (this.typeKey === 'deepShark' || this.typeKey === 'anglerFish') {
-      ctx.shadowColor = '#0284c7';
-      ctx.shadowBlur = 12;
-    }
-    }
 
     // 다크 판타지 도트 스프라이트 렌더링
     const drawn = assets.drawSprite(ctx, this.typeKey, this.x, this.y + bob, spriteSize, facingX, isHit);
@@ -497,8 +460,6 @@ class Enemy {
       ctx.save();
       ctx.translate(this.x, this.y + bob);
       ctx.fillStyle = '#ff0000';
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 10;
       const eyeDir = facingX;
       ctx.beginPath();
       ctx.arc(eyeDir * 2 - 2, -4, 2, 0, Math.PI * 2);
@@ -506,7 +467,7 @@ class Enemy {
       ctx.fill();
       ctx.restore();
     }
-    ctx.restore();
+    
 
     if (!drawn) {
       ctx.save();
@@ -561,11 +522,9 @@ class Enemy {
     // 빙결 시 서리빛 얼음 결계 및 틴트 렌더링
     if (this.freezeTimer > 0) {
       ctx.save();
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.40)';
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
       ctx.strokeStyle = '#bae6fd';
       ctx.lineWidth = 2;
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 8;
       ctx.beginPath();
       ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
       ctx.fill();

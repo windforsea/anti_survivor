@@ -652,43 +652,65 @@ class Game {
     // 1. 바닥 도트 장판
     this.weaponManager.draw(ctx);
 
-    // 2. 특수 아이템 드랍 (자석, 폭탄, 얼음)
+    // [초고속 뷰포트 컬링 바운딩 박스 계산]
+    const halfW = width / 2;
+    const halfH = height / 2;
+    const cMargin = 90; // 화면 테두리 팝인 방지 여유 마진
+    const vMinX = this.camera.x - halfW - cMargin;
+    const vMaxX = this.camera.x + halfW + cMargin;
+    const vMinY = this.camera.y - halfH - cMargin;
+    const vMaxY = this.camera.y + halfH + cMargin;
+
+    // 2. 특수 아이템 드랍 (자석, 폭탄, 얼음) - 화면 내 객체만 렌더링
     for (const item of this.pickupItems) {
-      item.draw(ctx);
+      if (item.x >= vMinX && item.x <= vMaxX && item.y >= vMinY && item.y <= vMaxY) {
+        item.draw(ctx);
+      }
     }
 
-    // 3. 경험치 보석
+    // 3. 경험치 보석 - 화면 내 객체만 렌더링 (후반부 보석 500개 누적 시 90% 연산 절감)
     for (const gem of this.expGems) {
-      gem.draw(ctx);
+      if (gem.x >= vMinX && gem.x <= vMaxX && gem.y >= vMinY && gem.y <= vMaxY) {
+        gem.draw(ctx);
+      }
     }
 
-    // 4. 몬스터
+    // 4. 몬스터 - 화면 내 객체만 렌더링
     for (const enemy of this.enemies) {
-      enemy.draw(ctx);
+      const r = enemy.radius || 20;
+      if (enemy.x + r >= vMinX && enemy.x - r <= vMaxX && enemy.y + r >= vMinY && enemy.y - r <= vMaxY) {
+        enemy.draw(ctx);
+      }
     }
 
     // 5. 플레이어
     this.player.draw(ctx);
 
-    // 6. 보스 투사체
+    // 6. 보스 투사체 - 화면 내 객체만 렌더링
     for (const bp of this.bossProjectiles) {
-      bp.draw(ctx);
+      if (bp.x >= vMinX && bp.x <= vMaxX && bp.y >= vMinY && bp.y <= vMaxY) {
+        bp.draw(ctx);
+      }
     }
 
-    // 7. 파티클
+    // 7. 파티클 - 화면 내 객체만 렌더링
     for (const p of this.particles) {
-      const alpha = Math.max(0, p.life / p.maxLife);
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = alpha;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      ctx.fill();
+      if (p.x >= vMinX && p.x <= vMaxX && p.y >= vMinY && p.y <= vMaxY) {
+        const alpha = Math.max(0, p.life / p.maxLife);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     ctx.globalAlpha = 1.0;
 
-    // 8. 데미지 숫자 텍스트
+    // 8. 데미지 숫자 텍스트 - 화면 내 객체만 렌더링
     for (const dn of this.damageNumbers) {
-      dn.draw(ctx);
+      if (dn.x >= vMinX && dn.x <= vMaxX && dn.y >= vMinY && dn.y <= vMaxY) {
+        dn.draw(ctx);
+      }
     }
 
     ctx.restore();
@@ -812,14 +834,11 @@ class Game {
     // 2. 외곽 고대 우주 룬 결계 발광 라인
     ctx.strokeStyle = `rgba(168, 85, 247, ${pulse})`;
     ctx.lineWidth = 6;
-    ctx.shadowColor = '#c084fc';
-    ctx.shadowBlur = 20;
     ctx.strokeRect(-bound, -bound, bound * 2, bound * 2);
 
     // 3. 내부 청록빛 룬 보조 라인
     ctx.strokeStyle = `rgba(56, 189, 248, ${pulse * 0.75})`;
     ctx.lineWidth = 2;
-    ctx.shadowBlur = 8;
     ctx.strokeRect(-bound + 12, -bound + 12, (bound - 12) * 2, (bound - 12) * 2);
 
     // 4. 4개 모서리 및 사방 중앙 결계석
@@ -835,8 +854,6 @@ class Game {
     ];
     for (const [cx, cy] of monoliths) {
       ctx.fillStyle = '#c084fc';
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 12;
       ctx.beginPath();
       ctx.arc(cx, cy, 14, 0, Math.PI * 2);
       ctx.fill();
@@ -942,14 +959,11 @@ class Game {
     // 2. 심해 협곡 청록색 발광 경계선
     ctx.strokeStyle = `rgba(6, 182, 212, ${pulse})`;
     ctx.lineWidth = 6;
-    ctx.shadowColor = '#22d3ee';
-    ctx.shadowBlur = 18;
     ctx.strokeRect(-boundW, -boundH, boundW * 2, boundH * 2);
 
     // 3. 내부 해양 네온 보조 라인
     ctx.strokeStyle = `rgba(45, 212, 191, ${pulse * 0.7})`;
     ctx.lineWidth = 2;
-    ctx.shadowBlur = 8;
     ctx.strokeRect(-boundW + 14, -boundH + 14, (boundW - 14) * 2, (boundH - 14) * 2);
 
     // 4. 협곡 모서리 및 거점 발광 산호 표식
@@ -962,8 +976,6 @@ class Game {
     ];
     for (const [cx, cy] of reefBeacons) {
       ctx.fillStyle = '#06b6d4';
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 14;
       ctx.beginPath();
       ctx.arc(cx, cy, 12, 0, Math.PI * 2);
       ctx.fill();

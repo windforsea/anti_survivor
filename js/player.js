@@ -459,8 +459,6 @@ class Player {
         const sx = Math.cos(a) * (this.radius + 12);
         const sy = Math.sin(a) * (this.radius + 12);
         ctx.fillStyle = '#38bdf8';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(sx, sy, 5, 0, Math.PI * 2);
         ctx.fill();

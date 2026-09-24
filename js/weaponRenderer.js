@@ -19,8 +19,6 @@ WeaponManager.prototype.draw = function(ctx) {
       // 결계 외곽 테두리선
       ctx.strokeStyle = `rgba(253, 224, 71, ${pulse + 0.35})`;
       ctx.lineWidth = Math.max(2, Math.round(3 * Math.sqrt(area)));
-      ctx.shadowColor = '#facc15';
-      ctx.shadowBlur = 12;
       ctx.stroke();
 
       // 회전하는 8개 성스러운 룬 마커
@@ -53,8 +51,6 @@ WeaponManager.prototype.draw = function(ctx) {
 
       ctx.strokeStyle = `rgba(34, 197, 94, ${pulse + 0.4})`;
       ctx.lineWidth = Math.max(2, Math.round(3 * Math.sqrt(area)));
-      ctx.shadowColor = '#22c55e';
-      ctx.shadowBlur = 12;
       ctx.stroke();
 
       const runes = 8;
@@ -99,8 +95,6 @@ WeaponManager.prototype.draw = function(ctx) {
       // 외곽 황금 테두리
       ctx.strokeStyle = `rgba(254, 240, 138, ${pulse + 0.45})`;
       ctx.lineWidth = Math.max(3, Math.round(4.5 * Math.sqrt(area)));
-      ctx.shadowColor = '#facc15';
-      ctx.shadowBlur = 18;
       ctx.stroke();
 
       // 회전하는 10개 천상 룬 마커
@@ -162,8 +156,6 @@ WeaponManager.prototype.draw = function(ctx) {
       ctx.save();
       ctx.strokeStyle = `rgba(186, 230, 253, ${alpha})`;
       ctx.lineWidth = 4;
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 16;
       ctx.beginPath();
       if (ls.segments && ls.segments.length > 0) {
         ctx.moveTo(ls.segments[0].x, ls.segments[0].y);
@@ -194,8 +186,6 @@ WeaponManager.prototype.draw = function(ctx) {
       // 확장되는 플라즈마 충격파
       ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
       ctx.lineWidth = 5 * (1 - prog);
-      ctx.shadowColor = '#06b6d4';
-      ctx.shadowBlur = 20;
       ctx.beginPath();
       ctx.arc(ps.x, ps.y, ps.radius * prog, 0, Math.PI * 2);
       ctx.stroke();
@@ -220,8 +210,6 @@ WeaponManager.prototype.draw = function(ctx) {
         const alpha = Math.min(1.0, s.life / 0.15);
         ctx.save();
         ctx.fillStyle = s.isInferno ? `rgba(239, 68, 68, ${0.6 * alpha})` : `rgba(249, 115, 22, ${0.5 * alpha})`;
-        ctx.shadowColor = s.isInferno ? '#dc2626' : '#f97316';
-        ctx.shadowBlur = 18;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.radius * Math.min(1.0, prog * 1.5), 0, Math.PI * 2);
         ctx.fill();
@@ -262,8 +250,6 @@ WeaponManager.prototype.draw = function(ctx) {
         // [진화 3] 메테오 고열 마도 혜성 렌더링
         const radius = p.radius;
         ctx.fillStyle = '#ef4444';
-        ctx.shadowColor = '#dc2626';
-        ctx.shadowBlur = 18;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -281,8 +267,6 @@ WeaponManager.prototype.draw = function(ctx) {
         // [진화 5] 뇌전포 탄환 렌더링
         const radius = p.radius;
         ctx.fillStyle = '#38bdf8';
-        ctx.shadowColor = '#06b6d4';
-        ctx.shadowBlur = 16;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -299,8 +283,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.translate(p.x, p.y);
         ctx.rotate(angle);
         ctx.fillStyle = '#f59e0b';
-        ctx.shadowColor = '#facc15';
-        ctx.shadowBlur = 14;
         ctx.beginPath();
         ctx.arc(0, 0, sz, -Math.PI / 3, Math.PI / 3);
         ctx.quadraticCurveTo(-sz * 0.4, 0, Math.cos(-Math.PI / 3) * sz, Math.sin(-Math.PI / 3) * sz);
@@ -314,8 +296,6 @@ WeaponManager.prototype.draw = function(ctx) {
           ctx.drawImage(img, p.x - size / 2, p.y - size / 2, size, size);
         } else {
           ctx.fillStyle = '#fef08a';
-          ctx.shadowColor = '#facc15';
-          ctx.shadowBlur = 12;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
           ctx.fill();
@@ -329,8 +309,6 @@ WeaponManager.prototype.draw = function(ctx) {
         // 불 지팡이 폭발 화염구 렌더링
         const radius = p.radius;
         ctx.fillStyle = '#ef4444';
-        ctx.shadowColor = '#f97316';
-        ctx.shadowBlur = 14;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -343,8 +321,6 @@ WeaponManager.prototype.draw = function(ctx) {
         // 비전 성역 유도탄 렌더링
         const radius = p.radius;
         ctx.fillStyle = '#c084fc';
-        ctx.shadowColor = '#38bdf8';
-        ctx.shadowBlur = 14;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -361,8 +337,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.translate(p.x, p.y);
         ctx.rotate(angle);
         ctx.fillStyle = '#22c55e';
-        ctx.shadowColor = '#4ade80';
-        ctx.shadowBlur = 12;
         ctx.fillRect(-sz / 2, -3, sz, 6);
         ctx.fillStyle = '#f0fdf4';
         ctx.fillRect(-sz / 2 + 2, -1.5, sz - 4, 3);
@@ -378,8 +352,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.stroke();
 
         ctx.fillStyle = '#38bdf8';
-        ctx.shadowColor = '#0284c7';
-        ctx.shadowBlur = 16;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -399,8 +371,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.stroke();
 
         ctx.fillStyle = '#10b981';
-        ctx.shadowColor = '#34d399';
-        ctx.shadowBlur = 20;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -417,8 +387,6 @@ WeaponManager.prototype.draw = function(ctx) {
       } else if (p.type === 'poisonShard') {
         // 블리자드 2단계 독성 얼음 파편 렌더링
         ctx.fillStyle = '#34d399';
-        ctx.shadowColor = '#10b981';
-        ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -434,8 +402,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.translate(p.x, p.y);
         ctx.rotate(angle);
         ctx.fillStyle = '#10b981';
-        ctx.shadowColor = '#34d399';
-        ctx.shadowBlur = 10;
         ctx.fillRect(-sz / 2, -2, sz, 4);
         // 화살촉
         ctx.fillStyle = '#a7f3d0';
@@ -463,8 +429,6 @@ WeaponManager.prototype.draw = function(ctx) {
 
         ctx.rotate(angle);
         ctx.fillStyle = '#059669';
-        ctx.shadowColor = '#10b981';
-        ctx.shadowBlur = 18;
         ctx.fillRect(-sz / 2, -4, sz, 8);
         ctx.fillStyle = '#6ee7b7';
         ctx.fillRect(-sz / 2 + 3, -2, sz - 6, 4);
@@ -481,8 +445,6 @@ WeaponManager.prototype.draw = function(ctx) {
         // 어둠의 보주 렌더링 (심연의 보랏빛 궤도 구체)
         const radius = p.radius;
         ctx.fillStyle = '#7c3aed';
-        ctx.shadowColor = '#a855f7';
-        ctx.shadowBlur = 14;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -507,8 +469,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.stroke();
 
         ctx.fillStyle = '#4c1d95';
-        ctx.shadowColor = '#9333ea';
-        ctx.shadowBlur = 20;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -526,8 +486,6 @@ WeaponManager.prototype.draw = function(ctx) {
         // 황혼의 나선 공허 유령탄 (유도탄)
         const radius = p.radius;
         ctx.fillStyle = '#a855f7';
-        ctx.shadowColor = '#c084fc';
-        ctx.shadowBlur = 12;
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
@@ -543,8 +501,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rotAngle || 0);
         ctx.fillStyle = isVortex ? '#4c1d95' : '#475569';
-        ctx.shadowColor = isVortex ? '#a855f7' : '#94a3b8';
-        ctx.shadowBlur = isVortex ? 16 : 10;
         ctx.beginPath();
         ctx.arc(0, 0, r, 0, Math.PI * 2);
         ctx.fill();
@@ -562,8 +518,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rotAngle || 0);
         ctx.fillStyle = isDivine ? '#facc15' : '#fef08a';
-        ctx.shadowColor = isDivine ? '#eab308' : '#ffffff';
-        ctx.shadowBlur = isDivine ? 20 : 12;
         ctx.fillRect(-r * 0.25, -r, r * 0.5, r * 2);
         ctx.fillRect(-r * 0.75, -r * 0.4, r * 1.5, r * 0.5);
         ctx.restore();
@@ -571,8 +525,6 @@ WeaponManager.prototype.draw = function(ctx) {
         const alpha = Math.min(1.0, p.life / 0.5);
         const pulse = Math.sin(Date.now() * 0.012) * 4;
         ctx.fillStyle = `rgba(239, 68, 68, ${0.45 * alpha})`;
-        ctx.shadowColor = '#f97316';
-        ctx.shadowBlur = 14;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius + pulse, 0, Math.PI * 2);
         ctx.fill();
@@ -584,8 +536,6 @@ WeaponManager.prototype.draw = function(ctx) {
       } else {
         // 일반 투사체 (마법 화살, 산탄)
         ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fill();
@@ -618,8 +568,6 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.save();
         ctx.translate(bx, by);
         ctx.rotate(angle * 3.5);
-        ctx.shadowColor = isAxe ? '#d97706' : '#38bdf8';
-        ctx.shadowBlur = 14;
 
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.imageSmoothingEnabled = false;
@@ -656,8 +604,6 @@ WeaponManager.prototype.draw = function(ctx) {
 
         // 외곽 암흑 글로우 오라
         ctx.save();
-        ctx.shadowColor = '#9333ea';
-        ctx.shadowBlur = 14;
         ctx.fillStyle = '#6b21a8';
         ctx.beginPath();
         ctx.arc(fam.x, fam.y, baseR, 0, Math.PI * 2);
@@ -706,15 +652,11 @@ WeaponManager.prototype.draw = function(ctx) {
         const ringPulse = Math.sin(pulseTime * 2 + fIdx) * 3;
         ctx.strokeStyle = 'rgba(232, 121, 249, 0.75)';
         ctx.lineWidth = 2;
-        ctx.shadowColor = '#e879f9';
-        ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(fam.x, fam.y, baseR + 5 + ringPulse, 0, Math.PI * 2);
         ctx.stroke();
 
         // 본체 암흑 코어
-        ctx.shadowColor = '#a855f7';
-        ctx.shadowBlur = 18;
         ctx.fillStyle = '#4c1d95';
         ctx.beginPath();
         ctx.arc(fam.x, fam.y, baseR, 0, Math.PI * 2);

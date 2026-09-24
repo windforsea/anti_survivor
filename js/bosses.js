@@ -905,8 +905,6 @@ class BossEnemy extends Enemy {
     if (this.bossStage === 99) {
       ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
       ctx.lineWidth = 4;
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 18;
     } else {
       ctx.strokeStyle = this.knockbackImmune ? 'rgba(245, 158, 11, 0.4)' : 'rgba(225, 29, 72, 0.4)';
       ctx.lineWidth = 2;
@@ -917,28 +915,7 @@ class BossEnemy extends Enemy {
     ctx.restore();
 
     // 다크 판타지 보스 도트 스프라이트 렌더링
-    ctx.save();
-    if (this.bossStage === 205) {
-      ctx.shadowColor = '#f43f5e';
-      ctx.shadowBlur = 22;
-    } else if (this.bossStage === 210) {
-      ctx.shadowColor = '#f97316';
-      ctx.shadowBlur = 22;
-    } else if (this.bossStage === 215) {
-      ctx.shadowColor = '#06b6d4';
-      ctx.shadowBlur = 26;
-    } else if (this.bossStage === 220) {
-      ctx.shadowColor = '#10b981';
-      ctx.shadowBlur = 28;
-    } else if (this.bossStage === 99 || this.bossStage === 15) {
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 24;
-    } else {
-      ctx.shadowColor = this.color;
-      ctx.shadowBlur = 16;
-    }
     const drawn = assets.drawSprite(ctx, bossKey, this.x, this.y, spriteSize, facingX, isHit);
-    ctx.restore();
 
     if (!drawn) {
       ctx.save();

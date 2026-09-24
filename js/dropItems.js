@@ -99,8 +99,6 @@ class ExpGem {
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.fillStyle = this.color;
-    ctx.shadowColor = this.color;
-    ctx.shadowBlur = this.value >= 50 ? 10 : 6;
 
     // 마름모 보석 형태
     ctx.beginPath();
@@ -233,8 +231,6 @@ class BossProjectile {
   draw(ctx) {
     ctx.save();
     ctx.fillStyle = this.color;
-    ctx.shadowColor = this.color;
-    ctx.shadowBlur = 8;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
     ctx.fill();

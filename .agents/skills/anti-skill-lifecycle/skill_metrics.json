@@ -1,6 +1,6 @@
 {
-  "totalCalls": 17,
-  "lastUpdated": "2026-09-24T13:19:52.419Z",
+  "totalCalls": 18,
+  "lastUpdated": "2026-09-24T13:53:23.956Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 5,
+      "callCount": 6,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T12:10:42.600Z",
+      "lastUsedAt": "2026-09-24T13:53:23.956Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-24T13:53:23.956Z",
+          "reason": "렌더링 최적화 후 전투 및 무기 시스템 무결성 검증"
+        },
         {
           "timestamp": "2026-09-24T12:10:42.601Z",
           "reason": "무기 로직 무결성 검사 실행 전 텔레메트리 기록"
