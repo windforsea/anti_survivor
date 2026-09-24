@@ -22,6 +22,30 @@ class AssetManager {
       bloodHound: 'assets/sprites/bloodHound.png',
       wraithSwarm: 'assets/sprites/wraithSwarm.png',
       abyssTitan: 'assets/sprites/abyssTitan.png',
+
+      // 월드 2 심해 마물 15종
+      plankton: 'assets/sprites/plankton.png',
+      jellyfish: 'assets/sprites/jellyfish.png',
+      hermitCrab: 'assets/sprites/hermitCrab.png',
+      flyingFish: 'assets/sprites/flyingFish.png',
+      seaLobster: 'assets/sprites/seaLobster.png',
+      stingray: 'assets/sprites/stingray.png',
+      coralGolem: 'assets/sprites/coralGolem.png',
+      seaLeech: 'assets/sprites/seaLeech.png',
+      anglerFish: 'assets/sprites/anglerFish.png',
+      ghostJelly: 'assets/sprites/ghostJelly.png',
+      deepShark: 'assets/sprites/deepShark.png',
+      poisonRay: 'assets/sprites/poisonRay.png',
+      shadowEel: 'assets/sprites/shadowEel.png',
+      voidSeaSerpent: 'assets/sprites/voidSeaSerpent.png',
+      trilobite: 'assets/sprites/trilobite.png',
+
+      // 월드 2 심해 4대 보스
+      boss_kraken: 'assets/sprites/boss_kraken.png',
+      boss_titancrab: 'assets/sprites/boss_titancrab.png',
+      boss_leviathan: 'assets/sprites/boss_leviathan.png',
+      boss_dagon: 'assets/sprites/boss_dagon.png',
+
       boss_boar: 'assets/sprites/boss_boar.png',
       boss_void: 'assets/sprites/boss_void.png',
       boss_eye: 'assets/sprites/boss_eye.png',

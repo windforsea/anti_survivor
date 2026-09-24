@@ -14,7 +14,7 @@ vam/
 ├── style.css                    # 다크 판타지 네온 레트로 UI 스타일시트
 ├── server.js                    # Node.js 경량 로컬 정적 서빙 & 랭킹 API 서버 (내장 모듈만 사용)
 ├── start_server.bat             # 원클릭 서버 실행 배치 파일
-├── generate_assets.js           # 순수 Node.js 94종 픽셀아트 PNG 스프라이트 빌더
+├── generate_assets.js           # 순수 Node.js 113종 픽셀아트 PNG 스프라이트 빌더
 ├── GEMINI.md                    # [루트] Antigravity 네이티브 프로젝트 표준 작업 규칙
 ├── AGENTS.md                    # [루트] 멀티 에이전트 공용 표준 지침
 ├── main.md                      # [본 문서] AI 아키텍처 인덱스 및 Fast Lookup 가이드
@@ -37,7 +37,7 @@ vam/
 │   ├── enemies.md               # 15종 일반 몬스터 & 15종 보스 상세 AI, 스탯, 패턴
 │   ├── stages.md                # 25스테이지 웨이브 타임라인(총 18분 45초), 사신 강림
 │   ├── items.md                 # 필드 장애물(바위/나무/상자), 5종 드랍템, 경험치 보석
-│   ├── assets.md                # 94종 스프라이트 에셋 명세표
+│   ├── assets.md                # 113종 스프라이트 에셋 명세표
 │   └── system.md                # FNV-1a 보안 체크섬, 무결성 검증
 │
 ├── js/                          # 🚀 고속 바닐라 JS 코어 런타임 (모듈화 구조)
@@ -52,10 +52,10 @@ vam/
 │   ├── obstacles.js             # ObstacleManager 클래스: 필드 장애물(바위, 나무, 상자) 충돌 및 파괴
 │   ├── saveManager.js           # SaveManager 클래스: FNV-1a 해시 체크섬 및 로컬 스토리지 입출력
 │   ├── audio.js                 # SoundEngine 클래스: Web Audio API 8비트 레트로 신디사이저 사운드
-│   ├── assets.js                # AssetManager 클래스: 94종 스프라이트 프리로더 및 매니페스트
+│   ├── assets.js                # AssetManager 클래스: 113종 스프라이트 프리로더 및 매니페스트
 │   └── ui.js                    # UIManager 클래스: HUD 렌더링, 모달 제어, 조이스틱, XSS 살균
 │
-└── assets/sprites/              # 94종 픽셀아트 스프라이트 PNG 파일 디렉토리
+└── assets/sprites/              # 113종 픽셀아트 스프라이트 PNG 파일 디렉토리
 ```
 
 ---

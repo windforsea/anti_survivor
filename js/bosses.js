@@ -860,127 +860,6 @@ class BossEnemy extends Enemy {
   }
 
   draw(ctx) {
-
-    // 월드 2 해양 보스 4종 전용 렌더링 (크라켄, 타이탄 크랩, 레비아탄, 다곤)
-    if (this.bossStage === 205) {
-      // 크라켄: 짙은 청록빛 거대 문어 머리 및 6개 꿈틀거리는 촉수
-      ctx.save();
-      ctx.translate(this.x, this.y);
-      ctx.fillStyle = '#0e7490';
-      ctx.shadowColor = '#06b6d4';
-      ctx.shadowBlur = 18;
-      ctx.beginPath();
-      ctx.arc(0, -6, this.radius * 0.9, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = '#0891b2';
-      ctx.lineWidth = 5;
-      for (let i = -3; i <= 3; i++) {
-        if (i === 0) continue;
-        const wave = Math.sin(this.animTimer * 3 + i) * 12;
-        ctx.beginPath();
-        ctx.moveTo(i * 7, 8);
-        ctx.quadraticCurveTo(i * 12 + wave, 24, i * 8 + wave * 1.4, 38);
-        ctx.stroke();
-      }
-
-      ctx.fillStyle = '#fde047';
-      ctx.beginPath();
-      ctx.arc(-8, -4, 4, 0, Math.PI * 2);
-      ctx.arc(8, -4, 4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-      return;
-    } else if (this.bossStage === 210) {
-      // 타이탄 크랩: 거대한 주황 강철 등껍질 + 양쪽 초대형 집게발
-      ctx.save();
-      ctx.translate(this.x, this.y);
-      ctx.fillStyle = '#c2410c';
-      ctx.shadowColor = '#f97316';
-      ctx.shadowBlur = 18;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, this.radius * 1.1, this.radius * 0.85, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#ea580c';
-      ctx.beginPath();
-      ctx.arc(-this.radius * 1.15, -12, 14, 0, Math.PI * 2);
-      ctx.arc(this.radius * 1.15, -12, 14, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = '#fed7aa';
-      ctx.lineWidth = 2.5;
-      ctx.strokeRect(-12, -8, 24, 16);
-      ctx.restore();
-      return;
-    } else if (this.bossStage === 215) {
-      // 레비아탄: 심해룡 유선형 푸른 몸체 + 지느러미 발광
-      ctx.save();
-      ctx.translate(this.x, this.y);
-      ctx.fillStyle = '#0369a1';
-      ctx.shadowColor = '#38bdf8';
-      ctx.shadowBlur = 24;
-      ctx.beginPath();
-      ctx.ellipse(0, 0, this.radius * 1.3, this.radius * 0.7, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#0284c7';
-      ctx.beginPath();
-      ctx.moveTo(-10, -this.radius * 0.6);
-      ctx.lineTo(0, -this.radius * 1.3);
-      ctx.lineTo(15, -this.radius * 0.6);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = '#67e8f9';
-      ctx.beginPath();
-      ctx.arc(14, -4, 4.5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-      return;
-    } else if (this.bossStage === 220) {
-      // 다곤: 심연의 고대신 - 거대한 심해 군주, 신비로운 삼지창 및 에메랄드 왕관
-      ctx.save();
-      ctx.translate(this.x, this.y);
-      ctx.fillStyle = '#115e59';
-      ctx.shadowColor = '#2dd4bf';
-      ctx.shadowBlur = 30;
-      ctx.beginPath();
-      ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#2dd4bf';
-      ctx.beginPath();
-      ctx.moveTo(-18, -this.radius + 4);
-      ctx.lineTo(-12, -this.radius - 12);
-      ctx.lineTo(0, -this.radius - 4);
-      ctx.lineTo(12, -this.radius - 12);
-      ctx.lineTo(18, -this.radius + 4);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.strokeStyle = '#facc15';
-      ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      ctx.moveTo(this.radius * 0.8, -this.radius * 1.2);
-      ctx.lineTo(this.radius * 0.8, this.radius * 1.1);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(this.radius * 0.5, -this.radius * 0.8);
-      ctx.lineTo(this.radius * 0.8, -this.radius * 1.3);
-      ctx.lineTo(this.radius * 1.1, -this.radius * 0.8);
-      ctx.stroke();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.arc(-10, -4, 5, 0, Math.PI * 2);
-      ctx.arc(10, -4, 5, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-      return;
-    }
-
     // 돌진 조준선 (Stage 2 보스)
     if (this.isAiming) {
       ctx.save();
@@ -1004,7 +883,11 @@ class BossEnemy extends Enemy {
       15: 'boss_reaper',
       18: 'boss_wyrm',
       20: 'boss_overlord',
-      99: 'boss_reaper'
+      99: 'boss_reaper',
+      205: 'boss_kraken',
+      210: 'boss_titancrab',
+      215: 'boss_leviathan',
+      220: 'boss_dagon'
     };
     const bossKey = bossKeyMap[this.bossStage] || 'boss_reaper';
     const isHit = this.hitFlashTimer > 0;
@@ -1034,7 +917,28 @@ class BossEnemy extends Enemy {
     ctx.restore();
 
     // 다크 판타지 보스 도트 스프라이트 렌더링
+    ctx.save();
+    if (this.bossStage === 205) {
+      ctx.shadowColor = '#f43f5e';
+      ctx.shadowBlur = 22;
+    } else if (this.bossStage === 210) {
+      ctx.shadowColor = '#f97316';
+      ctx.shadowBlur = 22;
+    } else if (this.bossStage === 215) {
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 26;
+    } else if (this.bossStage === 220) {
+      ctx.shadowColor = '#10b981';
+      ctx.shadowBlur = 28;
+    } else if (this.bossStage === 99 || this.bossStage === 15) {
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 24;
+    } else {
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 16;
+    }
     const drawn = assets.drawSprite(ctx, bossKey, this.x, this.y, spriteSize, facingX, isHit);
+    ctx.restore();
 
     if (!drawn) {
       ctx.save();

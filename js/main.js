@@ -66,7 +66,7 @@ class Game {
   }
   getWorldBoundaries() {
     if (this.currentWorld === 2) {
-      return { boundW: 2950, boundH: 1050 };
+      return { boundW: 2950, boundH: 525 };
     }
     return { boundW: 1580, boundH: 1580 };
   }
@@ -86,7 +86,7 @@ class Game {
     for (let i = 0; i < 90; i++) {
       this.underwaterBubbles.push({
         x: (Math.random() - 0.5) * 5900,
-        y: (Math.random() - 0.5) * 2100,
+        y: (Math.random() - 0.5) * 1050,
         r: Math.random() * 3.5 + 1.2,
         speed: 25 + Math.random() * 55,
         alpha: 0.15 + Math.random() * 0.45,
@@ -892,7 +892,7 @@ class Game {
   renderTrenchFloorGrid(ctx) {
     const tileSize = 64;
     const boundW = 3000;
-    const boundH = 1100;
+    const boundH = 550;
     const halfW = this.canvas.width / 2;
     const halfH = this.canvas.height / 2;
     const startX = Math.floor((this.camera.x - halfW) / tileSize) * tileSize;
@@ -929,7 +929,7 @@ class Game {
   // 월드 2 협곡 절벽 및 심해 경계선 렌더링
   drawTrenchBoundary(ctx) {
     const boundW = 3000;
-    const boundH = 1100;
+    const boundH = 550;
     const time = Date.now() * 0.003;
     const pulse = 0.55 + Math.sin(time) * 0.25;
 

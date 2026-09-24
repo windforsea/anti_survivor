@@ -1,6 +1,6 @@
 {
-  "totalCalls": 3,
-  "lastUpdated": "2026-09-24T02:11:42.743Z",
+  "totalCalls": 5,
+  "lastUpdated": "2026-09-24T02:22:21.971Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -23,10 +23,15 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 0,
+      "callCount": 1,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": null,
-      "callHistory": []
+      "lastUsedAt": "2026-09-24T02:22:21.970Z",
+      "callHistory": [
+        {
+          "timestamp": "2026-09-24T02:22:21.970Z",
+          "reason": "무기 및 전투 엔진 무결성 감사"
+        }
+      ]
     },
     "anti-world-architect": {
       "name": "anti-world-architect",
@@ -42,10 +47,14 @@
     },
     "pixel-sprite-builder": {
       "name": "pixel-sprite-builder",
-      "callCount": 1,
+      "callCount": 2,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T02:11:29.168Z",
+      "lastUsedAt": "2026-09-24T02:18:00.829Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-24T02:18:00.830Z",
+          "reason": "월드 2 해양 몬스터 15종 및 보스 4종 픽셀아트 제작"
+        },
         {
           "timestamp": "2026-09-24T02:11:29.169Z",
           "reason": "월드 2 신규 몬스터 및 보스 스프라이트 제작"

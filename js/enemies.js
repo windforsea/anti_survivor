@@ -708,7 +708,7 @@ class Enemy {
       return;
     }
 
-    const bob = Math.sin(this.animTimer) * 2;
+    const bob = this.isFlying ? Math.sin(this.animTimer * 1.5) * 3.5 : Math.sin(this.animTimer) * 2;
     const isHit = this.hitFlashTimer > 0;
     const facingX = (this.targetDirX !== undefined) ? this.targetDirX : ((this.vx && Math.abs(this.vx) > 5) ? (this.vx < 0 ? -1 : 1) : 1);
     const spriteSize = Math.max(28, this.radius * 2.4);
@@ -729,6 +729,30 @@ class Enemy {
       // 붉은 해골: 강렬한 핏빛 네온 아우라
       ctx.shadowColor = '#ef4444';
       ctx.shadowBlur = 18;
+    } else if (this.typeKey === 'plankton' || this.typeKey === 'jellyfish' || this.typeKey === 'ghostJelly') {
+      ctx.shadowColor = '#06b6d4';
+      ctx.shadowBlur = 12;
+    } else if (this.typeKey === 'stingray') {
+      ctx.shadowColor = '#eab308';
+      ctx.shadowBlur = 14;
+    } else if (this.typeKey === 'poisonRay') {
+      ctx.shadowColor = '#a855f7';
+      ctx.shadowBlur = 14;
+    } else if (this.typeKey === 'voidSeaSerpent' || this.typeKey === 'wraithSwarm' || this.typeKey === 'darkMage') {
+      ctx.shadowColor = '#c084fc';
+      ctx.shadowBlur = 14;
+    } else if (this.typeKey === 'ghost') {
+      ctx.shadowColor = '#38bdf8';
+      ctx.shadowBlur = 10;
+    } else if (this.typeKey === 'bloodHound') {
+      ctx.shadowColor = '#dc2626';
+      ctx.shadowBlur = 12;
+    } else if (this.typeKey === 'slime' || this.typeKey === 'miniSlime') {
+      ctx.shadowColor = '#22c55e';
+      ctx.shadowBlur = 8;
+    } else if (this.typeKey === 'deepShark' || this.typeKey === 'anglerFish') {
+      ctx.shadowColor = '#0284c7';
+      ctx.shadowBlur = 12;
     }
 
     // 다크 판타지 도트 스프라이트 렌더링

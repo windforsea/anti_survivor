@@ -225,7 +225,7 @@ class ObstacleManager {
   getBoundaries() {
     // 월드 1: 사각 부유섬 (1520 x 1520 이내) / 월드 2: 가로 협곡 (2850 x 1050 이내)
     if (this.game && this.game.currentWorld === 2) {
-      return { boundW: 2850, boundH: 1050 };
+      return { boundW: 2850, boundH: 525 };
     }
     return { boundW: 1520, boundH: 1520 };
   }

@@ -240,6 +240,9 @@ class WaveManager {
         const dist = spawnDistance + Math.random() * 140;
         x = player.x + Math.cos(angle) * dist;
         y = player.y + Math.sin(angle) * dist;
+        if (this.currentWorld === 2) {
+          y = Math.max(-boundH - 80, Math.min(boundH + 80, y));
+        }
       } else {
         // 그라운드 몬스터: 우주로 떨어지지 않고 반드시 부유섬 내부 [-islandBound, islandBound] 영역에서만 스폰
         const dist = spawnDistance + Math.random() * 60;
