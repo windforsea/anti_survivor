@@ -1,7 +1,111 @@
 // 메인 게임 엔진 및 렌더링 루프
 
 class Game {
+
+  // 전통 닥종이(한지) 및 수묵 텍스처 오프스크린 1회 베이킹 (프레임 부하 0%)
+  initHanjiTexture() {
+    // 1. 월드 1용 짙은 송연묵 닥종이 텍스처 (512x512)
+    const c1 = document.createElement('canvas');
+    c1.width = 512;
+    c1.height = 512;
+    const ctx1 = c1.getContext('2d');
+    
+    // 짙은 묵흑색 바탕
+    ctx1.fillStyle = '#0a0b10';
+    ctx1.fillRect(0, 0, 512, 512);
+
+    // 은은한 한지 섬유질 노이즈 & 붓자국
+    ctx1.fillStyle = 'rgba(255, 255, 255, 0.018)';
+    for (let i = 0; i < 400; i++) {
+      const rx = Math.random() * 512;
+      const ry = Math.random() * 512;
+      const rw = 2 + Math.random() * 8;
+      const rh = 1 + Math.random() * 2;
+      ctx1.fillRect(rx, ry, rw, rh);
+    }
+    // 은은한 먹물 번짐 원형 얼룩 4곳
+    const spots = [
+      { x: 120, y: 140, r: 90, color: 'rgba(20, 24, 38, 0.4)' },
+      { x: 380, y: 360, r: 110, color: 'rgba(16, 20, 32, 0.45)' },
+      { x: 420, y: 100, r: 80, color: 'rgba(24, 28, 44, 0.35)' },
+      { x: 90, y: 400, r: 95, color: 'rgba(18, 22, 35, 0.4)' }
+    ];
+    for (const sp of spots) {
+      const g = ctx1.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sp.r);
+      g.addColorStop(0, sp.color);
+      g.addColorStop(1, 'transparent');
+      ctx1.fillStyle = g;
+      ctx1.beginPath();
+      ctx1.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+      ctx1.fill();
+    }
+    // 섬세한 한지 창살 격자 틈새
+    ctx1.strokeStyle = 'rgba(30, 41, 59, 0.28)';
+    ctx1.lineWidth = 1;
+    ctx1.strokeRect(0.5, 0.5, 256, 256);
+    ctx1.strokeRect(256.5, 0.5, 256, 256);
+    ctx1.strokeRect(0.5, 256.5, 256, 256);
+    ctx1.strokeRect(256.5, 256.5, 256, 256);
+
+    this.hanjiPatternCanvas = c1;
+
+    // 2. 월드 2용 심해 옥빛 수묵 텍스처 (512x512)
+    const c2 = document.createElement('canvas');
+    c2.width = 512;
+    c2.height = 512;
+    const ctx2 = c2.getContext('2d');
+    ctx2.fillStyle = '#030d17';
+    ctx2.fillRect(0, 0, 512, 512);
+
+    ctx2.fillStyle = 'rgba(6, 182, 212, 0.025)';
+    for (let i = 0; i < 350; i++) {
+      ctx2.fillRect(Math.random() * 512, Math.random() * 512, 3 + Math.random() * 6, 1 + Math.random() * 2);
+    }
+    const tealSpots = [
+      { x: 150, y: 180, r: 100, color: 'rgba(4, 47, 54, 0.45)' },
+      { x: 350, y: 340, r: 120, color: 'rgba(8, 51, 68, 0.4)' }
+    ];
+    for (const sp of tealSpots) {
+      const g = ctx2.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sp.r);
+      g.addColorStop(0, sp.color);
+      g.addColorStop(1, 'transparent');
+      ctx2.fillStyle = g;
+      ctx2.beginPath();
+      ctx2.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+      ctx2.fill();
+    }
+    ctx2.strokeStyle = 'rgba(14, 116, 144, 0.25)';
+    ctx2.lineWidth = 1;
+    ctx2.strokeRect(0.5, 0.5, 256, 256);
+    ctx2.strokeRect(256.5, 256.5, 256, 256);
+
+    this.tealInkPatternCanvas = c2;
+  }
+
+  // 화면 리사이즈 시 다크 잉크 비네팅 마스크 1회 오프스크린 베이킹
+  updateInkVignette(width, height) {
+    if (!this.vignetteCanvas || this.vignetteCanvas.width !== width || this.vignetteCanvas.height !== height) {
+      const vc = document.createElement('canvas');
+      vc.width = width;
+      vc.height = height;
+      const vctx = vc.getContext('2d');
+      const cx = width / 2;
+      const cy = height / 2;
+      const maxR = Math.hypot(cx, cy);
+
+      const grad = vctx.createRadialGradient(cx, cy, maxR * 0.45, cx, cy, maxR);
+      grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      grad.addColorStop(0.7, 'rgba(5, 7, 12, 0.45)');
+      grad.addColorStop(1, 'rgba(3, 4, 8, 0.88)');
+
+      vctx.fillStyle = grad;
+      vctx.fillRect(0, 0, width, height);
+      this.vignetteCanvas = vc;
+    }
+  }
+
   constructor() {
+    this.initHanjiTexture();
     this.canvas = document.getElementById('gameCanvas');
     this.ctx = this.canvas.getContext('2d');
 
@@ -713,6 +817,12 @@ class Game {
       }
     }
 
+    // 다크 잉크 비네팅 오버레이 (조선 수묵 다크 판타지 분위기)
+    this.updateInkVignette(width, height);
+    if (this.vignetteCanvas) {
+      ctx.drawImage(this.vignetteCanvas, 0, 0);
+    }
+
     ctx.restore();
 
     // 화면 오버레이 이펙트 (빙결, 폭탄 플래시)
@@ -772,95 +882,64 @@ class Game {
   }
 
   renderFloorGrid(ctx) {
-    const tileSize = 64;
-    const islandBound = 1600;
-    const halfW = this.canvas.width / 2;
-    const halfH = this.canvas.height / 2;
-    const startX = Math.floor((this.camera.x - halfW) / tileSize) * tileSize;
-    const endX = this.camera.x + halfW + tileSize;
-    const startY = Math.floor((this.camera.y - halfH) / tileSize) * tileSize;
-    const endY = this.camera.y + halfH + tileSize;
-
-    // 부유섬 지면 [-islandBound, islandBound] 영역에만 타일 배치
-    const renderStartX = Math.max(-islandBound, startX);
-    const renderEndX = Math.min(islandBound, endX);
-    const renderStartY = Math.max(-islandBound, startY);
-    const renderEndY = Math.min(islandBound, endY);
-
-    if (renderStartX >= renderEndX || renderStartY >= renderEndY) return;
-
-    const floorTile = assets.images['tile_floor'];
-
-    // 부유섬 밑바탕 짙은 석조 바닥
-    ctx.fillStyle = '#0f1423';
-    ctx.fillRect(renderStartX, renderStartY, renderEndX - renderStartX, renderEndY - renderStartY);
-
-    if (floorTile && floorTile.complete && floorTile.naturalWidth > 0) {
-      ctx.imageSmoothingEnabled = false;
-      for (let x = renderStartX; x < renderEndX; x += tileSize) {
-        for (let y = renderStartY; y < renderEndY; y += tileSize) {
-          const w = Math.min(tileSize, renderEndX - x);
-          const h = Math.min(tileSize, renderEndY - y);
-          ctx.drawImage(floorTile, 0, 0, w, h, x, y, w, h);
-        }
-      }
-    } else {
-      ctx.strokeStyle = '#1e2540';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (let x = renderStartX; x <= renderEndX; x += tileSize) {
-        ctx.moveTo(x, renderStartY);
-        ctx.lineTo(x, renderEndY);
-      }
-      for (let y = renderStartY; y <= renderEndY; y += tileSize) {
-        ctx.moveTo(renderStartX, y);
-        ctx.lineTo(renderEndX, y);
-      }
-      ctx.stroke();
+    const bound = 1600;
+    if (!this.hanjiPattern && this.hanjiPatternCanvas) {
+      this.hanjiPattern = ctx.createPattern(this.hanjiPatternCanvas, 'repeat');
     }
+
+    // 1. 깊은 어둠의 닥종이(한지) 수묵 바닥 전체 1회 초고속 렌더링
+    if (this.hanjiPattern) {
+      ctx.fillStyle = this.hanjiPattern;
+    } else {
+      ctx.fillStyle = '#0a0b10';
+    }
+    ctx.fillRect(-bound, -bound, bound * 2, bound * 2);
+
+    // 2. 은은한 한지 질감 테두리 격자
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(-bound, -bound, bound * 2, bound * 2);
   }
 
   drawWorldBoundary(ctx) {
     const bound = 1600;
-    const time = Date.now() * 0.003;
-    const pulse = 0.55 + Math.sin(time) * 0.25;
+    const time = Date.now() * 0.002;
+    const pulse = 0.6 + Math.sin(time) * 0.2;
 
     ctx.save();
-    // 1. 부유섬 절벽 외곽 심연 그림자
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
-    ctx.lineWidth = 18;
-    ctx.strokeRect(-bound - 9, -bound - 9, (bound + 9) * 2, (bound + 9) * 2);
+    // 1. 거친 송연묵 서예 결계 외곽선 (먹선 이중 스트로크)
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 12;
+    ctx.strokeRect(-bound - 4, -bound - 4, (bound + 4) * 2, (bound + 4) * 2);
 
-    // 2. 외곽 고대 우주 룬 결계 발광 라인
-    ctx.strokeStyle = `rgba(168, 85, 247, ${pulse})`;
-    ctx.lineWidth = 6;
+    // 2. 단아한 주홍/자주 먹선 붓터치 궤적 결계
+    ctx.strokeStyle = `rgba(185, 28, 28, ${pulse})`;
+    ctx.lineWidth = 4;
     ctx.strokeRect(-bound, -bound, bound * 2, bound * 2);
 
-    // 3. 내부 청록빛 룬 보조 라인
-    ctx.strokeStyle = `rgba(56, 189, 248, ${pulse * 0.75})`;
-    ctx.lineWidth = 2;
-    ctx.strokeRect(-bound + 12, -bound + 12, (bound - 12) * 2, (bound - 12) * 2);
+    // 3. 내부 미세 먹선 보조 라인
+    ctx.strokeStyle = 'rgba(254, 240, 138, 0.4)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-bound + 8, -bound + 8, (bound - 8) * 2, (bound - 8) * 2);
 
-    // 4. 4개 모서리 및 사방 중앙 결계석
+    // 4. 모서리 흑요석 관인 룬 결계석
     const monoliths = [
-      [-bound, -bound],
-      [bound, -bound],
-      [bound, bound],
-      [-bound, bound],
-      [0, -bound],
-      [bound, 0],
-      [0, bound],
-      [-bound, 0]
+      [-bound, -bound], [bound, -bound],
+      [bound, bound], [-bound, bound],
+      [0, -bound], [bound, 0], [0, bound], [-bound, 0]
     ];
     for (const [cx, cy] of monoliths) {
-      ctx.fillStyle = '#c084fc';
+      ctx.fillStyle = '#0a0a0f';
       ctx.beginPath();
-      ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 12, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#fef08a';
       ctx.beginPath();
-      ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
       ctx.fill();
     }
     ctx.restore();
@@ -907,40 +986,18 @@ class Game {
 
   // 월드 2 심해 협곡 지면 격자 렌더링 (가로 6000 x 세로 1600)
   renderTrenchFloorGrid(ctx) {
-    const tileSize = 64;
     const boundW = 3000;
     const boundH = 550;
-    const halfW = this.canvas.width / 2;
-    const halfH = this.canvas.height / 2;
-    const startX = Math.floor((this.camera.x - halfW) / tileSize) * tileSize;
-    const endX = this.camera.x + halfW + tileSize;
-    const startY = Math.floor((this.camera.y - halfH) / tileSize) * tileSize;
-    const endY = this.camera.y + halfH + tileSize;
-
-    const renderStartX = Math.max(-boundW, startX);
-    const renderEndX = Math.min(boundW, endX);
-    const renderStartY = Math.max(-boundH, startY);
-    const renderEndY = Math.min(boundH, endY);
-
-    if (renderStartX >= renderEndX || renderStartY >= renderEndY) return;
-
-    // 해저 모래 및 암반 짙은 청회색 바탕
-    ctx.fillStyle = '#061325';
-    ctx.fillRect(renderStartX, renderStartY, renderEndX - renderStartX, renderEndY - renderStartY);
-
-    // 해저 미세 격자선
-    ctx.strokeStyle = 'rgba(14, 116, 144, 0.22)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for (let x = renderStartX; x <= renderEndX; x += tileSize) {
-      ctx.moveTo(x, renderStartY);
-      ctx.lineTo(x, renderEndY);
+    if (!this.tealInkPattern && this.tealInkPatternCanvas) {
+      this.tealInkPattern = ctx.createPattern(this.tealInkPatternCanvas, 'repeat');
     }
-    for (let y = renderStartY; y <= renderEndY; y += tileSize) {
-      ctx.moveTo(renderStartX, y);
-      ctx.lineTo(renderEndX, y);
+
+    if (this.tealInkPattern) {
+      ctx.fillStyle = this.tealInkPattern;
+    } else {
+      ctx.fillStyle = '#030d17';
     }
-    ctx.stroke();
+    ctx.fillRect(-boundW, -boundH, boundW * 2, boundH * 2);
   }
 
   // 월드 2 협곡 절벽 및 심해 경계선 렌더링

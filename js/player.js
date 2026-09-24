@@ -483,6 +483,27 @@ class Player {
         const spriteKey = anim.type === 'sword' ? 'anim_sword' : 'anim_dagger';
         const img = assets.images[spriteKey] || assets.images['anim_dagger'];
         const size = Math.round(30 * area);
+        // [수묵화 서예 붓글씨 검기 궤적]
+        ctx.save();
+        const slashRadius = (45 + Math.sin(progress * Math.PI) * 25) * Math.sqrt(area);
+        const arcSpread = 1.6;
+        const curSwingAngle = anim.angle - arcSpread / 2 + progress * arcSpread;
+        
+        // 거친 먹선 붓터치 궤적 (송연묵 흑색 + 백색 림)
+        ctx.strokeStyle = '#09090b';
+        ctx.lineWidth = Math.round(6 * Math.sqrt(area) * (1 - progress * 0.5));
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, slashRadius, anim.angle - arcSpread / 2, curSwingAngle, false);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(248, 250, 252, 0.85)';
+        ctx.lineWidth = Math.max(1.5, Math.round(2 * Math.sqrt(area)));
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, slashRadius - 2, anim.angle - arcSpread / 2, curSwingAngle, false);
+        ctx.stroke();
+        ctx.restore();
+
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.save();
           ctx.translate(px, py);

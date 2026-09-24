@@ -1,6 +1,6 @@
 {
-  "totalCalls": 18,
-  "lastUpdated": "2026-09-24T13:53:23.956Z",
+  "totalCalls": 19,
+  "lastUpdated": "2026-09-24T14:20:56.758Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 6,
+      "callCount": 7,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T13:53:23.956Z",
+      "lastUsedAt": "2026-09-24T14:20:56.757Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-24T14:20:56.758Z",
+          "reason": "수묵화풍 검기 궤적 및 먹물방울 치명타 반영 후 전투 무결성 검증"
+        },
         {
           "timestamp": "2026-09-24T13:53:23.956Z",
           "reason": "렌더링 최적화 후 전투 및 무기 시스템 무결성 검증"

@@ -2311,3 +2311,43 @@ body, #gameContainer, canvas {
   }
 }
 
+
+/* ============================================================
+   📜 한국형 다크 수묵화(K-Dark Sumi-e) UI & 붉은 낙관(인장) 테마
+   ============================================================ */
+.modal-box, .hof-box, .card-selection-box {
+  background: linear-gradient(180deg, #10121a 0%, #08090d 100%) !important;
+  border: 2px solid #2e3444 !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.95), inset 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+}
+
+/* 붉은 관인/낙관(도장) 스타일 메인 액션 버튼 */
+.btn-primary, .champ-submit-btn, .start-game-btn, .lobby-start-btn {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%) !important;
+  border: 1.5px solid #ef4444 !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  letter-spacing: 1px !important;
+  box-shadow: 0 4px 14px rgba(185, 28, 28, 0.4) !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+  border-radius: 8px !important;
+}
+
+.btn-primary:hover, .champ-submit-btn:hover, .start-game-btn:hover, .lobby-start-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+  border-color: #fca5a5 !important;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6) !important;
+}
+
+/* 카드 선택 모달 서화첩 프레임 */
+.upgrade-card {
+  border-radius: 10px !important;
+  border-width: 1.5px !important;
+}
+
+/* HUD 스탯 뱃지 서예 먹선 테두리 */
+.hud-stat-box {
+  background: rgba(14, 16, 24, 0.88) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}

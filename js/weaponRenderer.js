@@ -276,17 +276,34 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.arc(p.x, p.y, radius * 0.55, 0, Math.PI * 2);
         ctx.fill();
       } else if (p.type === 'swordWave') {
-        // [진화 4] 폭풍검 초승달 검기 렌더링
+        // [진화 4] 폭풍검: 조선 서예 붓글씨 초승달 검기 (송연묵 흑선 + 금박 림)
         const angle = Math.atan2(p.vy, p.vx);
-        const sz = Math.round(26 * projArea);
+        const sz = Math.round(28 * projArea);
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(angle);
-        ctx.fillStyle = '#f59e0b';
+        
+        // 1. 외곽 짙은 먹선 검기
+        ctx.fillStyle = '#09090b';
         ctx.beginPath();
-        ctx.arc(0, 0, sz, -Math.PI / 3, Math.PI / 3);
-        ctx.quadraticCurveTo(-sz * 0.4, 0, Math.cos(-Math.PI / 3) * sz, Math.sin(-Math.PI / 3) * sz);
+        ctx.arc(0, 0, sz, -Math.PI / 2.8, Math.PI / 2.8);
+        ctx.quadraticCurveTo(-sz * 0.45, 0, Math.cos(-Math.PI / 2.8) * sz, Math.sin(-Math.PI / 2.8) * sz);
         ctx.fill();
+
+        // 2. 내부 황금빛 묵흔 코어
+        ctx.fillStyle = '#fde047';
+        ctx.beginPath();
+        ctx.arc(0, 0, sz * 0.75, -Math.PI / 3.2, Math.PI / 3.2);
+        ctx.quadraticCurveTo(-sz * 0.35, 0, Math.cos(-Math.PI / 3.2) * (sz * 0.75), Math.sin(-Math.PI / 3.2) * (sz * 0.75));
+        ctx.fill();
+
+        // 3. 백색 날카로운 칼날 림
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(0, 0, sz - 1, -Math.PI / 3, Math.PI / 3);
+        ctx.stroke();
+
         ctx.restore();
       } else if (p.type === 'holyPellet') {
         // 홀리 산탄총 성스러운 탄환 렌더링

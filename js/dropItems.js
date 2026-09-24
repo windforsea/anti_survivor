@@ -11,6 +11,10 @@ class DamageNumber {
     this.maxLife = 0.55;
     this.vy = -70 - Math.random() * 25;
     this.vx = (Math.random() - 0.5) * 35;
+    // 치명타 수묵 먹물방울용 시드
+    if (this.isCrit || this.isSuperCrit) {
+      this.inkAngle = Math.random() * Math.PI * 2;
+    }
   }
 
   update(dt) {
@@ -21,25 +25,62 @@ class DamageNumber {
 
   draw(ctx) {
     const alpha = Math.max(0, this.life / this.maxLife);
+    const prog = 1 - (this.life / this.maxLife);
+
     ctx.save();
     ctx.globalAlpha = alpha;
+
     if (this.isSuperCrit) {
-      // 사신의 낫(크리티컬 데미지 증가) 보유 시: 강력한 핏빛 느낌표 (!)
-      ctx.font = '900 22px sans-serif';
+      // 🔴 [슈퍼 치명타]: 붉은 주사(朱砂) 먹물방울 4방울 폭발 스플래시 (느낌표 텍스트 완전 제외)
+      const baseR = 4.0 * (1 - prog * 0.4);
+      const spread = prog * 28;
+      
+      // 중심 주사 먹물핵
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y - prog * 8, baseR * 1.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 사방으로 튀는 4방울의 붉은 핏빛 먹물 파편
+      const angles = [this.inkAngle, this.inkAngle + 1.57, this.inkAngle + 3.14, this.inkAngle + 4.71];
       ctx.fillStyle = '#ef4444';
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 3.5;
-      ctx.strokeText('!', this.x, this.y);
-      ctx.fillText('!', this.x, this.y);
+      for (let i = 0; i < angles.length; i++) {
+        const a = angles[i];
+        const dist = spread * (0.8 + (i % 2) * 0.4);
+        const bx = this.x + Math.cos(a) * dist;
+        const by = this.y + Math.sin(a) * dist - (prog * 6);
+        ctx.beginPath();
+        ctx.arc(bx, by, Math.max(1, baseR * 0.65), 0, Math.PI * 2);
+        ctx.fill();
+      }
     } else if (this.isCrit) {
-      // 일반 크리티컬: 황금빛 느낌표 (!)
-      ctx.font = '900 18px sans-serif';
-      ctx.fillStyle = '#fde047';
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 3.0;
-      ctx.strokeText('!', this.x, this.y);
-      ctx.fillText('!', this.x, this.y);
+      // ⚫ [일반 치명타]: 짙은 까만 송연묵(松煙墨) 먹물방울 3방울 스플래시 (느낌표 텍스트 완전 제외)
+      const baseR = 3.5 * (1 - prog * 0.4);
+      const spread = prog * 22;
+
+      // 중심 흑묵 방울
+      ctx.fillStyle = '#09090b';
+      ctx.beginPath();
+      ctx.arc(this.x, this.y - prog * 6, baseR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 백색 미세 림 (어두운 배경 위 가독성 확보)
+      ctx.strokeStyle = 'rgba(248, 250, 252, 0.7)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // 3방향 튀는 먹물 방울
+      const angles = [this.inkAngle, this.inkAngle + 2.1, this.inkAngle + 4.2];
+      ctx.fillStyle = '#18181b';
+      for (const a of angles) {
+        const bx = this.x + Math.cos(a) * spread;
+        const by = this.y + Math.sin(a) * spread - (prog * 5);
+        ctx.beginPath();
+        ctx.arc(bx, by, Math.max(1, baseR * 0.55), 0, Math.PI * 2);
+        ctx.fill();
+      }
     } else {
+      // 일반 데미지 숫자 표기
       ctx.font = 'bold 13px sans-serif';
       ctx.fillStyle = '#ffffff';
       ctx.strokeStyle = '#000000';
