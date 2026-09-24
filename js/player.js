@@ -483,24 +483,32 @@ class Player {
         const spriteKey = anim.type === 'sword' ? 'anim_sword' : 'anim_dagger';
         const img = assets.images[spriteKey] || assets.images['anim_dagger'];
         const size = Math.round(30 * area);
-        // [수묵화 서예 붓글씨 검기 궤적]
+        // [수묵화 서예 붓글씨 검기 궤적 - 흑백 대비 강화]
         ctx.save();
-        const slashRadius = (45 + Math.sin(progress * Math.PI) * 25) * Math.sqrt(area);
-        const arcSpread = 1.6;
+        const slashRadius = (46 + Math.sin(progress * Math.PI) * 26) * Math.sqrt(area);
+        const arcSpread = 1.7;
         const curSwingAngle = anim.angle - arcSpread / 2 + progress * arcSpread;
         
-        // 거친 먹선 붓터치 궤적 (송연묵 흑색 + 백색 림)
-        ctx.strokeStyle = '#09090b';
-        ctx.lineWidth = Math.round(6 * Math.sqrt(area) * (1 - progress * 0.5));
+        // 1. 외곽 짙은 송연묵 거친 붓터치 궤적 (두께 8px)
+        ctx.strokeStyle = '#020204';
+        ctx.lineWidth = Math.round(8 * Math.sqrt(area) * (1 - progress * 0.4));
         ctx.lineCap = 'round';
         ctx.beginPath();
         ctx.arc(this.x, this.y, slashRadius, anim.angle - arcSpread / 2, curSwingAngle, false);
         ctx.stroke();
 
-        ctx.strokeStyle = 'rgba(248, 250, 252, 0.85)';
-        ctx.lineWidth = Math.max(1.5, Math.round(2 * Math.sqrt(area)));
+        // 2. 어두운 배경에서도 번뜩이는 은백색 서예 칼날 비백(飛白) 림 (두께 3.5px)
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = Math.max(2, Math.round(3.5 * Math.sqrt(area) * (1 - progress * 0.3)));
         ctx.beginPath();
-        ctx.arc(this.x, this.y, slashRadius - 2, anim.angle - arcSpread / 2, curSwingAngle, false);
+        ctx.arc(this.x, this.y, slashRadius - 1.5, anim.angle - arcSpread / 2, curSwingAngle, false);
+        ctx.stroke();
+
+        // 3. 찰나의 검기 안쪽 옥빛 잔상
+        ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, slashRadius - 4, anim.angle - arcSpread / 2, curSwingAngle, false);
         ctx.stroke();
         ctx.restore();
 

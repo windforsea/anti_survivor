@@ -4,31 +4,22 @@ class Game {
 
   // 전통 닥종이(한지) 및 수묵 텍스처 오프스크린 1회 베이킹 (프레임 부하 0%)
   initHanjiTexture() {
-    // 1. 월드 1용 짙은 송연묵 닥종이 텍스처 (512x512)
+    // 1. 월드 1용 깊은 흑회색 닥종이(한지) 수묵 텍스처 (512x512)
     const c1 = document.createElement('canvas');
     c1.width = 512;
     c1.height = 512;
     const ctx1 = c1.getContext('2d');
     
-    // 짙은 묵흑색 바탕
-    ctx1.fillStyle = '#0a0b10';
+    // 깊이 있는 조선 닥종이 흑회색 바탕
+    ctx1.fillStyle = '#141724';
     ctx1.fillRect(0, 0, 512, 512);
 
-    // 은은한 한지 섬유질 노이즈 & 붓자국
-    ctx1.fillStyle = 'rgba(255, 255, 255, 0.018)';
-    for (let i = 0; i < 400; i++) {
-      const rx = Math.random() * 512;
-      const ry = Math.random() * 512;
-      const rw = 2 + Math.random() * 8;
-      const rh = 1 + Math.random() * 2;
-      ctx1.fillRect(rx, ry, rw, rh);
-    }
-    // 은은한 먹물 번짐 원형 얼룩 4곳
+    // 굵고 옅은 수묵 먹물 번짐 농담 (Shades of Ink) 4구역
     const spots = [
-      { x: 120, y: 140, r: 90, color: 'rgba(20, 24, 38, 0.4)' },
-      { x: 380, y: 360, r: 110, color: 'rgba(16, 20, 32, 0.45)' },
-      { x: 420, y: 100, r: 80, color: 'rgba(24, 28, 44, 0.35)' },
-      { x: 90, y: 400, r: 95, color: 'rgba(18, 22, 35, 0.4)' }
+      { x: 130, y: 130, r: 120, color: 'rgba(8, 10, 16, 0.75)' },
+      { x: 380, y: 370, r: 140, color: 'rgba(10, 12, 20, 0.70)' },
+      { x: 390, y: 120, r: 110, color: 'rgba(28, 34, 52, 0.40)' },
+      { x: 120, y: 390, r: 130, color: 'rgba(9, 11, 18, 0.72)' }
     ];
     for (const sp of spots) {
       const g = ctx1.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sp.r);
@@ -39,13 +30,35 @@ class Game {
       ctx1.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
       ctx1.fill();
     }
-    // 섬세한 한지 창살 격자 틈새
-    ctx1.strokeStyle = 'rgba(30, 41, 59, 0.28)';
-    ctx1.lineWidth = 1;
+
+    // 화선지 고유의 섬유질 붓결 텍스처
+    ctx1.fillStyle = 'rgba(255, 255, 255, 0.04)';
+    for (let i = 0; i < 600; i++) {
+      const rx = Math.random() * 512;
+      const ry = Math.random() * 512;
+      const rw = 2 + Math.random() * 10;
+      const rh = 1 + Math.random() * 2;
+      ctx1.fillRect(rx, ry, rw, rh);
+    }
+
+    // 단아하고 뚜렷한 조선 전통 창살 묵선 격자 (256x256 타일링)
+    ctx1.strokeStyle = 'rgba(71, 85, 105, 0.35)';
+    ctx1.lineWidth = 1.5;
     ctx1.strokeRect(0.5, 0.5, 256, 256);
     ctx1.strokeRect(256.5, 0.5, 256, 256);
     ctx1.strokeRect(0.5, 256.5, 256, 256);
     ctx1.strokeRect(256.5, 256.5, 256, 256);
+
+    // 격자 모서리 전통 십자 묵흔
+    ctx1.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+    ctx1.lineWidth = 1;
+    const crosses = [[0, 0], [256, 0], [512, 0], [0, 256], [256, 256], [512, 256], [0, 512], [256, 512], [512, 512]];
+    for (const [cx, cy] of crosses) {
+      ctx1.beginPath();
+      ctx1.moveTo(cx - 8, cy); ctx1.lineTo(cx + 8, cy);
+      ctx1.moveTo(cx, cy - 8); ctx1.lineTo(cx, cy + 8);
+      ctx1.stroke();
+    }
 
     this.hanjiPatternCanvas = c1;
 
@@ -54,16 +67,12 @@ class Game {
     c2.width = 512;
     c2.height = 512;
     const ctx2 = c2.getContext('2d');
-    ctx2.fillStyle = '#030d17';
+    ctx2.fillStyle = '#061726';
     ctx2.fillRect(0, 0, 512, 512);
 
-    ctx2.fillStyle = 'rgba(6, 182, 212, 0.025)';
-    for (let i = 0; i < 350; i++) {
-      ctx2.fillRect(Math.random() * 512, Math.random() * 512, 3 + Math.random() * 6, 1 + Math.random() * 2);
-    }
     const tealSpots = [
-      { x: 150, y: 180, r: 100, color: 'rgba(4, 47, 54, 0.45)' },
-      { x: 350, y: 340, r: 120, color: 'rgba(8, 51, 68, 0.4)' }
+      { x: 150, y: 180, r: 140, color: 'rgba(4, 47, 54, 0.65)' },
+      { x: 350, y: 340, r: 160, color: 'rgba(8, 51, 68, 0.60)' }
     ];
     for (const sp of tealSpots) {
       const g = ctx2.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sp.r);
@@ -74,10 +83,10 @@ class Game {
       ctx2.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
       ctx2.fill();
     }
-    ctx2.strokeStyle = 'rgba(14, 116, 144, 0.25)';
-    ctx2.lineWidth = 1;
+    ctx2.strokeStyle = 'rgba(14, 116, 144, 0.40)';
+    ctx2.lineWidth = 1.5;
     ctx2.strokeRect(0.5, 0.5, 256, 256);
-    ctx2.strokeRect(256.5, 256.5, 256, 256);
+    ctx2.strokeRect(256.5, 0.5, 256, 256);
 
     this.tealInkPatternCanvas = c2;
   }
@@ -818,12 +827,13 @@ class Game {
     }
 
     // 다크 잉크 비네팅 오버레이 (조선 수묵 다크 판타지 분위기)
+    ctx.restore();
+
+    // 다크 잉크 비네팅 오버레이 (화면 뷰포트 좌표계에서 정확히 화면 전체를 부드럽게 커버)
     this.updateInkVignette(width, height);
     if (this.vignetteCanvas) {
       ctx.drawImage(this.vignetteCanvas, 0, 0);
     }
-
-    ctx.restore();
 
     // 화면 오버레이 이펙트 (빙결, 폭탄 플래시)
     if (this.freezeTimer > 0) {
