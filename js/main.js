@@ -344,9 +344,6 @@ class Game {
   triggerVictory() {
     this.gameState = 'VICTORY';
     this.saveEarnedGold();
-    if (this.ui) {
-      this.ui.triggerHaptic([100, 50, 100, 50, 200]);
-    }
     const m = Math.floor(this.totalElapsedTime / 60).toString().padStart(2, '0');
     const s = Math.floor(this.totalElapsedTime % 60).toString().padStart(2, '0');
     this.ui.showVictory({

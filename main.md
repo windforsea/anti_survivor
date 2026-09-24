@@ -79,7 +79,7 @@ vam/
 | :--- | :--- | :--- | :--- |
 | [`js/cards.js`](js/cards.js) | `CardManager` | 철검(sword) 전직업 공용화, 타 직업 시그니처 무기 5종 차단(Blacklist), 14대 진화 합성 힌트 및 카드 추첨 | `generateCards()`, `generateStartingWeaponCards()`, `getForbiddenWeaponsForClass()` |
 | [`js/obstacles.js`](js/obstacles.js) | `ObstacleManager` | 3종 필드 장애물(바위, 고대나무, 나무상자) 배치 및 충돌/파괴/아이템 드랍 | `update(dt, player)`, `draw(ctx, player)` |
-| [`js/ui.js`](js/ui.js) | `UIManager` | 체력바, EXP 게이지, 타이머, 레벨업 카드 모달, 승리/패배 모달, 명예의 전당, 가상 조이스틱 | `showLevelUpModal(cards)`, `showGameOverModal()`, `renderHallOfFame()` |
+| [`js/ui.js`](js/ui.js) | `UIManager` | 체력바, EXP 게이지, 타이머, 레벨업 카드 모달, 승리/패배 모달, 명예의 전당, 가상 조이스틱, 로비/HUD 듀얼 전체화면 | `showLevelUpModal(cards)`, `showGameOverModal()`, `renderHallOfFame()`, `initFullscreen()` |
 
 ---
 

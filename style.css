@@ -9,16 +9,20 @@
 html, body {
   width: 100%;
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
   background-color: #0b0d13;
   color: #f8fafc;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Malgun Gothic", "Noto Sans KR", sans-serif;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 #gameContainer {
   position: relative;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -944,32 +948,6 @@ html, body {
   display: none !important;
 }
 
-/* 반응형 */
-@media (max-width: 768px) {
-  .cards-container {
-    grid-template-columns: 1fr;
-    max-height: 65vh;
-    overflow-y: auto;
-  }
-  
-  .upgrade-card {
-    padding: 12px 14px;
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-    gap: 12px;
-  }
-
-  .card-icon {
-    font-size: 32px;
-    margin: 0;
-  }
-
-  .card-badge {
-    position: static;
-  }
-}
-
 /* ============================================================
    👑 로비 및 영구 업그레이드 상점 스타일
    ============================================================ */
@@ -982,13 +960,42 @@ html, body {
   padding: 24px;
   border-radius: 16px;
   max-height: 90vh;
+  max-height: 90dvh;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .lobby-header {
+  position: relative;
   text-align: center;
   margin-bottom: 16px;
+}
+
+.lobby-fullscreen-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 10;
+}
+
+.lobby-fullscreen-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #38bdf8;
+  transform: scale(1.04);
 }
 
 .lobby-title {
@@ -1446,12 +1453,6 @@ html, body {
   background: #475569;
 }
 
-@media (max-width: 768px) {
-  .lobby-upgrades-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* ================= 모바일 플로팅 가상 조이스틱 ================= */
 .joystick-zone {
   position: absolute;
@@ -1459,6 +1460,7 @@ html, body {
   left: 0;
   width: 100vw; /* 화면 가로 100% 전체 (왼손/오른손잡이 모두 대응) */
   height: calc(100vh - 60px);
+  height: calc(100dvh - 60px);
   z-index: 50;
   pointer-events: auto;
   touch-action: none;
@@ -1714,11 +1716,373 @@ body, #gameContainer, canvas {
   color: #ffffff;
 }
 
+/* ============================================================
+   📱 모바일 전용 반응형 & UI 컴팩트 최적화 (@media max-width: 768px)
+   ============================================================ */
 @media (max-width: 768px) {
+  /* 1. 상단 HUD 컴팩트화 */
+  .hud-top-bar {
+    gap: 6px;
+    padding: 6px 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hud-stat-box {
+    padding: 3px 8px;
+    font-size: 11px;
+    border-radius: 6px;
+    letter-spacing: 0px;
+  }
+
+  .hud-btn {
+    padding: 4px 8px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  /* 경험치 바 슬림화 */
+  .exp-bar-container {
+    width: 98%;
+    height: 10px;
+    border-radius: 5px;
+  }
+
+  .exp-text {
+    font-size: 8px;
+  }
+
+  /* 2. 플레이어 상태 및 인벤토리 슬롯 슬림화 (전투 시야 확보) */
+  .hud-player-status {
+    padding: 6px 10px;
+    gap: 5px;
+    max-width: 250px;
+  }
+
+  .hp-bar-container {
+    width: 140px;
+    height: 14px;
+    border-radius: 7px;
+  }
+
+  .hp-text {
+    font-size: 9px;
+  }
+
+  .inventory-slots {
+    gap: 4px;
+  }
+
+  .inv-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(2px);
+  }
+
+  .inv-img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .inv-level {
+    font-size: 9px;
+    bottom: 1px;
+    right: 2px;
+  }
+
+  .inv-level-max, .inv-level-evo {
+    font-size: 8px;
+  }
+
+  /* 3. 모달 공통 크기 및 패딩 축소 */
+  .modal-box {
+    padding: 16px 14px;
+    border-radius: 12px;
+    max-height: 92vh;
+    max-height: 92dvh;
+    overflow-y: auto;
+  }
+
+  .modal-title {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .modal-sub {
+    font-size: 12px;
+    margin-bottom: 14px;
+  }
+
+  /* 4. 레벨업 카드 모달 및 한글 줄바꿈 최적화 */
+  .card-selection-box {
+    width: 95%;
+    padding: 14px 12px;
+  }
+
+  .cards-container {
+    grid-template-columns: 1fr;
+    max-height: 56vh;
+    max-height: 56dvh;
+    overflow-y: auto;
+    gap: 10px;
+    padding: 2px;
+  }
+
+  .upgrade-card {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 4px;
+    position: relative;
+    border-radius: 10px;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .upgrade-card .card-icon {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    font-size: 28px;
+    height: 36px;
+    margin: 0;
+  }
+
+  .upgrade-card .card-pixel-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .upgrade-card .card-name {
+    font-size: 15px;
+    padding-right: 48px;
+    margin-bottom: 2px;
+  }
+
+  .upgrade-card .card-stars {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .upgrade-card .card-desc {
+    font-size: 12px;
+    line-height: 1.35;
+    margin-bottom: 6px;
+    padding-right: 46px;
+    word-break: keep-all;
+  }
+
+  .upgrade-card .card-effect {
+    font-size: 11px;
+    padding: 3px 8px;
+    word-break: keep-all;
+  }
+
+  .upgrade-card .card-evo-hint {
+    font-size: 10px;
+    padding: 4px 6px;
+    margin-top: 4px;
+    width: 100%;
+    word-break: keep-all;
+  }
+
+  .upgrade-card .card-num-badge {
+    position: static;
+    display: inline-block;
+    margin-bottom: 4px;
+  }
+
+  .upgrade-card .card-type-tag {
+    position: static;
+    display: inline-block;
+    margin-bottom: 4px;
+    margin-left: 6px;
+  }
+
+  .upgrade-card .card-badge {
+    position: absolute;
+    top: 10px;
+    right: 56px;
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .card-action-bar {
+    margin-top: 12px;
+    padding-top: 10px;
+    gap: 10px;
+  }
+
+  .card-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .card-keyboard-guide {
+    display: none; /* 모바일 터치 환경에서는 키보드 가이드 숨김 */
+  }
+
+  /* 5. 로비 모달 및 상점 최적화 */
+  .lobby-box {
+    padding: 14px;
+    max-height: 92vh;
+    max-height: 92dvh;
+  }
+
+  .lobby-header {
+    margin-bottom: 10px;
+    padding-top: 4px;
+  }
+
+  .lobby-fullscreen-btn {
+    top: -4px;
+    right: 0;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .lobby-title {
+    font-size: 19px;
+  }
+
+  .lobby-sub {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .lobby-gold-badge {
+    font-size: 13px;
+    padding: 4px 12px;
+  }
+
+  .lobby-upgrades-grid {
+    grid-template-columns: 1fr;
+    max-height: 50vh;
+    max-height: 50dvh;
+    gap: 8px;
+  }
+
+  .lobby-upgrade-card {
+    padding: 10px;
+    word-break: keep-all;
+  }
+
+  .lobby-card-info h3 {
+    font-size: 13px;
+    word-break: keep-all;
+  }
+
+  .lobby-card-info p {
+    font-size: 11px;
+    word-break: keep-all;
+  }
+
+  .lobby-buy-btn {
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .lobby-footer {
+    margin-top: 10px;
+    flex-shrink: 0;
+  }
+
+  .lobby-start-btn {
+    padding: 10px 18px;
+    font-size: 14px;
+    min-width: 140px;
+  }
+
+  /* 6. 캐릭터 선택 모달 최적화 */
+  .char-select-box {
+    padding: 14px;
+    max-height: 92vh;
+    max-height: 92dvh;
+  }
+
   .char-cards-grid {
     grid-template-columns: 1fr;
-    max-height: 55vh;
+    max-height: 52vh;
+    max-height: 52dvh;
     overflow-y: auto;
+    gap: 10px;
+  }
+
+  .char-card {
+    padding: 12px 10px;
+  }
+
+  .char-avatar-box {
+    width: 60px;
+    height: 60px;
+    margin: 4px 0 8px;
+  }
+
+  .char-pixel-img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .char-name {
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .char-desc {
+    font-size: 11px;
+    margin-bottom: 8px;
+    min-height: auto;
+    word-break: keep-all;
+  }
+
+  .char-stats-list {
+    padding: 6px 8px;
+    margin-bottom: 10px;
+  }
+
+  .char-select-btn {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  /* 7. 명예의 전당 및 결과 모달 최적화 */
+  .hof-box {
+    padding: 14px;
+    max-height: 90vh;
+    max-height: 90dvh;
+  }
+
+  .hof-title {
+    font-size: 18px;
+  }
+
+  .hof-card {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  .hof-medal {
+    font-size: 20px;
+    width: 28px;
+  }
+
+  .hof-user-name {
+    font-size: 13px;
+  }
+
+  .hof-time-badge {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  .result-title {
+    font-size: 24px;
   }
 }
 

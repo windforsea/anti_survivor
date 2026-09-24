@@ -304,9 +304,6 @@ class Player {
         this.hp = Math.round(this.maxHp * 0.5);
         this.invulnerableTimer = 3.0; // 부활 시 3초간 무적
         sounds.playVictory();
-        if (window.game && window.game.ui) {
-          window.game.ui.triggerHaptic([60, 40, 100]);
-        }
         if (window.game) {
           window.game.addParticles(this.x, this.y, '#f59e0b', 40);
           window.game.addParticles(this.x, this.y, '#ef4444', 30);
@@ -317,9 +314,6 @@ class Player {
       } else {
         this.hp = 0;
         this.isDead = true;
-        if (window.game && window.game.ui) {
-          window.game.ui.triggerHaptic([100, 50, 150]);
-        }
       }
     }
 

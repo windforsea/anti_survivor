@@ -75,6 +75,7 @@ class UIManager {
 
     this.soundToggleBtn = document.getElementById('soundToggleBtn');
     this.fullscreenToggleBtn = document.getElementById('fullscreenToggleBtn');
+    this.lobbyFullscreenBtn = document.getElementById('lobbyFullscreenBtn');
 
     // 키보드 카드 선택 포커스 상태
     this.focusedCardIndex = 0;
@@ -128,11 +129,9 @@ class UIManager {
     }
   }
 
-  // 전체화면 및 가로 모드 토글
+  // 전체화면 및 가로 모드 토글 (로비 및 HUD 양쪽 동기화)
   initFullscreen() {
-    if (!this.fullscreenToggleBtn) return;
-    this.fullscreenToggleBtn.addEventListener('click', async () => {
-      this.triggerHaptic(25);
+    const toggle = async () => {
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         const el = document.documentElement;
         if (el.requestFullscreen) {
@@ -144,8 +143,7 @@ class UIManager {
         if (screen.orientation && screen.orientation.lock) {
           screen.orientation.lock('landscape').catch(() => {});
         }
-        this.fullscreenToggleBtn.textContent = '✖';
-        this.fullscreenToggleBtn.title = '전체화면 종료';
+        this.updateFullscreenButtons(true);
       } else {
         if (document.exitFullscreen) {
           await document.exitFullscreen().catch(() => {});
@@ -155,17 +153,35 @@ class UIManager {
         if (screen.orientation && screen.orientation.unlock) {
           screen.orientation.unlock();
         }
-        this.fullscreenToggleBtn.textContent = '⛶';
-        this.fullscreenToggleBtn.title = '전체화면 (모바일 권장)';
+        this.updateFullscreenButtons(false);
       }
-    });
+    };
 
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement && this.fullscreenToggleBtn) {
-        this.fullscreenToggleBtn.textContent = '⛶';
-        this.fullscreenToggleBtn.title = '전체화면 (모바일 권장)';
-      }
-    });
+    if (this.fullscreenToggleBtn) {
+      this.fullscreenToggleBtn.addEventListener('click', toggle);
+    }
+    if (this.lobbyFullscreenBtn) {
+      this.lobbyFullscreenBtn.addEventListener('click', toggle);
+    }
+
+    const onFullscreenChange = () => {
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      this.updateFullscreenButtons(isFs);
+    };
+
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+  }
+
+  updateFullscreenButtons(isFullscreen) {
+    if (this.fullscreenToggleBtn) {
+      this.fullscreenToggleBtn.textContent = isFullscreen ? '✖' : '⛶';
+      this.fullscreenToggleBtn.title = isFullscreen ? '전체화면 종료' : '전체화면 (모바일 권장)';
+    }
+    if (this.lobbyFullscreenBtn) {
+      this.lobbyFullscreenBtn.textContent = isFullscreen ? '✖ 전체화면 종료' : '⛶ 전체화면';
+      this.lobbyFullscreenBtn.title = isFullscreen ? '전체화면 종료' : '전체화면 전환';
+    }
   }
 
   initEventListeners() {
@@ -232,7 +248,6 @@ class UIManager {
       const btn = card.querySelector('.char-select-btn');
 
       const selectHero = () => {
-        this.triggerHaptic(30);
         sounds.playLevelUp();
         this.hideCharacterSelect();
         this.game.startRunWithCharacter(charType);
@@ -1016,7 +1031,6 @@ class UIManager {
       if (!success) return;
 
       sounds.playLevelUp();
-      this.triggerHaptic([20, 20]);
       this.renderLobbyUpgrades();
     } catch (e) {
       console.warn('업그레이드 구매 실패:', e);
@@ -1051,8 +1065,6 @@ class UIManager {
       base.style.top = `${touch.clientY}px`;
       base.classList.add('active');
       knob.style.transform = 'translate(-50%, -50%)';
-
-      this.triggerHaptic(15);
     }, { passive: false });
 
     zone.addEventListener('touchmove', (e) => {
