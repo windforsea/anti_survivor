@@ -1,6 +1,6 @@
 {
-  "totalCalls": 12,
-  "lastUpdated": "2026-09-24T02:48:10.954Z",
+  "totalCalls": 13,
+  "lastUpdated": "2026-09-24T11:09:17.871Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -32,10 +32,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 3,
+      "callCount": 4,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T02:47:21.759Z",
+      "lastUsedAt": "2026-09-24T11:09:17.870Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-24T11:09:17.871Z",
+          "reason": "어둠의 보주 및 태풍의 눈 무기 로직 수정 후 정적 감사"
+        },
         {
           "timestamp": "2026-09-24T02:47:21.759Z",
           "reason": "스킬 업데이트 필요 여부 점검"

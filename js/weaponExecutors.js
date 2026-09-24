@@ -1019,6 +1019,7 @@ WeaponManager.prototype.executeCycloneBow = function(w, enemies) {
         pierce: 999,
         knockbackForce: 190,
         life: 0.95,
+        maxLife: 0.95,
         color: '#34d399',
         hitCooldowns: new Map(),
         hitEnemies: new Set(),

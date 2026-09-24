@@ -279,16 +279,26 @@ class WeaponManager {
       for (let i = 0; i < shadowOrb.familiars.length; i++) {
         const fam = shadowOrb.familiars[i];
 
+        // 0. 플레이어와의 거리 및 리쉬(Leash) 검사
+        const famDistToPlayer = Math.hypot(fam.x - this.player.x, fam.y - this.player.y);
+        const maxLeashDist = 420;
+        const maxPlayerRange = 380;
+        if (famDistToPlayer > maxLeashDist || (fam.target && Math.hypot(fam.target.x - this.player.x, fam.target.y - this.player.y) > maxPlayerRange)) {
+          fam.target = null;
+        }
+
         // 1. 타겟 유효성 검사 (타겟이 없거나 사망 시 새 타겟 탐색)
         if (!fam.target || fam.target.isDead) {
           fam.target = null;
           let closest = null;
-          let minDist = 650;
+          let minDist = maxPlayerRange;
+          const otherTargets = new Set(shadowOrb.familiars.filter((f, idx) => idx !== i && f.target && !f.target.isDead).map(f => f.target));
           for (const e of enemies) {
             if (e.isDead) continue;
-            const d = Math.hypot(e.x - fam.x, e.y - fam.y);
-            if (d < minDist) {
-              minDist = d;
+            const dToPlayer = Math.hypot(e.x - this.player.x, e.y - this.player.y);
+            const effectiveDist = otherTargets.has(e) ? dToPlayer + 80 : dToPlayer;
+            if (effectiveDist < minDist) {
+              minDist = effectiveDist;
               closest = e;
             }
           }
@@ -296,7 +306,7 @@ class WeaponManager {
         }
 
         // 2. 이동 로직
-        if (fam.target) {
+        if (fam.target && famDistToPlayer <= maxLeashDist) {
           const dx = fam.target.x - fam.x;
           const dy = fam.target.y - fam.y;
           const dist = Math.hypot(dx, dy);
@@ -333,7 +343,8 @@ class WeaponManager {
           const dy = targetY - fam.y;
           const dist = Math.hypot(dx, dy);
           if (dist > 2) {
-            const step = Math.min(dist, orbSpeed * 0.8 * dt);
+            const returnSpeedMult = famDistToPlayer > 100 ? 1.4 : 0.8;
+            const step = Math.min(dist, orbSpeed * returnSpeedMult * dt);
             fam.x += (dx / dist) * step;
             fam.y += (dy / dist) * step;
           }
@@ -391,16 +402,24 @@ class WeaponManager {
       for (let i = 0; i < eclipseSpiral.familiars.length; i++) {
         const fam = eclipseSpiral.familiars[i];
 
+        // 0. 플레이어와의 거리 및 리쉬(Leash) 검사
+        const famDistToPlayer = Math.hypot(fam.x - this.player.x, fam.y - this.player.y);
+        const maxLeashDist = 480;
+        const maxPlayerRange = 440;
+        if (famDistToPlayer > maxLeashDist || (fam.target && Math.hypot(fam.target.x - this.player.x, fam.target.y - this.player.y) > maxPlayerRange)) {
+          fam.target = null;
+        }
+
         // 1. 타겟 유효성 검사 (서로 다른 타겟 분산 우선)
         if (!fam.target || fam.target.isDead) {
           fam.target = null;
           let closest = null;
-          let minDist = 750;
+          let minDist = maxPlayerRange;
           const otherTargets = new Set(eclipseSpiral.familiars.map(f => f.target).filter(t => t && !t.isDead));
 
           for (const e of enemies) {
             if (e.isDead) continue;
-            const d = Math.hypot(e.x - fam.x, e.y - fam.y);
+            const d = Math.hypot(e.x - this.player.x, e.y - this.player.y);
             const effectiveDist = otherTargets.has(e) ? d + 120 : d;
             if (effectiveDist < minDist) {
               minDist = effectiveDist;
@@ -411,7 +430,7 @@ class WeaponManager {
         }
 
         // 2. 이동
-        if (fam.target) {
+        if (fam.target && famDistToPlayer <= maxLeashDist) {
           const dx = fam.target.x - fam.x;
           const dy = fam.target.y - fam.y;
           const dist = Math.hypot(dx, dy);
@@ -448,7 +467,8 @@ class WeaponManager {
           const dy = targetY - fam.y;
           const dist = Math.hypot(dx, dy);
           if (dist > 2) {
-            const step = Math.min(dist, orbSpeed * 0.85 * dt);
+            const returnSpeedMult = famDistToPlayer > 120 ? 1.4 : 0.85;
+            const step = Math.min(dist, orbSpeed * returnSpeedMult * dt);
             fam.x += (dx / dist) * step;
             fam.y += (dy / dist) * step;
           }
@@ -672,8 +692,20 @@ class WeaponManager {
 
       // 태풍의 눈 (cycloneArrow) 2단계: 주변 적을 화살 중심으로 강력 흡인 (블랙홀)
       if (p.type === 'cycloneArrow') {
-        const pullRadius = 140 * (p.area || 1.0);
-        for (const e of enemies) {
+        const maxLife = p.maxLife || 0.95;
+        const elapsed = Math.max(0, maxLife - p.life);
+        const safeDelay = 0.10;
+        const growthDuration = 0.35;
+        let growthProg = 0;
+        if (elapsed > safeDelay) {
+          growthProg = Math.min(1.0, (elapsed - safeDelay) / growthDuration);
+        }
+        const maxPullRadius = 150 * (p.area || 1.0);
+        const pullRadius = maxPullRadius * growthProg;
+        p.currentPullRadius = pullRadius;
+        p.growthProg = growthProg;
+        if (pullRadius > 8) {
+          for (const e of enemies) {
           if (e.isDead) continue;
           const ed = Math.hypot(p.x - e.x, p.y - e.y);
           if (ed < pullRadius && ed > 10) {
@@ -682,8 +714,9 @@ class WeaponManager {
             e.y += ((p.y - e.y) / ed) * pullForce;
           }
         }
-        if (window.game && Math.random() < 0.35) {
+          if (window.game && Math.random() < (0.2 + growthProg * 0.3)) {
           window.game.addParticles(p.x, p.y, '#6ee7b7', 2);
+          }
         }
       }
 

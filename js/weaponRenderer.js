@@ -435,10 +435,11 @@ WeaponManager.prototype.draw = function(ctx) {
         ctx.save();
         ctx.translate(p.x, p.y);
         // 외곽 소용돌이 흡인 링
-        ctx.strokeStyle = 'rgba(52, 211, 153, 0.4)';
-        ctx.lineWidth = 2;
+        const growthProg = p.growthProg !== undefined ? p.growthProg : 0;
+        ctx.strokeStyle = `rgba(52, 211, 153, ${0.45 * growthProg})`;
+        ctx.lineWidth = 1.5 + growthProg * 1.5;
         ctx.beginPath();
-        ctx.arc(0, 0, (40 * projArea) + pulse, 0, Math.PI * 2);
+        ctx.arc(0, 0, (50 * projArea * growthProg) + (pulse * growthProg), 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.rotate(angle);
