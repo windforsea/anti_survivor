@@ -23,7 +23,9 @@ vam/
 ├── .agents/skills/              # 🤖 Antigravity 프로젝트 전용 커스텀 스킬 (VCS 팀/PC 공유)
 │   ├── anti-content-pipeline/   # 신규 무기/진화/캐릭터/몬스터 추가 파이프라인
 │   ├── anti-logic-auditor/      # 전투 엔진 & 스탯 공식 정적 무결성 감사 스크립트
-│   └── pixel-sprite-builder/    # Canvas 2D 픽셀아트 스프라이트 빌더 가이드
+│   ├── pixel-sprite-builder/    # Canvas 2D 픽셀아트 스프라이트 빌더 가이드
+│   ├── anti-world-architect/    # 신규 월드(스테이지/지형/장애물/보스/UI) 생성 파이프라인
+│   └── anti-balance-simulator/  # 20~25스테이지 난이도 곡선 및 보스 TTK 밸런스 시뮬레이터
 │
 ├── api/                         # Vercel Serverless Function
 │   └── champion.js              # Vercel 배포 환경용 명예의 전당 REST API
@@ -108,6 +110,10 @@ vam/
   👉 [`js/ui.js`](js/ui.js), [`index.html`](index.html), [`style.css`](style.css)
 * **픽셀아트 스프라이트 디자인 및 생성을 수정할 때**:
   👉 [`generate_assets.js`](generate_assets.js) (수정 후 `node generate_assets.js` 실행)
+* **신규 월드(3, 4 등) 지형/장애물/보스/타임라인을 추가할 때**:
+  👉 `.agents/skills/anti-world-architect/` (`node .agents/skills/anti-world-architect/scripts/scaffold_world.js`)
+* **스테이지 난이도 곡선 및 보스 처치 시간(TTK) 밸런스를 검증할 때**:
+  👉 `.agents/skills/anti-balance-simulator/` (`node .agents/skills/anti-balance-simulator/scripts/simulate_balance.js`)
 
 ---
 
