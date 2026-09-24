@@ -48,7 +48,7 @@ node .agents/skills/anti-world-architect/scripts/scaffold_world.js 3 "화산 요
 1. `index.html`: `#stageSelectModal` 내 스테이지 카드 마크업
 2. `style.css`: 테마 네온 컬러 및 뱃지 스타일
 3. `js/obstacles.js`: 신규 3종 장애물 타입 및 절차적 렌더러
-4. `js/enemies.js`: 신규 15종 테마 몬스터 스펙 테이블
+4. `js/enemyData.js`: 신규 15종 테마 몬스터 스펙 테이블 (`ENEMY_TYPES_W{worldNum}` 등록)
 5. `js/bosses.js`: 4대 테마 보스 생성자 및 패턴 AI
 6. `js/waveManager.js`: 20스테이지 웨이브 타임라인 및 4대 보스 스폰 연동
 7. `js/main.js`: 맵 크기 바운더리 및 고정 객체 풀 렌더러

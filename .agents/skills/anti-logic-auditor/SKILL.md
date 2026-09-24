@@ -18,7 +18,7 @@ node .agents/skills/anti-logic-auditor/scripts/audit_weapons.js
 ```
 
 ### 주요 검사 항목:
-1. **28종 전체 무기 등록 여부**: `weaponData.js`와 `weapons.js` 사이의 ID 누락 및 오탈자 검사.
+1. **28종 전체 무기 등록 여부**: `weaponData.js`와 `weapons.js`, `weaponExecutors.js` 사이의 ID 누락, 발사 실행기 및 오탈자 검사.
 2. **스탯 계산 공식 호출 검사**:
    * 데미지: `getDamage(w)`를 통해 플레이어 공격력 증폭이 정상 적용되는가?
    * 범위: `getArea(w)`를 통해 범위 증가가 적용되는가?

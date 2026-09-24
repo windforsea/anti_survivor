@@ -75,4 +75,16 @@ console.log(`
 - 보스 4 (Stage ${worldNum}-20 / ID: ${worldNum}20) : HP 130,000 ~ 150,000, 진 최종 보스 (3중 복합 탄막)
 `);
 
+console.log(`--- [5. js/enemyData.js - ENEMY_TYPES_W${worldNum} 15종 몬스터 테이블 등록] ---`);
+console.log(`
+// [월드 ${worldNum}: ${worldName} 몬스터 15종 스펙]
+const ENEMY_TYPES_W${worldNum} = {
+  w${worldNum}_mob1: { name: '${worldName} 하급마물', hp: 12, speed: 150, radius: 10, color: '#f97316', exp: 2, damage: 6, isFlying: false },
+  // ... w${worldNum}_mob2 ~ w${worldNum}_mob15
+};
+
+// ENEMY_TYPES 통합 객체에 스프레드 추가:
+// const ENEMY_TYPES = { ...ENEMY_TYPES_W1, ...ENEMY_TYPES_W2, ...ENEMY_TYPES_W${worldNum} };
+`);
+
 console.log(`✨ 월드 ${worldNum} 스캐폴딩 뼈대 출력 완료!`);

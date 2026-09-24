@@ -9,29 +9,27 @@ const fs = require('fs');
 const path = require('path');
 
 const rootDir = path.resolve(__dirname, '../../../..');
-const enemiesFile = path.join(rootDir, 'js', 'enemies.js');
+const enemyDataFile = path.join(rootDir, 'js', 'enemyData.js');
 const waveFile = path.join(rootDir, 'js', 'waveManager.js');
 
-if (!fs.existsSync(enemiesFile) || !fs.existsSync(waveFile)) {
+if (!fs.existsSync(enemyDataFile) || !fs.existsSync(waveFile)) {
   console.error('❌ 핵심 소스 파일을 찾을 수 없습니다.');
   process.exit(1);
 }
 
-// 1. ENEMY_TYPES 추출
-const enemiesCode = fs.readFileSync(enemiesFile, 'utf8');
-const enemyTypesMatch = enemiesCode.match(/const ENEMY_TYPES = \{([\s\S]*?)\n\};/);
-if (!enemyTypesMatch) {
-  console.error('❌ ENEMY_TYPES 파싱 실패');
-  process.exit(1);
+// 1. ENEMY_TYPES 추출 (js/enemyData.js)
+const enemyDataCode = fs.readFileSync(enemyDataFile, 'utf8');
+const enemyHpMap = {};
+
+const mobRegex = /^\s*(\w+):\s*\{.*hp:\s*(\d+)/gm;
+let mobMatch;
+while ((mobMatch = mobRegex.exec(enemyDataCode)) !== null) {
+  enemyHpMap[mobMatch[1]] = parseInt(mobMatch[2]);
 }
 
-const enemyHpMap = {};
-const typeLines = enemyTypesMatch[1].split('\n');
-for (const line of typeLines) {
-  const m = line.match(/^\s*(\w+):\s*\{.*hp:\s*(\d+)/);
-  if (m) {
-    enemyHpMap[m[1]] = parseInt(m[2]);
-  }
+if (Object.keys(enemyHpMap).length === 0) {
+  console.error('❌ ENEMY_TYPES 파싱 실패');
+  process.exit(1);
 }
 
 // 2. 보스 HP 스펙 매핑
