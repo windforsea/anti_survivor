@@ -1,6 +1,6 @@
 {
-  "totalCalls": 41,
-  "lastUpdated": "2026-09-25T03:20:01.340Z",
+  "totalCalls": 43,
+  "lastUpdated": "2026-09-25T03:26:47.432Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -168,10 +168,14 @@
     },
     "to-web": {
       "name": "to-web",
-      "callCount": 6,
+      "callCount": 7,
       "createdAt": "2026-09-25T02:31:46.134Z",
-      "lastUsedAt": "2026-09-25T03:13:12.772Z",
+      "lastUsedAt": "2026-09-25T03:22:33.976Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T03:22:33.976Z",
+          "reason": "보스 7종 128x128 수묵 스프라이트 위임"
+        },
         {
           "timestamp": "2026-09-25T03:13:12.772Z",
           "reason": "방안 A Part 1 128x128 엠블럼 생성 위임"
@@ -200,10 +204,14 @@
     },
     "to-com": {
       "name": "to-com",
-      "callCount": 5,
+      "callCount": 6,
       "createdAt": "2026-09-25T02:40:19.670Z",
-      "lastUsedAt": "2026-09-25T03:19:31.879Z",
+      "lastUsedAt": "2026-09-25T03:26:47.431Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T03:26:47.432Z",
+          "reason": "방안 A 보스 7종 128x128 코드 로컬 반영"
+        },
         {
           "timestamp": "2026-09-25T03:19:31.879Z",
           "reason": "방안 A Part 1 128x128 엠블럼 코드 로컬 반영"
