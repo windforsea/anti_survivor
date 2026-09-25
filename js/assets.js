@@ -16,6 +16,13 @@ class AssetManager {
       'deepShark', 'poisonRay', 'shadowEel', 'voidSeaSerpent', 'trilobite'
     ]);
 
+    // 보스 13종 키 세트 (64x64 고해상도 수묵화 렌더링 스무딩 적용 대상)
+    this.sumieBossKeys = new Set([
+      'boss_boar', 'boss_void', 'boss_eye', 'boss_colossus', 'boss_doom',
+      'boss_lich', 'boss_reaper', 'boss_wyrm', 'boss_overlord',
+      'boss_kraken', 'boss_titancrab', 'boss_leviathan', 'boss_dagon'
+    ]);
+
     this.manifest = {
       player: 'assets/sprites/player.png',
       bat: 'assets/sprites/bat.png',
@@ -50,12 +57,7 @@ class AssetManager {
       voidSeaSerpent: 'assets/sprites/voidSeaSerpent.png',
       trilobite: 'assets/sprites/trilobite.png',
 
-      // 월드 2 심해 4대 보스
-      boss_kraken: 'assets/sprites/boss_kraken.png',
-      boss_titancrab: 'assets/sprites/boss_titancrab.png',
-      boss_leviathan: 'assets/sprites/boss_leviathan.png',
-      boss_dagon: 'assets/sprites/boss_dagon.png',
-
+      // 월드 1 및 엔드게임 보스 9종
       boss_boar: 'assets/sprites/boss_boar.png',
       boss_void: 'assets/sprites/boss_void.png',
       boss_eye: 'assets/sprites/boss_eye.png',
@@ -63,6 +65,15 @@ class AssetManager {
       boss_doom: 'assets/sprites/boss_doom.png',
       boss_lich: 'assets/sprites/boss_lich.png',
       boss_reaper: 'assets/sprites/boss_reaper.png',
+      boss_wyrm: 'assets/sprites/boss_wyrm.png',
+      boss_overlord: 'assets/sprites/boss_overlord.png',
+
+      // 월드 2 심해 4대 보스
+      boss_kraken: 'assets/sprites/boss_kraken.png',
+      boss_titancrab: 'assets/sprites/boss_titancrab.png',
+      boss_leviathan: 'assets/sprites/boss_leviathan.png',
+      boss_dagon: 'assets/sprites/boss_dagon.png',
+
       tile_floor: 'assets/sprites/tile_floor.png',
 
       // 카드 아이콘
@@ -132,10 +143,6 @@ class AssetManager {
       icon_divinejudgement: 'assets/sprites/icon_divinejudgement.png',
       icon_crit_dmg: 'assets/sprites/icon_crit_dmg.png',
       icon_thorns: 'assets/sprites/icon_thorns.png',
-
-      // 신규 보스 2종
-      boss_wyrm: 'assets/sprites/boss_wyrm.png',
-      boss_overlord: 'assets/sprites/boss_overlord.png',
 
       // 특수 드랍 아이템
       item_magnet: 'assets/sprites/item_magnet.png',
@@ -214,8 +221,8 @@ class AssetManager {
       ctx.scale(-1, 1);
     }
 
-    // 영웅(128x128) 및 리메이크된 일반 몬스터 30종(32x32 수묵화)은 먹선 부드러움 보간 처리
-    const isSumie = key.startsWith('player') || this.sumieEnemyKeys.has(key);
+    // 영웅(128x128), 일반 몬스터 30종(32x32) 및 보스 13종(64x64)은 먹선 부드러움 보간 처리
+    const isSumie = key.startsWith('player') || this.sumieEnemyKeys.has(key) || this.sumieBossKeys.has(key);
     ctx.imageSmoothingEnabled = isSumie;
     if (isSumie) {
       ctx.imageSmoothingQuality = 'high';
