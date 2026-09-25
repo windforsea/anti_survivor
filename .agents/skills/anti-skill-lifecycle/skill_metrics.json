@@ -1,6 +1,6 @@
 {
-  "totalCalls": 20,
-  "lastUpdated": "2026-09-24T14:32:50.108Z",
+  "totalCalls": 21,
+  "lastUpdated": "2026-09-25T01:03:07.213Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 8,
+      "callCount": 9,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-24T14:32:50.107Z",
+      "lastUsedAt": "2026-09-25T01:03:07.212Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T01:03:07.213Z",
+          "reason": "몬스터 30종 수묵화 리메이크 정적 점검"
+        },
         {
           "timestamp": "2026-09-24T14:32:50.108Z",
           "reason": "영웅 6종 수묵화 리메이크 정적 감사"

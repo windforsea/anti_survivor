@@ -1,10 +1,20 @@
-// 다크 판타지 픽셀 아트 에셋 로더 및 오프스크린 스프라이트 매니저
+// 다크 판타지 수묵화풍 픽셀 아트 에셋 로더 및 오프스크린 스프라이트 매니저
 
 class AssetManager {
   constructor() {
     this.images = {};
     this.hitFlashImages = {};
     this.isLoaded = false;
+
+    // 몬스터 30종 키 세트 (수묵화풍 렌더링 스무딩 적용 대상)
+    this.sumieEnemyKeys = new Set([
+      'bat', 'slime', 'miniSlime', 'zombie', 'skeleton', 'goblin', 'ghost',
+      'gargoyle', 'cultist', 'assassin', 'golem', 'darkMage', 'bloodHound',
+      'wraithSwarm', 'abyssTitan',
+      'plankton', 'jellyfish', 'hermitCrab', 'flyingFish', 'seaLobster',
+      'stingray', 'coralGolem', 'seaLeech', 'anglerFish', 'ghostJelly',
+      'deepShark', 'poisonRay', 'shadowEel', 'voidSeaSerpent', 'trilobite'
+    ]);
 
     this.manifest = {
       player: 'assets/sprites/player.png',
@@ -177,7 +187,6 @@ class AssetManager {
     });
   }
 
-  // 피격 시 레트로 아케이드 흰색 점멸(Hit Flash) 효과용 오프스크린 캔버스 생성
   createHitFlashVersion(key, img) {
     const canvas = document.createElement('canvas');
     canvas.width = img.width;
@@ -205,10 +214,10 @@ class AssetManager {
       ctx.scale(-1, 1);
     }
 
-    // 고해상도 수묵화풍 스프라이트(영웅 6종)는 부드러운 고품질 붓선 보간 적용, 레트로 도트 에셋은 픽셀 유지
-    const isSumieHero = key.startsWith('player');
-    ctx.imageSmoothingEnabled = isSumieHero;
-    if (isSumieHero) {
+    // 영웅(128x128) 및 리메이크된 일반 몬스터 30종(32x32 수묵화)은 먹선 부드러움 보간 처리
+    const isSumie = key.startsWith('player') || this.sumieEnemyKeys.has(key);
+    ctx.imageSmoothingEnabled = isSumie;
+    if (isSumie) {
       ctx.imageSmoothingQuality = 'high';
     }
 
