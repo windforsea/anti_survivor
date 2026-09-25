@@ -36,7 +36,7 @@ anti_survivor/
 │   ├── data/
 │   │   ├── ink_emblems.js       # 128x128 수묵 엠블럼 래스터라이저 (무기/패시브/진화/자석 56종)
 │   │   ├── ink_bosses.js        # 128x128 고해상도 수묵 보스 래스터라이저 (7종)
-│   │   └── ink_enemies.js       # 128x128 고해상도 수묵 일반 몬스터 래스터라이저 (Phase 1 8종 등)
+│   │   └── ink_enemies.js       # 128x128 고해상도 수묵 일반 몬스터 래스터라이저 (30종 전원)
 │   └── sprites/                 # 100% 수묵화풍 고화질 PNG 스프라이트 (빌드 결과물)
 │       ├── player*.png          # 영웅 6종 128x128 고해상도 수묵 스프라이트
 │       ├── boss_*.png           # 보스 몬스터 스프라이트 (128x128 7종 등)
@@ -62,7 +62,7 @@ anti_survivor/
    - 모든 에셋은 `node generate_assets.js` 단일 명령어로 일괄 빌드되며, 레거시 도트로 덮어씌워질 위험이 100% 차단되었습니다.
 2. **에셋별 렌더링 규격**:
    - **영웅 6종**: 128×128 고해상도 수묵화풍 단청 스프라이트 (`imageSmoothingEnabled = true`)
-   - **보스 7종**: 128×128 정밀 래스터라이저 (`ink_bosses.js`, 농묵/중묵/담묵 + 네온 안광)
+   - **보스 13종**: 128×128 정밀 래스터라이저 (`ink_bosses.js`, 농묵/중묵/담묵 + 네온 안광)
    - **아이콘 56종**: 128×128 단청 엠블럼 (`ink_emblems.js`, 비백 림 + 단청 오방색)
    - **장애물 3종**: 64×64 동양 산수화 부벽준 기암괴석, 굽이치는 흑묵 고목, 수묵 궤짝
    - **아이템/영석**: 단청 수묵화풍 특수 드랍 아이템 5종 및 영석 4단계
@@ -77,8 +77,8 @@ anti_survivor/
 | :--- | :--- | :--- |
 | **마스터 에셋 빌더** | [`generate_assets.js`](generate_assets.js) | 모든 수묵 에셋 일괄 빌드 총괄 (Zero-dependency) |
 | **수묵 엠블럼 엔진** | [`assets/data/ink_emblems.js`](assets/data/ink_emblems.js) | 128×128 단청 엠블럼 56종 래스터라이저 |
-| **수묵 보스 엔진** | [`assets/data/ink_bosses.js`](assets/data/ink_bosses.js) | 128×128 고해상도 보스 7종 래스터라이저 |
-| **수묵 일반 몬스터 엔진** | [`assets/data/ink_enemies.js`](assets/data/ink_enemies.js) | 128×128 고해상도 일반 몬스터 수묵 래스터라이저 (Phase 1 8종 등) |
+| **수묵 보스 엔진** | [`assets/data/ink_bosses.js`](assets/data/ink_bosses.js) | 128×128 고해상도 보스 13종 래스터라이저 |
+| **수묵 일반 몬스터 엔진** | [`assets/data/ink_enemies.js`](assets/data/ink_enemies.js) | 128×128 고해상도 일반 몬스터 수묵 래스터라이저 (30종 전원) |
 | **카드 시스템** | [`js/cards.js`](js/cards.js) | 무기 해금/업그레이드, 17대 진화 무기, 패시브 카드풀 |
 | **에셋 매니페스트** | [`js/assets.js`](js/assets.js) | 스프라이트 프리로딩 및 Canvas 2D 렌더링 인터페이스 |
 | **필드 장애물** | [`js/obstacles.js`](js/obstacles.js) | 기암괴석/고목/궤짝 및 월드 2 심해 장애물 충돌/타격/파괴 |
