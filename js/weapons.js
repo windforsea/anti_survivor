@@ -17,6 +17,8 @@ class WeaponManager {
     // 콤보 큐
     this.swordComboQueue = 0;
     this.swordComboTimer = 0;
+    this.thunderBladeComboQueue = 0;
+    this.thunderBladeComboTimer = 0;
     this.axeComboQueue = 0;
     this.axeComboTimer = 0;
     this.whipStrikesQueue = [];
@@ -106,10 +108,6 @@ class WeaponManager {
     return w.baseArea * areaBonus * (this.player.bonusAreaMult || 1.0);
   }
 
-  // 1. 일반 검 (sword): 가장 가까운 적을 향해 날렵한 근접 베기 (360도 자동 조준)
-  // ※ 28종 기본/진화 무기 발사 로직은 js/weaponExecutors.js로 분리됨
-  // ※ 무기 투사체 및 장판 렌더러(draw)는 js/weaponRenderer.js로 분리됨
-
   update(dt, enemies) {
     const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : [];
 
@@ -145,6 +143,17 @@ class WeaponManager {
         this.swordComboTimer = 0.08;
         const sword = this.weapons['sword'];
         if (sword) this.executeSwordSlash(sword, enemies);
+      }
+    }
+
+    // 벼락검(thunderBlade) 연속 번개 베기 및 낙뢰 콤보
+    if (this.thunderBladeComboQueue > 0) {
+      this.thunderBladeComboTimer -= dt;
+      if (this.thunderBladeComboTimer <= 0) {
+        this.thunderBladeComboQueue--;
+        this.thunderBladeComboTimer = 0.08;
+        const thunderBlade = this.weapons['thunderBlade'];
+        if (thunderBlade) this.executeThunderBlade(thunderBlade, enemies);
       }
     }
 
@@ -218,7 +227,7 @@ class WeaponManager {
               x: (enemy.x - this.player.x) / (Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y) || 1),
               y: (enemy.y - this.player.y) / (Math.hypot(enemy.x - this.player.x, enemy.y - this.player.y) || 1)
             };
-            enemy.takeDamage(dmg, kbDir, 240); // 넉백 상향 (180 -> 240)
+            enemy.takeDamage(dmg, kbDir, 240);
             sounds.playSlash();
           }
         }
@@ -233,14 +242,12 @@ class WeaponManager {
           }
         }
 
-        // [특수 기믹] 몬스터 및 보스 원거리 투사체 요격 및 삭제 (패링)
-        // 후반부 다량의 탄막 삭제 시 렉 방지를 위해 파티클/사운드 없이 무음·무이펙트로 즉시 삭제
+        // 보스 원거리 투사체 요격 및 삭제 (패링)
         if (this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
           for (let pIdx = this.game.bossProjectiles.length - 1; pIdx >= 0; pIdx--) {
             const bp = this.game.bossProjectiles[pIdx];
             const pDist = Math.hypot(bp.x - bx, bp.y - by);
             if (pDist <= bladeRadius + (bp.radius || 6)) {
-              // 투사체 즉시 제거 (플레이어 피격 방지, 0ms 부하 없는 무음·무이펙트 처리)
               this.game.bossProjectiles.splice(pIdx, 1);
             }
           }
@@ -248,7 +255,7 @@ class WeaponManager {
       }
     }
 
-    // [기본 무기 14] 어둠의 보주 (shadowOrb) 자율 추적 사역마(소환수 구체) 다단히트
+    // [기본 무기 14] 어둠의 보주 (shadowOrb) 자율 추적 사역마 다단히트
     const shadowOrb = this.weapons['shadowOrb'];
     if (shadowOrb) {
       const projSpeedMult = (1 + (shadowOrb.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
@@ -259,7 +266,6 @@ class WeaponManager {
       const hitInterval = Math.max(0.18, 0.30 / (1 + (shadowOrb.cooldownLevel || 0) * 0.08));
 
       if (!shadowOrb.familiars) shadowOrb.familiars = [];
-      // 구체 개수 동기화
       while (shadowOrb.familiars.length < count) {
         const idx = shadowOrb.familiars.length;
         shadowOrb.familiars.push({
@@ -275,11 +281,8 @@ class WeaponManager {
         shadowOrb.familiars.length = count;
       }
 
-      // 각 사역마 구체 업데이트
       for (let i = 0; i < shadowOrb.familiars.length; i++) {
         const fam = shadowOrb.familiars[i];
-
-        // 0. 플레이어와의 거리 및 리쉬(Leash) 검사
         const famDistToPlayer = Math.hypot(fam.x - this.player.x, fam.y - this.player.y);
         const maxLeashDist = 420;
         const maxPlayerRange = 380;
@@ -287,7 +290,6 @@ class WeaponManager {
           fam.target = null;
         }
 
-        // 1. 타겟 유효성 검사 (타겟이 없거나 사망 시 새 타겟 탐색)
         if (!fam.target || fam.target.isDead) {
           fam.target = null;
           let closest = null;
@@ -305,7 +307,6 @@ class WeaponManager {
           fam.target = closest;
         }
 
-        // 2. 이동 로직
         if (fam.target && famDistToPlayer <= maxLeashDist) {
           const dx = fam.target.x - fam.x;
           const dy = fam.target.y - fam.y;
@@ -317,7 +318,6 @@ class WeaponManager {
             fam.y += (dy / dist) * moveStep;
           }
 
-          // 3. 다단히트 타격 (적과 밀착 시)
           if (dist <= orbRadius + fam.target.radius + 10) {
             fam.hitTimer = (fam.hitTimer || 0) - dt;
             if (fam.hitTimer <= 0) {
@@ -328,14 +328,12 @@ class WeaponManager {
               if (this.game && this.game.addParticles) {
                 this.game.addParticles(fam.x, fam.y, '#9333ea', 3);
               }
-              // 타격으로 적 사망 시 즉시 타겟 해제 -> 다음 프레임 다른 적으로 신속 전환
               if (fam.target.isDead) {
                 fam.target = null;
               }
             }
           }
         } else {
-          // 적이 없을 때: 플레이어 주변 호위 선회
           fam.hoverAngle = (fam.hoverAngle || 0) + 2.4 * dt;
           const targetX = this.player.x + Math.cos(fam.hoverAngle + (i * Math.PI * 2) / count) * 45;
           const targetY = this.player.y + Math.sin(fam.hoverAngle + (i * Math.PI * 2) / count) * 45;
@@ -350,12 +348,10 @@ class WeaponManager {
           }
         }
 
-        // 잔상(Trail) 갱신 (최대 5개)
         if (!fam.trail) fam.trail = [];
         fam.trail.unshift({ x: fam.x, y: fam.y });
         if (fam.trail.length > 5) fam.trail.pop();
 
-        // 파괴 가능 장애물 접촉 시 타격
         for (const obs of obstacles) {
           if (obs.isDead || !obs.isDestructible) continue;
           const dist = Math.hypot(obs.x - fam.x, obs.y - fam.y);
@@ -366,7 +362,7 @@ class WeaponManager {
       }
     }
 
-    // [진화 14] 황혼의 나선 (eclipseSpiral) 자율 추적 사역마 3체 + 비전 매직 미사일 소환 난사
+    // [진화 14] 황혼의 나선 (eclipseSpiral) 자율 추적 사역마
     const eclipseSpiral = this.weapons['eclipseSpiral'];
     if (eclipseSpiral) {
       const projSpeedMult = (1 + (eclipseSpiral.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
@@ -374,7 +370,7 @@ class WeaponManager {
       const count = this.getCount(eclipseSpiral);
       const dmg = this.getDamage(eclipseSpiral);
       const orbRadius = 18 * this.getArea(eclipseSpiral);
-      const hitInterval = 0.20; // 0.20초 초고속 다단히트
+      const hitInterval = 0.20;
 
       if (!eclipseSpiral.familiars) eclipseSpiral.familiars = [];
       while (eclipseSpiral.familiars.length < count) {
@@ -393,7 +389,6 @@ class WeaponManager {
         eclipseSpiral.familiars.length = count;
       }
 
-      // 화면 내 잔존 미사일 개수 카운트 (후반 렉 원천 차단: 최대 32발 제한)
       let currentGhostCount = 0;
       for (let pIdx = 0; pIdx < this.projectiles.length; pIdx++) {
         if (this.projectiles[pIdx].type === 'voidGhostMissile') currentGhostCount++;
@@ -401,8 +396,6 @@ class WeaponManager {
 
       for (let i = 0; i < eclipseSpiral.familiars.length; i++) {
         const fam = eclipseSpiral.familiars[i];
-
-        // 0. 플레이어와의 거리 및 리쉬(Leash) 검사
         const famDistToPlayer = Math.hypot(fam.x - this.player.x, fam.y - this.player.y);
         const maxLeashDist = 480;
         const maxPlayerRange = 440;
@@ -410,7 +403,6 @@ class WeaponManager {
           fam.target = null;
         }
 
-        // 1. 타겟 유효성 검사 (서로 다른 타겟 분산 우선)
         if (!fam.target || fam.target.isDead) {
           fam.target = null;
           let closest = null;
@@ -429,7 +421,6 @@ class WeaponManager {
           fam.target = closest;
         }
 
-        // 2. 이동
         if (fam.target && famDistToPlayer <= maxLeashDist) {
           const dx = fam.target.x - fam.x;
           const dy = fam.target.y - fam.y;
@@ -441,7 +432,6 @@ class WeaponManager {
             fam.y += (dy / dist) * moveStep;
           }
 
-          // 3. 초고속 다단히트 타격
           if (dist <= orbRadius + fam.target.radius + 12) {
             fam.hitTimer = (fam.hitTimer || 0) - dt;
             if (fam.hitTimer <= 0) {
@@ -459,7 +449,6 @@ class WeaponManager {
             }
           }
         } else {
-          // 호위 선회
           fam.hoverAngle = (fam.hoverAngle || 0) + 3.0 * dt;
           const targetX = this.player.x + Math.cos(fam.hoverAngle + (i * Math.PI * 2) / count) * 60;
           const targetY = this.player.y + Math.sin(fam.hoverAngle + (i * Math.PI * 2) / count) * 60;
@@ -474,14 +463,13 @@ class WeaponManager {
           }
         }
 
-        // 4. 비전 매직 미사일 보주 외곽 8방향 방출 (후반 렉 방지 가드: 화면 최대 32발 제한)
         fam.missileTimer = (fam.missileTimer !== undefined ? fam.missileTimer : (0.6 * i)) - dt;
         if (fam.missileTimer <= 0) {
-          fam.missileTimer = 1.8; // 1.8초 주기 (3체가 0.6초 간격으로 번갈아 8방향 발사)
+          fam.missileTimer = 1.8;
 
           if (currentGhostCount < 32) {
             sounds.playMagic();
-            const spawnOffset = orbRadius + 14; // 보주 외곽 위치 (약 32px)
+            const spawnOffset = orbRadius + 14;
             const missileDmg = Math.max(1, Math.round(dmg * 0.45));
             const areaMult = this.getArea(eclipseSpiral);
 
@@ -514,12 +502,10 @@ class WeaponManager {
           }
         }
 
-        // 잔상(Trail) 갱신 (최대 6개)
         if (!fam.trail) fam.trail = [];
         fam.trail.unshift({ x: fam.x, y: fam.y });
         if (fam.trail.length > 6) fam.trail.pop();
 
-        // 파괴 가능 장애물
         for (const obs of obstacles) {
           if (obs.isDead || !obs.isDestructible) continue;
           const dist = Math.hypot(obs.x - fam.x, obs.y - fam.y);
@@ -533,7 +519,7 @@ class WeaponManager {
     // 무기 쿨다운 업데이트 및 발사 트리거
     for (const key in this.weapons) {
       const w = this.weapons[key];
-      if (w.id === 'spinningAxe' || w.id === 'slayerBladeStorm' || w.id === 'shadowOrb' || w.id === 'eclipseSpiral') continue; // 상시 지속 회전
+      if (w.id === 'spinningAxe' || w.id === 'slayerBladeStorm' || w.id === 'shadowOrb' || w.id === 'eclipseSpiral') continue;
       w.cooldownTimer -= dt;
 
       if (w.cooldownTimer <= 0) {
@@ -551,11 +537,9 @@ class WeaponManager {
         continue;
       }
 
-      // 플레이어 이동과 함께 부채꼴 중심 동기화
       s.x = this.player.x;
       s.y = this.player.y;
 
-      // 적 타격
       for (const enemy of enemies) {
         if (enemy.isDead || s.hitEnemies.has(enemy)) continue;
         const dist = Math.hypot(enemy.x - s.x, enemy.y - s.y);
@@ -564,9 +548,7 @@ class WeaponManager {
         if (s.type === 'circle') {
           inHitbox = dist <= s.radius + enemy.radius;
         } else if (s.type === 'cone') {
-          // 부채꼴 전체 판정: 플레이어 중심(거리 0)부터 사거리 끝(s.range)까지
           if (dist <= s.range + enemy.radius) {
-            // 아주 근접한 적(28px 이내)은 각도 무관 즉시 타격
             if (dist <= 28 + enemy.radius) {
               inHitbox = true;
             } else {
@@ -593,7 +575,6 @@ class WeaponManager {
           enemy.takeDamage(s.damage, kbDir, s.knockbackForce);
           sounds.playHit();
 
-          // 모닝스타: 첫 번째 적중 시 적중 위치에서 4방향 관통 표창 방출
           if (s.isMorningstarTempest && !s.shurikenSpawned) {
             s.shurikenSpawned = true;
             this.triggerMorningstar4Shurikens(enemy.x, enemy.y, s.weaponRef);
@@ -601,7 +582,6 @@ class WeaponManager {
         }
       }
 
-      // 파괴 가능 장애물 타격
       for (const obs of obstacles) {
         if (obs.isDead || !obs.isDestructible || s.hitObstacles.has(obs)) continue;
         const dist = Math.hypot(obs.x - s.x, obs.y - s.y);
@@ -622,7 +602,6 @@ class WeaponManager {
           s.hitObstacles.add(obs);
           obs.takeDamage(s.damage, this.game);
 
-          // 모닝스타: 장애물에 첫 적중 시에도 4방향 관통 표창 방출
           if (s.isMorningstarTempest && !s.shurikenSpawned) {
             s.shurikenSpawned = true;
             this.triggerMorningstar4Shurikens(obs.x, obs.y, s.weaponRef);
@@ -630,7 +609,6 @@ class WeaponManager {
         }
       }
 
-      // [도끼 / 화염도끼 특수 기믹] 360도 원형 회전 베기 시 적 및 보스 투사체 요격 및 즉시 삭제
       if (s.type === 'circle' && this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
         for (let pIdx = this.game.bossProjectiles.length - 1; pIdx >= 0; pIdx--) {
           const bp = this.game.bossProjectiles[pIdx];
@@ -676,7 +654,6 @@ class WeaponManager {
         p.rotAngle = (p.rotAngle || 0) + dt * 26;
       }
 
-      // 차크람 및 섀도우 차크람 부메랑 회귀
       if ((p.type === 'chakram' || p.type === 'shadowVortex') && p.life <= (p.maxLife || 1.1) * 0.55) {
         p.returning = true;
         const dx = this.player.x - p.x;
@@ -691,7 +668,6 @@ class WeaponManager {
         p.vy = (dy / dist) * retSpd;
       }
 
-      // 인페르노 용암 장판 (lavaPool) 지속 도트 데미지
       if (p.type === 'lavaPool') {
         p.tickTimer = (p.tickTimer || 0) - dt;
         if (p.tickTimer <= 0) {
@@ -706,7 +682,6 @@ class WeaponManager {
         continue;
       }
 
-      // 빙결 보주 & 블리자드 보주 비행 중 주기적 냉기 파동 발산
       if (p.type === 'frostOrb' || p.type === 'venomBlizzardOrb') {
         p.pulseTimer = (p.pulseTimer || 0) - dt;
         if (p.pulseTimer <= 0) {
@@ -732,7 +707,6 @@ class WeaponManager {
         }
       }
 
-      // 태풍의 눈 (cycloneArrow) 2단계: 주변 적을 화살 중심으로 강력 흡인 (블랙홀)
       if (p.type === 'cycloneArrow') {
         const maxLife = p.maxLife || 0.95;
         const elapsed = Math.max(0, maxLife - p.life);
@@ -748,16 +722,16 @@ class WeaponManager {
         p.growthProg = growthProg;
         if (pullRadius > 8) {
           for (const e of enemies) {
-          if (e.isDead) continue;
-          const ed = Math.hypot(p.x - e.x, p.y - e.y);
-          if (ed < pullRadius && ed > 10) {
-            const pullForce = (1 - ed / pullRadius) * 320 * dt;
-            e.x += ((p.x - e.x) / ed) * pullForce;
-            e.y += ((p.y - e.y) / ed) * pullForce;
+            if (e.isDead) continue;
+            const ed = Math.hypot(p.x - e.x, p.y - e.y);
+            if (ed < pullRadius && ed > 10) {
+              const pullForce = (1 - ed / pullRadius) * 320 * dt;
+              e.x += ((p.x - e.x) / ed) * pullForce;
+              e.y += ((p.y - e.y) / ed) * pullForce;
+            }
           }
-        }
           if (window.game && Math.random() < (0.2 + growthProg * 0.3)) {
-          window.game.addParticles(p.x, p.y, '#6ee7b7', 2);
+            window.game.addParticles(p.x, p.y, '#6ee7b7', 2);
           }
         }
       }
@@ -770,7 +744,6 @@ class WeaponManager {
         }
       }
 
-      // 유도 로직 (마법 화살 & 메테오 & 비전 미사일 & 유도 유령탄)
       if (p.homing && enemies.length > 0) {
         let closest = null;
         let minDist = 550;
@@ -798,7 +771,6 @@ class WeaponManager {
       p.x += (p.vx || 0) * dt;
       p.y += (p.vy || 0) * dt;
 
-      // 적 충돌 검사
       for (const enemy of enemies) {
         if (enemy.isDead || (p.hitCooldowns ? p.hitCooldowns.has(enemy) : p.hitEnemies.has(enemy))) continue;
 
@@ -813,7 +785,6 @@ class WeaponManager {
           enemy.takeDamage(p.damage, kbDir, p.knockbackForce || 100);
           sounds.playHit();
 
-          // 독비수 및 독 파편 적중 시 중독 부여
           if (p.type === 'frostDagger') {
             enemy.slowTimer = Math.max(enemy.slowTimer || 0, 1.0);
             enemy.slowMult = 0.60;
@@ -838,12 +809,10 @@ class WeaponManager {
             }
           }
 
-          // 뇌전탄 적중 시 체인 라이트닝 + 하늘 낙뢰
           if (p.type === 'teslaPellet') {
             this.triggerTeslaStrike(p, enemy, enemies);
           }
 
-          // 신성화살: 적중 시 정화 장판 생성
           if (p.type === 'holyArrow') {
             this.damagePools.push({
               x: enemy.x,
@@ -865,7 +834,6 @@ class WeaponManager {
         }
       }
 
-      // 파괴 가능 장애물 충돌 검사
       if (p.life > 0) {
         for (const obs of obstacles) {
           if (obs.isDead || !obs.isDestructible || p.hitObstacles.has(obs)) continue;
@@ -900,7 +868,7 @@ class WeaponManager {
       pool.tickTimer -= dt;
 
       if (pool.tickTimer <= 0) {
-        pool.tickTimer = 0.80; // 0.80초마다 틱 피해
+        pool.tickTimer = 0.80;
         for (const enemy of enemies) {
           if (enemy.isDead) continue;
           const dist = Math.hypot(enemy.x - pool.x, enemy.y - pool.y);
@@ -939,6 +907,15 @@ class WeaponManager {
         break;
       }
 
+      case 'thunderBlade': {
+        this.executeThunderBlade(w, enemies);
+        if (count > 1) {
+          this.thunderBladeComboQueue = count - 1;
+          this.thunderBladeComboTimer = 0.08;
+        }
+        break;
+      }
+
       case 'axe': {
         this.executeAxeSlash(w);
         if (count > 1) {
@@ -949,7 +926,6 @@ class WeaponManager {
       }
 
       case 'whip': {
-        // 채찍: 가장 가까운 몬스터 자동 타겟팅
         const closestEnemy = this.getClosestEnemy(enemies);
         let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
         if (closestEnemy) {
@@ -957,14 +933,9 @@ class WeaponManager {
         }
         w.lastTargetAngle = baseAngle;
 
-        // 연속공격 업그레이드 시 교차 연타 순서:
-        // 1회(기본): 타겟 방향 1회 (앞)
-        // 2회: 타겟 1회(앞) ➔ 반대 방향 1회(뒤)
-        // 3회: 타겟 1회(앞) ➔ 반대 1회(뒤) ➔ 타겟 1회(앞)
-        // 4회: 타겟 ➔ 반대 ➔ 타겟 ➔ 반대
         const pattern = [];
         for (let i = 0; i < count; i++) {
-          pattern.push(i % 2 === 1); // false: 타겟 방향, true: 반대 방향
+          pattern.push(i % 2 === 1);
         }
         this.executeWhipStrike(w, pattern[0], baseAngle);
         this.whipStrikesQueue = pattern.slice(1);
@@ -974,7 +945,6 @@ class WeaponManager {
 
       case 'shuriken':
       case 'throwingDagger': {
-        // 표창: 몬스터 방향으로 고속 회전하며 관통하는 수리검 투척
         sounds.playSlash();
         const closestEnemy = this.getClosestEnemy(enemies);
         let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
@@ -1010,7 +980,6 @@ class WeaponManager {
         break;
       }
 
-      // [진화 2] 모닝스타 (morningstarTempest): 일반 채찍과 동일하게 자동 조준 및 교차 연타
       case 'morningstarTempest':
       case 'bladeWhip': {
         const closestEnemy = this.getClosestEnemy(enemies);
@@ -1022,7 +991,7 @@ class WeaponManager {
 
         const pattern = [];
         for (let i = 0; i < count; i++) {
-          pattern.push(i % 2 === 1); // false: 타겟 방향, true: 반대 방향
+          pattern.push(i % 2 === 1);
         }
         this.executeMorningstarTempest(w, pattern[0], baseAngle);
         this.bladeWhipStrikesQueue = pattern.slice(1);
@@ -1030,20 +999,17 @@ class WeaponManager {
         break;
       }
 
-      // [진화 4] 폭풍검 (slayerBladeStorm: 검기 삭제 완료 - 상시 궤도 회전만 동작)
       case 'slayerBladeStorm':
       case 'spinningAxe': {
         break;
       }
 
-      // [진화 3] 메테오 (apocalypseComet)
       case 'apocalypseComet':
       case 'arcaneSanctuary': {
         this.executeApocalypseComet(w, enemies);
         break;
       }
 
-      // [진화 5] 뇌전포 (teslaShotgun)
       case 'teslaShotgun':
       case 'plasmaTempest':
       case 'holyShotgun': {
@@ -1051,15 +1017,12 @@ class WeaponManager {
         break;
       }
 
-      // [진화 1] 생츄어리 (heavenlySanctuary)
       case 'heavenlySanctuary': {
-        // 상시 오라 틱 및 충격파는 update()에서 처리
         this.executeHeavenlySanctuaryTick(w, enemies);
         break;
       }
 
       case 'magicMissile': {
-        // 원거리 유도 마법 화살 (장거리 사거리 약 700px)
         sounds.playMagic();
         const closestEnemy = this.getClosestEnemy(enemies);
         let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
@@ -1093,7 +1056,6 @@ class WeaponManager {
       }
 
       case 'shotgun': {
-        // 산탄총: 가장 가까운 적을 향해 전방 부채꼴 산탄 (자동 조준)
         sounds.playShotgun();
         const closest = this.getClosestEnemy(enemies);
         const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
@@ -1184,11 +1146,6 @@ class WeaponManager {
         break;
       }
 
-      case 'thunderBlade': {
-        this.executeThunderBlade(w, enemies);
-        break;
-      }
-
       case 'fireAxe': {
         this.executeFireAxe(w, enemies);
         break;
@@ -1261,11 +1218,11 @@ class WeaponManager {
 
       case 'divineJudgement': {
         this.executeDivineJudgement(w, enemies);
+        break;
       }
     }
   }
 
-  // 11. 독비수 (poisonDagger): 플레이어 조준 방향으로 쾌속 직진 비수 연사 및 중독
   getClosestEnemy(enemies) {
     let closest = null;
     let minDist = Infinity;
@@ -1320,7 +1277,6 @@ class WeaponManager {
       const dist = Math.hypot(enemy.x - p.x, enemy.y - p.y);
       if (dist <= strikeRadius + enemy.radius) {
         enemy.takeDamage(strikeDmg, null, 140);
-        // 30% 확률로 0.5초 기절(스턴)
         if (Math.random() < 0.30) {
           enemy.freeze(0.5);
         }

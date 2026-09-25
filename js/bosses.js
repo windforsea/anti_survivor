@@ -5,47 +5,44 @@ class BossEnemy extends Enemy {
     super('golem', x, y, 1.0);
     this.isBoss = true;
     this.bossStage = bossStage;
-    // 공중 부유/비행형 보스는 장애물 무시 관통 (4: 그림자 마법사, 6: 혼돈의 눈, 12: 심연의 리치, 15: 종말의 사신, 18: 공허의 지네, 20: 혼돈의 절대신, 25: 심연의 군주, 99: 진 붉은 사신)
+    // 공중 부유/비행형 보스는 장애물 무시 관통
     this.isFlying = (bossStage === 4 || bossStage === 6 || bossStage === 12 || bossStage === 15 || bossStage === 18 || bossStage === 20 || bossStage === 25 || bossStage === 99 || bossStage === 205 || bossStage === 215 || bossStage === 220);
 
     // 보스별 특화 설정
     if (bossStage === 2) {
-      // 2스테이지 보스: 순간가속형 돌진 맹수 (Dire Boar)
       this.name = '돌진 맹수 (Dire Boar)';
       this.maxHp = 1600;
       this.hp = this.maxHp;
       this.radius = 28;
-      this.color = '#b45309'; // 맹수 주황
+      this.color = '#b45309';
       this.speed = 100;
       this.damage = 32;
       this.exp = 150;
       
-      this.chargeCooldown = 2.0; // 4.0 -> 2.0 (기믹 2배 가속)
+      this.chargeCooldown = 2.0;
       this.chargeTimer = 1.0;
       this.isCharging = false;
       this.isAiming = false;
       this.aimTimer = 0;
       this.chargeDir = { x: 1, y: 0 };
     } else if (bossStage === 4) {
-      // 4스테이지 보스: 순간이동형 그림자 마법사 (Void Sorcerer)
       this.name = '그림자 마법사 (Void Sorcerer)';
       this.maxHp = 3400;
       this.hp = this.maxHp;
       this.radius = 26;
-      this.color = '#7e22ce'; // 보라빛
+      this.color = '#7e22ce';
       this.speed = 80;
       this.damage = 38;
       this.exp = 250;
 
-      this.teleportCooldown = 2.25; // 4.5 -> 2.25 (기믹 2배 가속)
+      this.teleportCooldown = 2.25;
       this.teleportTimer = 2.0;
     } else if (bossStage === 6) {
-      // 6스테이지 보스: 탄막형 베홀더 (Chaos Eye)
       this.name = '혼돈의 눈 (Chaos Eye)';
       this.maxHp = 5800;
       this.hp = this.maxHp;
       this.radius = 32;
-      this.color = '#e11d48'; // 피빛 레드
+      this.color = '#e11d48';
       this.speed = 60;
       this.damage = 42;
       this.exp = 400;
@@ -53,102 +50,95 @@ class BossEnemy extends Enemy {
       this.bulletSpiralAngle = 0;
       this.bulletTimer = 0;
     } else if (bossStage === 8) {
-      // 8스테이지 보스: 넉백면역형 불멸의 골렘 (Ironclad Colossus)
       this.name = '불멸의 골렘 (Ironclad Colossus)';
       this.maxHp = 9800;
       this.hp = this.maxHp;
       this.radius = 36;
-      this.color = '#475569'; // 짙은 강철색
+      this.color = '#475569';
       this.speed = 70;
       this.damage = 52;
       this.exp = 600;
-      this.knockbackImmune = true; // 100% 넉백 무시!
+      this.knockbackImmune = true;
 
-      this.stompTimer = 2.0; // 4.5 -> 2.0 (기믹 2배 가속)
+      this.stompTimer = 2.0;
     } else if (bossStage === 10) {
-      // 10스테이지 최종 보스: 파멸의 군주 (Lord of Doom)
       this.name = '파멸의 군주 (Lord of Doom)';
       this.maxHp = 18000;
       this.hp = this.maxHp;
       this.radius = 42;
-      this.color = '#991b1b'; // 심홍색
+      this.color = '#991b1b';
       this.speed = 110;
       this.damage = 60;
       this.exp = 1000;
       this.knockbackImmune = true;
 
       this.phaseTimer = 0;
-      this.teleportTimer = 2.5; // 5.0 -> 2.5 (기믹 2배 가속)
+      this.teleportTimer = 2.5;
       this.chargeTimer = 2.0;
     } else if (bossStage === 12) {
-      // 12스테이지 보스: 심연의 리치 (Abyss Lich)
       this.name = '심연의 리치 (Abyss Lich)';
       this.maxHp = 26000;
       this.hp = this.maxHp;
       this.radius = 38;
-      this.color = '#38bdf8'; // 혹한의 영혼불빛
+      this.color = '#38bdf8';
       this.speed = 95;
       this.damage = 68;
       this.exp = 1600;
       this.knockbackImmune = true;
 
-      this.teleportCooldown = 2.0; // 4.0 -> 2.0 (기믹 2배 가속)
+      this.teleportCooldown = 2.0;
       this.teleportTimer = 1.8;
-      this.frostNovaTimer = 0.9;  // 2.0 -> 0.9 (기믹 2배 가속)
+      this.frostNovaTimer = 0.9;
     } else if (bossStage === 15) {
-      // 15스테이지 종말의 보스: 종말의 사신 (Grim Reaper)
       this.name = '종말의 사신 (Grim Reaper)';
       this.maxHp = 52000;
       this.hp = this.maxHp;
       this.radius = 44;
-      this.color = '#18181b'; // 심연의 칠흑빛
+      this.color = '#18181b';
       this.speed = 135;
       this.damage = 88;
       this.exp = 3500;
       this.knockbackImmune = true;
 
       this.phaseTimer = 0;
-      this.teleportTimer = 2.25; // 4.5 -> 2.25 (기믹 2배 가속)
-      this.scytheChargeTimer = 2.0; // 4.0 -> 2.0
+      this.teleportTimer = 2.25;
+      this.scytheChargeTimer = 2.0;
       this.isCharging = false;
       this.chargeDuration = 0;
       this.chargeDir = { x: 1, y: 0 };
     } else if (bossStage === 18) {
-      // 18스테이지 보스: 공허의 지네 (Void Wyrm)
       this.name = '공허의 지네 (Void Wyrm)';
       this.maxHp = 48000;
       this.hp = this.maxHp;
       this.radius = 46;
-      this.color = '#a855f7'; // 아케인 퍼플
+      this.color = '#a855f7';
       this.speed = 145;
       this.damage = 95;
       this.exp = 5000;
       this.knockbackImmune = true;
 
       this.wyrmZigTimer = 0;
-      this.wyrmSpitTimer = 0.95; // 1.9 -> 0.95 (기믹 2배 가속)
+      this.wyrmSpitTimer = 0.95;
     } else if (bossStage === 20) {
-      // 20스테이지 진 보스: 혼돈의 절대신 (Chaos Overlord)
       this.name = '혼돈의 절대신 (Chaos Overlord)';
       this.maxHp = 68000;
       this.hp = this.maxHp;
       this.radius = 52;
-      this.color = '#e11d48'; // 절대 크림슨
+      this.color = '#e11d48';
       this.speed = 125;
       this.damage = 100;
       this.exp = 10000;
       this.knockbackImmune = true;
 
       this.phaseTimer = 0;
-      this.teleportTimer = 1.9; // 3.8 -> 1.9 (기믹 2배 가속)
-      this.beamTimer = 1.2;     // 2.4 -> 1.2 (기믹 2배 가속)
+      this.teleportTimer = 1.9;
+      this.beamTimer = 1.2;
     } else if (bossStage === 25) {
-      // 25스테이지 진 최종 보스: 심연의 군주 (Abyss Sovereign)
       this.name = '심연의 군주 (Abyss Sovereign)';
       this.maxHp = 88000;
       this.hp = this.maxHp;
       this.radius = 54;
-      this.color = '#4c1d95'; // 깊은 심연 보라
+      this.color = '#4c1d95';
       this.speed = 130;
       this.damage = 110;
       this.exp = 15000;
@@ -158,22 +148,20 @@ class BossEnemy extends Enemy {
       this.sovereignWaveTimer = 1.5;
       this.sovereignWarpTimer = 2.2;
     } else if (bossStage === 99) {
-      // 엔드게임 특수 보스: 진 붉은 사신 (The Red Death)
       this.name = '진 붉은 사신 (The Red Death)';
       this.maxHp = 666666;
       this.hp = this.maxHp;
       this.radius = 48;
-      this.color = '#ef4444'; // 핏빛 진홍색
-      this.speed = 360;       // 압도적인 추격 속도 (플레이어 220 대비 1.6배 이상)
-      this.damage = 99999;    // 스치면 1방 즉사
+      this.color = '#ef4444';
+      this.speed = 360;
+      this.damage = 99999;
       this.exp = 66666;
       this.knockbackImmune = true;
       this.isFlying = true;
       this.isRedReaper = true;
 
-      this.scytheTimer = 0.4; // 0.8 -> 0.4 (기믹 2배 가속)
+      this.scytheTimer = 0.4;
     } else if (bossStage === 205) {
-      // 월드 2 5스테이지 보스: 심해 대왕 문어 (Kraken Tentacle)
       this.name = '심해 대왕 문어 (Kraken)';
       this.maxHp = 4200;
       this.hp = this.maxHp;
@@ -188,7 +176,6 @@ class BossEnemy extends Enemy {
       this.whipTimer = 1.8;
       this.inkTimer = 3.2;
     } else if (bossStage === 210) {
-      // 월드 2 10스테이지 보스: 강철 집게 타이탄 크랩 (Titan Crab)
       this.name = '강철 집게 타이탄 크랩 (Titan Crab)';
       this.maxHp = 16000;
       this.hp = this.maxHp;
@@ -202,7 +189,6 @@ class BossEnemy extends Enemy {
       this.slamTimer = 2.2;
       this.bubbleTimer = 1.4;
     } else if (bossStage === 215) {
-      // 월드 2 15스테이지 보스: 심해의 지배자 레비아탄 (Leviathan)
       this.name = '심해의 지배자 레비아탄 (Leviathan)';
       this.maxHp = 38000;
       this.hp = this.maxHp;
@@ -220,7 +206,6 @@ class BossEnemy extends Enemy {
       this.dashDir = { x: 1, y: 0 };
       this.whirlpoolTimer = 3.0;
     } else if (bossStage === 220) {
-      // 월드 2 20스테이지 진 최종 보스: 심연의 고대신 다곤 (Abyssal God Dagon)
       this.name = '심연의 고대신 다곤 (Dagon)';
       this.maxHp = 78000;
       this.hp = this.maxHp;
@@ -279,7 +264,6 @@ class BossEnemy extends Enemy {
     const dy = player.y - this.y;
     const dist = Math.hypot(dx, dy);
 
-    // ================= 보스별 고유 기믹 AI =================
     if (this.bossStage === 2) {
       this.chargeTimer -= dt;
 
@@ -852,7 +836,7 @@ class BossEnemy extends Enemy {
     ctx.ellipse(this.x, this.y + this.radius - 2, this.radius * 0.95, this.radius * 0.4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 보스 발밑 위협적인 마법진 오라
+    // 보스 발밑 마법진 오라
     if (this.bossStage === 99) {
       ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)';
       ctx.lineWidth = 4;
@@ -884,28 +868,17 @@ class BossEnemy extends Enemy {
     ctx.save();
     ctx.translate(this.x, this.y);
 
-    // 황금/사신 왕관 표식
-    ctx.fillStyle = this.bossStage === 99 ? '#ef4444' : '#fde047';
-    ctx.beginPath();
-    ctx.moveTo(-14, -this.radius - 4);
-    ctx.lineTo(-7, -this.radius - 14);
-    ctx.lineTo(0, -this.radius - 6);
-    ctx.lineTo(7, -this.radius - 14);
-    ctx.lineTo(14, -this.radius - 4);
-    ctx.closePath();
-    ctx.fill();
-
-    // 보스 머리 위 체력바
+    // 보스 머리 위 체력바 (불필요한 왕관 표식 완전 제거)
     const barW = this.radius * 2.4;
     const barH = 6;
     const hpRatio = Math.max(0, this.hp / this.maxHp);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-    ctx.fillRect(-barW / 2, -this.radius - 24, barW, barH);
+    ctx.fillRect(-barW / 2, -this.radius - 14, barW, barH);
     ctx.fillStyle = '#ef4444';
-    ctx.fillRect(-barW / 2, -this.radius - 24, barW * hpRatio, barH);
+    ctx.fillRect(-barW / 2, -this.radius - 14, barW * hpRatio, barH);
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 1;
-    ctx.strokeRect(-barW / 2, -this.radius - 24, barW, barH);
+    ctx.strokeRect(-barW / 2, -this.radius - 14, barW, barH);
 
     ctx.restore();
   }
