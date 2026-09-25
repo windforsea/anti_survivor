@@ -532,8 +532,11 @@ class WeaponManager {
         continue;
       }
 
-      s.x = this.player.x;
-      s.y = this.player.y;
+      // 💡 [버그 수정]: 화염기둥/인페르노 등 위치 지정형 슬래시는 플레이어 위치로 덮어쓰지 않음
+      if (!s.isFlamePillar && !s.isInferno && !s.isStationary) {
+        s.x = this.player.x;
+        s.y = this.player.y;
+      }
 
       for (const enemy of enemies) {
         if (enemy.isDead || s.hitEnemies.has(enemy)) continue;
@@ -604,7 +607,8 @@ class WeaponManager {
         }
       }
 
-      if (s.type === 'circle' && this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
+      // 💡 [수정]: 보스 원거리 투사체 요격(패링)은 canParryProjectiles가 명시된 도끼류 무기에만 한정
+      if (s.canParryProjectiles && this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
         for (let pIdx = this.game.bossProjectiles.length - 1; pIdx >= 0; pIdx--) {
           const bp = this.game.bossProjectiles[pIdx];
           const pDist = Math.hypot(bp.x - s.x, bp.y - s.y);

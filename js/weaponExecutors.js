@@ -46,6 +46,7 @@ WeaponManager.prototype.executeAxeSlash = function(w) {
     knockbackForce: 110,
     life: 0.22,
     maxLife: 0.22,
+    canParryProjectiles: true, // 💡 도끼 회전 베기 고유 투사체 패링 활성화
     hitEnemies: new Set(),
     hitObstacles: new Set()
   });
@@ -280,9 +281,6 @@ WeaponManager.prototype.executeTeslaShotgun = function(w, enemies) {
     });
   }
 };
-
-
-
 
 WeaponManager.prototype.executeSanctuaryTick = function(w, enemies) {
   const dmg = this.getDamage(w);
@@ -644,7 +642,7 @@ WeaponManager.prototype.triggerShadowVortexShards = function(x, y, area, damage)
   for (let i = 0; i < 8; i++) {
     const angle = (i / 8) * Math.PI * 2;
     this.projectiles.push({
-      type: 'poisonDagger', // 기존 정규 독비수 수묵 서예 비수 렌더링 사용
+      type: 'poisonDagger',
       x: x,
       y: y,
       vx: Math.cos(angle) * shardSpeed,
@@ -654,7 +652,7 @@ WeaponManager.prototype.triggerShadowVortexShards = function(x, y, area, damage)
       damage: shardDmg,
       pierce: 3,
       knockbackForce: 130,
-      life: 0.35, // 기존 0.70s에서 50% 너프 (발사거리 절반 축소)
+      life: 0.35,
       color: '#22c55e',
       hitEnemies: new Set(),
       hitObstacles: new Set()
@@ -771,10 +769,10 @@ WeaponManager.prototype.executeFireAxe = function(w, enemies) {
   const area = this.getArea(w);
   const radius = 115 * area;
 
-  // 1. 화염도끼 회전 베기 애니메이션 트리거 (도끼 스프라이트 + 화염 수묵 궤적)
+  // 1. 화염도끼 회전 베기 애니메이션 트리거
   this.player.triggerAttackAnim('fireAxe', 0, 0.22, { area, color: '#f97316' });
 
-  // 2. 근접 원형 슬래시 판정 및 적 타격
+  // 2. 근접 원형 슬래시 판정 및 적 타격 (도끼 고유 투사체 패링 활성화)
   this.slashes.push({
     type: 'circle',
     x: this.player.x,
@@ -785,6 +783,8 @@ WeaponManager.prototype.executeFireAxe = function(w, enemies) {
     knockbackForce: 180,
     life: 0.22,
     maxLife: 0.22,
+    isFireAxe: true,
+    canParryProjectiles: true,
     hitEnemies: new Set(),
     hitObstacles: new Set()
   });
@@ -1059,6 +1059,7 @@ WeaponManager.prototype.executeEclipseSpiral = function(w, enemies) {
   // update() 루프에서 상시 동작
 };
 
+// 💡 [개편]: 타겟 위치 기반 수직 화염기둥 - 지상/공중 몬스터 전방위 타격 및 수직 부유 넉백
 WeaponManager.prototype.executeFlamePillar = function(w, enemies) {
   sounds.playFire();
   const dmg = this.getDamage(w);
@@ -1076,29 +1077,33 @@ WeaponManager.prototype.executeFlamePillar = function(w, enemies) {
       targetY = validEnemies[i].y;
     } else {
       const ang = Math.random() * Math.PI * 2;
-      const dist = 70 + Math.random() * 120;
+      const dist = 70 + Math.random() * 140;
       targetX = this.player.x + Math.cos(ang) * dist;
       targetY = this.player.y + Math.sin(ang) * dist;
     }
 
+    // 수직 화염기둥 슬래시 (패링 없음, 위치 고정, 수직 상승 넉백)
     this.slashes.push({
       type: 'circle',
       x: targetX,
       y: targetY,
       radius: radius,
+      height: 230 * area, // 렌더러가 참조할 수직 기둥 높이
       damage: dmg,
-      knockbackDir: null,
-      knockbackForce: 130,
-      life: 0.28,
-      maxLife: 0.28,
+      knockbackDir: { x: (Math.random() - 0.5) * 0.3, y: -1.0 }, // 수직 띄우기 넉백
+      knockbackForce: 160,
+      life: 0.36,
+      maxLife: 0.36,
       isFlamePillar: true,
+      canParryProjectiles: false, // 투사체 삭제 옵션 영구 제거
       hitEnemies: new Set(),
       hitObstacles: new Set()
     });
 
     if (window.game && window.game.addParticles) {
-      window.game.addParticles(targetX, targetY, '#f97316', 14);
-      window.game.addParticles(targetX, targetY, '#ef4444', 8);
+      window.game.addParticles(targetX, targetY, '#f97316', 16);
+      window.game.addParticles(targetX, targetY, '#ef4444', 10);
+      window.game.addParticles(targetX, targetY, '#fde047', 8);
     }
   }
 };
@@ -1173,6 +1178,7 @@ WeaponManager.prototype.executeHolyCross = function(w, enemies) {
   }
 };
 
+// 💡 [개편]: 대재앙 인페르노 - 거대 수직 화염기둥 폭발과 투과형 용암 아지랑이 생성
 WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
   sounds.playFire();
   const dmg = this.getDamage(w);
@@ -1190,7 +1196,7 @@ WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
       targetY = validEnemies[i].y;
     } else {
       const ang = Math.random() * Math.PI * 2;
-      const dist = 60 + Math.random() * 180;
+      const dist = 60 + Math.random() * 200;
       targetX = this.player.x + Math.cos(ang) * dist;
       targetY = this.player.y + Math.sin(ang) * dist;
     }
@@ -1200,12 +1206,14 @@ WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
       x: targetX,
       y: targetY,
       radius: radius,
+      height: 300 * area,
       damage: dmg,
-      knockbackDir: null,
-      knockbackForce: 170,
-      life: 0.32,
-      maxLife: 0.32,
+      knockbackDir: { x: (Math.random() - 0.5) * 0.4, y: -1.0 },
+      knockbackForce: 200,
+      life: 0.40,
+      maxLife: 0.40,
       isInferno: true,
+      canParryProjectiles: false, // 투사체 삭제 옵션 영구 제거
       hitEnemies: new Set(),
       hitObstacles: new Set()
     });
@@ -1214,7 +1222,7 @@ WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
       type: 'lavaPool',
       x: targetX,
       y: targetY,
-      radius: radius * 0.8,
+      radius: radius * 0.85,
       area: area,
       damage: Math.round(dmg * 0.4),
       life: 4.0,
@@ -1224,8 +1232,9 @@ WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
     });
 
     if (window.game && window.game.addParticles) {
-      window.game.addParticles(targetX, targetY, '#ef4444', 18);
-      window.game.addParticles(targetX, targetY, '#facc15', 10);
+      window.game.addParticles(targetX, targetY, '#ef4444', 20);
+      window.game.addParticles(targetX, targetY, '#facc15', 14);
+      window.game.addParticles(targetX, targetY, '#f97316', 10);
     }
   }
 };

@@ -360,33 +360,67 @@ WeaponManager.prototype.draw = function(ctx) {
   // ==========================================
   for (const s of this.slashes) {
     if (s.isFlamePillar || s.isInferno) {
-      // 화염 기둥 / 인페르노: 진사 적묵 소용돌이 기둥
+      // 🔥 [수직 수묵 화염기둥]: 지면에서 하늘로 치솟아 오르는 수묵 묵화 거대 불기둥 (지상/공중 관통)
       const prog = 1 - (s.life / s.maxLife);
-      const alpha = Math.min(1.0, s.life / 0.16);
+      const alpha = Math.min(1.0, s.life / 0.14);
+      const h = (s.height || (s.radius * 2.8)) * Math.min(1.0, prog * 2.2);
+      const r = s.radius * (0.85 + prog * 0.25);
+      const isInf = !!s.isInferno;
+
       ctx.save();
 
-      // 한지 붉은 묵연 번짐
-      ctx.fillStyle = s.isInferno ? `rgba(185, 28, 28, ${0.45 * alpha})` : `rgba(234, 88, 12, ${0.40 * alpha})`;
+      // (1) 지면 원근 타원 바닥 림
+      ctx.fillStyle = isInf ? `rgba(185, 28, 28, ${0.25 * alpha})` : `rgba(234, 88, 12, ${0.20 * alpha})`;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.radius * Math.min(1.0, prog * 1.4), 0, Math.PI * 2);
+      ctx.ellipse(s.x, s.y, r, r * 0.42, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // 농묵 외곽선
-      ctx.strokeStyle = '#09090b';
-      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = isInf ? '#dc2626' : '#ea580c';
+      ctx.lineWidth = 2.0;
       ctx.stroke();
 
-      // 내부 황금 불길 핵
-      ctx.fillStyle = `rgba(253, 224, 71, ${0.75 * alpha})`;
+      // (2) 수직으로 치솟아 오르는 수묵 불기둥 몸통
+      const topR = r * 0.65;
+      const grad = ctx.createLinearGradient(s.x, s.y, s.x, s.y - h);
+      if (isInf) {
+        grad.addColorStop(0, `rgba(185, 28, 28, ${0.65 * alpha})`);
+        grad.addColorStop(0.4, `rgba(234, 88, 12, ${0.60 * alpha})`);
+        grad.addColorStop(0.85, `rgba(253, 224, 71, ${0.50 * alpha})`);
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      } else {
+        grad.addColorStop(0, `rgba(234, 88, 12, ${0.60 * alpha})`);
+        grad.addColorStop(0.5, `rgba(249, 115, 22, ${0.55 * alpha})`);
+        grad.addColorStop(0.85, `rgba(253, 224, 71, ${0.45 * alpha})`);
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+      }
+
+      ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.radius * 0.42 * Math.min(1.0, prog * 1.4), 0, Math.PI * 2);
+      ctx.moveTo(s.x - r * 0.9, s.y);
+      ctx.lineTo(s.x - topR, s.y - h);
+      ctx.lineTo(s.x + topR, s.y - h);
+      ctx.lineTo(s.x + r * 0.9, s.y);
+      ctx.closePath();
       ctx.fill();
 
-      // 중심 백색 묵적
-      ctx.fillStyle = `rgba(250, 250, 249, ${0.9 * alpha})`;
+      // (3) 불기둥 외곽 농묵 붓선 궤적
+      ctx.strokeStyle = '#09090b';
+      ctx.lineWidth = Math.max(2, Math.round(3.0 * (1 - prog * 0.5)));
       ctx.beginPath();
-      ctx.arc(s.x, s.y, s.radius * 0.20 * Math.min(1.0, prog * 1.4), 0, Math.PI * 2);
-      ctx.fill();
+      ctx.moveTo(s.x - r * 0.9, s.y);
+      ctx.quadraticCurveTo(s.x - r * 0.7, s.y - h * 0.5, s.x - topR, s.y - h);
+      ctx.moveTo(s.x + r * 0.9, s.y);
+      ctx.quadraticCurveTo(s.x + r * 0.7, s.y - h * 0.5, s.x + topR, s.y - h);
+      ctx.stroke();
+
+      // (4) 중심 황금 불꽃 심선
+      ctx.strokeStyle = `rgba(255, 255, 255, ${0.85 * alpha})`;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x, s.y - h * 0.9);
+      ctx.stroke();
+
       ctx.restore();
     } else if (s.drawSector) {
       // 채찍 / 모닝스타: 서예 부채꼴 묵선 호 (Calligraphy Sector Stroke)
@@ -957,28 +991,38 @@ WeaponManager.prototype.draw = function(ctx) {
       ctx.fill();
 
     } else if (p.type === 'lavaPool') {
-      // [14] 인페르노 용암 장판: 진사 적묵 웅덩이
+      // 🌋 [14] 인페르노 용암 장판: 장애물이 훤히 보이는 투과형 열기 아지랑이 & 화염 소용돌이 림
       const alpha = Math.min(1.0, p.life / 0.5);
-      const pulse = Math.sin(Date.now() * 0.010) * 3;
+      const pulse = Math.sin(Date.now() * 0.008) * 3;
+      const rot = (Date.now() * 0.003) % (Math.PI * 2);
 
-      ctx.fillStyle = `rgba(9, 9, 11, ${0.45 * alpha})`;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius + pulse + 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = `rgba(185, 28, 28, ${0.42 * alpha})`;
+      // (1) 극저농도 반투명 열기 바닥 (장애물/필드 100% 투과)
+      ctx.fillStyle = `rgba(234, 88, 12, ${0.12 * alpha})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius + pulse, 0, Math.PI * 2);
       ctx.fill();
 
-      ctx.fillStyle = `rgba(234, 88, 12, ${0.55 * alpha})`;
+      // (2) 경계면 수묵 화염 소용돌이 림 (외곽 회전 호선들로 영역 명확화)
+      ctx.strokeStyle = `rgba(185, 28, 28, ${0.65 * alpha})`;
+      ctx.lineWidth = 2.2;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius * 0.65, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.arc(p.x, p.y, p.radius + pulse, 0, Math.PI * 2);
+      ctx.stroke();
 
-      ctx.fillStyle = `rgba(253, 224, 71, ${0.7 * alpha})`;
+      // (3) 4개 호선으로 이루어진 회전 화염 비백 테두리
+      ctx.strokeStyle = `rgba(253, 224, 71, ${0.75 * alpha})`;
+      ctx.lineWidth = 1.6;
+      for (let arcIdx = 0; arcIdx < 4; arcIdx++) {
+        const aStart = rot + (arcIdx * Math.PI / 2);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius + pulse - 2, aStart, aStart + Math.PI * 0.35);
+        ctx.stroke();
+      }
+
+      // (4) 중심 미세 핵 (투과 방해 없는 소형 불씨)
+      ctx.fillStyle = `rgba(254, 240, 138, ${0.4 * alpha})`;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius * 0.28, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
       ctx.fill();
 
     } else {
