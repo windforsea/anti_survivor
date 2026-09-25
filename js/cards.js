@@ -184,7 +184,7 @@ class CardManager {
     };
 
     const unownedWeapons = allWeaponKeys.filter(k => {
-      if (forbiddenWeapons.includes(k)) return false; // 타 직업 시그니처 무기 5종 차단!
+      if (forbiddenWeapons.includes(k)) return false; // 타 직업 시그니처 무기 차단
       if (k === 'shuriken' && (this.weaponManager.weapons['throwingDagger'] || isConsumedWeapon('throwingDagger'))) return false;
       return !this.weaponManager.weapons[k] && !isConsumedWeapon(k);
     });
@@ -253,7 +253,7 @@ class CardManager {
       });
     }
 
-    // 2. 특수 진화 무기 합성 카드 (5종, 조건: 두 재료 무기 모두 5레벨 MAX)
+    // 2. 특수 진화 무기 합성 카드 (조건: 두 재료 무기 모두 5레벨 MAX)
     const evolutionCards = [];
 
     // [진화 1] 생츄어리 = 성역(5Lv) + 성수(5Lv)
@@ -760,7 +760,7 @@ class CardManager {
           title: '[진화] 황혼의 나선',
           icon: '🔮✨',
           iconKey: 'icon_eclipsespiral',
-          desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 황혼의 사역마가 자율 추적 다단히트하며(투사체 증가 시 사역마 수 증가) 8방향 관통 화살을 일제 난사합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 황혼의 사역마가 자율 추적 다단히트하며 8방향 관통 화살을 일제 난사합니다. (1Lv 획득, 슬롯 1칸 반환)',
           effectText: '어둠의 보주(5Lv) + 마법 화살(5Lv) 합성 -> [황혼의 나선 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -897,7 +897,6 @@ class CardManager {
       const w = this.weaponManager.weapons[key];
       const currentLv = this.weaponManager.getLevel(w);
 
-      // 이미 5레벨 MAX인 경우 강화 제외
       if (currentLv >= 5) continue;
 
       const nextLv = currentLv + 1;
@@ -962,13 +961,12 @@ class CardManager {
         }
       });
 
-      // 4) [무기 투사체 / 연속공격 증가 강화] (성역 계열은 제외)
+      // 4) [무기 투사체 / 연속공격 증가 강화]
       if (key !== 'sanctuary' && key !== 'heavenlySanctuary') {
         let countTitle = `${w.name} 투사체 증가`;
         let countDesc = `동시에 발사하는 투사체 수를 늘립니다.`;
         let countEffect = '투사체 +1개';
 
-        // [근접 계열]: 검, 도끼, 채찍, 폭풍검
         if (key === 'sword' || key === 'axe' || key === 'whip' || key === 'slayerBladeStorm') {
           countTitle = `${w.name} 연속공격`;
           countEffect = '연속 공격 +1회';
@@ -982,7 +980,6 @@ class CardManager {
             countDesc = `회전 칼날 및 검기 연속 공격 횟수를 추가합니다.`;
           }
         } else {
-          // [원거리 / 도트 투사체 계열]: 표창, 산탄, 마법화살, 화염지팡이, 번개반지, 성수 등
           countTitle = `${w.name} 투사체 증가`;
           if (key === 'shotgun' || key === 'teslaShotgun') {
             countDesc = `동시에 일제 발사하는 산탄 탄환 수를 늘립니다.`;
@@ -1069,7 +1066,7 @@ class CardManager {
       }
     }
 
-    // 4. 캐릭터 패시브 스탯 카드 (총 10종 중 최대 6종 슬롯 제한)
+    // 4. 캐릭터 패시브 스탯 카드 (총 16종 중 최대 6종 슬롯 제한)
     const ownedPassiveKeys = Object.keys(this.player.ownedPassives);
     const canAcquireNewPassive = ownedPassiveKeys.length < 6;
 
@@ -1154,7 +1151,7 @@ class CardManager {
         id: 'stat_area',
         title: '확장의 룬',
         icon: '🎯',
-        iconKey: 'icon_arcanesanctuary',
+        iconKey: 'icon_area',
         desc: '공격 범위 및 크기를 확대합니다.',
         effectText: '공격 범위 +30%',
         maxLevel: 3,

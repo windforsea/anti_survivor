@@ -107,6 +107,7 @@ class AssetManager {
       icon_lightning: 'assets/sprites/icon_lightning.png',
       icon_firewand: 'assets/sprites/icon_firewand.png',
       icon_arcanesanctuary: 'assets/sprites/icon_arcanesanctuary.png',
+      icon_area: 'assets/sprites/icon_area.png',
       icon_plasmatempest: 'assets/sprites/icon_plasmatempest.png',
       icon_clover: 'assets/sprites/icon_clover.png',
       icon_crown: 'assets/sprites/icon_crown.png',

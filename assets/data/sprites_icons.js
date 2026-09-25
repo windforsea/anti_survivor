@@ -1,5 +1,5 @@
 module.exports = {
-// ================= 기본 무기 아이콘 14종 (창의적 리디자인 적용) =================
+// ================= 기본 무기 아이콘 14종 (128x128 고해상도 리워크) =================
 
   // 1. 철검 (sword - 방랑기사 시그니처) : 웅장한 십자 가드와 넓은 강철 대검
   icon_sword: [
@@ -21,44 +21,44 @@ module.exports = {
     ".....KGGK......."
   ],
 
-  // 2. 도끼 (axe - 공용) : 묵직한 중세 양날 배틀액스
+  // 2. 도끼 (axe - 공용) : 육중한 중세 양날 배틀액스
   icon_axe: [
-    "...KK......KK...",
-    "..KWWK....KWWK..",
-    ".KWWLK....KLWWK.",
-    "KLMMDK....KDMMLL",
-    "KLMDK......KDMLK",
-    ".KKDKK....KKDKK.",
-    "...KKOOOOOOKK...",
-    "....KOOEEEOK....",
-    "....KOOEEEOK....",
-    "....KOOEEEOK....",
-    "...KKOOOOOOKK...",
-    ".KLMDK....KDMLK.",
-    "KLMMDK....KDMMLL",
-    ".KWWLK....KLWWK.",
-    "..KWWK....KWWK..",
-    "...KK......KK..."
+    "......KWWK......",
+    ".KK...KLMK...KK.",
+    "KWWLK.KMMK.KLWWK",
+    "KLWWMKKDDKKMWWLK",
+    "KLMMMDKWWKDMMMLK",
+    ".KLMMDKYYKDMMML.",
+    "..KKMDKGGKDMKK..",
+    "...KKDKMMKDKK...",
+    "......KOEK......",
+    "......KOEK......",
+    ".....KOOEEK.....",
+    ".....KOEEOK.....",
+    "......KOEK......",
+    "......KOEK......",
+    ".....KGGYYK.....",
+    "......KKKK......"
   ],
 
   // 3. 단검 (dagger) : 투척용 날렵한 밸런스 비수
   icon_dagger: [
     "..............WW",
-    ".............WLW",
-    "............WMMW",
-    "...........WMMW.",
-    "..........WMMW..",
-    ".........WMMW...",
-    "........WMMW....",
-    ".......WMMW.....",
-    "......WMMW......",
-    ".....WMMW.......",
-    "...KKKKW........",
-    "..KGGKKK........",
-    ".KGGKK..........",
-    ".KKK............",
-    "KC..............",
-    "K..............."
+    ".............WLL",
+    "............WLLM",
+    "...........WLLMD",
+    "..........WLLMD.",
+    ".........WLLMD..",
+    "........WLLMD...",
+    ".......WLLMD....",
+    "......WLLMD.....",
+    "....KKKLLD......",
+    "...KGGYYYYK.....",
+    "..KGYKMMKYGK....",
+    "...KKKOOOK......",
+    "....KOEEOK......",
+    ".....KGGK.......",
+    "......KK........"
   ],
 
   // 4. 표창 (shuriken - 공용) : 고속 회전 4방향 닌자 수리검
@@ -72,7 +72,7 @@ module.exports = {
     ".KLLMMMDDDMLLMK.",
     "KKMMMDDKKDDMMMKK",
     "KKMMMDDKKDDMMMKK",
-    ".KMLLMDDDMMLLK.",
+    ".KMLLMDDDMMLLK..",
     ".KLLKKMDMMMKK...",
     "..KK..KMMMKK....",
     "......KMMMK.....",
@@ -181,24 +181,24 @@ module.exports = {
     "......KKKK......"
   ],
 
-  // 10. 번개 반지 (lightning - 공용) : 벼락 룬 번개 심볼
+  // 10. 번개 반지 (lightning - 공용) : 번개 모양 보석이 박힌 황금 반지
   icon_lightning: [
     ".......KK.......",
-    "......KYYK......",
-    ".....KYYYYK.....",
-    "....KYYYYYK.....",
-    "...KYYYYYYK.....",
-    "..KYYYYYYYYK....",
-    "...KKKKYYYYK....",
-    "......KYYYYK....",
-    ".....KYYYYK.....",
-    "....KYYYYK......",
-    "...KYYYYK.......",
-    "..KYYYYK........",
-    ".KYYYYK.........",
-    "..KYYK..........",
-    "...KK...........",
-    "................"
+    "......KWWK......",
+    ".....KWWTTK.....",
+    "....KWWTTK......",
+    "...KWWTTKKKK....",
+    "...KTTTWWTTK....",
+    "....KKTTWWK.....",
+    "...KGGYYWWKGGK..",
+    "..KGGYYYYGGYYGK.",
+    ".KGYK..KK..KYGK.",
+    "KGYK........KYGK",
+    "KGYK........KYGK",
+    "KGYK........KYGK",
+    ".KGYK......KYGK.",
+    "..KGGYYYYYYGGK..",
+    "...KKKKKKKKKK..."
   ],
 
   // 11. 불 지팡이 (firewand - 마도사 시그니처) : 타오르는 화염보주 지팡이
@@ -657,7 +657,7 @@ module.exports = {
     "................"
   ],
 
-  // ================= 패시브 스탯 아이콘 15종 =================
+  // ================= 패시브 스탯 아이콘 16종 =================
   icon_armor: [
     "..KKKKKKKKKKKK..",
     ".KLLLLLLLLLLLLK.",
@@ -928,6 +928,26 @@ module.exports = {
     "KK....KKKK....KK",
     "K..............K"
   ],
+  // 16. 확장의 룬 (area - 패시브) : 대각선 4방향(↖ ↗ ↙ ↘) 네온 화살표 룬 엠블럼
+  icon_area: [
+    "KWWKK......KKWWK",
+    "WQQQWK....KWQQQW",
+    "WQQTTK....KTTQQW",
+    "KWTQQTK..KTQQTWK",
+    "KK.TQQTKKTTQT.KK",
+    "...KTQTTTTQTK...",
+    "..KTWWTTTTWWTTK.",
+    ".KTWWQWWWWQWWTTK",
+    ".KTWWQWWWWQWWTTK",
+    "..KTWWTTTTWWTTK.",
+    "...KTQTTTTQTK...",
+    "KK.TQQTKKTTQT.KK",
+    "KWTQQTK..KTQQTWK",
+    "WQQTTK....KTTQQW",
+    "WQQQWK....KWQQQW",
+    "KWWKK......KKWWK"
+  ],
+
   // ================= 신규 무기 및 진화 무기 아이콘 6종 =================
   // 1. 화염 기둥 (flamePillar - 마도사 고유)
   icon_flamepillar: [

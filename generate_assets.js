@@ -152,18 +152,23 @@ const SPRITES = {
   ...MISC
 };
 
-// 모든 스프라이트 파일 저장 (기본 16x16을 32x32로 2배 스케일링하여 저장)
+// 모든 스프라이트 파일 저장 (아이콘류는 128x128 해상도로, 일반 캐릭터/몬스터는 32x32로 저장)
 console.log('🖌️ 다크 판타지 픽셀 아트 스프라이트 생성 시작...');
 let count = 0;
 
 for (const key in SPRITES) {
   const matrix = SPRITES[key];
-  const { width, height, buf } = renderMatrix(matrix, PALETTE, 2);
+  const origW = matrix[0].length;
+  const isIcon = key.startsWith('icon_') || (key in ICONS);
+  
+  // 아이콘은 128x128 해상도로 렌더링, 일반 스프라이트는 기본 2배 스케일링 유지
+  const scale = isIcon ? Math.max(1, Math.round(128 / origW)) : 2;
+  const { width, height, buf } = renderMatrix(matrix, PALETTE, scale);
   const pngData = createPNG(width, height, buf);
   const filePath = path.join(ASSETS_DIR, `${key}.png`);
   fs.writeFileSync(filePath, pngData);
   count++;
 }
 
-console.log(`✅ 총 ${count}개의 다크 판타지 스프라이트 PNG가 성공적으로 생성되었습니다!`);
+console.log(`✅ 총 ${count}개의 다크 판타지 스프라이트 PNG가 성공적으로 생성되었습니다! (아이콘 128x128 렌더링 적용)`);
 console.log(`📂 저장 위치: ${ASSETS_DIR}`);
