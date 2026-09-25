@@ -896,13 +896,26 @@ class WeaponManager {
   }
 
   hasTargetInRange(w, enemies) {
+    // 0. 사거리 무제한 무기: 맵 전역 낙뢰, 랜덤 낙하, 상시 결계 및 오라 (사거리 체크 없이 상시 발사)
+    if (
+      w.id === 'lightningRing' ||
+      w.id === 'holyWater' || w.id === 'acidPool' ||
+      w.id === 'sanctuary' || w.id === 'heavenlySanctuary' ||
+      w.id === 'plague' ||
+      w.id === 'slayerBladeStorm' || w.id === 'spinningAxe' ||
+      w.id === 'shadowOrb' || w.id === 'eclipseSpiral'
+    ) {
+      return true;
+    }
+
     const px = this.player.x;
     const py = this.player.y;
     const area = this.getArea(w);
 
-    let checkRadius = 580; // 원거리 무기 기본 가시 사거리
+    let checkRadius = 380 * area; // 기본 유효 사거리
     let checkBossProjectiles = false;
 
+    // 캐릭터로부터 직접 발사/휘두르는 무기별 실제 유효 사거리 정밀 매핑
     if (w.id === 'axe') {
       checkRadius = 95 * area + 25;
       checkBossProjectiles = true;
@@ -910,17 +923,43 @@ class WeaponManager {
       checkRadius = 115 * area + 30;
       checkBossProjectiles = true;
     } else if (w.id === 'sword') {
-      checkRadius = 80 * area + 20;
+      checkRadius = 80 * area + 25;
     } else if (w.id === 'thunderBlade') {
-      checkRadius = 95 * area + 25;
+      checkRadius = 95 * area + 30;
     } else if (w.id === 'whip') {
       checkRadius = 165 * area + 20;
     } else if (w.id === 'morningstarTempest' || w.id === 'bladeWhip') {
       checkRadius = 175 * area + 25;
     } else if (w.id === 'frostWhip') {
       checkRadius = 170 * area + 25;
-    } else if (w.id === 'sanctuary') {
-      checkRadius = 90 * area + 25;
+    } else if (w.id === 'shuriken' || w.id === 'scatterShuriken' || w.id === 'throwingDagger') {
+      checkRadius = 310 * area;
+    } else if (w.id === 'shotgun' || w.id === 'teslaShotgun' || w.id === 'holyShotgun' || w.id === 'plasmaTempest') {
+      checkRadius = 285 * area;
+    } else if (w.id === 'magicMissile') {
+      checkRadius = 450 * area;
+    } else if (w.id === 'fireWand') {
+      checkRadius = 380 * area;
+    } else if (w.id === 'apocalypseComet' || w.id === 'arcaneSanctuary') {
+      checkRadius = 460 * area;
+    } else if (w.id === 'poisonDagger') {
+      checkRadius = 320 * area;
+    } else if (w.id === 'windBow' || w.id === 'cycloneBow') {
+      checkRadius = 480 * area;
+    } else if (w.id === 'frostOrb' || w.id === 'venomBlizzard') {
+      checkRadius = 360 * area;
+    } else if (w.id === 'holyArrow') {
+      checkRadius = 450 * area;
+    } else if (w.id === 'chakram') {
+      checkRadius = 340 * area;
+    } else if (w.id === 'holyCross') {
+      checkRadius = 380 * area;
+    } else if (w.id === 'divineJudgement') {
+      checkRadius = 420 * area;
+    } else if (w.id === 'flamePillar' || w.id === 'infernoCataclysm') {
+      checkRadius = 350 * area;
+    } else if (w.id === 'shadowVortex') {
+      checkRadius = 360 * area;
     }
 
     const checkRadiusSq = checkRadius * checkRadius;

@@ -428,26 +428,28 @@ class Player {
       const area = anim.area || 1.0;
 
       if (anim.type === 'sword') {
-        // ⚔️ [철검]: 전통 서예 삼묵법(농묵·중묵·비백) 초승달 수묵 베기 모션 (60fps 무렉 No-lag 최적화)
+        // ⚔️ [철검]: 전통 서예 삼묵법(농묵·중묵·비백) 초승달 수묵 베기 모션 - 칼날 끝(Tip) 1:1 일치화
         const sweepArc = 2.1;
         const startAngle = anim.angle - sweepArc / 2;
         const curAngle = startAngle + progress * sweepArc;
-        const swordDist = (28 + Math.sin(progress * Math.PI) * 16) * Math.sqrt(area);
-        const slashRadius = swordDist + 12;
+        const size = Math.round(34 * area);
+        const swordDist = (28 + Math.sin(progress * Math.PI) * 16) * area;
+        
+        // 칼날 끝(Tip)의 정확한 궤적 반경: 손잡이 위치 + 검신 길이의 60%
+        const slashRadius = swordDist + size * 0.60;
 
         const px = this.x + Math.cos(curAngle) * swordDist;
         const py = this.y + Math.sin(curAngle) * swordDist;
         const img = assets.images['anim_sword'];
-        const size = Math.round(34 * area);
 
         ctx.save();
 
         // 1. [초승달 수묵 패스] - 외곽 농묵(濃墨)과 중묵(中墨)
         const tailArc = Math.min(curAngle - startAngle, 1.4);
         const tailStart = curAngle - tailArc;
-        const crescentThickness = (10 + Math.sin(progress * Math.PI) * 6) * Math.sqrt(area);
-        const outerR = slashRadius + crescentThickness * 0.45;
-        const innerR = Math.max(8, slashRadius - crescentThickness * 0.55);
+        const crescentThickness = (10 + Math.sin(progress * Math.PI) * 6) * area;
+        const outerR = slashRadius;
+        const innerR = Math.max(8, slashRadius - crescentThickness);
 
         if (tailArc > 0.05) {
           // 외곽 농묵(濃墨) 바탕 초승달 면 채우기
@@ -467,13 +469,13 @@ class Player {
 
           // 은은한 먹빛/담묵 잔향
           ctx.strokeStyle = 'rgba(56, 189, 248, 0.45)';
-          ctx.lineWidth = 1.2;
+          ctx.lineWidth = Math.max(1, 1.2 * Math.sqrt(area));
           ctx.beginPath();
           ctx.arc(this.x, this.y, (outerR + innerR) * 0.5 - 1.5, tailStart, curAngle, false);
           ctx.stroke();
         }
 
-        // 2. [칼날 비백(飛白) 림] - 날카롭고 번뜩이는 은백색 칼날 예기
+        // 2. [칼날 비백(飛白) 림] - 칼날 끝(Tip)을 따라 번뜩이는 은백색 칼날 예기
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = Math.max(2, Math.round(3.2 * Math.sqrt(area) * (1 - progress * 0.25)));
         ctx.lineCap = 'round';
@@ -493,7 +495,7 @@ class Player {
           ctx.restore();
         }
       } else if (anim.type === 'dagger') {
-        const thrustDist = (16 + Math.sin(progress * Math.PI) * 30) * Math.sqrt(area);
+        const thrustDist = (16 + Math.sin(progress * Math.PI) * 30) * area;
         const px = this.x + Math.cos(anim.angle) * thrustDist;
         const py = this.y + Math.sin(anim.angle) * thrustDist;
         const img = assets.images['anim_dagger'];
@@ -510,7 +512,9 @@ class Player {
         const sweepArc = anim.arc || (Math.PI / 2);
         const startAngle = anim.angle - sweepArc / 2;
         const curAngle = startAngle + progress * sweepArc;
-        const swordDist = (28 + Math.sin(progress * Math.PI) * 18) * Math.sqrt(area);
+        const size = Math.round(38 * area);
+        const swordDist = (28 + Math.sin(progress * Math.PI) * 18) * area;
+        const slashRadius = swordDist + size * 0.60;
         const px = this.x + Math.cos(curAngle) * swordDist;
         const py = this.y + Math.sin(curAngle) * swordDist;
 
@@ -519,17 +523,16 @@ class Player {
         ctx.lineWidth = Math.round(4 * Math.sqrt(area));
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.arc(this.x, this.y, swordDist + 12, startAngle, curAngle, false);
+        ctx.arc(this.x, this.y, slashRadius, startAngle, curAngle, false);
         ctx.stroke();
 
         ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = Math.max(1.5, Math.round(1.8 * Math.sqrt(area)));
         ctx.beginPath();
-        ctx.arc(this.x, this.y, swordDist + 8, startAngle, curAngle, false);
+        ctx.arc(this.x, this.y, slashRadius - 3 * area, startAngle, curAngle, false);
         ctx.stroke();
 
         const img = assets.images['anim_sword'];
-        const size = Math.round(38 * area);
         ctx.translate(px, py);
         ctx.rotate(curAngle + Math.PI / 4);
         ctx.imageSmoothingEnabled = false;
@@ -542,11 +545,34 @@ class Player {
         ctx.restore();
       } else if (anim.type === 'axe') {
         const orbitAngle = anim.startAngle + progress * Math.PI * 2.2;
-        const orbitDist = 42 * area;
+        const orbitDist = 44 * area;
+        const size = Math.round(36 * area);
         const px = this.x + Math.cos(orbitAngle) * orbitDist;
         const py = this.y + Math.sin(orbitAngle) * orbitDist;
         const img = assets.images['anim_axe'];
-        const size = Math.round(36 * area);
+
+        // 🪓 도끼날 끝단(Tip)을 따르는 수묵 회전 바람 궤적
+        const tipDist = orbitDist + size * 0.55;
+        const tailArc = Math.min(progress * Math.PI * 2, 1.25);
+        const tailStart = orbitAngle - tailArc;
+        if (tailArc > 0.05) {
+          ctx.save();
+          ctx.strokeStyle = anim.color || 'rgba(12, 14, 20, 0.75)';
+          ctx.lineWidth = Math.max(2, Math.round(4.5 * Math.sqrt(area)));
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, tipDist, tailStart, orbitAngle, false);
+          ctx.stroke();
+
+          // 날카로운 은백색/주홍 비백 림
+          ctx.strokeStyle = anim.color === '#f97316' ? '#fdba74' : 'rgba(255, 255, 255, 0.85)';
+          ctx.lineWidth = Math.max(1, Math.round(2 * Math.sqrt(area)));
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, tipDist, tailStart, orbitAngle, false);
+          ctx.stroke();
+          ctx.restore();
+        }
+
         if (img && img.complete && img.naturalWidth > 0) {
           ctx.save();
           ctx.translate(px, py);
