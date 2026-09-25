@@ -88,8 +88,8 @@ class WeaponManager {
 
   getCount(w) {
     const extra = (w.countLevel || 0) + (this.player.bonusProjectiles || 0);
-    if (w.id === 'shotgun' || w.id === 'teslaShotgun') {
-      return w.baseCount + extra * 2; // 산탄총: 투사체 추가시마다 2발씩 추가
+    if (w.id === 'shotgun' || w.id === 'teslaShotgun' || w.id === 'scatterShuriken') {
+      return w.baseCount + extra * 2; // 산탄총, 뇌전포, 산탄표창: 투사체 추가시마다 2발씩 추가
     }
     return w.baseCount + extra;
   }

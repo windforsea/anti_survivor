@@ -889,7 +889,7 @@ WeaponManager.prototype.executeScatterShuriken = function(w, enemies) {
   sounds.playSlash();
   const dmg = this.getDamage(w);
   const area = this.getArea(w);
-  const count = 5;
+  const count = this.getCount(w);
   const closest = this.getClosestEnemy(enemies);
   const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
   const speed = 580;

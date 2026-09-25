@@ -38,23 +38,23 @@ class CardManager {
     const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb', 'flamePillar', 'chakram', 'holyCross'];
     const starterKeys = allWeaponKeys.filter(k => !forbidden.includes(k));
     const weaponMeta = {
-      sword: { name: '철검', icon: '🗡️', iconKey: 'icon_sword', desc: '가장 가까운 적을 향해 날렵하게 검을 휘둘러 벱니다.' },
-      axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냅니다.' },
-      whip: { name: '채찍', icon: '🪢', iconKey: 'icon_whip', desc: '가장 가까운 적을 자동 조준하여 휘두르고, 반대 방향과 번갈아 교차 강타합니다.' },
-      shuriken: { name: '표창', icon: '🥷', iconKey: 'icon_shuriken', desc: '가장 가까운 몬스터를 향해 고속 회전하며 관통하는 표창을 던집니다.' },
-      magicMissile: { name: '마법 화살', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환을 발사합니다.' },
-      shotgun: { name: '산탄총', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄을 일제 사격합니다.' },
-      holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.' },
-      sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_sanctuary', desc: '플레이어를 감싸는 원형 결계로 적들에게 매초 도트 피해를 입힙니다.' },
-      lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적의 머리 위로 하늘에서 벼락을 내리꽂아 반경 범위 피해를 입힙니다.' },
-      fireWand: { name: '불 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 화염구를 발사하며, 명중 시 폭발하여 광역 피해를 입힙니다.' },
-      poisonDagger: { name: '독비수', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 독비수를 쾌속 연사하며 피격된 적에게 중독 피해를 입힙니다.' },
-      frostOrb: { name: '빙결 보주', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동을 발산하여 감속시키고 피해를 입힙니다.' },
-      windBow: { name: '바람 활', icon: '🏹💨', iconKey: 'icon_windbow', desc: '직선으로 쾌속 관통 바람 화살을 사격하여 적을 밀쳐냅니다.' },
-      shadowOrb: { name: '어둠의 보주', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '플레이어 주변을 공전하며 적에게 지속 암흑 피해를 입힙니다.' },
-      flamePillar: { name: '화염 기둥', icon: '🌋🔥', iconKey: 'icon_flamepillar', desc: '가장 가까운 적 발밑에서 거대한 지옥 화염 기둥을 솟구치게 하여 폭발 피해를 입힙니다.' },
-      chakram: { name: '차크람', icon: '💫🗡️', iconKey: 'icon_chakram', desc: '날카로운 톱날 원반을 던져 적들을 관통한 뒤 플레이어에게 되돌아오며 2중 피해를 입힙니다.' },
-      holyCross: { name: '십자가', icon: '✝️✨', iconKey: 'icon_holycross', desc: '신성한 빛의 십자가를 투척하여 상하좌우 4방향으로 십자 성광을 발산하며 폭발합니다.' }
+      sword: { name: '철검', icon: '🗡️', iconKey: 'icon_sword', desc: '검을 휘둘러 벱니다.' },
+      axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '원형으로 베어내며 적을 밀쳐냅니다.' },
+      whip: { name: '채찍', icon: '🪢', iconKey: 'icon_whip', desc: '교차 강타합니다.' },
+      shuriken: { name: '표창', icon: '🥷', iconKey: 'icon_shuriken', desc: '관통하는 표창을 던집니다.' },
+      magicMissile: { name: '마법 화살', icon: '🔮', iconKey: 'icon_missile', desc: '유도 마법탄을 발사합니다.' },
+      shotgun: { name: '산탄총', icon: '💥', iconKey: 'icon_shotgun', desc: '여러 발의 산탄을 사격합니다.' },
+      holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척합니다.' },
+      sanctuary: { name: '성역', icon: '⛪', iconKey: 'icon_sanctuary', desc: '결계로 적들에게 피해를 입힙니다.' },
+      lightningRing: { name: '번개 반지', icon: '⚡', iconKey: 'icon_lightning', desc: '벼락을 내리꽂아 범위 피해를 입힙니다.' },
+      fireWand: { name: '불 지팡이', icon: '🔥', iconKey: 'icon_firewand', desc: '화염구를 발사하며, 명중 시 폭발합니다.' },
+      poisonDagger: { name: '독비수', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '독이 묻은 비수를 투척하여 중독 피해를 입힙니다.' },
+      frostOrb: { name: '빙결 보주', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '천천히 전진하며 지속적인 냉기 파동을 발산합니다.' },
+      windBow: { name: '바람 활', icon: '🏹💨', iconKey: 'icon_windbow', desc: '화살을 쏘아 적들을 꿰뚫고 밀쳐냅니다.' },
+      shadowOrb: { name: '어둠의 보주', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '자율 추적하여 플레이어를 호위합니다.' },
+      flamePillar: { name: '화염 기둥', icon: '🌋🔥', iconKey: 'icon_flamepillar', desc: '화염 기둥을 솟구치게 하여 폭발 피해를 입힙니다.' },
+      chakram: { name: '차크람', icon: '💫🗡️', iconKey: 'icon_chakram', desc: '관통한 뒤 되돌아오며 2중 피해를 입힙니다.' },
+      holyCross: { name: '십자가', icon: '✝️✨', iconKey: 'icon_holycross', desc: '십자가를 투척하여 폭발합니다.' }
     };
 
     const shuffled = [...starterKeys].sort(() => 0.5 - Math.random());
@@ -129,42 +129,42 @@ class CardManager {
     });
 
     const weaponMeta = {
-      sword: { name: '철검', type: '근접', icon: '🗡️', iconKey: 'icon_sword', desc: '바라보는 방향으로 날렵하게 검을 휘둘러 베기' },
-      axe: { name: '도끼', type: '근접', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냄' },
-      whip: { name: '채찍', type: '근접', icon: '🪢', iconKey: 'icon_whip', desc: '가장 가까운 적을 자동 조준하여 휘두르고 반대 방향과 번갈아 교차 강타' },
-      shuriken: { name: '표창', type: '원거리', icon: '🥷', iconKey: 'icon_shuriken', desc: '가장 가까운 몬스터를 향해 고속 회전 관통 표창 투척' },
-      magicMissile: { name: '마법 화살', type: '원거리', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환' },
-      shotgun: { name: '산탄총', type: '원거리', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄 일제 사격' },
-      holyWater: { name: '성수', type: '도트', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
-      sanctuary: { name: '성역', type: '도트', icon: '⛪', iconKey: 'icon_sanctuary', desc: '플레이어를 감싸는 360도 원형 결계로 적들에게 매초 도트 피해 부여' },
-      lightningRing: { name: '번개 반지', type: '원거리', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적 머리 위로 벼락을 내리꽂아 지면 폭발 피해 및 25% 확률 0.4초 기절' },
-      fireWand: { name: '불 지팡이', type: '원거리', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 폭발 화염구를 발사' },
-      poisonDagger: { name: '독비수', type: '원거리', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 독비수를 쾌속 연사하며 피격된 적에게 중독 피해 부여' },
-      frostOrb: { name: '빙결 보주', type: '원거리', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '전방으로 천천히 전진하며 주변 적들에게 지속 냉기 파동 발산 및 감속' },
-      windBow: { name: '바람 활', type: '원거리', icon: '🏹💨', iconKey: 'icon_windbow', desc: '직선으로 쾌속 관통 바람 화살을 사격하여 적을 밀쳐냄' },
-      shadowOrb: { name: '어둠의 보주', type: '소환', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '가장 가까운 적을 자율 추적하여 밀착 다단히트 및 호위' },
-      flamePillar: { name: '화염 기둥', type: '소환', icon: '🌋🔥', iconKey: 'icon_flamepillar', desc: '가장 가까운 적 발밑에서 지옥 화염 기둥을 분출시켜 폭발 피해를 입힘' },
-      chakram: { name: '차크람', type: '원거리', icon: '💫🗡️', iconKey: 'icon_chakram', desc: '날카로운 톱날 원반을 던져 적들을 관통한 뒤 되돌아오며 2중 피해를 입힘' },
-      holyCross: { name: '십자가', type: '원거리', icon: '✝️✨', iconKey: 'icon_holycross', desc: '신성한 빛의 십자가를 투척하여 상하좌우 4방향으로 십자 성광을 발산하며 폭발' },
+      sword: { name: '철검', type: '근접', icon: '🗡️', iconKey: 'icon_sword', desc: '검을 휘둘러 벱니다.' },
+      axe: { name: '도끼', type: '근접', icon: '🪓', iconKey: 'icon_axe', desc: '원형으로 베어내며 적을 밀쳐냅니다.' },
+      whip: { name: '채찍', type: '근접', icon: '🪢', iconKey: 'icon_whip', desc: '교차 강타합니다.' },
+      shuriken: { name: '표창', type: '원거리', icon: '🥷', iconKey: 'icon_shuriken', desc: '관통하는 표창을 던집니다.' },
+      magicMissile: { name: '마법 화살', type: '원거리', icon: '🔮', iconKey: 'icon_missile', desc: '유도 마법탄을 발사합니다.' },
+      shotgun: { name: '산탄총', type: '원거리', icon: '💥', iconKey: 'icon_shotgun', desc: '여러 발의 산탄을 사격합니다.' },
+      holyWater: { name: '성수', type: '도트', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척합니다.' },
+      sanctuary: { name: '성역', type: '도트', icon: '⛪', iconKey: 'icon_sanctuary', desc: '결계로 적들에게 피해를 입힙니다.' },
+      lightningRing: { name: '번개 반지', type: '원거리', icon: '⚡', iconKey: 'icon_lightning', desc: '벼락을 내리꽂아 범위 피해를 입힙니다.' },
+      fireWand: { name: '불 지팡이', type: '원거리', icon: '🔥', iconKey: 'icon_firewand', desc: '화염구를 발사하며, 명중 시 폭발합니다.' },
+      poisonDagger: { name: '독비수', type: '원거리', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '독이 묻은 비수를 투척하여 중독 피해를 입힙니다.' },
+      frostOrb: { name: '빙결 보주', type: '원거리', icon: '❄️🔮', iconKey: 'icon_frostorb', desc: '천천히 전진하며 지속적인 냉기 파동을 발산합니다.' },
+      windBow: { name: '바람 활', type: '원거리', icon: '🏹💨', iconKey: 'icon_windbow', desc: '화살을 쏘아 적들을 꿰뚫고 밀쳐냅니다.' },
+      shadowOrb: { name: '어둠의 보주', type: '소환', icon: '🔮🖤', iconKey: 'icon_shadoworb', desc: '자율 추적하여 플레이어를 호위합니다.' },
+      flamePillar: { name: '화염 기둥', type: '소환', icon: '🌋🔥', iconKey: 'icon_flamepillar', desc: '화염 기둥을 솟구치게 하여 폭발 피해를 입힙니다.' },
+      chakram: { name: '차크람', type: '원거리', icon: '💫🗡️', iconKey: 'icon_chakram', desc: '관통한 뒤 되돌아오며 2중 피해를 입힙니다.' },
+      holyCross: { name: '십자가', type: '원거리', icon: '✝️✨', iconKey: 'icon_holycross', desc: '십자가를 투척하여 폭발합니다.' },
 
       // 17대 진화 무기 메타
-      heavenlySanctuary: { name: '생츄어리', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 적 빙결(동결) 효과' },
-      morningstarTempest: { name: '모닝스타', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '채찍 전후방 교차 타격 및 첫 적중 시 4방향 관통 표창 방출' },
-      apocalypseComet: { name: '메테오', type: '원거리', icon: '☄️🔥', iconKey: 'icon_apocalypsecomet', desc: '유도 화염 혜성 연사 및 헬파이어 연쇄 폭발' },
-      bladeStorm: { name: '폭풍칼날', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_bladestorm', desc: '초고속 상시 궤도 회전 대검·도끼 근접 방쇄 및 적 투사체 요격 삭제' },
-      teslaShotgun: { name: '뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '고전압 뇌전 산탄 일제 사격 및 체인 라이트닝·낙뢰 폭격 (25% 확률 0.4초 기절)' },
-      venomBlizzard: { name: '블리자드', type: '원거리', icon: '❄️🧪', iconKey: 'icon_venomblizzard', desc: '거대 서리 구체 전진 파동 및 8방향 냉기단검 폭발 방출 (1초간 대폭 감속)' },
-      thunderBlade: { name: '벼락검', type: '근접', icon: '⚡⚔️', iconKey: 'icon_thunderblade', desc: '전방 강타 베기 및 타겟 적 벼락 강타 (30% 확률 0.5초 기절)' },
-      fireAxe: { name: '화염도끼', type: '근접', icon: '🪓🔥', iconKey: 'icon_fireaxe', desc: '360도 도끼 대회전 및 8방향 화염구 폭발' },
-      frostWhip: { name: '얼음채찍', type: '근접', icon: '❄️⛓️', iconKey: 'icon_frostwhip', desc: '전후방 냉기 채찍 타격 및 피격 적 낮은 확률(8%) 동결' },
-      scatterShuriken: { name: '산탄표창', type: '원거리', icon: '🎯💥', iconKey: 'icon_scattershuriken', desc: '부채꼴 5발 관통 표창 일제 사격' },
-      holyArrow: { name: '신성화살', type: '원거리', icon: '🏹✨', iconKey: 'icon_holyarrow', desc: '유도 신성 화살 사격 및 적중 위치 정화 장판 생성' },
-      plague: { name: '역병', type: '도트', icon: '☣️💀', iconKey: 'icon_plague', desc: '독기 결계 지속 중독 및 30초 주기 전체 화면 맹독 폭발' },
-      cycloneBow: { name: '태풍의 눈', type: '원거리', icon: '🌀🏹', iconKey: 'icon_cyclonebow', desc: '대형 관통 폭풍 화살을 사격하고 적들을 블랙홀처럼 중심 흡인' },
-      eclipseSpiral: { name: '황혼의 나선', type: '소환', icon: '🔮✨', iconKey: 'icon_eclipsespiral', desc: '황혼 사역마 자율 추적 다단히트 및 8방향 관통 화살 난사' },
-      infernoCataclysm: { name: '인페르노', type: '광역', icon: '🌋☄️', iconKey: 'icon_infernocataclysm', desc: '4개의 초대형 화염 분화구를 폭발시키고 헬파이어 용암 장판 생성' },
-      shadowVortex: { name: '섀도우 차크람', type: '복합', icon: '🌀🗡️', iconKey: 'icon_shadowvortex', desc: '초대형 암흑 차크람 왕복 회귀 및 적중 시 6방향 파편 폭쇄' },
-      divineJudgement: { name: '저지먼트', type: '성광', icon: '✝️⚡', iconKey: 'icon_divinejudgement', desc: '거대 대천사 십자가 착탄 시 심판 낙뢰 및 30% 확률 0.5초 기절' }
+      heavenlySanctuary: { name: '생츄어리', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '결계를 형성하여 낮은 확률로 적을 얼립니다.' },
+      morningstarTempest: { name: '모닝스타', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '타겟 적중 시 관통 표창을 발사합니다.' },
+      apocalypseComet: { name: '메테오', type: '원거리', icon: '☄️🔥', iconKey: 'icon_apocalypsecomet', desc: '화염 혜성을 발사하며, 연쇄 폭발을 일으킵니다.' },
+      bladeStorm: { name: '폭풍칼날', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_bladestorm', desc: '검과 도끼들이 주위를 상시 회전합니다.' },
+      teslaShotgun: { name: '뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '산탄 사격하며, 적중 시 낙뢰가 폭격됩니다.' },
+      venomBlizzard: { name: '블리자드', type: '원거리', icon: '❄️🧪', iconKey: 'icon_venomblizzard', desc: '구체는 전진하며 2초 후 폭발하여 독단검을 일제 사격합니다.' },
+      thunderBlade: { name: '벼락검', type: '근접', icon: '⚡⚔️', iconKey: 'icon_thunderblade', desc: '베어낸 위치에 벼락이 내리꽂힙니다.' },
+      fireAxe: { name: '화염도끼', type: '근접', icon: '🪓🔥', iconKey: 'icon_fireaxe', desc: '도끼 베기 직후, 화염구를 방출합니다.' },
+      frostWhip: { name: '얼음채찍', type: '근접', icon: '❄️⛓️', iconKey: 'icon_frostwhip', desc: '낮은 확률로 빙결시킵니다.' },
+      scatterShuriken: { name: '산탄표창', type: '원거리', icon: '🎯💥', iconKey: 'icon_scattershuriken', desc: '회전 관통 표창을 일제히 발사 적들을 밀쳐냅니다.' },
+      holyArrow: { name: '신성화살', type: '원거리', icon: '🏹✨', iconKey: 'icon_holyarrow', desc: '빛의 화살 2발을 발사하며, 착탄 위치에 성역을 생성합니다.' },
+      plague: { name: '역병', type: '도트', icon: '☣️💀', iconKey: 'icon_plague', desc: '일정 시간마다 화면 전체에 역병 폭발을 일으킵니다.' },
+      cycloneBow: { name: '태풍의 눈', type: '원거리', icon: '🌀🏹', iconKey: 'icon_cyclonebow', desc: '블랙홀 관통 화살을 발사합니다.' },
+      eclipseSpiral: { name: '황혼의 나선', type: '소환', icon: '🔮✨', iconKey: 'icon_eclipsespiral', desc: '사역마가 마법 화살을 난사합니다.' },
+      infernoCataclysm: { name: '인페르노', type: '광역', icon: '🌋☄️', iconKey: 'icon_infernocataclysm', desc: '화염 분화구와 화염지대를 남깁니다.' },
+      shadowVortex: { name: '섀도우 차크람', type: '복합', icon: '🌀🗡️', iconKey: 'icon_shadowvortex', desc: '적중 시 6방향 맹독 파편을 뿌립니다.' },
+      divineJudgement: { name: '저지먼트', type: '성광', icon: '✝️⚡', iconKey: 'icon_divinejudgement', desc: '십자가를 투척하고, 낙뢰로 기절시킵니다.' }
     };
 
     // 진화 링크 힌트 헬퍼
@@ -262,7 +262,7 @@ class CardManager {
           title: '[진화] 생츄어리',
           icon: '⛪✨',
           iconKey: 'icon_heavenlysanctuary',
-          desc: '성역과 성수를 합성 진화합니다! 초대형 성역 결계가 형성되고 범위 내 적에게 지속 피해 및 빙결을 겁니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '성역과 성수를 합성 진화합니다! 결계를 형성하여 낮은 확률로 적을 얼립니다.',
           effectText: '성역(5Lv) + 성수(5Lv) 합성 -> [생츄어리 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -297,7 +297,7 @@ class CardManager {
           title: '[진화] 모닝스타',
           icon: '⛓️🌪️',
           iconKey: 'icon_morningstartempest',
-          desc: '채찍과 표창을 합성 진화합니다! 채찍 타격 후 적중 위치에서 4방향 관통 표창이 폭쇄 방출됩니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '채찍과 표창을 합성 진화합니다! 타겟 적중 시 관통 표창을 발사합니다.',
           effectText: '채찍(5Lv) + 표창(5Lv) 합성 -> [모닝스타 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -332,7 +332,7 @@ class CardManager {
           title: '[진화] 메테오',
           icon: '☄️🔥',
           iconKey: 'icon_apocalypsecomet',
-          desc: '불 지팡이와 마법 화살을 합성 진화합니다! 유도 추적 화염 메테오를 연속 투하하여 연쇄 폭발을 일으킵니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '불 지팡이와 마법 화살을 합성 진화합니다! 화염 혜성을 발사하며, 연쇄 폭발을 일으킵니다.',
           effectText: '불 지팡이(5Lv) + 마법 화살(5Lv) 합성 -> [메테오 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -367,7 +367,7 @@ class CardManager {
           title: '[진화] 폭풍칼날',
           icon: '⚔️🌪️',
           iconKey: 'icon_bladestorm',
-          desc: '철검과 도끼를 합성 진화합니다! 대검과 도끼가 주위를 상시 회전하며 적을 베고 투사체를 요격합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '철검과 도끼를 합성 진화합니다! 검과 도끼들이 주위를 상시 회전합니다.',
           effectText: '철검(5Lv) + 도끼(5Lv) 합성 -> [폭풍칼날 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -402,7 +402,7 @@ class CardManager {
           title: '[진화] 뇌전포',
           icon: '⚡💥',
           iconKey: 'icon_teslashotgun',
-          desc: '산탄총과 번개 반지를 합성 진화합니다! 뇌전 산탄 사격과 함께 체인 라이트닝 및 25% 확률로 0.4초 기절시키는 낙뢰가 폭격됩니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '산탄총과 번개 반지를 합성 진화합니다! 산탄 사격하며, 적중 시 낙뢰가 폭격됩니다.',
           effectText: '산탄총(5Lv) + 번개 반지(5Lv) 합성 -> [뇌전포 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -437,7 +437,7 @@ class CardManager {
           title: '[진화] 블리자드',
           icon: '❄️🧪',
           iconKey: 'icon_venomblizzard',
-          desc: '독비수와 빙결 보주를 합성 진화합니다! 서리 구체가 냉기 파동을 일으킨 후 8방향 냉기단검으로 폭발하여 적들을 1초간 대폭 감속시킵니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '독비수와 빙결 보주를 합성 진화합니다! 구체는 전진하며 2초 후 폭발하여 독단검을 일제 사격합니다.',
           effectText: '독비수(5Lv) + 빙결 보주(5Lv) 합성 -> [블리자드 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -470,7 +470,7 @@ class CardManager {
           title: '[진화] 벼락검',
           icon: '⚡⚔️',
           iconKey: 'icon_thunderblade',
-          desc: '철검과 번개 반지를 합성 진화합니다! 전방을 강타 베기하며 30% 확률로 0.5초 기절시키는 강력한 벼락을 내리칩니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '철검과 번개 반지를 합성 진화합니다! 베어낸 위치에 벼락이 내리꽂힙니다.',
           effectText: '철검(5Lv) + 번개 반지(5Lv) 합성 -> [벼락검 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -503,7 +503,7 @@ class CardManager {
           title: '[진화] 화염도끼',
           icon: '🪓🔥',
           iconKey: 'icon_fireaxe',
-          desc: '도끼와 불 지팡이를 합성 진화합니다! 도끼가 360도 대회전하며 사방으로 화염구를 뿜어내어 폭발시킵니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '도끼와 불 지팡이를 합성 진화합니다! 도끼 베기 직후, 화염구를 방출합니다.',
           effectText: '도끼(5Lv) + 불 지팡이(5Lv) 합성 -> [화염도끼 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -536,7 +536,7 @@ class CardManager {
           title: '[진화] 얼음채찍',
           icon: '❄️⛓️',
           iconKey: 'icon_frostwhip',
-          desc: '채찍과 빙결 보주를 합성 진화합니다! 전후방을 냉기 채찍으로 후려치며 피격된 모든 적을 1초간 동결시킵니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '채찍과 빙결 보주를 합성 진화합니다! 낮은 확률로 빙결시킵니다.',
           effectText: '채찍(5Lv) + 빙결 보주(5Lv) 합성 -> [얼음채찍 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -569,7 +569,7 @@ class CardManager {
           title: '[진화] 산탄표창',
           icon: '🎯💥',
           iconKey: 'icon_scattershuriken',
-          desc: '표창과 산탄총을 합성 진화합니다! 부채꼴로 5발의 대형 표창을 일제 발사하여 적들을 꿰뚫고 크게 밀쳐냅니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '표창과 산탄총을 합성 진화합니다! 회전 관통 표창을 일제히 발사 적들을 밀쳐냅니다.',
           effectText: '표창(5Lv) + 산탄총(5Lv) 합성 -> [산탄표창 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -602,7 +602,7 @@ class CardManager {
           title: '[진화] 신성화살',
           icon: '🏹✨',
           iconKey: 'icon_holyarrow',
-          desc: '마법 화살과 성수를 합성 진화합니다! 유도 추적 신성 화살을 쏘아보내며 적중한 자리에 3초간 정화 장판을 생성합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '마법 화살과 성수를 합성 진화합니다! 빛의 화살 2발을 발사하며, 착탄 위치에 성역을 생성합니다.',
           effectText: '마법 화살(5Lv) + 성수(5Lv) 합성 -> [신성화살 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -635,7 +635,7 @@ class CardManager {
           title: '[진화] 역병',
           icon: '☣️💀',
           iconKey: 'icon_plague',
-          desc: '독비수와 성역을 합성 진화합니다! 플레이어 주위에 독기 결계를 펼쳐 지속 중독을 걸고, 30초마다 화면 전체에 대폭발을 일으킵니다! (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '독비수와 성역을 합성 진화합니다! 일정 시간마다 화면 전체에 역병 폭발을 일으킵니다.',
           effectText: '독비수(5Lv) + 성역(5Lv) 합성 -> [역병 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -669,7 +669,7 @@ class CardManager {
           title: '[진화] 태풍의 눈',
           icon: '🌀🏹',
           iconKey: 'icon_cyclonebow',
-          desc: '바람 활과 표창을 합성 진화합니다! 거대 폭풍 화살이 모든 적을 꿰뚫고 중심부로 블랙홀 흡인합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '바람 활과 표창을 합성 진화합니다! 블랙홀 관통 화살을 발사합니다.',
           effectText: '바람 활(5Lv) + 표창(5Lv) 합성 -> [태풍의 눈 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -703,7 +703,7 @@ class CardManager {
           title: '[진화] 황혼의 나선',
           icon: '🔮✨',
           iconKey: 'icon_eclipsespiral',
-          desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 황혼의 사역마가 자율 추적 다단히트하며 8방향 관통 화살을 일제 난사합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 사역마가 마법 화살을 난사합니다.',
           effectText: '어둠의 보주(5Lv) + 마법 화살(5Lv) 합성 -> [황혼의 나선 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -737,7 +737,7 @@ class CardManager {
           title: '[진화] 인페르노',
           icon: '🌋🔥',
           iconKey: 'icon_infernocataclysm',
-          desc: '화염 기둥과 불 지팡이를 합성 진화합니다! 거대 대재앙 화염 기둥이 폭발하며 지속 피해를 주는 용암 지대를 생성합니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '화염 기둥과 불 지팡이를 합성 진화합니다! 화염 분화구와 화염지대를 남깁니다.',
           effectText: '화염 기둥(5Lv) + 불 지팡이(5Lv) 합성 -> [인페르노 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -771,7 +771,7 @@ class CardManager {
           title: '[진화] 섀도우 차크람',
           icon: '💫☠️',
           iconKey: 'icon_shadowvortex',
-          desc: '차크람과 독비수를 합성 진화합니다! 맹독 그림자 차크람이 궤적상의 모든 적을 중독 관통하며 사방으로 독화살을 흩뿌립니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '차크람과 독비수를 합성 진화합니다! 적중 시 6방향 맹독 파편을 뿌립니다.',
           effectText: '차크람(5Lv) + 독비수(5Lv) 합성 -> [섀도우 차크람 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -805,7 +805,7 @@ class CardManager {
           title: '[진화] 저지먼트',
           icon: '✝️⚡',
           iconKey: 'icon_divinejudgement',
-          desc: '십자가와 성수를 합성 진화합니다! 황금 신성 십자가가 적을 관통 후 최대 사거리에서 폭발하며 30% 확률로 0.5초 기절시키는 심판 낙뢰를 내리꽂습니다. (1Lv 획득, 슬롯 1칸 반환)',
+          desc: '십자가와 성수를 합성 진화합니다! 십자가를 투척하고, 낙뢰로 기절시킵니다.',
           effectText: '십자가(5Lv) + 성수(5Lv) 합성 -> [저지먼트 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -888,7 +888,7 @@ class CardManager {
         title: `${w.name} 범위 증가`,
         icon: '🎯',
         iconKey: meta.iconKey,
-        desc: `공격 범위 및 폭발 크기를 확대합니다. (Lv.${nextLv}/5)`,
+        desc: `공격 범위를 확대합니다. (Lv.${nextLv}/5)`,
         effectText: '공격 범위 +20%',
         badge: `Lv.${nextLv}/5`,
         stars: formatStars(nextLv, 5),
@@ -902,85 +902,85 @@ class CardManager {
       // 4) [무기 투사체 / 연속공격 증가 강화]
       if (key !== 'sanctuary' && key !== 'heavenlySanctuary') {
         let countTitle = `${w.name} 투사체 증가`;
-        let countDesc = `동시에 발사하는 투사체 수를 늘립니다.`;
+        let countDesc = `투사체 수를 늘립니다.`;
         let countEffect = '투사체 +1개';
 
         if (key === 'sword' || key === 'axe' || key === 'whip' || key === 'bladeStorm') {
           countTitle = `${w.name} 연속공격`;
           countEffect = '연속 공격 +1회';
           if (key === 'sword') {
-            countDesc = `빠르게 휘두르는 연속 공격 횟수를 추가합니다.`;
+            countDesc = `공격 횟수를 추가합니다.`;
           } else if (key === 'axe') {
-            countDesc = `크게 회전시키는 연속 공격 횟수를 추가합니다.`;
+            countDesc = `공격 횟수를 추가합니다.`;
           } else if (key === 'whip') {
-            countDesc = `반대 방향과 번갈아 타격하는 연속 공격 횟수를 늘립니다.`;
+            countDesc = `공격 횟수를 추가합니다.`;
           } else if (key === 'bladeStorm') {
-            countDesc = `회전 칼날 및 검기 연속 공격 횟수를 추가합니다.`;
+            countDesc = `공격 횟수를 추가합니다.`;
           }
         } else {
           countTitle = `${w.name} 투사체 증가`;
-          if (key === 'shotgun' || key === 'teslaShotgun') {
-            countDesc = `동시에 일제 발사하는 산탄 탄환 수를 늘립니다.`;
+          if (key === 'shotgun' || key === 'teslaShotgun' || key === 'scatterShuriken') {
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +2개';
           } else if (key === 'shuriken') {
-            countDesc = `동시에 투척하는 고속 회전 표창 개수를 늘립니다.`;
+            countDesc = `표창 개수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'magicMissile') {
-            countDesc = `동시에 발사하는 유도 마법 화살 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'fireWand') {
-            countDesc = `동시에 발사하는 폭발 화염구 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'lightningRing') {
-            countDesc = `동시에 내리꽂는 낙뢰 벼락 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'holyWater') {
-            countDesc = `동시에 투척하는 성수 갯수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'morningstarTempest') {
-            countDesc = `적중 시 방출되는 관통 표창 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'apocalypseComet') {
-            countDesc = `동시에 연사 투하되는 유도 화염 혜성 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'poisonDagger') {
-            countDesc = `동시에 투척하는 독비수 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'frostOrb') {
-            countDesc = `동시에 발사하는 빙결 보주 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'venomBlizzard') {
-            countDesc = `동시에 발사하는 서리독 구체 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'windBow') {
-            countDesc = `동시에 사격하는 바람 화살 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'shadowOrb') {
-            countDesc = `자율 추적하는 어둠의 보주 개수를 늘립니다.`;
+            countDesc = `보주의 수를 늘립니다.`;
             countEffect = '보주 +1개';
           } else if (key === 'cycloneBow') {
-            countDesc = `동시에 사격하는 태풍의 눈 화살 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'eclipseSpiral') {
-            countDesc = `자율 추적 다단히트하는 황혼의 사역마 개수를 늘립니다.`;
-            countEffect = '사역마 +1체';
+            countDesc = `보주의 수를 늘립니다.`;
+            countEffect = '보주 +1개';
           } else if (key === 'flamePillar') {
-            countDesc = `동시에 분출하는 화염 기둥 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '화염 기둥 +1개';
           } else if (key === 'chakram') {
-            countDesc = `동시에 투척하는 회귀 차크람 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '차크람 +1개';
           } else if (key === 'holyCross') {
-            countDesc = `동시에 투척하는 회전 십자가 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '십자가 +1개';
           } else if (key === 'infernoCataclysm') {
-            countDesc = `동시에 분출하는 대재앙 용암 화염 기둥 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '기둥 +1개';
           } else if (key === 'shadowVortex') {
-            countDesc = `동시에 투척하는 맹독 섀도우 차크람 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '차크람 +1개';
           } else if (key === 'divineJudgement') {
-            countDesc = `동시에 투척하는 신성 십자가 및 심판 낙뢰 개수를 늘립니다.`;
+            countDesc = `투사체 수를 늘립니다.`;
             countEffect = '십자가 +1개';
           }
         }
@@ -1015,7 +1015,7 @@ class CardManager {
         title: '철벽 갑옷',
         icon: '🛡️',
         iconKey: 'icon_armor',
-        desc: '받는 피해를 감쇄하고 추가 경감합니다.',
+        desc: '받는 피해를 감쇄합니다.',
         effectText: '방어력 +1 & 피해 4% 경감',
         maxLevel: 5,
         apply: () => { this.player.armor += 1; }
@@ -1025,7 +1025,7 @@ class CardManager {
         title: '장화',
         icon: '👟',
         iconKey: 'icon_speed',
-        desc: '이동 속도를 증가시켜 적들의 포위망을 돌파합니다.',
+        desc: '이동 속도를 증가합니다.',
         effectText: '이동 속도 +15%', // +12% -> +15% 상향 (무빙 회피 생존력 보장)
         maxLevel: 5,
         apply: () => { this.player.speed += this.player.baseSpeed * 0.15; }
@@ -1045,8 +1045,8 @@ class CardManager {
         title: '재생의 반지',
         icon: '💍',
         iconKey: 'icon_regen',
-        desc: '매초 체력을 지속 자동 회복합니다.',
-        effectText: '초당 체력 회복 +0.9 HP/s',
+        desc: '체력을 지속 회복합니다.',
+        effectText: '초당 회복 +0.9 HP/s',
         maxLevel: 5,
         apply: () => { this.player.hpRegen += 0.9; }
       },
@@ -1055,8 +1055,8 @@ class CardManager {
         title: '거인의 심장',
         icon: '❤️',
         iconKey: 'icon_hp',
-        desc: '최대 체력을 증가시키고 체력을 즉시 일부 회복합니다.',
-        effectText: '최대 체력 +25 & 회복 +25',
+        desc: '최대 체력을 증가시킵니다.',
+        effectText: '최대 체력 +25',
         maxLevel: 5,
         apply: () => {
           this.player.maxHp += 25;
@@ -1068,8 +1068,8 @@ class CardManager {
         title: '황혼의 시계',
         icon: '⏳',
         iconKey: 'icon_global_speed',
-        desc: '모든 무기의 재사용 대기시간을 완만하게 단축합니다. (최대 -20%)',
-        effectText: '쿨타임 감소 -4% (최대 -20%)',
+        desc: '재사용 대기시간을 단축합니다.',
+        effectText: '쿨타임 감소 -4%',
         maxLevel: 5,
         apply: () => {
           // 레벨당 4.5% 가속 적용 (5레벨 달성 시 1.045^5 = 1.246배 가속, 실질 쿨타임 약 20% 감소로 말뚝딜 억제)
@@ -1081,7 +1081,7 @@ class CardManager {
         title: '자력의 부적',
         icon: '🧲',
         iconKey: 'icon_magnet',
-        desc: '경험치 보석을 흡수하는 자석 반경을 확장합니다.',
+        desc: '자석 반경을 확장합니다.',
         effectText: '자석 반경 +30%',
         maxLevel: 5,
         apply: () => {
@@ -1094,7 +1094,7 @@ class CardManager {
         title: '확장의 룬',
         icon: '🎯',
         iconKey: 'icon_area',
-        desc: '공격 범위 및 크기를 확대합니다.',
+        desc: '공격 범위를 확대합니다.',
         effectText: '공격 범위 +30%',
         maxLevel: 3,
         apply: () => { this.player.bonusAreaMult = (this.player.bonusAreaMult || 1.0) + 0.30; }
@@ -1104,8 +1104,8 @@ class CardManager {
         title: '복제의 오브',
         icon: '🪞',
         iconKey: 'icon_proj_count',
-        desc: '투사체 수 및 연속공격 횟수를 영구 증가시킵니다. (최대 2회)',
-        effectText: '투사체/연속공격 +1',
+        desc: '투사체 수를 영구 증가시킵니다.',
+        effectText: '투사체 +1',
         maxLevel: 2,
         apply: () => {
           this.player.bonusProjectiles = Math.min(2, (this.player.bonusProjectiles || 0) + 1);
@@ -1116,7 +1116,7 @@ class CardManager {
         title: '질풍의 깃털',
         icon: '🪶',
         iconKey: 'icon_proj_speed',
-        desc: '투사체의 비행 속도를 대폭 증가시킵니다.',
+        desc: '투사체가 빨라집니다.',
         effectText: '투사체 속도 +20%',
         maxLevel: 5,
         apply: () => {
@@ -1128,8 +1128,8 @@ class CardManager {
         title: '행운의 클로버',
         icon: '🍀',
         iconKey: 'icon_clover',
-        desc: '치명타 확률이 상승하고 아이템 드랍률이 증가합니다.',
-        effectText: '치명타 확률 +10% & 드랍률 +15%',
+        desc: '치명타&드랍률이 증가합니다.',
+        effectText: '치명률 +10% & 드랍률 +15%',
         maxLevel: 5,
         apply: () => {
           this.player.critChance = (this.player.critChance || 0) + 0.10;
@@ -1141,7 +1141,7 @@ class CardManager {
         title: '지혜의 왕관',
         icon: '👑',
         iconKey: 'icon_crown',
-        desc: '몬스터 처치 및 보석 획득 시 얻는 경험치 획득량이 증가합니다.',
+        desc: '경험치 획득량이 증가합니다.',
         effectText: '경험치 획득량 +20%',
         maxLevel: 5,
         apply: () => {
@@ -1153,7 +1153,7 @@ class CardManager {
         title: '흡혈의 송곳니',
         icon: '🧛‍♂️',
         iconKey: 'icon_vampire',
-        desc: '적 처치 시 피의 정수를 흡수하여 일정 확률로 체력을 회복합니다.',
+        desc: '처치시 일정 확률로 체력을 회복합니다.',
         effectText: '처치 시 체력 +1 회복 확률 +2%',
         maxLevel: 5,
         apply: () => {
@@ -1165,7 +1165,7 @@ class CardManager {
         title: '빛의 성벽',
         icon: '🛡️✨',
         iconKey: 'icon_shield',
-        desc: '주기적으로 1회의 피격을 100% 무효화하는 에너지 방벽을 생성합니다.',
+        desc: '주기적으로 피격을 무효화 합니다.',
         effectText: '방벽 쿨타임 -2.5초 (최대 2스택)',
         maxLevel: 5,
         apply: () => {
@@ -1182,8 +1182,8 @@ class CardManager {
         title: '사신의 낫',
         icon: '🗡️💀',
         iconKey: 'icon_crit_dmg',
-        desc: '치명타 확률이 소폭 상승하고, 치명타 적중 시 입히는 피해량이 대폭 증가합니다.',
-        effectText: '치명타 확률 +4% & 치명타 피해량 +35%',
+        desc: '치명률이 상승하고, 치명타 피해량이 증가합니다.',
+        effectText: '치명률 +4% & 치명 피해량 +35%',
         maxLevel: 5,
         apply: () => {
           const curLv = (this.player.ownedPassives['stat_crit_dmg']?.level || 0) + 1;
@@ -1196,7 +1196,7 @@ class CardManager {
         title: '가시갑옷',
         icon: '🛡️🌵',
         iconKey: 'icon_thorns',
-        desc: '피격 시 주변 적들에게 받은 피해를 가시 폭발로 강력하게 되돌려줍니다.',
+        desc: '피격 시 받은 피해를 되돌려줍니다.',
         effectText: '피해 반사 +100%',
         maxLevel: 5,
         apply: () => {
@@ -1252,8 +1252,8 @@ class CardManager {
       title: '성수 포션',
       icon: '🧪',
       iconKey: 'icon_heal',
-      desc: '상처를 즉시 치료하고 활력을 되찾습니다.',
-      effectText: '체력 +35 즉시 회복',
+      desc: '즉시 치료합니다.',
+      effectText: '체력 +35',
       badge: 'HEAL',
       stars: '★★★',
       apply: () => {
