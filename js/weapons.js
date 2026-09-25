@@ -23,8 +23,8 @@ class WeaponManager {
     this.axeComboTimer = 0;
     this.whipStrikesQueue = [];
     this.whipStrikeTimer = 0;
-    this.bladeWhipStrikesQueue = [];
-    this.bladeWhipStrikeTimer = 0;
+    this.morningstarStrikesQueue = [];
+    this.morningstarStrikeTimer = 0;
 
     // 시작 무기는 게임 시작 시 카드 선택을 통해 장착 (기본 지급 제거)
   }
@@ -50,17 +50,7 @@ class WeaponManager {
   }
 
   upgradeWeapon(type, statType) {
-    // 호환용 키 보정
-    let targetKey = type;
-    if (!this.weapons[targetKey]) {
-      if (type === 'throwingDagger') targetKey = 'shuriken';
-      else if (type === 'spinningAxe') targetKey = 'slayerBladeStorm';
-      else if (type === 'bladeWhip') targetKey = 'morningstarTempest';
-      else if (type === 'holyShotgun') targetKey = 'heavenlySanctuary';
-      else if (type === 'arcaneSanctuary') targetKey = 'apocalypseComet';
-      else if (type === 'plasmaTempest') targetKey = 'teslaShotgun';
-    }
-    const w = this.weapons[targetKey];
+    const w = this.weapons[type];
     if (!w) return;
 
     // 5레벨 MAX (초기 1레벨 + 4회 강화로 5레벨 완성)
@@ -126,7 +116,7 @@ class WeaponManager {
     }
 
     // [진화 1] 생츄어리 (heavenlySanctuary) 상시 성수 도트 결계 & 빙결
-    const heavenly = this.weapons['heavenlySanctuary'] || this.weapons['holyShotgun'];
+    const heavenly = this.weapons['heavenlySanctuary'];
     if (heavenly) {
       heavenly.cooldownTimer -= dt;
       if (heavenly.cooldownTimer <= 0) {
@@ -180,18 +170,18 @@ class WeaponManager {
     }
 
     // [진화 2] 모닝스타 전후방 교차 연타 큐 처리
-    if (this.bladeWhipStrikesQueue.length > 0) {
-      this.bladeWhipStrikeTimer -= dt;
-      if (this.bladeWhipStrikeTimer <= 0) {
-        const isBack = this.bladeWhipStrikesQueue.shift();
-        this.bladeWhipStrikeTimer = 0.10;
-        const msTempest = this.weapons['morningstarTempest'] || this.weapons['bladeWhip'];
+    if (this.morningstarStrikesQueue.length > 0) {
+      this.morningstarStrikeTimer -= dt;
+      if (this.morningstarStrikeTimer <= 0) {
+        const isBack = this.morningstarStrikesQueue.shift();
+        this.morningstarStrikeTimer = 0.10;
+        const msTempest = this.weapons['morningstarTempest'];
         if (msTempest) this.executeMorningstarTempest(msTempest, isBack, msTempest.lastTargetAngle);
       }
     }
 
     // [진화 4] 폭풍검 (slayerBladeStorm) 상시 궤도 회전 타격
-    const bladeStorm = this.weapons['slayerBladeStorm'] || this.weapons['spinningAxe'];
+    const bladeStorm = this.weapons['slayerBladeStorm'];
     if (bladeStorm) {
       const projSpeedMult = (1 + (bladeStorm.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
       const orbitSpeed = 4.8 * projSpeedMult;
@@ -519,7 +509,7 @@ class WeaponManager {
     // 무기 쿨다운 업데이트 및 발사 트리거
     for (const key in this.weapons) {
       const w = this.weapons[key];
-      if (w.id === 'spinningAxe' || w.id === 'slayerBladeStorm' || w.id === 'shadowOrb' || w.id === 'eclipseSpiral') continue;
+      if (w.id === 'slayerBladeStorm' || w.id === 'shadowOrb' || w.id === 'eclipseSpiral') continue;
       w.cooldownTimer -= dt;
 
       if (w.cooldownTimer <= 0) {
@@ -899,10 +889,10 @@ class WeaponManager {
     // 0. 사거리 무제한 무기: 맵 전역 낙뢰, 랜덤 낙하, 상시 결계 및 오라 (사거리 체크 없이 상시 발사)
     if (
       w.id === 'lightningRing' ||
-      w.id === 'holyWater' || w.id === 'acidPool' ||
+      w.id === 'holyWater' ||
       w.id === 'sanctuary' || w.id === 'heavenlySanctuary' ||
       w.id === 'plague' ||
-      w.id === 'slayerBladeStorm' || w.id === 'spinningAxe' ||
+      w.id === 'slayerBladeStorm' ||
       w.id === 'shadowOrb' || w.id === 'eclipseSpiral'
     ) {
       return true;
@@ -928,19 +918,19 @@ class WeaponManager {
       checkRadius = 95 * area + 30;
     } else if (w.id === 'whip') {
       checkRadius = 165 * area + 20;
-    } else if (w.id === 'morningstarTempest' || w.id === 'bladeWhip') {
+    } else if (w.id === 'morningstarTempest') {
       checkRadius = 175 * area + 25;
     } else if (w.id === 'frostWhip') {
       checkRadius = 170 * area + 25;
-    } else if (w.id === 'shuriken' || w.id === 'scatterShuriken' || w.id === 'throwingDagger') {
+    } else if (w.id === 'shuriken' || w.id === 'scatterShuriken') {
       checkRadius = 310 * area;
-    } else if (w.id === 'shotgun' || w.id === 'teslaShotgun' || w.id === 'holyShotgun' || w.id === 'plasmaTempest') {
+    } else if (w.id === 'shotgun' || w.id === 'teslaShotgun') {
       checkRadius = 285 * area;
     } else if (w.id === 'magicMissile') {
       checkRadius = 450 * area;
     } else if (w.id === 'fireWand') {
       checkRadius = 380 * area;
-    } else if (w.id === 'apocalypseComet' || w.id === 'arcaneSanctuary') {
+    } else if (w.id === 'apocalypseComet') {
       checkRadius = 460 * area;
     } else if (w.id === 'poisonDagger') {
       checkRadius = 320 * area;
@@ -1059,8 +1049,7 @@ class WeaponManager {
         break;
       }
 
-      case 'shuriken':
-      case 'throwingDagger': {
+      case 'shuriken': {
         sounds.playSlash();
         const closestEnemy = this.getClosestEnemy(enemies);
         let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
@@ -1096,8 +1085,7 @@ class WeaponManager {
         break;
       }
 
-      case 'morningstarTempest':
-      case 'bladeWhip': {
+      case 'morningstarTempest': {
         const closestEnemy = this.getClosestEnemy(enemies);
         let baseAngle = Math.atan2(this.player.facing.y, this.player.facing.x);
         if (closestEnemy) {
@@ -1110,25 +1098,21 @@ class WeaponManager {
           pattern.push(i % 2 === 1);
         }
         this.executeMorningstarTempest(w, pattern[0], baseAngle);
-        this.bladeWhipStrikesQueue = pattern.slice(1);
-        this.bladeWhipStrikeTimer = 0.10;
+        this.morningstarStrikesQueue = pattern.slice(1);
+        this.morningstarStrikeTimer = 0.10;
         break;
       }
 
-      case 'slayerBladeStorm':
-      case 'spinningAxe': {
+      case 'slayerBladeStorm': {
         break;
       }
 
-      case 'apocalypseComet':
-      case 'arcaneSanctuary': {
+      case 'apocalypseComet': {
         this.executeApocalypseComet(w, enemies);
         break;
       }
 
-      case 'teslaShotgun':
-      case 'plasmaTempest':
-      case 'holyShotgun': {
+      case 'teslaShotgun': {
         this.executeTeslaShotgun(w, enemies);
         break;
       }
@@ -1210,8 +1194,7 @@ class WeaponManager {
         break;
       }
 
-      case 'holyWater':
-      case 'acidPool': {
+      case 'holyWater': {
         sounds.playAcid();
         for (let i = 0; i < count; i++) {
           const randomEnemy = this.getRandomAliveEnemy(enemies, 700);

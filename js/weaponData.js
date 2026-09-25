@@ -64,8 +64,7 @@ const WEAPON_CONFIGS = {
         speedProjLevel: 0,
         cooldownTimer: 0
       },
-      // 구 단검 호환용 alias (중복 코드 제거)
-      throwingDagger: { id: 'shuriken' },
+
       magicMissile: {
         id: 'magicMissile',
         name: '마법 화살',
@@ -132,8 +131,7 @@ const WEAPON_CONFIGS = {
         areaLevel: 0,
         cooldownTimer: 0
       },
-      // 구 산성웅덩이 호환용 alias (중복 코드 제거)
-      acidPool: { id: 'holyWater' },
+
       lightningRing: {
         id: 'lightningRing',
         name: '번개 반지',
@@ -606,12 +604,5 @@ const WEAPON_CONFIGS = {
         countLevel: 0,
         areaLevel: 0,
         cooldownTimer: 0
-      },
-
-      // 이전 진화 무기 호환용
-      spinningAxe: { id: 'slayerBladeStorm' },
-      bladeWhip: { id: 'morningstarTempest' },
-      holyShotgun: { id: 'heavenlySanctuary' },
-      arcaneSanctuary: { id: 'apocalypseComet' },
-      plasmaTempest: { id: 'teslaShotgun' }
+      }
 };

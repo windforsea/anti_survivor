@@ -406,19 +406,17 @@ class UIManager {
           'thunderBlade', 'fireAxe', 'frostWhip', 'scatterShuriken', 'holyArrow', 'plague',
           'cycloneBow', 'eclipseSpiral',
           'infernoCataclysm', 'shadowVortex', 'divineJudgement',
-          'spinningAxe', 'bladeWhip', 'holyShotgun', 'arcaneSanctuary', 'plasmaTempest'
         ].includes(key);
         slot.className = `inv-icon inv-weapon ${isEvolved ? 'inv-evolution' : ''}`;
         
         let iconKey = w.iconSprite || 'icon_atk';
         if (key === 'sword') iconKey = 'icon_sword';
-        else if (key === 'axe' || key === 'spinningAxe') iconKey = 'icon_axe';
-        else if (key === 'whip' || key === 'bladeWhip') iconKey = 'icon_whip';
-        else if (key === 'shuriken' || key === 'throwingDagger') iconKey = 'icon_shuriken';
+        else if (key === 'axe') iconKey = 'icon_axe';
+        else if (key === 'whip') iconKey = 'icon_whip';
+        else if (key === 'shuriken') iconKey = 'icon_shuriken';
         else if (key === 'magicMissile') iconKey = 'icon_missile';
         else if (key === 'shotgun') iconKey = 'icon_shotgun';
-        else if (key === 'holyShotgun') iconKey = 'icon_holyshotgun';
-        else if (key === 'holyWater' || key === 'acidPool') iconKey = 'icon_holywater';
+        else if (key === 'holyWater') iconKey = 'icon_holywater';
         else if (key === 'sanctuary') iconKey = 'icon_sanctuary';
         else if (key === 'lightningRing') iconKey = 'icon_lightning';
         else if (key === 'fireWand') iconKey = 'icon_firewand';
@@ -440,8 +438,6 @@ class UIManager {
         else if (key === 'plague') iconKey = 'icon_plague';
         else if (key === 'cycloneBow') iconKey = 'icon_cyclonebow';
         else if (key === 'eclipseSpiral') iconKey = 'icon_eclipsespiral';
-        else if (key === 'arcaneSanctuary') iconKey = 'icon_arcanesanctuary';
-        else if (key === 'plasmaTempest') iconKey = 'icon_plasmatempest';
         else if (key === 'flamePillar') iconKey = 'icon_flamepillar';
         else if (key === 'chakram') iconKey = 'icon_chakram';
         else if (key === 'holyCross') iconKey = 'icon_holycross';

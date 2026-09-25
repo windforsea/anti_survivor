@@ -281,17 +281,8 @@ WeaponManager.prototype.executeTeslaShotgun = function(w, enemies) {
   }
 };
 
-WeaponManager.prototype.executeBladeWhipStrike = function(w, isBack = false) {
-  this.executeMorningstarTempest(w, isBack);
-};
 
-WeaponManager.prototype.executeArcaneSanctuary = function(w, enemies) {
-  this.executeApocalypseComet(w, enemies);
-};
 
-WeaponManager.prototype.executePlasmaTempest = function(w, enemies) {
-  this.executeTeslaShotgun(w, enemies);
-};
 
 WeaponManager.prototype.executeSanctuaryTick = function(w, enemies) {
   const dmg = this.getDamage(w);

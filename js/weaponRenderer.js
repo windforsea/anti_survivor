@@ -105,7 +105,7 @@ WeaponManager.prototype.draw = function(ctx) {
   }
 
   // 0-3. [진화 1] 생츄어리 (heavenlySanctuary) - 청화 군청과 황금 단청의 이중 수묵 결계
-  const heavenly = this.weapons['heavenlySanctuary'] || this.weapons['holyShotgun'];
+  const heavenly = this.weapons['heavenlySanctuary'];
   if (heavenly) {
     const area = this.getArea(heavenly);
     const radius = 135 * area;
@@ -909,7 +909,7 @@ WeaponManager.prototype.draw = function(ctx) {
   // ==========================================
   // 4. [진화 4] 폭풍검 (slayerBladeStorm) 상시 회전 대검 & 도끼
   // ==========================================
-  const bladeStorm = this.weapons['slayerBladeStorm'] || this.weapons['spinningAxe'];
+  const bladeStorm = this.weapons['slayerBladeStorm'];
   if (bladeStorm) {
     const area = this.getArea(bladeStorm);
     const orbitRadius = 85 * area;

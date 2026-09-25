@@ -1,6 +1,6 @@
 {
-  "totalCalls": 43,
-  "lastUpdated": "2026-09-25T03:26:47.432Z",
+  "totalCalls": 61,
+  "lastUpdated": "2026-09-25T05:03:54.245Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,22 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 18,
+      "callCount": 21,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T03:20:01.339Z",
+      "lastUsedAt": "2026-09-25T05:03:54.244Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T05:03:54.245Z",
+          "reason": "무기 정합성 감사 및 레거시 무기 키 제거 검증"
+        },
+        {
+          "timestamp": "2026-09-25T04:04:05.449Z",
+          "reason": "무기 사거리 체크 및 도끼 투사체 패링 대기 시스템 무결성 검증"
+        },
+        {
+          "timestamp": "2026-09-25T03:46:44.387Z",
+          "reason": "수묵 에셋 통합 후 로직 감사"
+        },
         {
           "timestamp": "2026-09-25T03:20:01.340Z",
           "reason": "128x128 수묵 엠블럼 래스터라이저 정합성 감사"
@@ -87,18 +99,6 @@
         {
           "timestamp": "2026-09-24T14:20:56.758Z",
           "reason": "수묵화풍 검기 궤적 및 먹물방울 치명타 반영 후 전투 무결성 검증"
-        },
-        {
-          "timestamp": "2026-09-24T13:53:23.956Z",
-          "reason": "렌더링 최적화 후 전투 및 무기 시스템 무결성 검증"
-        },
-        {
-          "timestamp": "2026-09-24T12:10:42.601Z",
-          "reason": "무기 로직 무결성 검사 실행 전 텔레메트리 기록"
-        },
-        {
-          "timestamp": "2026-09-24T11:09:17.871Z",
-          "reason": "어둠의 보주 및 태풍의 눈 무기 로직 수정 후 정적 감사"
         }
       ]
     },
@@ -168,10 +168,38 @@
     },
     "to-web": {
       "name": "to-web",
-      "callCount": 7,
+      "callCount": 14,
       "createdAt": "2026-09-25T02:31:46.134Z",
-      "lastUsedAt": "2026-09-25T03:22:33.976Z",
+      "lastUsedAt": "2026-09-25T04:46:17.880Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T04:46:17.880Z",
+          "reason": "월드 2 장애물 3종(산호 암초, 거대 해초, 침몰선 보물상자) 수묵 리워크 to-web 번들링"
+        },
+        {
+          "timestamp": "2026-09-25T04:41:06.029Z",
+          "reason": "Phase 2 후반 2대 보스(boss_wyrm, boss_overlord) 128x128 수묵 래스터라이저 to-web 번들링"
+        },
+        {
+          "timestamp": "2026-09-25T04:34:49.115Z",
+          "reason": "Phase 1 월드 2 심해 4대 보스 128x128 수묵 래스터라이저 to-web 번들링"
+        },
+        {
+          "timestamp": "2026-09-25T04:24:16.530Z",
+          "reason": "Phase 4 월드 2 심해 심연 7종 수묵 몬스터 to-web 번들링"
+        },
+        {
+          "timestamp": "2026-09-25T04:19:31.704Z",
+          "reason": "Phase 3 월드 2 심해 기본 8종 수묵 몬스터 to-web 번들링"
+        },
+        {
+          "timestamp": "2026-09-25T04:13:33.260Z",
+          "reason": "Phase 2 월드 1 고급 7종 수묵 몬스터 to-web 번들링"
+        },
+        {
+          "timestamp": "2026-09-25T04:06:36.543Z",
+          "reason": "128x128 수묵 몬스터 생성 분할 위임 계획 수립"
+        },
         {
           "timestamp": "2026-09-25T03:22:33.976Z",
           "reason": "보스 7종 128x128 수묵 스프라이트 위임"
@@ -204,10 +232,42 @@
     },
     "to-com": {
       "name": "to-com",
-      "callCount": 6,
+      "callCount": 14,
       "createdAt": "2026-09-25T02:40:19.670Z",
-      "lastUsedAt": "2026-09-25T03:26:47.431Z",
+      "lastUsedAt": "2026-09-25T04:56:47.118Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T04:56:47.119Z",
+          "reason": "월드 2 장애물 3종 클립보드 패치 반영"
+        },
+        {
+          "timestamp": "2026-09-25T04:50:59.674Z",
+          "reason": "월드 2 장애물 3종 클립보드 패치 반영"
+        },
+        {
+          "timestamp": "2026-09-25T04:44:00.611Z",
+          "reason": "Phase 2 후반 2대 보스 128x128 클립보드 패치 반영"
+        },
+        {
+          "timestamp": "2026-09-25T04:39:39.765Z",
+          "reason": "Phase 1 월드 2 심해 4대 보스 128x128 클립보드 패치 반영"
+        },
+        {
+          "timestamp": "2026-09-25T04:28:42.837Z",
+          "reason": "Phase 4 최종 128x128 수묵 몬스터 클립보드 패치 반영"
+        },
+        {
+          "timestamp": "2026-09-25T04:23:24.140Z",
+          "reason": "Phase 3 128x128 수묵 몬스터 클립보드 패치 반영"
+        },
+        {
+          "timestamp": "2026-09-25T04:18:24.856Z",
+          "reason": "Phase 2 128x128 수묵 몬스터 클립보드 패치 반영"
+        },
+        {
+          "timestamp": "2026-09-25T04:11:16.567Z",
+          "reason": "Phase 1 128x128 수묵 몬스터 클립보드 패치 반영"
+        },
         {
           "timestamp": "2026-09-25T03:26:47.432Z",
           "reason": "방안 A 보스 7종 128x128 코드 로컬 반영"

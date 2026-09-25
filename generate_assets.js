@@ -134,10 +134,7 @@ const ALL_EMBLEM_KEYS = [
   'icon_slayerbladestorm', 'icon_teslashotgun', 'icon_venomblizzard',
   'icon_thunderblade', 'icon_fireaxe', 'icon_frostwhip', 'icon_scattershuriken',
   'icon_holyarrow', 'icon_plague', 'icon_cyclonebow', 'icon_eclipsespiral',
-  'icon_infernocataclysm', 'icon_shadowvortex', 'icon_divinejudgement',
-
-  // 레거시 호환 4종
-  'icon_acid', 'icon_holyshotgun', 'icon_arcanesanctuary', 'icon_plasmatempest'
+  'icon_infernocataclysm', 'icon_shadowvortex', 'icon_divinejudgement'
 ];
 
 let emblemCount = 0;

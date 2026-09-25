@@ -1036,6 +1036,49 @@ const PASSIVES_INK = {
     });
     canvas.drawEnsoRim(CX, CY, 26, 3.0, INK_COLORS.WHITE_JADE, 0.3, 216);
     canvas.drawGlow(CX, CY, 28, INK_COLORS.BLUE_CYAN, 0.5);
+  },
+
+  // 17. 자력의 부적 (magnet) : 드랍 아이템 자석 형태를 계승한 단청 수묵 말굽자석
+  icon_magnet: (canvas) => {
+    canvas.drawBaseEmblem(INK_COLORS.BLUE_AZURE, 0.45, 217);
+    const prng = createPRNG(217);
+
+    // U자형 말굽자석 궤적
+    // 좌측(N극 - 진홍): (36, 92) -> (36, 52) -> (64, 28)
+    const leftArm = [[36, 92], [36, 54], [50, 32], [64, 28]];
+    // 우측(S극 - 감청): (92, 92) -> (92, 52) -> (64, 28)
+    const rightArm = [[92, 92], [92, 54], [78, 32], [64, 28]];
+
+    // 1) 굵은 농묵 붓선 바탕
+    canvas.drawCalligraphyStroke(leftArm, INK_COLORS.INK_DEEP, 18.0, 14.0, { alpha: 0.98, feiBai: 0.15, prng });
+    canvas.drawCalligraphyStroke(rightArm, INK_COLORS.INK_DEEP, 18.0, 14.0, { alpha: 0.98, feiBai: 0.15, prng });
+
+    // 2) 좌측 N극 선혈 단청 진홍 채움
+    canvas.drawCalligraphyStroke([[36, 86], [36, 54], [52, 34], [64, 30]], INK_COLORS.RED_CRIMSON, 12.0, 9.0, { alpha: 0.95, isAdditive: true, prng });
+    // 3) 우측 S극 감청 단청 푸른빛 채움
+    canvas.drawCalligraphyStroke([[92, 86], [92, 54], [76, 34], [64, 30]], INK_COLORS.BLUE_AZURE, 12.0, 9.0, { alpha: 0.95, isAdditive: true, prng });
+
+    // 4) 양 끝단 은백/옥백 놋쇠 팁 (수묵 하이라이트)
+    canvas.drawCalligraphyStroke([[36, 92], [36, 80]], INK_COLORS.WHITE_JADE, 14.0, 14.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke([[92, 92], [92, 80]], INK_COLORS.WHITE_JADE, 14.0, 14.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke([[36, 92], [36, 84]], INK_COLORS.WHITE_SILVER, 8.0, 8.0, { isAdditive: true });
+    canvas.drawCalligraphyStroke([[92, 92], [92, 84]], INK_COLORS.WHITE_SILVER, 8.0, 8.0, { isAdditive: true });
+
+    // 5) 양 끝단에서 방출되는 반원형 자기력 파동 호 (진홍/청안 림)
+    const arcLeft1 = [[24, 98], [36, 108], [48, 98]];
+    const arcLeft2 = [[18, 102], [36, 118], [54, 102]];
+    const arcRight1 = [[80, 98], [92, 108], [104, 98]];
+    const arcRight2 = [[74, 102], [92, 118], [110, 102]];
+
+    canvas.drawCalligraphyStroke(arcLeft1, INK_COLORS.RED_FIRE, 3.2, 1.2, { alpha: 0.9, isAdditive: true, prng });
+    canvas.drawCalligraphyStroke(arcLeft2, INK_COLORS.GOLD_BRIGHT, 2.2, 0.8, { alpha: 0.7, isAdditive: true, prng });
+    canvas.drawCalligraphyStroke(arcRight1, INK_COLORS.BLUE_CYAN, 3.2, 1.2, { alpha: 0.9, isAdditive: true, prng });
+    canvas.drawCalligraphyStroke(arcRight2, INK_COLORS.WHITE_SILVER, 2.2, 0.8, { alpha: 0.7, isAdditive: true, prng });
+
+    // 6) 외곽 원호 비백 림 및 자기력 코어 글로우
+    canvas.drawEnsoRim(CX, CY, 42, 4.0, INK_COLORS.WHITE_SILVER, 0.25, 217);
+    canvas.drawGlow(36, 90, 18, INK_COLORS.RED_FIRE, 0.6);
+    canvas.drawGlow(92, 90, 18, INK_COLORS.BLUE_CYAN, 0.6);
   }
 };
 

@@ -41,7 +41,6 @@ class CardManager {
       axe: { name: '도끼', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냅니다.' },
       whip: { name: '채찍', icon: '🪢', iconKey: 'icon_whip', desc: '가장 가까운 적을 자동 조준하여 휘두르고, 반대 방향과 번갈아 교차 강타합니다.' },
       shuriken: { name: '표창', icon: '🥷', iconKey: 'icon_shuriken', desc: '가장 가까운 몬스터를 향해 고속 회전하며 관통하는 표창을 던집니다.' },
-      throwingDagger: { name: '표창', icon: '🥷', iconKey: 'icon_shuriken', desc: '가장 가까운 몬스터를 향해 고속 회전하며 관통하는 표창을 던집니다.' },
       magicMissile: { name: '마법 화살', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환을 발사합니다.' },
       shotgun: { name: '산탄총', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄을 일제 사격합니다.' },
       holyWater: { name: '성수', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판을 생성합니다.' },
@@ -152,8 +151,8 @@ class CardManager {
 
     // 이미 진화에 소모되었거나 현재 보유 중인 진화 무기의 재료 무기는 카드 풀에서 영구 제외
     const evolvedMaterialPairs = {
-      heavenlySanctuary: ['sanctuary', 'holyWater', 'acidPool'],
-      morningstarTempest: ['whip', 'shuriken', 'throwingDagger'],
+      heavenlySanctuary: ['sanctuary', 'holyWater'],
+      morningstarTempest: ['whip', 'shuriken'],
       apocalypseComet: ['fireWand', 'magicMissile'],
       slayerBladeStorm: ['sword', 'axe'],
       teslaShotgun: ['shotgun', 'lightningRing'],
@@ -164,7 +163,7 @@ class CardManager {
       scatterShuriken: ['shuriken', 'shotgun'],
       holyArrow: ['magicMissile', 'holyWater'],
       plague: ['poisonDagger', 'sanctuary'],
-      cycloneBow: ['windBow', 'shuriken', 'throwingDagger'],
+      cycloneBow: ['windBow', 'shuriken'],
       eclipseSpiral: ['shadowOrb', 'magicMissile'],
       infernoCataclysm: ['flamePillar', 'fireWand'],
       shadowVortex: ['chakram', 'poisonDagger'],
@@ -185,7 +184,6 @@ class CardManager {
 
     const unownedWeapons = allWeaponKeys.filter(k => {
       if (forbiddenWeapons.includes(k)) return false; // 타 직업 시그니처 무기 차단
-      if (k === 'shuriken' && (this.weaponManager.weapons['throwingDagger'] || isConsumedWeapon('throwingDagger'))) return false;
       return !this.weaponManager.weapons[k] && !isConsumedWeapon(k);
     });
 
@@ -194,12 +192,10 @@ class CardManager {
       axe: { name: '도끼', type: '근접', icon: '🪓', iconKey: 'icon_axe', desc: '주변을 원형으로 크게 베어내며 적을 밀쳐냄' },
       whip: { name: '채찍', type: '근접', icon: '🪢', iconKey: 'icon_whip', desc: '가장 가까운 적을 자동 조준하여 휘두르고 반대 방향과 번갈아 교차 강타' },
       shuriken: { name: '표창', type: '원거리', icon: '🥷', iconKey: 'icon_shuriken', desc: '가장 가까운 몬스터를 향해 고속 회전 관통 표창 투척' },
-      throwingDagger: { name: '표창', type: '원거리', icon: '🥷', iconKey: 'icon_shuriken', desc: '가장 가까운 몬스터를 향해 고속 회전 관통 표창 투척' },
       magicMissile: { name: '마법 화살', type: '원거리', icon: '🔮', iconKey: 'icon_missile', desc: '가장 가까운 적을 유도 추적하는 마법 탄환' },
       shotgun: { name: '산탄총', type: '원거리', icon: '💥', iconKey: 'icon_shotgun', desc: '바라보는 방향으로 부채꼴 형태의 산탄 일제 사격' },
       holyWater: { name: '성수', type: '도트', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
       sanctuary: { name: '성역', type: '도트', icon: '⛪', iconKey: 'icon_sanctuary', desc: '플레이어를 감싸는 360도 원형 결계로 적들에게 매초 도트 피해 부여' },
-      acidPool: { name: '성수', type: '도트', icon: '🧪', iconKey: 'icon_holywater', desc: '바닥에 지속 피해를 입히는 성수를 투척하여 정화 장판 생성' },
       lightningRing: { name: '번개 반지', type: '원거리', icon: '⚡', iconKey: 'icon_lightning', desc: '무작위 적 머리 위로 벼락을 내리꽂아 지면 폭발 피해 및 25% 확률 0.4초 기절' },
       fireWand: { name: '불 지팡이', type: '원거리', icon: '🔥', iconKey: 'icon_firewand', desc: '가장 가까운 적을 향해 폭발 화염구를 발사' },
       poisonDagger: { name: '독비수', type: '원거리', icon: '🗡️🧪', iconKey: 'icon_poisondagger', desc: '바라보는 방향으로 독비수를 쾌속 연사하며 피격된 적에게 중독 피해 부여' },
@@ -258,7 +254,7 @@ class CardManager {
 
     // [진화 1] 생츄어리 = 성역(5Lv) + 성수(5Lv)
     const wSanctuary = this.weaponManager.weapons['sanctuary'];
-    const wHolyWater = this.weaponManager.weapons['holyWater'] || this.weaponManager.weapons['acidPool'];
+    const wHolyWater = this.weaponManager.weapons['holyWater'];
     const hasHeavenlySanctuary = !!this.weaponManager.weapons['heavenlySanctuary'];
 
     if (wSanctuary && wHolyWater && !hasHeavenlySanctuary) {
@@ -281,11 +277,9 @@ class CardManager {
             if (this.weaponManager.consumedWeapons) {
               this.weaponManager.consumedWeapons.add('sanctuary');
               this.weaponManager.consumedWeapons.add('holyWater');
-              this.weaponManager.consumedWeapons.add('acidPool');
             }
             delete this.weaponManager.weapons['sanctuary'];
             delete this.weaponManager.weapons['holyWater'];
-            delete this.weaponManager.weapons['acidPool'];
             this.weaponManager.unlockWeapon('heavenlySanctuary');
             sounds.playVictory();
             if (window.game) {
@@ -299,7 +293,7 @@ class CardManager {
 
     // [진화 2] 모닝스타 = 채찍(5Lv) + 표창(5Lv)
     const wWhip = this.weaponManager.weapons['whip'];
-    const wShuriken = this.weaponManager.weapons['shuriken'] || this.weaponManager.weapons['throwingDagger'];
+    const wShuriken = this.weaponManager.weapons['shuriken'];
     const hasMorningstarTempest = !!this.weaponManager.weapons['morningstarTempest'];
 
     if (wWhip && wShuriken && !hasMorningstarTempest) {
@@ -322,11 +316,9 @@ class CardManager {
             if (this.weaponManager.consumedWeapons) {
               this.weaponManager.consumedWeapons.add('whip');
               this.weaponManager.consumedWeapons.add('shuriken');
-              this.weaponManager.consumedWeapons.add('throwingDagger');
             }
             delete this.weaponManager.weapons['whip'];
             delete this.weaponManager.weapons['shuriken'];
-            delete this.weaponManager.weapons['throwingDagger'];
             this.weaponManager.unlockWeapon('morningstarTempest');
             sounds.playVictory();
             if (window.game) {
@@ -619,11 +611,9 @@ class CardManager {
           apply: () => {
             if (this.weaponManager.consumedWeapons) {
               this.weaponManager.consumedWeapons.add('shuriken');
-              this.weaponManager.consumedWeapons.add('throwingDagger');
               this.weaponManager.consumedWeapons.add('shotgun');
             }
             delete this.weaponManager.weapons['shuriken'];
-            delete this.weaponManager.weapons['throwingDagger'];
             delete this.weaponManager.weapons['shotgun'];
             this.weaponManager.unlockWeapon('scatterShuriken');
             sounds.playVictory();
@@ -657,11 +647,9 @@ class CardManager {
             if (this.weaponManager.consumedWeapons) {
               this.weaponManager.consumedWeapons.add('magicMissile');
               this.weaponManager.consumedWeapons.add('holyWater');
-              this.weaponManager.consumedWeapons.add('acidPool');
             }
             delete this.weaponManager.weapons['magicMissile'];
             delete this.weaponManager.weapons['holyWater'];
-            delete this.weaponManager.weapons['acidPool'];
             this.weaponManager.unlockWeapon('holyArrow');
             sounds.playVictory();
             if (window.game) {
@@ -730,11 +718,9 @@ class CardManager {
             if (this.weaponManager.consumedWeapons) {
               this.weaponManager.consumedWeapons.add('windBow');
               this.weaponManager.consumedWeapons.add('shuriken');
-              this.weaponManager.consumedWeapons.add('throwingDagger');
             }
             delete this.weaponManager.weapons['windBow'];
             delete this.weaponManager.weapons['shuriken'];
-            delete this.weaponManager.weapons['throwingDagger'];
             this.weaponManager.unlockWeapon('cycloneBow');
             sounds.playVictory();
             if (window.game) {
@@ -984,7 +970,7 @@ class CardManager {
           if (key === 'shotgun' || key === 'teslaShotgun') {
             countDesc = `동시에 일제 발사하는 산탄 탄환 수를 늘립니다.`;
             countEffect = '투사체 +2개';
-          } else if (key === 'shuriken' || key === 'throwingDagger') {
+          } else if (key === 'shuriken') {
             countDesc = `동시에 투척하는 고속 회전 표창 개수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'magicMissile') {
@@ -996,7 +982,7 @@ class CardManager {
           } else if (key === 'lightningRing') {
             countDesc = `동시에 내리꽂는 낙뢰 벼락 개수를 늘립니다.`;
             countEffect = '투사체 +1개';
-          } else if (key === 'holyWater' || key === 'acidPool') {
+          } else if (key === 'holyWater') {
             countDesc = `동시에 투척하는 성수 갯수를 늘립니다.`;
             countEffect = '투사체 +1개';
           } else if (key === 'morningstarTempest') {
@@ -1138,7 +1124,7 @@ class CardManager {
         id: 'stat_magnet',
         title: '자력의 부적',
         icon: '🧲',
-        iconKey: 'item_magnet',
+        iconKey: 'icon_magnet',
         desc: '경험치 보석을 흡수하는 자석 반경을 확장합니다.',
         effectText: '자석 반경 +30%',
         maxLevel: 5,

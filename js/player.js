@@ -581,8 +581,8 @@ class Player {
           ctx.drawImage(img, -size / 2, -size / 2, size, size);
           ctx.restore();
         }
-      } else if (anim.type === 'whip' || anim.type === 'morningstar' || anim.type === 'morningstartempest' || anim.type === 'bladewhip') {
-        const isTempest = anim.type === 'morningstartempest' || anim.type === 'bladewhip';
+      } else if (anim.type === 'whip' || anim.type === 'morningstar' || anim.type === 'morningstartempest') {
+        const isTempest = anim.type === 'morningstartempest';
         const sweepArc = anim.arc || (isTempest ? 2.35 : 1.95);
         const maxRange = anim.range || ((isTempest ? 260 : 165) * area);
 
