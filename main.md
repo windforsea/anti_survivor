@@ -79,7 +79,7 @@ anti_survivor/
 
 1. **무기 유효 사거리 체크 및 스마트 홀드 파이어 (`js/weapons.js`)**:
    - 발사체/휘두르기 무기는 유효 사거리 내에 적이 감지되지 않으면 허공에 난사하지 않고 쿨타임을 0으로 대기(Hold Fire)합니다.
-   - 사거리 무제한 무기 10종(`lightningRing`, `holyWater`, `sanctuary`, `heavenlySanctuary`, `plague`, `slayerBladeStorm`, `shadowOrb`, `eclipseSpiral` 등)은 상시 작동합니다.
+   - 사거리 무제한 무기 10종(`lightningRing`, `holyWater`, `sanctuary`, `heavenlySanctuary`, `plague`, `bladeStorm`, `shadowOrb`, `eclipseSpiral` 등)은 상시 작동합니다.
    - 도끼 계열(`axe`, `fireAxe`)은 보스 투사체 패링 가능 범위까지 사거리 체크에 포함됩니다.
 2. **근접 무기 궤적 반경 정밀 동기화 (`js/player.js`)**:
    - 철검, 도끼, 벼락검 등 휘두르는 무기의 수묵 궤적 반경을 무기 끝(Tip) 위치에 1:1로 일치시키고, 범위(`area`) 스탯 증가 시 비례 확대되도록 정밀 보정되었습니다.

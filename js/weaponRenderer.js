@@ -742,7 +742,7 @@ WeaponManager.prototype.draw = function(ctx) {
       ctx.fill();
 
     } else if (p.type === 'swordWave') {
-      // [10] [진화 4] 폭풍검: 조선 서예 붓글씨 초승달 비백(飛白) 검기
+      // [10] [진화 4] 폭풍칼날: 조선 서예 붓글씨 초승달 비백(飛白) 검기
       const angle = Math.atan2(p.vy, p.vx);
       const sz = Math.round(30 * projArea);
       ctx.translate(p.x, p.y);
@@ -907,9 +907,9 @@ WeaponManager.prototype.draw = function(ctx) {
   }
 
   // ==========================================
-  // 4. [진화 4] 폭풍검 (slayerBladeStorm) 상시 회전 대검 & 도끼
+  // 4. [진화 4] 폭풍칼날 (bladeStorm) 상시 회전 대검 & 도끼
   // ==========================================
-  const bladeStorm = this.weapons['slayerBladeStorm'];
+  const bladeStorm = this.weapons['bladeStorm'];
   if (bladeStorm) {
     const area = this.getArea(bladeStorm);
     const orbitRadius = 85 * area;

@@ -1,6 +1,6 @@
 // 14종 기본 무기(5강 MAX) 및 14대 2단계 특수 진화 무기 통합 매니저 (WeaponManager)
 // - 기본 무기 14종: 철검, 도끼, 채찍, 표창, 마법화살, 산탄총, 성수, 성역, 번개반지, 불지팡이, 독비수, 빙결보주, 바람활, 어둠의보주
-// - 진화 무기 14대: 생츄어리, 모닝스타, 메테오, 폭풍검, 뇌전포, 블리자드, 벼락검, 화염도끼, 얼음채찍, 산탄표창, 신성화살, 역병, 태풍의눈, 황혼의나선
+// - 진화 무기 14대: 생츄어리, 모닝스타, 메테오, 폭풍칼날, 뇌전포, 블리자드, 벼락검, 화염도끼, 얼음채찍, 산탄표창, 신성화살, 역병, 태풍의눈, 황혼의나선
 
 class WeaponManager {
   constructor(player, game) {
@@ -180,8 +180,8 @@ class WeaponManager {
       }
     }
 
-    // [진화 4] 폭풍검 (slayerBladeStorm) 상시 궤도 회전 타격
-    const bladeStorm = this.weapons['slayerBladeStorm'];
+    // [진화 4] 폭풍칼날 (bladeStorm) 상시 궤도 회전 타격
+    const bladeStorm = this.weapons['bladeStorm'];
     if (bladeStorm) {
       const projSpeedMult = (1 + (bladeStorm.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
       const orbitSpeed = 4.8 * projSpeedMult;
@@ -509,7 +509,7 @@ class WeaponManager {
     // 무기 쿨다운 업데이트 및 발사 트리거
     for (const key in this.weapons) {
       const w = this.weapons[key];
-      if (w.id === 'slayerBladeStorm' || w.id === 'shadowOrb' || w.id === 'eclipseSpiral') continue;
+      if (w.id === 'bladeStorm' || w.id === 'shadowOrb' || w.id === 'eclipseSpiral') continue;
       w.cooldownTimer -= dt;
 
       if (w.cooldownTimer <= 0) {
@@ -892,7 +892,7 @@ class WeaponManager {
       w.id === 'holyWater' ||
       w.id === 'sanctuary' || w.id === 'heavenlySanctuary' ||
       w.id === 'plague' ||
-      w.id === 'slayerBladeStorm' ||
+      w.id === 'bladeStorm' ||
       w.id === 'shadowOrb' || w.id === 'eclipseSpiral'
     ) {
       return true;
@@ -1103,7 +1103,7 @@ class WeaponManager {
         break;
       }
 
-      case 'slayerBladeStorm': {
+      case 'bladeStorm': {
         break;
       }
 

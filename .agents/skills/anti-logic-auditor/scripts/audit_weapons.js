@@ -55,7 +55,7 @@ weaponIds.forEach(id => {
   const usesCount = funcBody.includes('getCount(');
 
   // 근접 공격 및 오라형 무기는 getCount 미사용 정상
-  const isMeleeOrAura = ['sword', 'axe', 'whip', 'sanctuary', 'heavenlySanctuary', 'slayerBladeStorm', 'frostWhip', 'plague', 'shadowOrb', 'eclipseSpiral'].includes(id);
+  const isMeleeOrAura = ['sword', 'axe', 'whip', 'sanctuary', 'heavenlySanctuary', 'bladeStorm', 'frostWhip', 'plague', 'shadowOrb', 'eclipseSpiral'].includes(id);
   let status = '✅ 정상';
   let issue = '';
 

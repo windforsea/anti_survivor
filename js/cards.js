@@ -90,7 +90,7 @@ class CardManager {
         { w1: 'sanctuary', w2: 'holyWater', evoId: 'heavenlySanctuary', evoName: '생츄어리', evoIcon: '⛪✨', evoIconKey: 'icon_heavenlysanctuary' },
         { w1: 'whip', w2: 'shuriken', evoId: 'morningstarTempest', evoName: '모닝스타', evoIcon: '⛓️🌪️', evoIconKey: 'icon_morningstartempest' },
         { w1: 'fireWand', w2: 'magicMissile', evoId: 'apocalypseComet', evoName: '메테오', evoIcon: '☄️🔥', evoIconKey: 'icon_apocalypsecomet' },
-        { w1: 'sword', w2: 'axe', evoId: 'slayerBladeStorm', evoName: '폭풍검', evoIcon: '⚔️🌪️', evoIconKey: 'icon_slayerbladestorm' },
+        { w1: 'sword', w2: 'axe', evoId: 'bladeStorm', evoName: '폭풍칼날', evoIcon: '⚔️🌪️', evoIconKey: 'icon_bladestorm' },
         { w1: 'shotgun', w2: 'lightningRing', evoId: 'teslaShotgun', evoName: '뇌전포', evoIcon: '⚡💥', evoIconKey: 'icon_teslashotgun' },
         { w1: 'poisonDagger', w2: 'frostOrb', evoId: 'venomBlizzard', evoName: '블리자드', evoIcon: '❄️🧪', evoIconKey: 'icon_venomblizzard' },
         // 루트 2
@@ -154,7 +154,7 @@ class CardManager {
       heavenlySanctuary: ['sanctuary', 'holyWater'],
       morningstarTempest: ['whip', 'shuriken'],
       apocalypseComet: ['fireWand', 'magicMissile'],
-      slayerBladeStorm: ['sword', 'axe'],
+      bladeStorm: ['sword', 'axe'],
       teslaShotgun: ['shotgun', 'lightningRing'],
       venomBlizzard: ['poisonDagger', 'frostOrb'],
       thunderBlade: ['sword', 'lightningRing'],
@@ -210,7 +210,7 @@ class CardManager {
       heavenlySanctuary: { name: '생츄어리', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 적 빙결(동결) 효과' },
       morningstarTempest: { name: '모닝스타', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '채찍 전후방 교차 타격 및 첫 적중 시 4방향 관통 표창 방출' },
       apocalypseComet: { name: '메테오', type: '원거리', icon: '☄️🔥', iconKey: 'icon_apocalypsecomet', desc: '유도 화염 혜성 연사 및 헬파이어 연쇄 폭발' },
-      slayerBladeStorm: { name: '폭풍검', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_slayerbladestorm', desc: '초고속 상시 궤도 회전 대검·도끼 근접 방쇄 및 적 투사체 요격 삭제' },
+      bladeStorm: { name: '폭풍칼날', type: '근접', icon: '⚔️🌪️', iconKey: 'icon_bladestorm', desc: '초고속 상시 궤도 회전 대검·도끼 근접 방쇄 및 적 투사체 요격 삭제' },
       teslaShotgun: { name: '뇌전포', type: '원거리', icon: '⚡💥', iconKey: 'icon_teslashotgun', desc: '고전압 뇌전 산탄 일제 사격 및 체인 라이트닝·낙뢰 폭격 (25% 확률 0.4초 기절)' },
       venomBlizzard: { name: '블리자드', type: '원거리', icon: '❄️🧪', iconKey: 'icon_venomblizzard', desc: '거대 서리 구체 전진 파동 및 8방향 냉기단검 폭발 방출 (1초간 대폭 감속)' },
       thunderBlade: { name: '벼락검', type: '근접', icon: '⚡⚔️', iconKey: 'icon_thunderblade', desc: '전방 강타 베기 및 타겟 적 벼락 강타 (30% 확률 0.5초 기절)' },
@@ -369,12 +369,12 @@ class CardManager {
       }
     }
 
-    // [진화 4] 폭풍검 = 철검(5Lv) + 도끼(5Lv)
+    // [진화 4] 폭풍칼날 = 철검(5Lv) + 도끼(5Lv)
     const wSword = this.weaponManager.weapons['sword'];
     const wAxe = this.weaponManager.weapons['axe'];
-    const hasSlayerBladeStorm = !!this.weaponManager.weapons['slayerBladeStorm'];
+    const hasBladeStorm = !!this.weaponManager.weapons['bladeStorm'];
 
-    if (wSword && wAxe && !hasSlayerBladeStorm) {
+    if (wSword && wAxe && !hasBladeStorm) {
       const swordLv = this.weaponManager.getLevel(wSword);
       const axeLv = this.weaponManager.getLevel(wAxe);
 
@@ -383,11 +383,11 @@ class CardManager {
           id: 'evolve_slayer_blade_storm',
           type: 'weapon_evolution',
           category: 'evolution',
-          title: '[진화] 폭풍검',
+          title: '[진화] 폭풍칼날',
           icon: '⚔️🌪️',
-          iconKey: 'icon_slayerbladestorm',
+          iconKey: 'icon_bladestorm',
           desc: '철검과 도끼를 합성 진화합니다! 대검과 도끼가 주위를 상시 회전하며 적을 베고 투사체를 요격합니다. (1Lv 획득, 슬롯 1칸 반환)',
-          effectText: '철검(5Lv) + 도끼(5Lv) 합성 -> [폭풍검 1Lv]',
+          effectText: '철검(5Lv) + 도끼(5Lv) 합성 -> [폭풍칼날 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
           apply: () => {
@@ -397,7 +397,7 @@ class CardManager {
             }
             delete this.weaponManager.weapons['sword'];
             delete this.weaponManager.weapons['axe'];
-            this.weaponManager.unlockWeapon('slayerBladeStorm');
+            this.weaponManager.unlockWeapon('bladeStorm');
             sounds.playVictory();
             if (window.game) {
               window.game.addParticles(this.player.x, this.player.y, '#f59e0b', 50);
@@ -953,7 +953,7 @@ class CardManager {
         let countDesc = `동시에 발사하는 투사체 수를 늘립니다.`;
         let countEffect = '투사체 +1개';
 
-        if (key === 'sword' || key === 'axe' || key === 'whip' || key === 'slayerBladeStorm') {
+        if (key === 'sword' || key === 'axe' || key === 'whip' || key === 'bladeStorm') {
           countTitle = `${w.name} 연속공격`;
           countEffect = '연속 공격 +1회';
           if (key === 'sword') {
@@ -962,7 +962,7 @@ class CardManager {
             countDesc = `크게 회전시키는 연속 공격 횟수를 추가합니다.`;
           } else if (key === 'whip') {
             countDesc = `반대 방향과 번갈아 타격하는 연속 공격 횟수를 늘립니다.`;
-          } else if (key === 'slayerBladeStorm') {
+          } else if (key === 'bladeStorm') {
             countDesc = `회전 칼날 및 검기 연속 공격 횟수를 추가합니다.`;
           }
         } else {

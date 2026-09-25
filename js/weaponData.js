@@ -220,12 +220,12 @@ const WEAPON_CONFIGS = {
         speedProjLevel: 0,
         cooldownTimer: 0
       },
-      // [진화 4] 폭풍검 (slayerBladeStorm) = 철검(5렙) + 도끼(5렙)
-      slayerBladeStorm: {
-        id: 'slayerBladeStorm',
-        name: '폭풍검',
+      // [진화 4] 폭풍칼날 (bladeStorm) = 철검(5렙) + 도끼(5렙)
+      bladeStorm: {
+        id: 'bladeStorm',
+        name: '폭풍칼날',
         icon: '⚔️🌪️',
-        iconSprite: 'icon_slayerbladestorm',
+        iconSprite: 'icon_bladestorm',
         desc: '거대 대검과 도끼들이 플레이어 주위를 초고속 상시 회전하며 접근하는 모든 적을 갈아냅니다.',
         baseCooldown: 0.50,
         baseDamage: 56,

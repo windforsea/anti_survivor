@@ -88,7 +88,7 @@ class AssetManager {
       icon_heavenlysanctuary: 'assets/sprites/icon_heavenlysanctuary.png',
       icon_morningstartempest: 'assets/sprites/icon_morningstartempest.png',
       icon_apocalypsecomet: 'assets/sprites/icon_apocalypsecomet.png',
-      icon_slayerbladestorm: 'assets/sprites/icon_slayerbladestorm.png',
+      icon_bladestorm: 'assets/sprites/icon_bladestorm.png',
       icon_teslashotgun: 'assets/sprites/icon_teslashotgun.png',
       icon_armor: 'assets/sprites/icon_armor.png',
       icon_speed: 'assets/sprites/icon_speed.png',

@@ -402,7 +402,7 @@ class UIManager {
         const key = keys[i];
         const w = weapons[key];
         const isEvolved = [
-          'heavenlySanctuary', 'morningstarTempest', 'apocalypseComet', 'slayerBladeStorm', 'teslaShotgun', 'venomBlizzard',
+          'heavenlySanctuary', 'morningstarTempest', 'apocalypseComet', 'bladeStorm', 'teslaShotgun', 'venomBlizzard',
           'thunderBlade', 'fireAxe', 'frostWhip', 'scatterShuriken', 'holyArrow', 'plague',
           'cycloneBow', 'eclipseSpiral',
           'infernoCataclysm', 'shadowVortex', 'divineJudgement',
@@ -427,7 +427,7 @@ class UIManager {
         else if (key === 'heavenlySanctuary') iconKey = 'icon_heavenlysanctuary';
         else if (key === 'morningstarTempest') iconKey = 'icon_morningstartempest';
         else if (key === 'apocalypseComet') iconKey = 'icon_apocalypsecomet';
-        else if (key === 'slayerBladeStorm') iconKey = 'icon_slayerbladestorm';
+        else if (key === 'bladeStorm') iconKey = 'icon_bladestorm';
         else if (key === 'teslaShotgun') iconKey = 'icon_teslashotgun';
         else if (key === 'venomBlizzard') iconKey = 'icon_venomblizzard';
         else if (key === 'thunderBlade') iconKey = 'icon_thunderblade';

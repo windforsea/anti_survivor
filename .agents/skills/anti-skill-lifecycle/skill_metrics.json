@@ -1,6 +1,6 @@
 {
-  "totalCalls": 61,
-  "lastUpdated": "2026-09-25T05:03:54.245Z",
+  "totalCalls": 62,
+  "lastUpdated": "2026-09-25T05:10:01.429Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 21,
+      "callCount": 22,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T05:03:54.244Z",
+      "lastUsedAt": "2026-09-25T05:10:01.429Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T05:10:01.429Z",
+          "reason": "폭풍칼날(bladeStorm) ID 및 명칭 단일화 검증"
+        },
         {
           "timestamp": "2026-09-25T05:03:54.245Z",
           "reason": "무기 정합성 감사 및 레거시 무기 키 제거 검증"
@@ -95,10 +99,6 @@
         {
           "timestamp": "2026-09-24T14:32:50.108Z",
           "reason": "영웅 6종 수묵화 리메이크 정적 감사"
-        },
-        {
-          "timestamp": "2026-09-24T14:20:56.758Z",
-          "reason": "수묵화풍 검기 궤적 및 먹물방울 치명타 반영 후 전투 무결성 검증"
         }
       ]
     },

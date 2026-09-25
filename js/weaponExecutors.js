@@ -240,7 +240,7 @@ WeaponManager.prototype.executeApocalypseComet = function(w, enemies) {
   }
 };
 
-WeaponManager.prototype.executeSlayerBladeStorm = function(w, enemies) {
+WeaponManager.prototype.executeBladeStorm = function(w, enemies) {
   // 상시 궤도 회전만 동작 (검기 미발사)
 };
 

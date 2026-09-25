@@ -131,7 +131,7 @@ const ALL_EMBLEM_KEYS = [
 
   // 진화 무기 17종
   'icon_heavenlysanctuary', 'icon_morningstartempest', 'icon_apocalypsecomet',
-  'icon_slayerbladestorm', 'icon_teslashotgun', 'icon_venomblizzard',
+  'icon_bladestorm', 'icon_teslashotgun', 'icon_venomblizzard',
   'icon_thunderblade', 'icon_fireaxe', 'icon_frostwhip', 'icon_scattershuriken',
   'icon_holyarrow', 'icon_plague', 'icon_cyclonebow', 'icon_eclipsespiral',
   'icon_infernocataclysm', 'icon_shadowvortex', 'icon_divinejudgement'

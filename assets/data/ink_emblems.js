@@ -1113,7 +1113,7 @@ const EVOLVED_INK = {
     canvas.drawGlow(CX, CY, 36, INK_COLORS.RED_FIRE, 0.7);
   },
 
-  icon_slayerbladestorm: (canvas) => {
+  icon_bladestorm: (canvas) => {
     canvas.drawBaseEmblem(INK_COLORS.BLUE_CYAN, 0.5, 304);
     canvas.drawCalligraphyStroke([[20, 20], [108, 108]], INK_COLORS.WHITE_JADE, 4.5, 4.5, { isAdditive: true });
     canvas.drawCalligraphyStroke([[108, 20], [20, 108]], INK_COLORS.BLUE_CYAN, 4.5, 4.5, { isAdditive: true });
