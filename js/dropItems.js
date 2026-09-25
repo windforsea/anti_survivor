@@ -145,25 +145,54 @@ class ExpGem {
   }
 
   draw(ctx) {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.fillStyle = this.color;
-
-    // 마름모 보석 형태
-    ctx.beginPath();
-    ctx.moveTo(0, -this.radius);
-    ctx.lineTo(this.radius, 0);
-    ctx.lineTo(0, this.radius);
-    ctx.lineTo(-this.radius, 0);
-    ctx.closePath();
-    ctx.fill();
-
-    // 50EXP 이상 대형 골드 보석 하이라이트
+    // 수묵화풍 경험치 영석 스프라이트 렌더링
+    let gemKey = 'gem_blue';
+    let drawSize = 14;
     if (this.value >= 50) {
-      ctx.fillStyle = '#ffffff';
+      gemKey = 'gem_purple';
+      drawSize = 22;
+    } else if (this.value >= 20) {
+      gemKey = 'gem_red';
+      drawSize = 18;
+    } else if (this.value >= 5) {
+      gemKey = 'gem_green';
+      drawSize = 16;
+    }
+
+    ctx.save();
+
+    // 50EXP 이상 대형 보석: 은은한 수묵 황금빛 후광 펄스 연출
+    if (this.value >= 50) {
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.28)';
       ctx.beginPath();
-      ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+      ctx.arc(this.x, this.y, drawSize * 0.7, 0, Math.PI * 2);
       ctx.fill();
+    }
+
+    const drawn = assets.drawSprite(ctx, gemKey, this.x, this.y, drawSize);
+
+    // 에셋 로드 전 폴백: 마름모 수묵 테두리 렌더링
+    if (!drawn) {
+      ctx.translate(this.x, this.y);
+      ctx.fillStyle = this.color;
+      ctx.strokeStyle = '#0a0a0f';
+      ctx.lineWidth = 1.6;
+
+      ctx.beginPath();
+      ctx.moveTo(0, -this.radius);
+      ctx.lineTo(this.radius, 0);
+      ctx.lineTo(0, this.radius);
+      ctx.lineTo(-this.radius, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      if (this.value >= 50) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
     ctx.restore();
@@ -220,30 +249,37 @@ class PickupItem {
     const bob = Math.sin(this.bobTimer) * 4;
     const spriteKey = `item_${this.type}`;
 
-    // 바닥 빛나는 오라 효과
     ctx.save();
+
+    // 바닥 수묵 담묵 번짐 오라 효과
     const auraColors = {
-      heal: 'rgba(34, 197, 94, 0.55)',
+      heal: 'rgba(34, 197, 94, 0.45)',
       magnet: 'rgba(56, 189, 248, 0.45)',
       bomb: 'rgba(239, 68, 68, 0.45)',
       freeze: 'rgba(165, 243, 252, 0.55)',
-      gold: 'rgba(251, 191, 36, 0.65)'
+      gold: 'rgba(245, 158, 11, 0.55)'
     };
     ctx.fillStyle = auraColors[this.type] || 'rgba(255, 255, 255, 0.3)';
     ctx.beginPath();
-    ctx.ellipse(this.x, this.y + this.radius - 1, this.radius * 1.15, this.radius * 0.45, 0, 0, Math.PI * 2);
+    ctx.ellipse(this.x, this.y + this.radius - 1, this.radius * 1.25, this.radius * 0.45, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 픽셀 스프라이트 렌더링
-    const drawn = assets.drawSprite(ctx, spriteKey, this.x, this.y + bob, this.type === 'gold' ? 24 : 32);
+    // 외곽 담묵 번짐 림
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.35)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
 
-    // 에셋 로드 전 폴백 또는 금화
+    // 수묵화풍 픽셀 스프라이트 렌더링 (금화 24px, 기타 아이템 32px)
+    const drawSize = this.type === 'gold' ? 24 : 32;
+    const drawn = assets.drawSprite(ctx, spriteKey, this.x, this.y + bob, drawSize);
+
+    // 에셋 로드 전 폴백
     if (!drawn) {
       ctx.translate(this.x, this.y + bob);
       ctx.font = this.type === 'gold' ? '18px sans-serif' : '22px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const emojis = { heal: '🧪', magnet: '🧲', bomb: '💣', freeze: '❄️', gold: '🪙' };
+      const emojis = { heal: '🍶', magnet: '🧲', bomb: '💣', freeze: '❄️', gold: '🪙' };
       ctx.fillText(emojis[this.type] || '⭐', 0, 0);
     }
     ctx.restore();

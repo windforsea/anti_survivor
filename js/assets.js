@@ -144,12 +144,20 @@ class AssetManager {
       icon_crit_dmg: 'assets/sprites/icon_crit_dmg.png',
       icon_thorns: 'assets/sprites/icon_thorns.png',
 
-      // 특수 드랍 아이템
+      // 특수 드랍 아이템 (수묵화풍 리메이크)
       item_magnet: 'assets/sprites/item_magnet.png',
       item_bomb: 'assets/sprites/item_bomb.png',
       item_freeze: 'assets/sprites/item_freeze.png',
+      item_heal: 'assets/sprites/item_heal.png',
+      item_gold: 'assets/sprites/item_gold.png',
 
-      // 필드 장애물
+      // 경험치 영석 4단계 (수묵 단청 보석)
+      gem_blue: 'assets/sprites/gem_blue.png',
+      gem_green: 'assets/sprites/gem_green.png',
+      gem_red: 'assets/sprites/gem_red.png',
+      gem_purple: 'assets/sprites/gem_purple.png',
+
+      // 필드 장애물 (64x64 수묵화풍 산수화)
       obstacle_rock: 'assets/sprites/obstacle_rock.png',
       obstacle_tree: 'assets/sprites/obstacle_tree.png',
       obstacle_crate: 'assets/sprites/obstacle_crate.png',
@@ -242,8 +250,10 @@ class AssetManager {
       ctx.scale(-1, 1);
     }
 
-    // 영웅(128x128), 일반 몬스터 30종(32x32), 보스 13종(64x64) 및 수묵 투사체/이펙트는 먹선 부드러움 보간 처리
-    const isSumie = key.startsWith('player') || key.startsWith('proj_') || key.startsWith('effect_') || this.sumieEnemyKeys.has(key) || this.sumieBossKeys.has(key);
+    // 영웅(128x128), 몬스터 30종, 보스 13종, 무기/이펙트 및 필드 장애물/아이템 수묵화 먹선 스무딩 적용
+    const isSumie = key.startsWith('player') || key.startsWith('proj_') || key.startsWith('effect_') ||
+                    key.startsWith('obstacle_') || key.startsWith('item_') || key.startsWith('gem_') ||
+                    key.startsWith('icon_') || this.sumieEnemyKeys.has(key) || this.sumieBossKeys.has(key);
     ctx.imageSmoothingEnabled = isSumie;
     if (isSumie) {
       ctx.imageSmoothingQuality = 'high';
