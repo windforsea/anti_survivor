@@ -5,6 +5,14 @@ const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
 
+// 128x128 수묵 래스터라이저 모듈 연동 (Phase별 순차 적용)
+let inkEnemiesModule = null;
+try {
+  inkEnemiesModule = require('../assets/data/ink_enemies');
+} catch (e) {
+  // 모듈 없을 시 기존 32x32 폴백
+}
+
 // 1. 단청 및 수묵화 전용 정밀 RGBA 컬러 팔레트 정의
 const PALETTE = {
   TRANSPARENT: [0, 0, 0, 0],
@@ -64,9 +72,7 @@ function createChunk(type, data) {
   return chunk;
 }
 
-function encodePNG32x32(pixelBuffer) {
-  const width = 32;
-  const height = 32;
+function encodePNG(width, height, pixelBuffer) {
   const signature = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
 
   const ihdr = Buffer.alloc(13);
@@ -93,6 +99,7 @@ function encodePNG32x32(pixelBuffer) {
 
   return Buffer.concat([signature, ihdrChunk, idatChunk, iendChunk]);
 }
+const encodePNG32x32 = (pixelBuffer) => encodePNG(32, 32, pixelBuffer);
 
 // 3. 32x32 수묵화 래스터 캔버스 도우미
 class SumieCanvas {
@@ -581,21 +588,37 @@ function buildAllSumieEnemies() {
   }
 
   const keys = Object.keys(ENEMY_BUILDERS);
-  console.log(`[Sumie Enmey Builder] 총 ${keys.length}종 몬스터 수묵화풍 32x32 PNG 생성 시작...`);
+  console.log(`[Sumie Enemy Builder] 총 ${keys.length}종 몬스터 수묵화풍 PNG 생성 시작...`);
 
   let successCount = 0;
+  let inkCount = 0;
+
   keys.forEach((key) => {
+    const filePath = path.join(targetDir, `${key}.png`);
+
+    // 1. 128x128 고해상도 수묵 래스터라이저 우선 적용
+    if (inkEnemiesModule && typeof inkEnemiesModule.hasInkEnemy === 'function' && inkEnemiesModule.hasInkEnemy(key)) {
+      const rgbaBuffer = inkEnemiesModule.renderInkEnemy(key);
+      if (rgbaBuffer) {
+        const pngBuffer = encodePNG(128, 128, rgbaBuffer);
+        fs.writeFileSync(filePath, pngBuffer);
+        successCount++;
+        inkCount++;
+        return;
+      }
+    }
+
+    // 2. 미변환 몬스터는 기존 32x32 폴백 생성
     const cv = new SumieCanvas();
     const builder = ENEMY_BUILDERS[key];
     builder(cv);
 
     const pngBuffer = encodePNG32x32(cv.buffer);
-    const filePath = path.join(targetDir, `${key}.png`);
     fs.writeFileSync(filePath, pngBuffer);
     successCount++;
   });
 
-  console.log(`[Sumie Enemy Builder] 성공: ${successCount}개 몬스터 스프라이트 생성 완료 (${targetDir})`);
+  console.log(`[Sumie Enemy Builder] 성공: 총 ${successCount}개 중 128x128 수묵 래스터 ${inkCount}종, 32x32 ${successCount - inkCount}종 생성 완료 (${targetDir})`);
 }
 
 buildAllSumieEnemies();
