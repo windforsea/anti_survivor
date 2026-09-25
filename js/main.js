@@ -1,4 +1,4 @@
-// 메인 게임 엔진 및 렌더링 루프
+// 메인 게임 엔진 및 60 FPS 무렉 수묵화 렌더링 루프
 
 class Game {
 
@@ -91,7 +91,7 @@ class Game {
     this.tealInkPatternCanvas = c2;
   }
 
-  // 화면 리사이즈 시 다크 잉크 비네팅 마스크 1회 오프스크린 베이킹
+  // 화면 리사이즈 시 다크 잉크 비네팅 마스크 1회 오프스크린 베이킹 (GC 0%, 렌더 렉 0%)
   updateInkVignette(width, height) {
     if (!this.vignetteCanvas || this.vignetteCanvas.width !== width || this.vignetteCanvas.height !== height) {
       const vc = document.createElement('canvas');
@@ -104,8 +104,8 @@ class Game {
 
       const grad = vctx.createRadialGradient(cx, cy, maxR * 0.45, cx, cy, maxR);
       grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      grad.addColorStop(0.7, 'rgba(5, 7, 12, 0.45)');
-      grad.addColorStop(1, 'rgba(3, 4, 8, 0.88)');
+      grad.addColorStop(0.68, 'rgba(4, 6, 10, 0.42)');
+      grad.addColorStop(1, 'rgba(2, 3, 6, 0.88)');
 
       vctx.fillStyle = grad;
       vctx.fillRect(0, 0, width, height);
@@ -123,7 +123,7 @@ class Game {
       joystick: { active: false, x: 0, y: 0 }
     };
 
-    this.gameState = 'PLAYING'; // 'PLAYING', 'LEVEL_UP', 'GAME_OVER', 'VICTORY'
+    this.gameState = 'PLAYING';
     this.totalElapsedTime = 0;
 
     // 카메라
@@ -177,6 +177,7 @@ class Game {
       });
     }
   }
+
   getWorldBoundaries() {
     if (this.currentWorld === 2) {
       return { boundW: 2950, boundH: 525 };
@@ -193,7 +194,7 @@ class Game {
     }
   }
 
-  // 월드 2 심해 기포 고정 객체 풀 (90개 고정 재사용으로 GC 렉 완벽 차단)
+  // 월드 2 심해 기포 고정 객체 풀 (90개 고정 재사용으로 GC 렉 차단)
   initUnderwaterBubbles() {
     this.underwaterBubbles = [];
     for (let i = 0; i < 90; i++) {
@@ -225,11 +226,11 @@ class Game {
     }
   }
 
-
   initCanvasResize() {
     const resize = () => {
       this.canvas.width = window.innerWidth;
       this.canvas.height = window.innerHeight;
+      this.updateInkVignette(this.canvas.width, this.canvas.height);
     };
     window.addEventListener('resize', resize);
     resize();
@@ -237,9 +238,8 @@ class Game {
 
   initInputListeners() {
     window.addEventListener('keydown', (e) => {
-      sounds.ensureContext(); // 사용자 첫 키보드 입력 시 오디오 활성화
+      sounds.ensureContext();
 
-      // 카드 선택 모달(시작 무기/레벨업) 오픈 시 키보드 방향키/엔터/숫자키 처리
       if (this.ui && this.ui.isCardModalOpen) {
         const handled = this.ui.handleCardModalKeydown(e);
         if (handled) return;
@@ -257,7 +257,7 @@ class Game {
     });
 
     window.addEventListener('pointerdown', () => {
-      sounds.ensureContext(); // 모바일 터치 또는 클릭 시 오디오 활성화
+      sounds.ensureContext();
     });
   }
 
@@ -304,7 +304,7 @@ class Game {
       this.ui.hidePauseModal();
       this.ui.hideCharacterSelect();
       if (this.ui.hideStageSelect) this.ui.hideStageSelect();
-      this.ui.showChampionBanner(); // 사망 또는 로비 진입 시 챔피언 배너 띄움
+      this.ui.showChampionBanner();
       this.ui.showLobby();
     }
   }
@@ -336,7 +336,7 @@ class Game {
     this.bombFlashTimer = 0;
 
     this.player = new Player(0, 0, charType);
-    this.applyUpgradesFromSave(); // 영구 업그레이드 스탯 적용!
+    this.applyUpgradesFromSave();
     this.obstacleManager.reset(worldNum);
     this.weaponManager = new WeaponManager(this.player, this);
     this.cardManager = new CardManager(this.player, this.weaponManager);
@@ -354,7 +354,6 @@ class Game {
       this.ui.hideVictory();
     }
 
-    // 선택된 캐릭터의 전용 시그니처 시작 무기 지급
     const startWeaponMap = {
       knight: 'sword',
       mage: 'flamePillar',
@@ -368,30 +367,26 @@ class Game {
     this.lastTime = performance.now();
   }
 
-  // 게임 시작 시 3종의 기본 무기 중 1종 선택
   presentStartingWeaponSelection() {
     this.gameState = 'LEVEL_UP';
     const render = () => {
       const cards = this.cardManager.generateStartingWeaponCards();
       this.ui.showCardSelection(
         cards,
-        // onSelect
         (selectedCard) => {
           selectedCard.apply();
           this.gameState = 'PLAYING';
           this.lastTime = performance.now();
         },
-        // onReroll
         () => {
           if (this.player.rerollCount > 0) {
             this.player.rerollCount -= 1;
             render();
           }
         },
-        // onSkip (시작 무기는 반드시 선택해야 하므로 null)
         null,
-        false, // isBossReward
-        true   // isStarting
+        false,
+        true
       );
     };
     render();
@@ -403,21 +398,17 @@ class Game {
       const cards = this.cardManager.generateCards();
       this.ui.showCardSelection(
         cards,
-        // onSelect
         (selectedCard) => {
           selectedCard.apply();
           this.gameState = 'PLAYING';
         },
-        // onReroll
         () => {
           if (this.player.rerollCount > 0) {
             this.player.rerollCount -= 1;
             render();
           }
         },
-        // onSkip
         () => {
-          // 스킵 시 체력 20 즉시 회복
           const healAmt = 20;
           this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmt);
           this.damageNumbers.push(new DamageNumber(this.player.x, this.player.y - 14, `+${healAmt}`, false, '#22c55e'));
@@ -434,25 +425,20 @@ class Game {
     this.presentCardSelection(false);
   }
 
-  // 보스 격파 즉시 1회 무료 업그레이드 보상
   triggerBossRewardCard() {
     this.presentCardSelection(true);
   }
 
-  // 필드 특수 드랍 아이템 발동
-  // 필드 특수 드랍 아이템 발동
   applyPickupItem(item) {
     const type = typeof item === 'string' ? item : item.type;
 
     if (type === 'heal') {
-      // 체력 포션: 체력 10 즉시 회복
       sounds.playLevelUp();
       const healAmt = 10;
       this.player.hp = Math.min(this.player.maxHp, this.player.hp + healAmt);
       this.damageNumbers.push(new DamageNumber(this.player.x, this.player.y - 14, `+${healAmt}`, false, '#22c55e'));
       this.addParticles(this.player.x, this.player.y, '#22c55e', 18);
     } else if (type === 'magnet') {
-      // 자석: 전체 맵의 모든 경험치 보석 및 필드 금화 즉시 진공 회수
       sounds.playLevelUp();
       for (const gem of this.expGems) {
         gem.magnetized = true;
@@ -464,7 +450,6 @@ class Game {
       }
       this.addParticles(this.player.x, this.player.y, '#38bdf8', 20);
     } else if (type === 'bomb') {
-      // 폭탄(TNT): 플레이어 중심 화면 2/3 범위 내 적 광역 피해 (일반 몬스터 600, 보스는 최대 HP의 10% 또는 최대 250 제한)
       sounds.playShotgun();
       this.bombFlashTimer = 0.28;
       const bombRadius = Math.min(this.canvas.width, this.canvas.height) * (2 / 3);
@@ -478,12 +463,10 @@ class Game {
       }
       this.addParticles(this.player.x, this.player.y, '#ef4444', 36);
     } else if (type === 'freeze') {
-      // 얼음(눈결정): 모든 적의 이동 및 공격 4.5초간 완전 정지
       sounds.playBossAlarm();
       this.freezeTimer = 4.5;
       this.addParticles(this.player.x, this.player.y, '#a5f3fc', 24);
     } else if (type === 'gold') {
-      // 금화 습득
       const rawVal = item.goldValue || 1;
       const earned = Math.max(1, Math.round(rawVal * (this.player.goldMult || 1.0)));
       this.player.gold = (this.player.gold || 0) + earned;
@@ -493,7 +476,6 @@ class Game {
     }
   }
 
-  // 획득한 골드를 로컬 영구 저장소에 무결성 서명과 함께 합산 저장
   saveEarnedGold() {
     try {
       const earned = this.player.gold || 0;
@@ -564,7 +546,6 @@ class Game {
   update(dt) {
     this.totalElapsedTime += dt;
 
-    // 심해 기포 파티클 풀 업데이트 (월드 2)
     if (this.currentWorld === 2 && this.underwaterBubbles) {
       for (const b of this.underwaterBubbles) {
         b.y -= b.speed * dt;
@@ -577,14 +558,11 @@ class Game {
       }
     }
 
-    // 0. 필드 장애물 청크 갱신 및 상태 업데이트
     this.obstacleManager.update(dt, this.player.x, this.player.y);
 
-    // 1. 플레이어 업데이트
     this.player.update(dt, this.input);
     this.obstacleManager.resolveCollisions(this.player);
 
-    // 전장 외곽 경계 충돌 (플레이어가 맵 끝에 걸려 밖으로 나가지 못하게 차단)
     const { boundW, boundH } = this.getWorldBoundaries();
     this.player.x = Math.max(-boundW, Math.min(boundW, this.player.x));
     this.player.y = Math.max(-boundH, Math.min(boundH, this.player.y));
@@ -594,22 +572,16 @@ class Game {
       return;
     }
 
-    // 카메라 플레이어 중심 추적
     this.camera.x = this.player.x;
     this.camera.y = this.player.y;
 
-    // 상태 타이머 차감
     if (this.bombFlashTimer > 0) this.bombFlashTimer -= dt;
     const isFrozen = this.freezeTimer > 0;
     if (isFrozen) this.freezeTimer -= dt;
 
-    // 2. 웨이브 및 몬스터 스폰 업데이트
     this.waveManager.update(dt);
-
-    // 3. 무기 발사 및 히트박스 판정
     this.weaponManager.update(dt, this.enemies);
 
-    // 4. 몬스터 업데이트 & 사망 처리 (빙결 상태 시 이동 및 공격 일시 정지)
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       const enemy = this.enemies[i];
       if (!isFrozen) {
@@ -619,19 +591,16 @@ class Game {
         }
       }
 
-      // 그라운드 몬스터는 부유섬 밖 우주로 나가지 못하도록 경계 제한 [-1580, 1580]
       if (!enemy.isFlying && !enemy.isBoss) {
         enemy.x = Math.max(-boundW, Math.min(boundW, enemy.x));
         enemy.y = Math.max(-boundH, Math.min(boundH, enemy.y));
       }
 
       if (enemy.isDead) {
-        // 해골 몬스터 부활 대기 중일 때는 사망 제거 및 드랍 유예
         if (enemy.reviveState === 1) {
           continue;
         }
 
-        // 슬라임 분열 기믹: 일반 슬라임 사망 시 2마리의 미니 슬라임으로 분열 생성
         if (enemy.typeKey === 'slime' && !enemy.isMini) {
           const parentScale = (typeof enemy.hpScale === 'number' && !isNaN(enemy.hpScale)) ? enemy.hpScale : 1.0;
           for (let s = -1; s <= 1; s += 2) {
@@ -641,15 +610,12 @@ class Game {
           }
         }
 
-        // 공중 몬스터가 맵 밖에서 사망하더라도 보석은 플레이어가 먹을 수 있는 그라운드 테두리로 안전 낙하
         const clampX = Math.max(-boundW + 40, Math.min(boundW - 40, enemy.x));
         const clampY = Math.max(-boundH + 40, Math.min(boundH - 40, enemy.y));
         const safePos = this.obstacleManager ? this.obstacleManager.getUnblockedPosition(clampX, clampY, 14) : { x: clampX, y: clampY };
 
-        // 경험치 보석 드랍 (뒤 5종 마물은 대량 경험치 보석)
         this.expGems.push(new ExpGem(safePos.x, safePos.y, enemy.exp));
 
-        // 1) 특수 아이템 드랍 (일반몹 약 0.55%로 기존 대비 50% 추가 감소, 보스는 100% 확정 드랍)
         const dropBonus = 1 + (this.player.dropRateBonus || 0);
         const itemDropChance = enemy.isBoss ? 1.0 : (0.0055 * dropBonus);
         if (Math.random() < itemDropChance) {
@@ -658,14 +624,12 @@ class Game {
           this.pickupItems.push(new PickupItem(picked, safePos.x, safePos.y));
         }
 
-        // 2) 금화 드랍 (특수 아이템과 동일한 약 0.55% 확률, 보스는 100% 확정 50G 보너스)
         const goldDropChance = enemy.isBoss ? 1.0 : (0.0055 * dropBonus);
         if (Math.random() < goldDropChance) {
           const goldVal = enemy.isBoss ? 50 : Math.floor(Math.random() * 3) + 1;
           this.pickupItems.push(new PickupItem('gold', safePos.x, safePos.y, goldVal));
         }
 
-        // 사망 파티클 및 킬 카운트/흡혈 처리
         this.addParticles(enemy.x, enemy.y, enemy.color, enemy.isBoss ? 24 : 8);
         this.player.onKillEnemy(enemy);
         sounds.playKill();
@@ -678,7 +642,6 @@ class Game {
       }
     }
 
-    // 5. 보스 투사체 업데이트 (빙결 상태 시 궤적 일시 정지)
     if (!isFrozen) {
       for (let i = this.bossProjectiles.length - 1; i >= 0; i--) {
         const bp = this.bossProjectiles[i];
@@ -689,7 +652,6 @@ class Game {
       }
     }
 
-    // 6. 특수 드랍 아이템(자석, 폭탄, 얼음, 회복, 금화) 업데이트 및 습득 판정 (영구 보존)
     for (let i = this.pickupItems.length - 1; i >= 0; i--) {
       const item = this.pickupItems[i];
       const collected = item.update(dt, this.player);
@@ -699,7 +661,6 @@ class Game {
       }
     }
 
-    // 7. 경험치 보석 흡수 판정
     for (let i = this.expGems.length - 1; i >= 0; i--) {
       const gem = this.expGems[i];
       const collected = gem.update(dt, this.player);
@@ -710,7 +671,6 @@ class Game {
       }
     }
 
-    // 8. 파티클 업데이트
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.life -= dt;
@@ -721,7 +681,6 @@ class Game {
       }
     }
 
-    // 9. 데미지 텍스트 업데이트
     for (let i = this.damageNumbers.length - 1; i >= 0; i--) {
       const dn = this.damageNumbers[i];
       dn.update(dt);
@@ -730,7 +689,6 @@ class Game {
       }
     }
 
-    // 10. HUD 갱신
     this.ui.updateHUD(this.player, this.waveManager, this.totalElapsedTime);
   }
 
@@ -739,56 +697,45 @@ class Game {
     const width = this.canvas.width;
     const height = this.canvas.height;
 
-    // 배경 클리어 (월드 1: 심연 우주 암흑, 월드 2: 심해 네이비)
     ctx.fillStyle = this.currentWorld === 2 ? '#020813' : '#030308';
     ctx.fillRect(0, 0, width, height);
 
     ctx.save();
-    // 카메라 좌표계 변환 (플레이어가 항상 중앙)
     ctx.translate(Math.round(width / 2 - this.camera.x), Math.round(height / 2 - this.camera.y));
 
     if (this.currentWorld === 2) {
-      // 월드 2: 심해 협곡 공간, 해저 타일, 절벽 암벽 렌더링
       this.renderDeepSeaSpace(ctx);
       this.renderTrenchFloorGrid(ctx);
       this.drawTrenchBoundary(ctx);
     } else {
-      // 월드 1: 부유섬 외곽 광활한 우주 공간 및 성운 별빛, 지면, 결계선
       this.renderCosmicSpace(ctx);
       this.renderFloorGrid(ctx);
       this.drawWorldBoundary(ctx);
     }
 
-    // 필드 장애물 (돌기둥, 나무 상자)
     this.obstacleManager.draw(ctx, this.camera, width, height);
-
-    // 1. 바닥 도트 장판
     this.weaponManager.draw(ctx);
 
-    // [초고속 뷰포트 컬링 바운딩 박스 계산]
     const halfW = width / 2;
     const halfH = height / 2;
-    const cMargin = 90; // 화면 테두리 팝인 방지 여유 마진
+    const cMargin = 90;
     const vMinX = this.camera.x - halfW - cMargin;
     const vMaxX = this.camera.x + halfW + cMargin;
     const vMinY = this.camera.y - halfH - cMargin;
     const vMaxY = this.camera.y + halfH + cMargin;
 
-    // 2. 특수 아이템 드랍 (자석, 폭탄, 얼음) - 화면 내 객체만 렌더링
     for (const item of this.pickupItems) {
       if (item.x >= vMinX && item.x <= vMaxX && item.y >= vMinY && item.y <= vMaxY) {
         item.draw(ctx);
       }
     }
 
-    // 3. 경험치 보석 - 화면 내 객체만 렌더링 (후반부 보석 500개 누적 시 90% 연산 절감)
     for (const gem of this.expGems) {
       if (gem.x >= vMinX && gem.x <= vMaxX && gem.y >= vMinY && gem.y <= vMaxY) {
         gem.draw(ctx);
       }
     }
 
-    // 4. 몬스터 - 화면 내 객체만 렌더링
     for (const enemy of this.enemies) {
       const r = enemy.radius || 20;
       if (enemy.x + r >= vMinX && enemy.x - r <= vMaxX && enemy.y + r >= vMinY && enemy.y - r <= vMaxY) {
@@ -796,17 +743,14 @@ class Game {
       }
     }
 
-    // 5. 플레이어
     this.player.draw(ctx);
 
-    // 6. 보스 투사체 - 화면 내 객체만 렌더링
     for (const bp of this.bossProjectiles) {
       if (bp.x >= vMinX && bp.x <= vMaxX && bp.y >= vMinY && bp.y <= vMaxY) {
         bp.draw(ctx);
       }
     }
 
-    // 7. 파티클 - 화면 내 객체만 렌더링
     for (const p of this.particles) {
       if (p.x >= vMinX && p.x <= vMaxX && p.y >= vMinY && p.y <= vMaxY) {
         const alpha = Math.max(0, p.life / p.maxLife);
@@ -819,23 +763,19 @@ class Game {
     }
     ctx.globalAlpha = 1.0;
 
-    // 8. 데미지 숫자 텍스트 - 화면 내 객체만 렌더링
     for (const dn of this.damageNumbers) {
       if (dn.x >= vMinX && dn.x <= vMaxX && dn.y >= vMinY && dn.y <= vMaxY) {
         dn.draw(ctx);
       }
     }
 
-    // 다크 잉크 비네팅 오버레이 (조선 수묵 다크 판타지 분위기)
     ctx.restore();
 
-    // 다크 잉크 비네팅 오버레이 (화면 뷰포트 좌표계에서 정확히 화면 전체를 부드럽게 커버)
     this.updateInkVignette(width, height);
     if (this.vignetteCanvas) {
       ctx.drawImage(this.vignetteCanvas, 0, 0);
     }
 
-    // 화면 오버레이 이펙트 (빙결, 폭탄 플래시)
     if (this.freezeTimer > 0) {
       ctx.save();
       ctx.fillStyle = 'rgba(165, 243, 252, 0.12)';
@@ -855,12 +795,10 @@ class Game {
     }
   }
 
-  // 부유섬 바깥 광활한 우주 성운 및 반짝이는 별빛 렌더링
   renderCosmicSpace(ctx) {
     const time = Date.now() * 0.001;
     ctx.save();
 
-    // 성운 (Nebula) 은은한 배경 발광 3곳
     const nebulas = [
       { x: -1200, y: -1100, r: 650, color: 'rgba(79, 70, 229, 0.08)' },
       { x: 1300, y: -900, r: 750, color: 'rgba(192, 132, 252, 0.07)' },
@@ -876,7 +814,6 @@ class Game {
       ctx.fill();
     }
 
-    // 별빛 렌더링
     if (this.cosmicStars) {
       for (const s of this.cosmicStars) {
         const alpha = s.baseAlpha * (0.6 + Math.sin(time * s.twinkleSpeed + s.phase) * 0.4);
@@ -897,7 +834,6 @@ class Game {
       this.hanjiPattern = ctx.createPattern(this.hanjiPatternCanvas, 'repeat');
     }
 
-    // 1. 깊은 어둠의 닥종이(한지) 수묵 바닥 전체 1회 초고속 렌더링
     if (this.hanjiPattern) {
       ctx.fillStyle = this.hanjiPattern;
     } else {
@@ -905,7 +841,6 @@ class Game {
     }
     ctx.fillRect(-bound, -bound, bound * 2, bound * 2);
 
-    // 2. 은은한 한지 질감 테두리 격자
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
     ctx.lineWidth = 1;
     ctx.strokeRect(-bound, -bound, bound * 2, bound * 2);
@@ -917,22 +852,18 @@ class Game {
     const pulse = 0.6 + Math.sin(time) * 0.2;
 
     ctx.save();
-    // 1. 거친 송연묵 서예 결계 외곽선 (먹선 이중 스트로크)
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 12;
     ctx.strokeRect(-bound - 4, -bound - 4, (bound + 4) * 2, (bound + 4) * 2);
 
-    // 2. 단아한 주홍/자주 먹선 붓터치 궤적 결계
     ctx.strokeStyle = `rgba(185, 28, 28, ${pulse})`;
     ctx.lineWidth = 4;
     ctx.strokeRect(-bound, -bound, bound * 2, bound * 2);
 
-    // 3. 내부 미세 먹선 보조 라인
     ctx.strokeStyle = 'rgba(254, 240, 138, 0.4)';
     ctx.lineWidth = 1.5;
     ctx.strokeRect(-bound + 8, -bound + 8, (bound - 8) * 2, (bound - 8) * 2);
 
-    // 4. 모서리 흑요석 관인 룬 결계석
     const monoliths = [
       [-bound, -bound], [bound, -bound],
       [bound, bound], [-bound, bound],
@@ -955,12 +886,8 @@ class Game {
     ctx.restore();
   }
 
-  // 월드 2 심해 협곡 외곽 수중 연출 및 기포 렌더링 (60fps 무렉)
   renderDeepSeaSpace(ctx) {
     ctx.save();
-
-    // 1. 심해 해류 광원 (부드러운 청록빛 수중 빛기둥)
-    const time = Date.now() * 0.001;
     const lightGradients = [
       { x: -1600, y: -400, r: 800, color: 'rgba(6, 182, 212, 0.06)' },
       { x: 0, y: -500, r: 900, color: 'rgba(14, 165, 233, 0.07)' },
@@ -976,7 +903,6 @@ class Game {
       ctx.fill();
     }
 
-    // 2. 심해 기포 파티클 풀 렌더링 (순수 arc 렌더링으로 프레임 드랍 0%)
     if (this.underwaterBubbles) {
       ctx.strokeStyle = 'rgba(165, 243, 252, 0.6)';
       ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
@@ -994,7 +920,6 @@ class Game {
     ctx.restore();
   }
 
-  // 월드 2 심해 협곡 지면 격자 렌더링 (가로 6000 x 세로 1600)
   renderTrenchFloorGrid(ctx) {
     const boundW = 3000;
     const boundH = 550;
@@ -1010,7 +935,6 @@ class Game {
     ctx.fillRect(-boundW, -boundH, boundW * 2, boundH * 2);
   }
 
-  // 월드 2 협곡 절벽 및 심해 경계선 렌더링
   drawTrenchBoundary(ctx) {
     const boundW = 3000;
     const boundH = 550;
@@ -1018,22 +942,18 @@ class Game {
     const pulse = 0.55 + Math.sin(time) * 0.25;
 
     ctx.save();
-    // 1. 상하단 해저 절벽 외곽 암흑 그림자
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.9)';
     ctx.lineWidth = 22;
     ctx.strokeRect(-boundW - 11, -boundH - 11, (boundW + 11) * 2, (boundH + 11) * 2);
 
-    // 2. 심해 협곡 청록색 발광 경계선
     ctx.strokeStyle = `rgba(6, 182, 212, ${pulse})`;
     ctx.lineWidth = 6;
     ctx.strokeRect(-boundW, -boundH, boundW * 2, boundH * 2);
 
-    // 3. 내부 해양 네온 보조 라인
     ctx.strokeStyle = `rgba(45, 212, 191, ${pulse * 0.7})`;
     ctx.lineWidth = 2;
     ctx.strokeRect(-boundW + 14, -boundH + 14, (boundW - 14) * 2, (boundH - 14) * 2);
 
-    // 4. 협곡 모서리 및 거점 발광 산호 표식
     const reefBeacons = [
       [-boundW, -boundH], [boundW, -boundH],
       [boundW, boundH], [-boundW, boundH],
@@ -1057,13 +977,11 @@ class Game {
 
 }
 
-// 게임 기동 및 다크 판타지 에셋 로드
 window.addEventListener('load', () => {
-  // 세이브 데이터 1차 무결성 검증
   saveManager.load();
 
   assets.loadAll(() => {
-    console.log('⚔️ 다크 판타지 픽셀 아트 에셋 로드 완료!');
+    console.log('⚔️ 수묵화풍(Ink-Wash) 다크 판타지 에셋 로드 완료!');
   });
   window.game = new Game();
 });
