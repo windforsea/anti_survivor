@@ -101,6 +101,7 @@ class AssetManager {
       icon_global_speed: 'assets/sprites/icon_global_speed.png',
       icon_proj_speed: 'assets/sprites/icon_proj_speed.png',
       icon_proj_count: 'assets/sprites/icon_proj_count.png',
+      icon_magnet: 'assets/sprites/icon_magnet.png',
 
       // 신규 무기 및 패시브 아이콘 & 아기 슬라임
       icon_sanctuary: 'assets/sprites/icon_sanctuary.png',
@@ -158,10 +159,15 @@ class AssetManager {
       gem_red: 'assets/sprites/gem_red.png',
       gem_purple: 'assets/sprites/gem_purple.png',
 
-      // 필드 장애물 (64x64 수묵화풍 산수화)
+      // 월드 1 필드 장애물 (64x64 수묵화풍 산수화)
       obstacle_rock: 'assets/sprites/obstacle_rock.png',
       obstacle_tree: 'assets/sprites/obstacle_tree.png',
       obstacle_crate: 'assets/sprites/obstacle_crate.png',
+
+      // 월드 2 심해 필드 장애물 (64x64 심해 수묵화풍 산호/해초/침몰선)
+      obstacle_reef: 'assets/sprites/obstacle_reef.png',
+      obstacle_kelp: 'assets/sprites/obstacle_kelp.png',
+      obstacle_chest: 'assets/sprites/obstacle_chest.png',
 
       // 무기 공격 애니메이션
       anim_sword: 'assets/sprites/anim_sword.png',

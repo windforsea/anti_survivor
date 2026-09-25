@@ -53,17 +53,25 @@ class Obstacle {
 
     if (!game) return;
 
-    // 나무 파편 파티클 방출
+    // 나무 파편 파티클 방출 (월드 2 침몰선 상자는 청록/금빛 파편 연출)
+    const isWorld2 = this.type === 'sunkenChest';
     for (let i = 0; i < 14; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = 60 + Math.random() * 120;
+      let particleColor;
+      if (isWorld2) {
+        particleColor = Math.random() > 0.4 ? '#0f766e' : '#facc15';
+      } else {
+        particleColor = Math.random() > 0.4 ? '#78350f' : '#b45309';
+      }
+
       game.particles.push({
         x: this.x,
         y: this.y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
         size: 3 + Math.random() * 3,
-        color: Math.random() > 0.4 ? '#78350f' : '#b45309',
+        color: particleColor,
         life: 0.45,
         maxLife: 0.45
       });
@@ -105,104 +113,86 @@ class Obstacle {
 
     ctx.save();
 
-    // 장애물 하단 그림자
+    // 장애물 하단 그림자 (해초는 밑동 기준 소형 타원, 바위/궤짝은 바닥 지지 타원)
     ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
     ctx.beginPath();
-    ctx.ellipse(this.x, this.y + this.radius * 0.75, this.radius * 1.05, this.radius * 0.55, 0, 0, Math.PI * 2);
+    if (this.type === 'seaKelp') {
+      ctx.ellipse(this.x, this.y + this.radius * 0.8, this.radius * 0.85, this.radius * 0.45, 0, 0, Math.PI * 2);
+    } else {
+      ctx.ellipse(this.x, this.y + this.radius * 0.75, this.radius * 1.05, this.radius * 0.55, 0, 0, Math.PI * 2);
+    }
     ctx.fill();
 
+    // 월드 1 및 월드 2 스프라이트 매핑
     let imgKey = 'obstacle_rock';
     if (this.type === 'tree') imgKey = 'obstacle_tree';
     else if (this.type === 'crate') imgKey = 'obstacle_crate';
+    else if (this.type === 'reefRock') imgKey = 'obstacle_reef';
+    else if (this.type === 'seaKelp') imgKey = 'obstacle_kelp';
+    else if (this.type === 'sunkenChest') imgKey = 'obstacle_chest';
 
     const img = assets.images[imgKey];
-    const size = this.radius * 2.2;
 
-    if (img && img.complete && img.naturalWidth > 0 && (this.type === 'rock' || this.type === 'tree' || this.type === 'crate')) {
-      ctx.imageSmoothingEnabled = false;
+    // 스프라이트 렌더링 지원 (이미지 로드 완료 시)
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
 
-      // 피격 플래시 (파괴형 상자만)
+      // 피격 플래시 (파괴형 상자/궤짝)
       if (this.hitFlashTimer > 0) {
         ctx.filter = 'brightness(2.2) saturate(0.2)';
       }
 
-      ctx.drawImage(img, this.x - size / 2, this.y - size / 2, size, size);
-      ctx.filter = 'none';
-    } else if (this.type === 'reefRock') {
-      // 🌊 [월드 2] 심해 산호 암초 바위 (비파괴형 대형 암석)
-      ctx.fillStyle = '#1e293b';
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#0284c7';
-      ctx.lineWidth = 3;
-      ctx.stroke();
+      if (this.type === 'seaKelp') {
+        // 🌿 거대 해초: 해저 밑동을 고정점으로 잡고 수중 조류에 맞추어 유연하게 좌우로 흔들리는 수묵 애니메이션
+        const time = Date.now() * 0.0025 + this.kelpWaveTimer;
+        const swayAngle = Math.sin(time) * 0.08; // 약 4.5도 자연스러운 만곡
+        const kelpSize = this.radius * 2.8;
+        const pivotY = this.y + this.radius * 0.6;
 
-      // 산호 돌출부 및 발광 따개비
-      ctx.fillStyle = '#38bdf8';
-      ctx.beginPath();
-      ctx.arc(this.x - 14, this.y - 12, 10, 0, Math.PI * 2);
-      ctx.arc(this.x + 16, this.y - 8, 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#f43f5e'; // 핑크 산호 포인트
-      ctx.beginPath();
-      ctx.arc(this.x + 2, this.y + 12, 7, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (this.type === 'seaKelp') {
-      // 🌿 [월드 2] 거대 해초 숲 (비파괴형 대형 해초 기둥)
-      const time = Date.now() * 0.0025 + this.kelpWaveTimer;
-      const sway = Math.sin(time) * 12;
-
-      ctx.fillStyle = '#065f46';
-      ctx.beginPath();
-      ctx.arc(this.x, this.y + 16, this.radius * 0.8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 물결치듯 흔들리는 해초 줄기들
-      ctx.strokeStyle = '#10b981';
-      ctx.lineWidth = 8;
-      ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(this.x - 16, this.y + 20);
-      ctx.quadraticCurveTo(this.x - 8 + sway, this.y - 10, this.x - 14 + sway * 1.5, this.y - 42);
-      ctx.stroke();
-
-      ctx.strokeStyle = '#34d399';
-      ctx.lineWidth = 10;
-      ctx.beginPath();
-      ctx.moveTo(this.x + 2, this.y + 22);
-      ctx.quadraticCurveTo(this.x + 12 + sway * 0.8, this.y - 15, this.x + 4 + sway * 1.8, this.y - 48);
-      ctx.stroke();
-
-      ctx.strokeStyle = '#059669';
-      ctx.lineWidth = 7;
-      ctx.beginPath();
-      ctx.moveTo(this.x + 18, this.y + 18);
-      ctx.quadraticCurveTo(this.x + 24 - sway, this.y - 8, this.x + 18 + sway, this.y - 36);
-      ctx.stroke();
-    } else if (this.type === 'sunkenChest') {
-      // 📦 [월드 2] 침몰선 보물상자 (파괴 가능한 궤짝)
-      if (this.hitFlashTimer > 0) {
-        ctx.filter = 'brightness(2.2) saturate(0.2)';
+        ctx.translate(this.x, pivotY);
+        ctx.rotate(swayAngle);
+        ctx.drawImage(img, -kelpSize / 2, -kelpSize + this.radius * 0.3, kelpSize, kelpSize);
+      } else {
+        // 일반 암초/바위/나무/궤짝 스프라이트 렌더링
+        let size = this.radius * 2.2;
+        if (this.type === 'sunkenChest') {
+          size = this.radius * 2.4;
+        }
+        ctx.drawImage(img, this.x - size / 2, this.y - size / 2, size, size);
       }
-      ctx.fillStyle = '#0f766e'; // 청록빛 침몰선 목재
-      ctx.fillRect(this.x - 18, this.y - 14, 36, 28);
-      ctx.strokeStyle = '#facc15'; // 금빛 쇠테두리
-      ctx.lineWidth = 2;
-      ctx.strokeRect(this.x - 18, this.y - 14, 36, 28);
-      ctx.fillStyle = '#fde047'; // 자물쇠
-      ctx.fillRect(this.x - 4, this.y - 2, 8, 8);
+
       ctx.filter = 'none';
     } else {
-      // 폴백 드로잉
-      ctx.fillStyle = this.type === 'rock' ? '#64748b' : '#92400e';
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#0f172a';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      // 에셋 로딩 중 대비 폴백 드로잉
+      if (this.type === 'reefRock') {
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      } else if (this.type === 'seaKelp') {
+        ctx.fillStyle = '#065f46';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y + 16, this.radius * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (this.type === 'sunkenChest') {
+        ctx.fillStyle = '#0f766e';
+        ctx.fillRect(this.x - 18, this.y - 14, 36, 28);
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.x - 18, this.y - 14, 36, 28);
+      } else {
+        ctx.fillStyle = this.type === 'rock' ? '#64748b' : '#92400e';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
     }
 
     ctx.restore();

@@ -367,6 +367,233 @@ function createObstacleCrate() {
   return cvs.toPngBuffer();
 }
 
+// [월드 2 장애물 1]: 심해 산호 암초 바위 (obstacle_reef - 64x64) - 심해 기암괴석 & 형광 산호초
+function createObstacleReef() {
+  const cvs = new SumieCanvas(64, 64);
+
+  // 심해 해저 바닥 짙은 청흑색 수묵 번짐
+  cvs.inkWash(32, 54, 26, 8, [8, 16, 26], 160);
+
+  // 기암 산호 암초 기본 실루엣 다각형 (날카롭고 웅장한 해저 바위)
+  const reefPoly = [
+    { x: 10, y: 54 }, { x: 6, y: 42 }, { x: 13, y: 26 }, { x: 20, y: 12 },
+    { x: 28, y: 16 }, { x: 38, y: 8 }, { x: 48, y: 18 }, { x: 58, y: 34 },
+    { x: 54, y: 54 }, { x: 32, y: 56 }
+  ];
+  cvs.fillPolygon(reefPoly, [20, 30, 44, 255]);
+
+  // 심해 부벽준(斧劈皴) 음영 절벽면 1 (중앙 심해 청묵)
+  cvs.fillPolygon([
+    { x: 20, y: 12 }, { x: 32, y: 25 }, { x: 36, y: 50 }, { x: 22, y: 55 },
+    { x: 13, y: 44 }, { x: 13, y: 26 }
+  ], [12, 20, 32, 255]);
+
+  // 심해 절벽면 2 (우측 가장 깊은 심연 음영)
+  cvs.fillPolygon([
+    { x: 32, y: 25 }, { x: 48, y: 18 }, { x: 58, y: 34 }, { x: 54, y: 54 },
+    { x: 36, y: 50 }
+  ], [8, 14, 22, 255]);
+
+  // 암초 능선 하이라이트 (심해 청록빛 백묵 터치)
+  cvs.fillPolygon([
+    { x: 20, y: 12 }, { x: 28, y: 16 }, { x: 38, y: 8 }, { x: 32, y: 25 }
+  ], [35, 75, 95, 255]);
+  cvs.drawLine(22, 13, 36, 10, 1.8, [56, 189, 248, 180]);
+
+  // 짙은 송연묵 붓선 테두리
+  cvs.strokePolygon(reefPoly, 2.5, [5, 10, 16, 255]);
+
+  // 날카로운 암초 균열 및 도끼자국 먹선
+  cvs.drawLine(28, 16, 32, 25, 2.0, [4, 8, 12, 255]);
+  cvs.drawLine(32, 25, 36, 50, 2.2, [4, 8, 12, 255]);
+  cvs.drawLine(20, 12, 13, 44, 1.8, [6, 12, 18, 240]);
+  cvs.drawLine(32, 25, 54, 32, 1.8, [5, 10, 15, 240]);
+  cvs.drawLine(16, 34, 26, 42, 1.5, [8, 15, 22, 220]);
+
+  // 좌측 솟아오른 붉은 수묵 산호 뿔 가지 (Coral Horn)
+  cvs.fillPolygon([
+    { x: 12, y: 30 }, { x: 7, y: 18 }, { x: 10, y: 14 }, { x: 16, y: 24 }
+  ], [225, 45, 75, 255]);
+  cvs.fillPolygon([
+    { x: 9, y: 16 }, { x: 4, y: 10 }, { x: 7, y: 8 }, { x: 11, y: 14 }
+  ], [244, 114, 138, 255]);
+  cvs.strokePolygon([
+    { x: 12, y: 30 }, { x: 7, y: 18 }, { x: 4, y: 10 }, { x: 7, y: 8 },
+    { x: 10, y: 14 }, { x: 16, y: 24 }
+  ], 1.2, [10, 5, 8, 255]);
+
+  // 우측 단청 다홍빛 산호 분지
+  cvs.fillPolygon([
+    { x: 46, y: 24 }, { x: 55, y: 14 }, { x: 59, y: 17 }, { x: 50, y: 30 }
+  ], [225, 45, 75, 255]);
+  cvs.fillCircle(57, 13, 2.5, [251, 113, 133, 255]);
+  cvs.fillCircle(50, 10, 1.8, [244, 63, 94, 255]);
+  cvs.drawLine(55, 16, 50, 11, 1.5, [180, 20, 50, 255]);
+
+  // 암초 표면 발광 따개비 및 청록 수묵 태점(苔點) 클러스터
+  const barnacles = [
+    { x: 22, y: 28, r: 3.2, c: [14, 165, 233] },
+    { x: 25, y: 25, r: 2.0, c: [56, 189, 248] },
+    { x: 42, y: 36, r: 3.5, c: [14, 165, 233] },
+    { x: 44, y: 34, r: 2.2, c: [125, 211, 252] },
+    { x: 33, y: 44, r: 2.8, c: [13, 148, 136] },
+    { x: 17, y: 48, r: 3.0, c: [15, 118, 110] },
+    { x: 49, y: 46, r: 2.6, c: [244, 63, 94] }
+  ];
+  for (const b of barnacles) {
+    cvs.fillCircle(b.x, b.y, b.r, [5, 15, 25, 255]);
+    cvs.fillCircle(b.x, b.y, b.r * 0.75, [...b.c, 245]);
+    cvs.fillCircle(b.x - 0.5, b.y - 0.5, b.r * 0.35, [224, 242, 254, 255]); // 중심 발광 핵
+    cvs.fillCircle(b.x, b.y, 0.8, [5, 10, 15, 255]); // 따개비 숨구멍
+  }
+
+  return cvs.toPngBuffer();
+}
+
+// [월드 2 장애물 2]: 거대 수묵 해초 (obstacle_kelp - 64x64) - 굽이치는 난초잎 수류 해초 기둥
+function createObstacleKelp() {
+  const cvs = new SumieCanvas(64, 64);
+
+  // 해저 모래 및 해초 뿌리 담묵 침전
+  cvs.inkWash(32, 57, 24, 6, [10, 30, 25], 160);
+
+  // 단단한 해저 암반 부착기(Holdfast) 뿌리 덩어리
+  cvs.fillCircle(32, 56, 8.0, [8, 25, 18, 255]);
+  cvs.fillCircle(24, 57, 5.0, [6, 20, 15, 255]);
+  cvs.fillCircle(40, 57, 5.0, [6, 20, 15, 255]);
+  cvs.drawLine(32, 54, 18, 61, 3.5, [5, 18, 12, 255]);
+  cvs.drawLine(32, 54, 46, 61, 3.5, [5, 18, 12, 255]);
+
+  // [1] 좌측 해초 잎새 (물결치며 좌측으로 휘었다가 위로 향함)
+  const leftFrond = [
+    { x: 28, y: 54 }, { x: 18, y: 44 }, { x: 11, y: 32 }, { x: 14, y: 18 },
+    { x: 18, y: 8 }, { x: 19, y: 14 }, { x: 17, y: 26 }, { x: 22, y: 38 },
+    { x: 30, y: 52 }
+  ];
+  cvs.fillPolygon(leftFrond, [13, 95, 65, 255]);
+  cvs.strokePolygon(leftFrond, 1.8, [4, 25, 15, 255]);
+  cvs.drawLine(29, 53, 16, 22, 1.5, [52, 211, 153, 200]); // 잎맥 담채
+
+  // [2] 우측 해초 잎새 (풍성하게 우측으로 너울거림)
+  const rightFrond = [
+    { x: 34, y: 53 }, { x: 42, y: 42 }, { x: 53, y: 33 }, { x: 52, y: 20 },
+    { x: 45, y: 12 }, { x: 46, y: 18 }, { x: 46, y: 28 }, { x: 38, y: 40 },
+    { x: 33, y: 52 }
+  ];
+  cvs.fillPolygon(rightFrond, [16, 115, 78, 255]);
+  cvs.strokePolygon(rightFrond, 1.8, [5, 30, 20, 255]);
+  cvs.drawLine(34, 52, 49, 24, 1.5, [110, 231, 183, 200]);
+
+  // [3] 중앙 주 줄기 해초 (하늘 높이 용틀임하며 솟구침)
+  const centerFrond = [
+    { x: 30, y: 54 }, { x: 35, y: 43 }, { x: 27, y: 31 }, { x: 36, y: 19 },
+    { x: 31, y: 6 }, { x: 35, y: 13 }, { x: 33, y: 24 }, { x: 39, y: 36 },
+    { x: 34, y: 54 }
+  ];
+  cvs.fillPolygon(centerFrond, [5, 65, 45, 255]);
+  cvs.strokePolygon(centerFrond, 2.2, [3, 18, 12, 255]);
+  // 중앙 잎새 갈필(渴筆) 수묵 터치
+  cvs.drawLine(32, 52, 33, 10, 1.8, [16, 185, 129, 230]);
+  cvs.drawLine(33, 40, 29, 29, 1.2, [167, 243, 208, 220]);
+
+  // 해초 줄기 곳곳에 맺힌 발광 공기주머니(Pneumatocyst / 수포 부낭)
+  const bulbs = [
+    { x: 22, y: 40, r: 3.2 },
+    { x: 13, y: 28, r: 2.8 },
+    { x: 40, y: 41, r: 3.5 },
+    { x: 48, y: 27, r: 3.0 },
+    { x: 30, y: 32, r: 2.8 },
+    { x: 34, y: 20, r: 2.4 }
+  ];
+  for (const b of bulbs) {
+    cvs.fillCircle(b.x, b.y, b.r, [4, 40, 25, 255]);
+    cvs.fillCircle(b.x, b.y, b.r * 0.75, [16, 185, 129, 245]);
+    cvs.fillCircle(b.x - 0.6, b.y - 0.6, b.r * 0.35, [209, 250, 229, 255]);
+    cvs.fillCircle(b.x, b.y, 0.7, [2, 20, 12, 255]);
+  }
+
+  // 주변을 떠도는 심해 미세 유기물 기포 먹점
+  cvs.fillCircle(20, 12, 1.2, [52, 211, 153, 200]);
+  cvs.fillCircle(43, 8, 1.5, [110, 231, 183, 220]);
+  cvs.fillCircle(26, 4, 1.0, [209, 250, 229, 240]);
+
+  return cvs.toPngBuffer();
+}
+
+// [월드 2 장애물 3]: 침몰선 수묵 보물궤짝 (obstacle_chest - 64x64) - 청동 녹청 & 해조류가 덮인 침몰선 목제 궤짝
+function createObstacleChest() {
+  const cvs = new SumieCanvas(64, 64);
+
+  // 바닥 짙은 해저 침전 그림자
+  cvs.inkWash(32, 54, 25, 7, [10, 18, 22], 170);
+
+  // 상자 본체 (해수에 절어 검푸른빛을 띠는 침몰선 오크 목재)
+  const bodyPoly = [
+    { x: 12, y: 25 }, { x: 52, y: 25 }, { x: 52, y: 52 }, { x: 12, y: 52 }
+  ];
+  cvs.fillPolygon(bodyPoly, [18, 52, 56, 255]);
+
+  // 뚜껑 (둥근 돔형 아치 덮개)
+  const lidPoly = [
+    { x: 9, y: 25 }, { x: 11, y: 15 }, { x: 22, y: 11 }, { x: 42, y: 11 },
+    { x: 53, y: 15 }, { x: 55, y: 25 }
+  ];
+  cvs.fillPolygon(lidPoly, [24, 72, 78, 255]);
+
+  // 상자 본체 목재 판자 틈새 먹선
+  cvs.drawLine(12, 34, 52, 34, 1.8, [8, 28, 30, 255]);
+  cvs.drawLine(12, 43, 52, 43, 1.8, [8, 28, 30, 255]);
+  cvs.drawLine(11, 19, 53, 19, 1.5, [12, 38, 42, 255]);
+
+  // 산화되어 청록색 녹청(Patina)이 슨 황동 쇠띠
+  // 좌측 세로 쇠띠
+  cvs.fillPolygon([{ x: 16, y: 25 }, { x: 21, y: 25 }, { x: 21, y: 52 }, { x: 16, y: 52 }], [20, 140, 120, 255]);
+  // 우측 세로 쇠띠
+  cvs.fillPolygon([{ x: 43, y: 25 }, { x: 48, y: 25 }, { x: 48, y: 52 }, { x: 43, y: 52 }], [20, 140, 120, 255]);
+  // 덮개 테두리 황동 띠
+  cvs.fillPolygon([{ x: 9, y: 22 }, { x: 55, y: 22 }, { x: 55, y: 26 }, { x: 9, y: 26 }], [45, 175, 145, 255]);
+  cvs.fillPolygon([{ x: 16, y: 12 }, { x: 21, y: 12 }, { x: 21, y: 25 }, { x: 16, y: 25 }], [20, 140, 120, 255]);
+  cvs.fillPolygon([{ x: 43, y: 12 }, { x: 48, y: 12 }, { x: 48, y: 25 }, { x: 43, y: 25 }], [20, 140, 120, 255]);
+
+  // 황금빛 힌지와 금박 잔여 흔적
+  cvs.drawLine(17, 23, 20, 23, 1.5, [234, 179, 8, 255]);
+  cvs.drawLine(44, 23, 47, 23, 1.5, [234, 179, 8, 255]);
+
+  // 중앙 해적 문양/봉인 황동 자물쇠 판
+  cvs.fillCircle(32, 30, 6.5, [30, 160, 135, 255]);
+  cvs.fillCircle(32, 30, 3.5, [15, 85, 75, 255]);
+  // 녹슨 황금빛 자물통
+  cvs.fillPolygon([{ x: 29, y: 32 }, { x: 35, y: 32 }, { x: 35, y: 39 }, { x: 29, y: 39 }], [202, 138, 4, 255]);
+  cvs.fillCircle(32, 35, 1.2, [10, 20, 22, 255]); // 열쇠구멍
+
+  // 쇠띠 고정 황동 리벳 못(동병)
+  const rivets = [
+    { x: 18, y: 27 }, { x: 18, y: 38 }, { x: 18, y: 49 },
+    { x: 46, y: 27 }, { x: 46, y: 38 }, { x: 46, y: 49 },
+    { x: 18, y: 16 }, { x: 46, y: 16 }
+  ];
+  for (const rv of rivets) {
+    cvs.fillCircle(rv.x, rv.y, 1.4, [10, 45, 40, 255]);
+    cvs.fillCircle(rv.x - 0.5, rv.y - 0.5, 0.7, [153, 246, 228, 255]);
+  }
+
+  // 궤짝 표면에 달라붙은 심해 따개비 & 해조류
+  cvs.fillCircle(13, 47, 2.2, [244, 63, 94, 255]);
+  cvs.fillCircle(13, 47, 0.8, [15, 23, 42, 255]);
+  cvs.fillCircle(50, 48, 2.5, [14, 165, 233, 255]);
+  cvs.fillCircle(50, 48, 0.9, [15, 23, 42, 255]);
+  cvs.fillCircle(11, 28, 1.8, [16, 185, 129, 255]);
+  // 덮개 위에 살짝 얹힌 물풀 조각
+  cvs.drawLine(35, 11, 41, 8, 1.6, [16, 185, 129, 240]);
+  cvs.drawLine(41, 8, 45, 11, 1.4, [5, 150, 105, 240]);
+
+  // 짙은 흑묵 외곽선 마감
+  cvs.strokePolygon(bodyPoly, 2.5, [6, 18, 20, 255]);
+  cvs.strokePolygon(lidPoly, 2.5, [6, 18, 20, 255]);
+
+  return cvs.toPngBuffer();
+}
+
 // [특수 아이템 1]: 서예 나침반 / 자석 (item_magnet - 32x32) - 단청 태극 지남철 자석
 function createItemMagnet() {
   const cvs = new SumieCanvas(32, 32);
@@ -706,10 +933,15 @@ function runGenerator() {
   }
 
   const assetList = [
-    // 필드 장애물 3종 (64x64)
+    // 월드 1 필드 장애물 3종 (64x64)
     { name: 'obstacle_rock.png', generator: createObstacleRock },
     { name: 'obstacle_tree.png', generator: createObstacleTree },
     { name: 'obstacle_crate.png', generator: createObstacleCrate },
+
+    // 월드 2 심해 필드 장애물 3종 (64x64 수묵화풍 리메이크)
+    { name: 'obstacle_reef.png', generator: createObstacleReef },
+    { name: 'obstacle_kelp.png', generator: createObstacleKelp },
+    { name: 'obstacle_chest.png', generator: createObstacleChest },
 
     // 특수 드랍 아이템 (32x32, 24x24)
     { name: 'item_magnet.png', generator: createItemMagnet },
