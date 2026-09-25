@@ -1,6 +1,7 @@
-// Anti Survivors - 128x128 수묵화풍 일반 몬스터 15종 전체 래스터라이저 (ink_enemies.js)
+// Anti Survivors - 128x128 수묵화풍 일반 몬스터 23종 전체 래스터라이저 (ink_enemies.js)
 // Phase 1: 월드 1 기본 8종 (bat, slime, miniSlime, zombie, skeleton, goblin, ghost, gargoyle)
 // Phase 2: 월드 1 고급 7종 (cultist, assassin, golem, darkMage, bloodHound, wraithSwarm, abyssTitan)
+// Phase 3: 월드 2 심해 기본 8종 (plankton, jellyfish, hermitCrab, flyingFish, seaLobster, stingray, coralGolem, seaLeech)
 // 순수 JS 기반 Zero-dependency: 128x128 캔버스에 직접 농묵/중묵/담묵 번짐, 서예 붓터치, 단청 안광 구현
 
 const WIDTH = 128;
@@ -30,13 +31,13 @@ const INK_COLORS = {
   GOLD_BRIGHT: [254, 240, 138],  // 명황 (빛의 코어)
 
   BLUE_AZURE: [2, 132, 199],     // 감청 (단청 푸른빛)
-  BLUE_CYAN: [6, 182, 212],      // 비취 시안 (영기, 플라즈마)
+  BLUE_CYAN: [6, 182, 212],      // 비취 시안 (영기, 플라즈마, 생체발광)
   BLUE_MIDNIGHT: [15, 23, 42],   // 심해 암청 (어둠의 장막)
 
   GREEN_JADE: [16, 185, 129],    // 벽옥 에메랄드
   GREEN_VENOM: [34, 197, 94],    // 맹독 취록 / 하엽록
   GREEN_DARK: [20, 83, 45],      // 송록 (깊은 소나무 먹록색)
-  GREEN_MINT: [110, 231, 183],   // 담청록 (슬라임 하이라이트)
+  GREEN_MINT: [110, 231, 183],   // 담청록 (슬라임/해파리 하이라이트)
 
   PURPLE_ARCANE: [168, 85, 247], // 아케인 자황
   PURPLE_SHADOW: [88, 28, 135],  // 심연 흑자
@@ -82,7 +83,7 @@ class EnemyInkCanvas {
     }
   }
 
-  // 가산 블렌딩 (빛, 안광, 영혼불, 에너지 코어)
+  // 가산 블렌딩 (빛, 안광, 영혼불, 에너지 코어, 심해 생체발광)
   addPixel(x, y, r, g, b, a) {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height || a <= 0) return;
     const idx = (Math.floor(y) * this.width + Math.floor(x)) * 4;
@@ -175,7 +176,7 @@ class EnemyInkCanvas {
     }
   }
 
-  // 발광 오라 (Neon / Spiritual Glow)
+  // 발광 오라 (Neon / Spiritual Glow / Bioluminescence)
   drawGlow(cx, cy, radius, color, intensity = 0.5) {
     const minX = Math.max(0, Math.floor(cx - radius));
     const maxX = Math.min(this.width - 1, Math.ceil(cx + radius));
@@ -275,9 +276,11 @@ class EnemyInkCanvas {
   }
 }
 
-// ================= 월드 1 일반 몬스터 15종 128x128 수묵화풍 렌더러 =================
+// ================= 일반 몬스터 23종 128x128 수묵화풍 렌더러 =================
 
 const ENEMY_RENDERERS = {
+  // ---------------- 월드 1 기본 8종 ----------------
+
   // 1. 박쥐 (bat)
   // 날렵하고 거친 수묵 날개선, 비백 피막 번짐, 솟구친 귀와 진홍빛 단청 안광
   bat: (canvas) => {
@@ -376,13 +379,11 @@ const ENEMY_RENDERERS = {
     canvas.drawCalligraphyStroke(highlightCurve, INK_COLORS.WHITE_JADE, 3.8, 1.2, { alpha: 0.85, isAdditive: true, prng });
 
     // [수묵화풍 먹방울 안구 2점]
-    // 좌측 눈
     canvas.stampDisc(CX - 13, CY + 2, 6.0, INK_COLORS.INK_DEEP, 0.98);
     canvas.stampDisc(CX - 13, CY + 2, 4.2, INK_COLORS.WHITE_JADE, 0.98);
     canvas.stampDisc(CX - 12, CY + 2, 2.4, INK_COLORS.INK_DEEP, 1.0);
     canvas.stampDisc(CX - 14, CY, 1.2, INK_COLORS.WHITE_JADE, 1.0);
 
-    // 우측 눈
     canvas.stampDisc(CX + 13, CY + 2, 6.0, INK_COLORS.INK_DEEP, 0.98);
     canvas.stampDisc(CX + 13, CY + 2, 4.2, INK_COLORS.WHITE_JADE, 0.98);
     canvas.stampDisc(CX + 12, CY + 2, 2.4, INK_COLORS.INK_DEEP, 1.0);
@@ -535,13 +536,11 @@ const ENEMY_RENDERERS = {
     canvas.drawCalligraphyStroke(pelvis, INK_COLORS.INK_DEEP, 1.6, 1.6, { alpha: 0.8, prng });
 
     // [사지 뼈 (다리와 팔)]
-    // 대퇴골 및 경골
     const leftLegSkeleton = [[CX - 10, CY + 28], [CX - 14, CY + 42], [CX - 16, CY + 56]];
     const rightLegSkeleton = [[CX + 10, CY + 28], [CX + 14, CY + 42], [CX + 16, CY + 56]];
     canvas.drawCalligraphyStroke(leftLegSkeleton, INK_COLORS.WHITE_JADE, 3.2, 1.8, { alpha: 0.98, prng });
     canvas.drawCalligraphyStroke(rightLegSkeleton, INK_COLORS.WHITE_JADE, 3.2, 1.8, { alpha: 0.98, prng });
 
-    // 팔과 손가락
     const leftArmSkeleton = [[CX - 14, CY + 2], [CX - 24, CY + 14], [CX - 32, CY + 26]];
     const rightArmSkeleton = [[CX + 14, CY + 2], [CX + 24, CY + 14], [CX + 32, CY + 26]];
     canvas.drawCalligraphyStroke(leftArmSkeleton, INK_COLORS.WHITE_JADE, 2.8, 1.4, { alpha: 0.98, prng });
@@ -591,7 +590,6 @@ const ENEMY_RENDERERS = {
     canvas.stampEllipse(CX, CY - 8, 4.5, 3.0, 0, INK_COLORS.GREEN_DARK, 0.95);
     const smirk = [[CX - 7, CY - 2], [CX, CY - 4], [CX + 8, CY - 1]];
     canvas.drawCalligraphyStroke(smirk, INK_COLORS.INK_DEEP, 2.5, 1.5, { alpha: 0.98, prng });
-    // 삐져나온 덧니
     canvas.stampDisc(CX - 4, CY - 4, 1.2, INK_COLORS.WHITE_JADE, 1.0);
     canvas.stampDisc(CX + 5, CY - 3, 1.2, INK_COLORS.WHITE_JADE, 1.0);
 
@@ -720,6 +718,8 @@ const ENEMY_RENDERERS = {
     canvas.stampDisc(CX + 6, CY - 16, 1.0, INK_COLORS.GOLD_BRIGHT, 1.0);
   },
 
+  // ---------------- 월드 1 고급 7종 ----------------
+
   // 9. 흑마술사 (cultist)
   // 진홍빛 피의 로브와 깊은 두건, 제의용 주술 지팡이와 피어오르는 혈진 룬
   cultist: (canvas) => {
@@ -826,13 +826,11 @@ const ENEMY_RENDERERS = {
     canvas.drawRadialWash(CX - 2, CY - 16, 11, INK_COLORS.INK_LIGHT, INK_COLORS.INK_DEEP, 0.95, 0.6);
 
     // [서슬 퍼런 쌍단도 (Dual Daggers)]
-    // 좌수 역수 단도 (아래를 향해 찌르는 서슬)
     const daggerLeftBlade = [[CX - 18, CY + 8], [CX - 30, CY + 20], [CX - 46, CY + 32]];
     canvas.drawCalligraphyStroke(daggerLeftBlade, INK_COLORS.INK_DEEP, 4.0, 1.2, { alpha: 0.98, prng });
     canvas.drawCalligraphyStroke(daggerLeftBlade, INK_COLORS.WHITE_SILVER, 2.0, 0.6, { alpha: 0.95, isAdditive: true, prng });
     canvas.drawGlow(CX - 38, CY + 26, 10, INK_COLORS.BLUE_CYAN, 0.6);
 
-    // 우수 순수 단도 (앞으로 겨눈 서릿빛 칼날)
     const daggerRightBlade = [[CX + 16, CY + 4], [CX + 32, CY - 4], [CX + 50, CY - 14]];
     canvas.drawCalligraphyStroke(daggerRightBlade, INK_COLORS.INK_DEEP, 4.2, 1.2, { alpha: 0.98, prng });
     canvas.drawCalligraphyStroke(daggerRightBlade, INK_COLORS.WHITE_JADE, 2.2, 0.6, { alpha: 0.98, isAdditive: true, prng });
@@ -892,7 +890,6 @@ const ENEMY_RENDERERS = {
     canvas.stampDisc(CX, CY + 10, 3.5, INK_COLORS.GOLD_BRIGHT, 1.0);
     canvas.stampDisc(CX, CY + 10, 1.5, INK_COLORS.WHITE_JADE, 1.0);
 
-    // 몸통 틈새 룬 맥락선
     const crack1 = [[CX - 14, CY + 2], [CX - 6, CY + 8], [CX, CY + 10]];
     const crack2 = [[CX + 14, CY + 2], [CX + 6, CY + 8], [CX, CY + 10]];
     const crack3 = [[CX, CY + 10], [CX - 4, CY + 22], [CX + 6, CY + 28]];
@@ -904,7 +901,6 @@ const ENEMY_RENDERERS = {
     canvas.stampDisc(CX, CY - 18, 12, INK_COLORS.INK_DEEP, 0.98);
     canvas.drawRadialWash(CX, CY - 18, 11, INK_COLORS.GOLD_AMBER, INK_COLORS.INK_MID, 0.95, 0.5);
 
-    // 이마 및 안면 석조 밴드
     canvas.drawCalligraphyStroke([[CX - 8, CY - 24], [CX + 8, CY - 24]], INK_COLORS.INK_DEEP, 3.5, 3.5, { alpha: 0.98, prng });
 
     // [단청 황금빛 룬 안광 슬릿]
@@ -1005,13 +1001,11 @@ const ENEMY_RENDERERS = {
     canvas.drawCalligraphyStroke(mane3, INK_COLORS.RED_CRIMSON, 3.5, 1.0, { alpha: 0.9, prng });
 
     // [질주하는 네 다리 및 발톱]
-    // 뒷다리 (강한 반발력)
     const hindLeg1 = [[CX - 32, CY + 8], [CX - 44, CY + 24], [CX - 40, CY + 42]];
     const hindLeg2 = [[CX - 22, CY + 10], [CX - 30, CY + 28], [CX - 24, CY + 44]];
     canvas.drawCalligraphyStroke(hindLeg1, INK_COLORS.INK_DEEP, 5.5, 3.2, { alpha: 0.98, feiBai: 0.2, prng });
     canvas.drawCalligraphyStroke(hindLeg2, INK_COLORS.INK_DEEP, 5.0, 3.0, { alpha: 0.98, feiBai: 0.2, prng });
 
-    // 앞다리 (먹이를 덮쳐누르는 자세)
     const foreLeg1 = [[CX + 14, CY + 6], [CX + 20, CY + 26], [CX + 28, CY + 42]];
     const foreLeg2 = [[CX + 24, CY + 4], [CX + 34, CY + 22], [CX + 44, CY + 38]];
     canvas.drawCalligraphyStroke(foreLeg1, INK_COLORS.INK_DEEP, 5.5, 3.2, { alpha: 0.98, feiBai: 0.2, prng });
@@ -1043,7 +1037,7 @@ const ENEMY_RENDERERS = {
     // 입 안쪽 암적색 공간
     canvas.stampEllipse(CX + 40, CY - 1, 6, 3, 0.1, INK_COLORS.RED_DEEP, 0.95);
 
-    // 상하 송곳니 (Fangs)
+    // 송곳니
     canvas.stampDisc(CX + 44, CY - 5, 1.4, INK_COLORS.WHITE_JADE, 1.0);
     canvas.stampDisc(CX + 48, CY - 3, 1.2, INK_COLORS.WHITE_JADE, 1.0);
     canvas.stampDisc(CX + 45, CY + 2, 1.4, INK_COLORS.WHITE_JADE, 1.0);
@@ -1073,10 +1067,9 @@ const ENEMY_RENDERERS = {
     canvas.drawCalligraphyStroke(spiral1, INK_COLORS.BLUE_CYAN, 4.0, 1.0, { alpha: 0.65, feiBai: 0.5, prng });
 
     // [1. 중앙 우두머리 망령 (Main Wraith)]
-    // 영체 꼬리
     const mainTail = [[CX, CY + 2], [CX - 8, CY + 24], [CX + 4, CY + 48]];
     canvas.drawCalligraphyStroke(mainTail, INK_COLORS.BLUE_CYAN, 6.0, 1.0, { alpha: 0.75, feiBai: 0.5, prng });
-    // 영체 몸체 및 후드
+
     const mainHood = [
       [CX - 18, CY + 6], [CX - 16, CY - 16], [CX - 8, CY - 28],
       [CX, CY - 32],
@@ -1115,7 +1108,7 @@ const ENEMY_RENDERERS = {
     canvas.stampDisc(subB_CX + 2, subB_CY - 4, 1.2, INK_COLORS.BLUE_CYAN, 1.0);
     canvas.drawGlow(subB_CX, subB_CY - 4, 8, INK_COLORS.BLUE_CYAN, 0.6);
 
-    // [군단 영혼불 도깨비불 3점]
+    // [군단 영혼불 도깨비불 2점]
     canvas.drawGlow(CX - 12, CY + 32, 10, INK_COLORS.BLUE_CYAN, 0.7);
     canvas.stampDisc(CX - 12, CY + 32, 2.0, INK_COLORS.WHITE_JADE, 0.9);
     canvas.drawGlow(CX + 20, CY - 24, 10, INK_COLORS.BLUE_CYAN, 0.7);
@@ -1201,11 +1194,429 @@ const ENEMY_RENDERERS = {
     canvas.stampEllipse(CX + 6, CY - 22, 3.2, 1.6, 0.2, INK_COLORS.RED_CRIMSON, 1.0);
     canvas.stampDisc(CX - 6, CY - 22, 1.0, INK_COLORS.WHITE_JADE, 1.0);
     canvas.stampDisc(CX + 6, CY - 22, 1.0, INK_COLORS.WHITE_JADE, 1.0);
+  },
+
+  // ---------------- 월드 2 심해 기본 8종 (Phase 3) ----------------
+
+  // 16. 발광 플랑크톤 (plankton)
+  // 초미세 발광 코어, 사방으로 뻗은 영롱한 섬모와 편모, 비취 시안빛 심해 생체발광 포자
+  plankton: (canvas) => {
+    const prng = createPRNG(2031);
+
+    // [배경] 심해 암흑 속 미세 발광 수포 및 포자 수묵 워시
+    canvas.drawRadialWash(CX, CY, 42, INK_COLORS.BLUE_CYAN, INK_COLORS.BLUE_MIDNIGHT, 0.42, 0.0);
+    canvas.drawSplatter(CX, CY, 16, 32, INK_COLORS.BLUE_CYAN, 2032);
+
+    // [중심 생체 발광 핵 (Bioluminescent Core)]
+    canvas.drawGlow(CX, CY, 24, INK_COLORS.BLUE_CYAN, 0.95);
+    canvas.drawGlow(CX, CY, 14, INK_COLORS.WHITE_JADE, 0.85);
+    canvas.stampDisc(CX, CY, 8.5, INK_COLORS.BLUE_MIDNIGHT, 0.98);
+    canvas.stampDisc(CX, CY, 6.2, INK_COLORS.BLUE_CYAN, 1.0);
+    canvas.stampDisc(CX, CY, 3.0, INK_COLORS.WHITE_JADE, 1.0);
+
+    // [방사형 유영 편모 (Flagella) 및 미세 섬모 (Cilia)]
+    const flagellaList = [
+      [[CX - 6, CY - 6], [CX - 20, CY - 18], [CX - 34, CY - 28], [CX - 46, CY - 36]],
+      [[CX + 6, CY - 6], [CX + 20, CY - 18], [CX + 34, CY - 28], [CX + 46, CY - 36]],
+      [[CX - 8, CY + 2], [CX - 24, CY + 6], [CX - 38, CY + 14], [CX - 50, CY + 22]],
+      [[CX + 8, CY + 2], [CX + 24, CY + 6], [CX + 38, CY + 14], [CX + 50, CY + 22]],
+      [[CX - 4, CY + 8], [CX - 14, CY + 24], [CX - 18, CY + 38], [CX - 26, CY + 52]],
+      [[CX + 4, CY + 8], [CX + 14, CY + 24], [CX + 18, CY + 38], [CX + 26, CY + 52]]
+    ];
+
+    flagellaList.forEach((pts) => {
+      canvas.drawCalligraphyStroke(pts, INK_COLORS.BLUE_CYAN, 2.6, 0.6, { alpha: 0.88, feiBai: 0.35, prng });
+      canvas.drawCalligraphyStroke(pts, INK_COLORS.WHITE_JADE, 1.2, 0.4, { alpha: 0.75, isAdditive: true, prng });
+    });
+
+    // [군집을 이루는 보조 미세 발광체 4기]
+    const satellites = [
+      [CX - 18, CY - 14, 2.2],
+      [CX + 20, CY - 12, 2.0],
+      [CX - 14, CY + 20, 1.8],
+      [CX + 16, CY + 18, 2.4]
+    ];
+    satellites.forEach(([sx, sy, sr]) => {
+      canvas.drawGlow(sx, sy, 8, INK_COLORS.BLUE_CYAN, 0.7);
+      canvas.stampDisc(sx, sy, sr, INK_COLORS.WHITE_JADE, 0.95, true);
+    });
+  },
+
+  // 17. 청록 해파리 (jellyfish)
+  // 반투명한 비취빛 우산(Bell) 돔, 유려하게 물결치는 비백 구완과 흩날리는 긴 촉수선
+  jellyfish: (canvas) => {
+    const prng = createPRNG(2033);
+
+    // [배경] 심해 해류 워시 및 미세 부유 비묵
+    canvas.drawRadialWash(CX, CY - 8, 46, INK_COLORS.BLUE_CYAN, INK_COLORS.BLUE_MIDNIGHT, 0.4, 0.0);
+    canvas.drawSplatter(CX, CY + 12, 14, 36, INK_COLORS.BLUE_CYAN, 2034);
+
+    // [우산 돔 (Bell) 반투명 수묵 번짐]
+    canvas.stampEllipse(CX, CY - 18, 28, 22, 0, INK_COLORS.INK_LIGHT, 0.5);
+    canvas.drawRadialWash(CX, CY - 22, 26, INK_COLORS.BLUE_CYAN, INK_COLORS.INK_DEEP, 0.85, 0.25);
+
+    // 삿갓 상단 서예 윤곽선
+    const bellDome = [
+      [CX - 30, CY - 10], [CX - 26, CY - 26], [CX - 14, CY - 38],
+      [CX, CY - 40],
+      [CX + 14, CY - 38], [CX + 26, CY - 26], [CX + 30, CY - 10]
+    ];
+    canvas.drawCalligraphyStroke(bellDome, INK_COLORS.INK_DEEP, 4.5, 3.5, { alpha: 0.98, feiBai: 0.15, prng });
+
+    // 삿갓 하단 파도 물결 림 (Puff Rim)
+    const bellRim = [
+      [CX - 30, CY - 10], [CX - 20, CY - 6], [CX - 10, CY - 9],
+      [CX, CY - 6],
+      [CX + 10, CY - 9], [CX + 20, CY - 6], [CX + 30, CY - 10]
+    ];
+    canvas.drawCalligraphyStroke(bellRim, INK_COLORS.BLUE_CYAN, 3.2, 3.2, { alpha: 0.92, prng });
+
+    // [내부 4엽 생식선 및 발광 코어]
+    canvas.drawGlow(CX, CY - 22, 18, INK_COLORS.BLUE_CYAN, 0.9);
+    canvas.stampDisc(CX - 7, CY - 22, 4.5, INK_COLORS.GREEN_MINT, 0.8);
+    canvas.stampDisc(CX + 7, CY - 22, 4.5, INK_COLORS.GREEN_MINT, 0.8);
+    canvas.stampDisc(CX, CY - 28, 4.2, INK_COLORS.GREEN_MINT, 0.8);
+    canvas.stampDisc(CX, CY - 16, 4.2, INK_COLORS.GREEN_MINT, 0.8);
+    canvas.stampDisc(CX, CY - 22, 3.0, INK_COLORS.WHITE_JADE, 0.95);
+
+    // [중앙 주름진 구완 (Oral Arms)]
+    const arm1 = [[CX - 4, CY - 6], [CX - 8, CY + 14], [CX + 2, CY + 34], [CX - 4, CY + 54]];
+    const arm2 = [[CX + 4, CY - 6], [CX + 8, CY + 14], [CX - 2, CY + 34], [CX + 4, CY + 54]];
+    canvas.drawCalligraphyStroke(arm1, INK_COLORS.INK_DEEP, 4.0, 1.2, { alpha: 0.95, feiBai: 0.35, prng });
+    canvas.drawCalligraphyStroke(arm2, INK_COLORS.INK_DEEP, 4.0, 1.2, { alpha: 0.95, feiBai: 0.35, prng });
+    canvas.drawCalligraphyStroke(arm1, INK_COLORS.BLUE_CYAN, 2.0, 0.6, { alpha: 0.85, isAdditive: true, prng });
+    canvas.drawCalligraphyStroke(arm2, INK_COLORS.BLUE_CYAN, 2.0, 0.6, { alpha: 0.85, isAdditive: true, prng });
+
+    // [외곽 하늘거리는 긴 촉수군 (Tentacles)]
+    const tent1 = [[CX - 22, CY - 8], [CX - 28, CY + 16], [CX - 18, CY + 38], [CX - 26, CY + 56]];
+    const tent2 = [[CX + 22, CY - 8], [CX + 28, CY + 16], [CX + 18, CY + 38], [CX + 26, CY + 56]];
+    const tent3 = [[CX - 12, CY - 7], [CX - 16, CY + 22], [CX - 8, CY + 44], [CX - 14, CY + 58]];
+    const tent4 = [[CX + 12, CY - 7], [CX + 16, CY + 22], [CX + 8, CY + 44], [CX + 14, CY + 58]];
+
+    canvas.drawCalligraphyStroke(tent1, INK_COLORS.BLUE_CYAN, 2.5, 0.6, { alpha: 0.8, feiBai: 0.45, prng });
+    canvas.drawCalligraphyStroke(tent2, INK_COLORS.BLUE_CYAN, 2.5, 0.6, { alpha: 0.8, feiBai: 0.45, prng });
+    canvas.drawCalligraphyStroke(tent3, INK_COLORS.INK_WASH, 2.2, 0.5, { alpha: 0.75, feiBai: 0.4, prng });
+    canvas.drawCalligraphyStroke(tent4, INK_COLORS.INK_WASH, 2.2, 0.5, { alpha: 0.75, feiBai: 0.4, prng });
+  },
+
+  // 18. 뿔소라게 (hermitCrab)
+  // 단단하게 나선으로 꼬인 뿔소라 껍질, 우람한 주홍빛 집게발, 돌출된 기둥 눈
+  hermitCrab: (canvas) => {
+    const prng = createPRNG(2035);
+
+    // [배경] 모래톱 및 해저 암반 수묵 워시
+    canvas.drawRadialWash(CX, CY + 4, 46, INK_COLORS.GOLD_AMBER, INK_COLORS.INK_DEEP, 0.35, 0.0);
+    canvas.drawSplatter(CX, CY + 22, 12, 36, INK_COLORS.INK_DEEP, 2036);
+
+    // [나선형 뿔소라 껍질 (Spiral Shell)]
+    canvas.stampEllipse(CX - 16, CY - 20, 16, 12, -0.6, INK_COLORS.GOLD_AMBER, 0.95);
+    canvas.stampEllipse(CX - 4, CY - 8, 22, 16, -0.4, INK_COLORS.GOLD_AMBER, 0.95);
+    canvas.stampEllipse(CX + 6, CY + 2, 20, 15, -0.2, INK_COLORS.INK_DEEP, 0.98);
+
+    // 소라 나선 능선 붓터치
+    const ridge1 = [[CX - 32, CY - 28], [CX - 22, CY - 34], [CX - 10, CY - 26], [CX - 18, CY - 14]];
+    const ridge2 = [[CX - 24, CY - 18], [CX - 10, CY - 20], [CX + 6, CY - 10], [CX - 2, CY + 4]];
+    const ridge3 = [[CX - 6, CY + 2], [CX + 14, CY - 2], [CX + 24, CY + 10], [CX + 12, CY + 22]];
+
+    canvas.drawCalligraphyStroke(ridge1, INK_COLORS.INK_DEEP, 4.0, 2.5, { alpha: 0.98, feiBai: 0.2, prng });
+    canvas.drawCalligraphyStroke(ridge2, INK_COLORS.INK_DEEP, 4.5, 3.0, { alpha: 0.98, feiBai: 0.2, prng });
+    canvas.drawCalligraphyStroke(ridge3, INK_COLORS.INK_DEEP, 5.0, 3.5, { alpha: 0.98, feiBai: 0.2, prng });
+
+    // [소라 밖으로 드러난 보행지 3개]
+    const leg1 = [[CX + 14, CY + 18], [CX + 26, CY + 28], [CX + 34, CY + 44]];
+    const leg2 = [[CX + 6, CY + 22], [CX + 14, CY + 36], [CX + 18, CY + 52]];
+    const leg3 = [[CX - 6, CY + 24], [CX - 2, CY + 38], [CX, CY + 54]];
+
+    canvas.drawCalligraphyStroke(leg1, INK_COLORS.INK_DEEP, 4.5, 2.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(leg2, INK_COLORS.INK_DEEP, 4.5, 2.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(leg3, INK_COLORS.INK_DEEP, 4.0, 1.8, { alpha: 0.98, prng });
+
+    canvas.drawCalligraphyStroke(leg1, INK_COLORS.GOLD_AMBER, 2.0, 0.8, { alpha: 0.85, prng });
+    canvas.drawCalligraphyStroke(leg2, INK_COLORS.GOLD_AMBER, 2.0, 0.8, { alpha: 0.85, prng });
+    canvas.drawCalligraphyStroke(leg3, INK_COLORS.GOLD_AMBER, 1.8, 0.8, { alpha: 0.85, prng });
+
+    // [우람한 주홍 대형 집게발 (Great Claw)]
+    const clawArm = [[CX + 18, CY + 8], [CX + 32, CY + 4], [CX + 42, CY + 10]];
+    canvas.drawCalligraphyStroke(clawArm, INK_COLORS.INK_DEEP, 6.0, 5.0, { alpha: 0.98, prng });
+    canvas.stampEllipse(CX + 44, CY + 10, 10, 7, 0.2, INK_COLORS.RED_DEEP, 0.98);
+
+    const clawTop = [[CX + 46, CY + 6], [CX + 56, CY + 4], [CX + 58, CY + 10]];
+    const clawBtm = [[CX + 46, CY + 14], [CX + 54, CY + 16], [CX + 58, CY + 10]];
+    canvas.drawCalligraphyStroke(clawTop, INK_COLORS.INK_DEEP, 3.6, 1.5, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(clawBtm, INK_COLORS.INK_DEEP, 3.6, 1.5, { alpha: 0.98, prng });
+
+    // 집게 이빨 호분 백색
+    canvas.stampDisc(CX + 52, CY + 8, 1.2, INK_COLORS.WHITE_JADE, 1.0);
+    canvas.stampDisc(CX + 52, CY + 12, 1.2, INK_COLORS.WHITE_JADE, 1.0);
+
+    // [돌출된 기둥 눈 (Eye Stalks)]
+    const stalkL = [[CX + 10, CY - 4], [CX + 14, CY - 16]];
+    const stalkR = [[CX + 18, CY - 2], [CX + 24, CY - 14]];
+    canvas.drawCalligraphyStroke(stalkL, INK_COLORS.INK_DEEP, 2.5, 2.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(stalkR, INK_COLORS.INK_DEEP, 2.5, 2.0, { alpha: 0.98, prng });
+
+    canvas.stampDisc(CX + 14, CY - 16, 2.5, INK_COLORS.GOLD_BRIGHT, 1.0);
+    canvas.stampDisc(CX + 24, CY - 14, 2.5, INK_COLORS.GOLD_BRIGHT, 1.0);
+    canvas.stampDisc(CX + 14, CY - 16, 1.0, INK_COLORS.INK_DEEP, 1.0);
+    canvas.stampDisc(CX + 24, CY - 14, 1.0, INK_COLORS.INK_DEEP, 1.0);
+  },
+
+  // 19. 심해 날치 (flyingFish)
+  // 초고속 유선형 어체, 활짝 펼쳐진 부채꼴 날개 지느러미, 갈라진 제비꼬리와 수류
+  flyingFish: (canvas) => {
+    const prng = createPRNG(2037);
+
+    // [배경] 고속 활공 수류 워시 및 비산하는 물보라 비묵
+    canvas.drawRadialWash(CX, CY, 46, INK_COLORS.BLUE_AZURE, INK_COLORS.INK_DEEP, 0.35, 0.0);
+    canvas.drawSplatter(CX, CY + 16, 14, 38, INK_COLORS.BLUE_CYAN, 2038);
+
+    // [유선형 어체 (Body)]
+    canvas.stampEllipse(CX, CY - 2, 10, 34, 0, INK_COLORS.INK_DEEP, 0.98);
+    canvas.drawRadialWash(CX, CY - 6, 28, INK_COLORS.BLUE_AZURE, INK_COLORS.INK_MID, 0.9, 0.4);
+
+    // 등줄기 은백색 하이라이트
+    canvas.drawCalligraphyStroke([[CX, CY - 30], [CX, CY + 24]], INK_COLORS.WHITE_SILVER, 2.5, 1.2, { alpha: 0.85, isAdditive: true, prng });
+
+    // [거대한 가슴지느러미 날개 (좌우 대칭)]
+    const finMain = [
+      [CX - 6, CY - 12], [CX - 26, CY - 22], [CX - 48, CY - 24], [CX - 58, CY - 12]
+    ];
+    canvas.drawSymmetricStroke(finMain, INK_COLORS.INK_DEEP, 4.5, 1.8, { alpha: 0.98, feiBai: 0.2, prng });
+    canvas.drawSymmetricStroke(finMain, INK_COLORS.BLUE_CYAN, 2.0, 0.8, { alpha: 0.85, isAdditive: true, prng });
+
+    // 날개 피막 투명 시안 번짐
+    canvas.stampEllipse(CX - 34, CY - 10, 22, 10, -0.2, INK_COLORS.BLUE_CYAN, 0.45);
+    canvas.stampEllipse(CX + 34, CY - 10, 22, 10, 0.2, INK_COLORS.BLUE_CYAN, 0.45);
+
+    // 지느러미살 (Rays) 갈필 필선
+    const ray1 = [[CX - 10, CY - 8], [CX - 32, CY - 2], [CX - 52, CY + 4]];
+    const ray2 = [[CX - 8, CY - 4], [CX - 28, CY + 6], [CX - 44, CY + 16]];
+    canvas.drawSymmetricStroke(ray1, INK_COLORS.INK_LIGHT, 2.0, 0.8, { alpha: 0.8, feiBai: 0.3, prng });
+    canvas.drawSymmetricStroke(ray2, INK_COLORS.INK_LIGHT, 1.8, 0.8, { alpha: 0.75, feiBai: 0.3, prng });
+
+    // [갈라진 제비꼬리 지느러미]
+    const tailFinL = [[CX, CY + 28], [CX - 12, CY + 44], [CX - 18, CY + 56]];
+    const tailFinR = [[CX, CY + 28], [CX + 12, CY + 44], [CX + 18, CY + 56]];
+    canvas.drawCalligraphyStroke(tailFinL, INK_COLORS.INK_DEEP, 4.0, 1.5, { alpha: 0.98, feiBai: 0.3, prng });
+    canvas.drawCalligraphyStroke(tailFinR, INK_COLORS.INK_DEEP, 4.0, 1.5, { alpha: 0.98, feiBai: 0.3, prng });
+
+    // [두상 및 번뜩이는 심해 어안]
+    canvas.drawGlow(CX - 6, CY - 26, 8, INK_COLORS.BLUE_CYAN, 0.8);
+    canvas.drawGlow(CX + 6, CY - 26, 8, INK_COLORS.BLUE_CYAN, 0.8);
+    canvas.stampDisc(CX - 6, CY - 26, 2.5, INK_COLORS.BLUE_CYAN, 1.0);
+    canvas.stampDisc(CX + 6, CY - 26, 2.5, INK_COLORS.BLUE_CYAN, 1.0);
+    canvas.stampDisc(CX - 6, CY - 26, 1.0, INK_COLORS.WHITE_JADE, 1.0);
+    canvas.stampDisc(CX + 6, CY - 26, 1.0, INK_COLORS.WHITE_JADE, 1.0);
+  },
+
+  // 20. 갑주 가재 (seaLobster)
+  // 중후한 진홍빛 분절 갑주, 위협적으로 벌어진 대형 집게발, 부채꼴 꼬리와 긴 수염
+  seaLobster: (canvas) => {
+    const prng = createPRNG(2039);
+
+    // [배경] 핏빛 갑각 분진 및 심해 살기 워시
+    canvas.drawRadialWash(CX, CY, 48, INK_COLORS.RED_DEEP, INK_COLORS.INK_DEEP, 0.38, 0.0);
+    canvas.drawSplatter(CX, CY + 14, 14, 38, INK_COLORS.RED_CRIMSON, 2040);
+
+    // [복부 분절 갑각 (Abdomen Segments)]
+    const seg1 = [[CX - 14, CY + 14], [CX, CY + 16], [CX + 14, CY + 14]];
+    const seg2 = [[CX - 12, CY + 24], [CX, CY + 26], [CX + 12, CY + 24]];
+    const seg3 = [[CX - 10, CY + 34], [CX, CY + 36], [CX + 10, CY + 34]];
+    canvas.drawCalligraphyStroke(seg1, INK_COLORS.INK_DEEP, 5.0, 5.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(seg2, INK_COLORS.INK_DEEP, 4.5, 4.5, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(seg3, INK_COLORS.INK_DEEP, 4.0, 4.0, { alpha: 0.98, prng });
+
+    // 부채꼴 꼬리 (Telson)
+    const telsonMid = [[CX, CY + 38], [CX, CY + 54]];
+    const telsonL = [[CX, CY + 38], [CX - 14, CY + 52]];
+    const telsonR = [[CX, CY + 38], [CX + 14, CY + 52]];
+    canvas.drawCalligraphyStroke(telsonMid, INK_COLORS.RED_DEEP, 4.0, 2.0, { alpha: 0.95, prng });
+    canvas.drawCalligraphyStroke(telsonL, INK_COLORS.RED_DEEP, 3.5, 1.5, { alpha: 0.95, prng });
+    canvas.drawCalligraphyStroke(telsonR, INK_COLORS.RED_DEEP, 3.5, 1.5, { alpha: 0.95, prng });
+
+    // [두흉부 (Carapace)]
+    canvas.stampEllipse(CX, CY - 2, 16, 18, 0, INK_COLORS.INK_DEEP, 0.98);
+    canvas.drawRadialWash(CX, CY - 2, 15, INK_COLORS.RED_CRIMSON, INK_COLORS.RED_DEEP, 0.95, 0.5);
+
+    // 날카로운 이마뿔 (Rostrum)
+    canvas.drawCalligraphyStroke([[CX, CY - 16], [CX, CY - 30]], INK_COLORS.INK_DEEP, 3.5, 1.2, { alpha: 0.98, prng });
+
+    // [거대한 양쪽 집게발 (대칭)]
+    const armPts = [[CX - 12, CY - 6], [CX - 28, CY - 16], [CX - 38, CY - 8]];
+    canvas.drawSymmetricStroke(armPts, INK_COLORS.INK_DEEP, 6.0, 5.0, { alpha: 0.98, prng });
+
+    canvas.stampEllipse(CX - 40, CY - 8, 12, 8, -0.3, INK_COLORS.RED_DEEP, 0.98);
+    canvas.stampEllipse(CX + 40, CY - 8, 12, 8, 0.3, INK_COLORS.RED_DEEP, 0.98);
+
+    const pincerL1 = [[CX - 44, CY - 12], [CX - 56, CY - 18], [CX - 58, CY - 10]];
+    const pincerL2 = [[CX - 44, CY - 4], [CX - 54, CY + 2], [CX - 56, CY - 6]];
+    canvas.drawCalligraphyStroke(pincerL1, INK_COLORS.INK_DEEP, 4.0, 1.5, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(pincerL2, INK_COLORS.INK_DEEP, 3.5, 1.5, { alpha: 0.98, prng });
+
+    const pincerR1 = [[CX + 44, CY - 12], [CX + 56, CY - 18], [CX + 58, CY - 10]];
+    const pincerR2 = [[CX + 44, CY - 4], [CX + 54, CY + 2], [CX + 56, CY - 6]];
+    canvas.drawCalligraphyStroke(pincerR1, INK_COLORS.INK_DEEP, 4.0, 1.5, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(pincerR2, INK_COLORS.INK_DEEP, 3.5, 1.5, { alpha: 0.98, prng });
+
+    // [긴 촉각 수염 (Antennae)]
+    const antenna = [[CX - 4, CY - 24], [CX - 20, CY - 42], [CX - 38, CY - 56]];
+    canvas.drawSymmetricStroke(antenna, INK_COLORS.RED_FIRE, 2.4, 0.6, { alpha: 0.9, feiBai: 0.3, prng });
+
+    // [안광]
+    canvas.stampDisc(CX - 5, CY - 18, 1.8, INK_COLORS.GOLD_BRIGHT, 1.0);
+    canvas.stampDisc(CX + 5, CY - 18, 1.8, INK_COLORS.GOLD_BRIGHT, 1.0);
+  },
+
+  // 21. 전기 가오리 (stingray)
+  // 마름모형 활공 원반 지느러미, 채찍 꼬리와 독침, 번뜩이는 황금 생체 전기 방전 룬
+  stingray: (canvas) => {
+    const prng = createPRNG(2041);
+
+    // [배경] 황금 전격 및 심해 암청 수묵 워시
+    canvas.drawRadialWash(CX, CY - 2, 48, INK_COLORS.GOLD_AMBER, INK_COLORS.BLUE_MIDNIGHT, 0.4, 0.0);
+    canvas.drawSplatter(CX, CY + 8, 14, 38, INK_COLORS.GOLD_BRIGHT, 2042);
+
+    // [마름모형 원반 날개 (Pectoral Disc)]
+    const discPts = [
+      [CX, CY - 36], [CX - 24, CY - 22], [CX - 48, CY], [CX - 50, CY + 14],
+      [CX - 28, CY + 24], [CX, CY + 28], [CX + 28, CY + 24], [CX + 50, CY + 14],
+      [CX + 48, CY], [CX + 24, CY - 22], [CX, CY - 36]
+    ];
+    canvas.drawCalligraphyStroke(discPts, INK_COLORS.INK_DEEP, 6.0, 5.0, { alpha: 0.98, feiBai: 0.15, prng });
+    canvas.drawRadialWash(CX, CY, 32, INK_COLORS.GOLD_ROYAL, INK_COLORS.INK_MID, 0.85, 0.35);
+
+    // [등 척추선 및 채찍 꼬리]
+    canvas.drawCalligraphyStroke([[CX, CY - 28], [CX, CY + 26]], INK_COLORS.INK_DEEP, 4.5, 3.0, { alpha: 0.98, prng });
+
+    const tailWhip = [[CX, CY + 26], [CX - 4, CY + 38], [CX + 2, CY + 48], [CX, CY + 60]];
+    canvas.drawCalligraphyStroke(tailWhip, INK_COLORS.INK_DEEP, 3.2, 0.8, { alpha: 0.98, feiBai: 0.35, prng });
+
+    // 독침 가시
+    canvas.drawCalligraphyStroke([[CX, CY + 36], [CX + 8, CY + 34]], INK_COLORS.WHITE_SILVER, 2.2, 0.8, { alpha: 0.95, prng });
+
+    // [전기 방전 아크 (Sparks & Electric Arc)]
+    canvas.drawGlow(CX, CY - 4, 22, INK_COLORS.GOLD_BRIGHT, 0.88);
+    const arcL = [[CX - 12, CY - 10], [CX - 26, CY - 6], [CX - 38, CY + 4]];
+    const arcR = [[CX + 12, CY - 10], [CX + 26, CY - 6], [CX + 38, CY + 4]];
+    canvas.drawCalligraphyStroke(arcL, INK_COLORS.GOLD_BRIGHT, 2.2, 0.8, { alpha: 0.9, isAdditive: true, prng });
+    canvas.drawCalligraphyStroke(arcR, INK_COLORS.GOLD_BRIGHT, 2.2, 0.8, { alpha: 0.9, isAdditive: true, prng });
+
+    // [상단 안구 슬릿]
+    canvas.stampEllipse(CX - 8, CY - 18, 2.5, 1.5, -0.2, INK_COLORS.GOLD_BRIGHT, 1.0);
+    canvas.stampEllipse(CX + 8, CY - 18, 2.5, 1.5, 0.2, INK_COLORS.GOLD_BRIGHT, 1.0);
+    canvas.stampDisc(CX - 8, CY - 18, 1.0, INK_COLORS.INK_DEEP, 1.0);
+    canvas.stampDisc(CX + 8, CY - 18, 1.0, INK_COLORS.INK_DEEP, 1.0);
+  },
+
+  // 22. 산호 골렘 (coralGolem)
+  // 해저 암초와 가지 산호초의 융합체, 굳건한 바위 주먹, 크랙 속 맥동하는 에메랄드 코어
+  coralGolem: (canvas) => {
+    const prng = createPRNG(2043);
+
+    // [배경] 해저 암초 분진 및 에메랄드 마력 워시
+    canvas.drawRadialWash(CX, CY, 52, INK_COLORS.GREEN_JADE, INK_COLORS.INK_DEEP, 0.38, 0.0);
+    canvas.drawSplatter(CX, CY + 16, 16, 42, INK_COLORS.GREEN_VENOM, 2044);
+
+    // [하체 암초 다리]
+    const legL = [[CX - 20, CY + 28], [CX - 26, CY + 44], [CX - 28, CY + 58]];
+    const legR = [[CX + 20, CY + 28], [CX + 26, CY + 44], [CX + 28, CY + 58]];
+    canvas.drawCalligraphyStroke(legL, INK_COLORS.INK_DEEP, 8.5, 7.0, { alpha: 0.98, feiBai: 0.2, prng });
+    canvas.drawCalligraphyStroke(legR, INK_COLORS.INK_DEEP, 8.5, 7.0, { alpha: 0.98, feiBai: 0.2, prng });
+
+    // [육중한 산호석 흉부]
+    const torsoPts = [
+      [CX - 24, CY - 10], [CX - 30, CY + 12], [CX - 22, CY + 32],
+      [CX + 22, CY + 32], [CX + 30, CY + 12], [CX + 24, CY - 10]
+    ];
+    canvas.drawCalligraphyStroke(torsoPts, INK_COLORS.INK_DEEP, 8.0, 6.5, { alpha: 0.98, feiBai: 0.2, prng });
+    canvas.drawRadialWash(CX, CY + 10, 26, INK_COLORS.GREEN_JADE, INK_COLORS.INK_DEEP, 0.9, 0.45);
+
+    // [어깨와 머리 위의 가지 산호초 (Branching Corals)]
+    const coralL1 = [[CX - 28, CY - 12], [CX - 38, CY - 26], [CX - 42, CY - 40]];
+    const coralL2 = [[CX - 38, CY - 26], [CX - 48, CY - 28]];
+    const coralR1 = [[CX + 28, CY - 12], [CX + 38, CY - 26], [CX + 42, CY - 40]];
+    const coralR2 = [[CX + 38, CY - 26], [CX + 48, CY - 28]];
+    const coralHead = [[CX, CY - 24], [CX - 6, CY - 38], [CX - 8, CY - 50]];
+    const coralHeadR = [[CX, CY - 24], [CX + 6, CY - 38], [CX + 8, CY - 50]];
+
+    canvas.drawCalligraphyStroke(coralL1, INK_COLORS.RED_FIRE, 4.0, 1.5, { alpha: 0.95, prng });
+    canvas.drawCalligraphyStroke(coralL2, INK_COLORS.RED_FIRE, 3.0, 1.2, { alpha: 0.95, prng });
+    canvas.drawCalligraphyStroke(coralR1, INK_COLORS.RED_FIRE, 4.0, 1.5, { alpha: 0.95, prng });
+    canvas.drawCalligraphyStroke(coralR2, INK_COLORS.RED_FIRE, 3.0, 1.2, { alpha: 0.95, prng });
+    canvas.drawCalligraphyStroke(coralHead, INK_COLORS.GREEN_JADE, 3.5, 1.2, { alpha: 0.95, prng });
+    canvas.drawCalligraphyStroke(coralHeadR, INK_COLORS.GREEN_JADE, 3.5, 1.2, { alpha: 0.95, prng });
+
+    // [바위 팔과 산호 주먹]
+    const armL = [[CX - 32, CY - 4], [CX - 44, CY + 14], [CX - 42, CY + 34]];
+    const armR = [[CX + 32, CY - 4], [CX + 44, CY + 14], [CX + 42, CY + 34]];
+    canvas.drawCalligraphyStroke(armL, INK_COLORS.INK_DEEP, 7.5, 6.0, { alpha: 0.98, feiBai: 0.2, prng });
+    canvas.drawCalligraphyStroke(armR, INK_COLORS.INK_DEEP, 7.5, 6.0, { alpha: 0.98, feiBai: 0.2, prng });
+    canvas.stampDisc(CX - 42, CY + 36, 7.0, INK_COLORS.INK_DEEP, 0.98);
+    canvas.stampDisc(CX + 42, CY + 36, 7.0, INK_COLORS.INK_DEEP, 0.98);
+
+    // [가슴의 심해 산호 마력 코어]
+    canvas.drawGlow(CX, CY + 10, 22, INK_COLORS.GREEN_MINT, 0.9);
+    canvas.stampDisc(CX, CY + 10, 7.0, INK_COLORS.GREEN_DARK, 1.0);
+    canvas.stampDisc(CX, CY + 10, 4.0, INK_COLORS.GREEN_MINT, 1.0);
+    canvas.stampDisc(CX, CY + 10, 1.5, INK_COLORS.WHITE_JADE, 1.0);
+
+    // [안광]
+    canvas.stampDisc(CX - 5, CY - 16, 2.0, INK_COLORS.GREEN_MINT, 1.0);
+    canvas.stampDisc(CX + 5, CY - 16, 2.0, INK_COLORS.GREEN_MINT, 1.0);
+  },
+
+  // 23. 심해 거머리 (seaLeech)
+  // 꿈틀거리는 S자형 환형 연체 몸체, 원형 흡반 구강과 동심원 톱니 이빨, 끈적이는 점액질
+  seaLeech: (canvas) => {
+    const prng = createPRNG(2045);
+
+    // [배경] 심연 암자색 점액 워시 및 사악한 비묵
+    canvas.drawRadialWash(CX, CY, 46, INK_COLORS.RED_DEEP, INK_COLORS.PURPLE_SHADOW, 0.4, 0.0);
+    canvas.drawSplatter(CX, CY + 10, 14, 36, INK_COLORS.RED_DEEP, 2046);
+
+    // [유연한 파동 S자형 연체 척추]
+    const leechSpine = [
+      [CX - 16, CY - 36], [CX - 24, CY - 22], [CX - 18, CY - 4],
+      [CX + 6, CY + 8], [CX + 20, CY + 22], [CX + 14, CY + 38], [CX - 4, CY + 48]
+    ];
+    canvas.drawCalligraphyStroke(leechSpine, INK_COLORS.INK_DEEP, 12.0, 8.0, { alpha: 0.98, feiBai: 0.15, prng });
+    canvas.drawCalligraphyStroke(leechSpine, INK_COLORS.RED_DEEP, 7.0, 4.5, { alpha: 0.85, prng });
+
+    // [환형 분절 (Annuli) 주름 횡선]
+    canvas.drawCalligraphyStroke([[CX - 26, CY - 14], [CX - 14, CY - 16]], INK_COLORS.INK_DEEP, 2.2, 2.2, { alpha: 0.9, prng });
+    canvas.drawCalligraphyStroke([[CX - 14, CY - 2], [CX - 2, CY - 4]], INK_COLORS.INK_DEEP, 2.5, 2.5, { alpha: 0.9, prng });
+    canvas.drawCalligraphyStroke([[CX + 2, CY + 12], [CX + 14, CY + 8]], INK_COLORS.INK_DEEP, 2.8, 2.8, { alpha: 0.9, prng });
+    canvas.drawCalligraphyStroke([[CX + 14, CY + 26], [CX + 24, CY + 22]], INK_COLORS.INK_DEEP, 2.5, 2.5, { alpha: 0.9, prng });
+    canvas.drawCalligraphyStroke([[CX + 4, CY + 40], [CX + 16, CY + 38]], INK_COLORS.INK_DEEP, 2.2, 2.2, { alpha: 0.9, prng });
+
+    // [전면 원형 구강 흡반 (Oral Sucker)]
+    canvas.stampEllipse(CX - 16, CY - 36, 9.0, 8.0, -0.4, INK_COLORS.INK_DEEP, 1.0);
+    canvas.stampEllipse(CX - 16, CY - 36, 6.0, 5.0, -0.4, INK_COLORS.RED_CRIMSON, 1.0);
+    canvas.stampEllipse(CX - 16, CY - 36, 2.5, 2.0, -0.4, INK_COLORS.INK_DEEP, 1.0);
+
+    // 흡반 둘레의 동심원상 톱니 이빨 6점
+    const mouthCX = CX - 16;
+    const mouthCY = CY - 36;
+    for (let i = 0; i < 6; i++) {
+      const ang = (i * Math.PI * 2) / 6;
+      const tx = mouthCX + Math.cos(ang) * 4.5;
+      const ty = mouthCY + Math.sin(ang) * 4.0;
+      canvas.stampDisc(tx, ty, 0.8, INK_COLORS.WHITE_JADE, 1.0);
+    }
+
+    // [후면 꼬리 흡반 (Caudal Sucker)]
+    canvas.stampDisc(CX - 4, CY + 48, 6.0, INK_COLORS.INK_DEEP, 0.98);
+    canvas.stampDisc(CX - 4, CY + 48, 3.5, INK_COLORS.RED_DEEP, 0.95);
+
+    // [점액질 윤기 가산 하이라이트]
+    const mucusHighlight = [[CX - 22, CY - 20], [CX, CY + 6], [CX + 16, CY + 26]];
+    canvas.drawCalligraphyStroke(mucusHighlight, INK_COLORS.WHITE_SILVER, 2.0, 0.6, { alpha: 0.75, isAdditive: true, prng });
   }
 };
 
-// ================= 일반 몬스터 15종 전체 식별자 목록 =================
+// ================= 일반 몬스터 23종 전체 식별자 목록 =================
 const ENEMY_KEYS = [
+  // 월드 1 기본 8종
   'bat',
   'slime',
   'miniSlime',
@@ -1214,13 +1625,23 @@ const ENEMY_KEYS = [
   'goblin',
   'ghost',
   'gargoyle',
+  // 월드 1 고급 7종
   'cultist',
   'assassin',
   'golem',
   'darkMage',
   'bloodHound',
   'wraithSwarm',
-  'abyssTitan'
+  'abyssTitan',
+  // 월드 2 심해 기본 8종 (Phase 3)
+  'plankton',
+  'jellyfish',
+  'hermitCrab',
+  'flyingFish',
+  'seaLobster',
+  'stingray',
+  'coralGolem',
+  'seaLeech'
 ];
 
 /**
