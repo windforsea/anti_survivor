@@ -163,7 +163,28 @@ class AssetManager {
       anim_muzzle: 'assets/sprites/anim_muzzle.png',
       proj_dagger: 'assets/sprites/proj_dagger.png',
       proj_shuriken: 'assets/sprites/proj_shuriken.png',
-      proj_holypellet: 'assets/sprites/proj_holypellet.png'
+      proj_holypellet: 'assets/sprites/proj_holypellet.png',
+
+      // 수묵화풍 신규 무기 투사체 및 광역 이펙트
+      proj_missile: 'assets/sprites/proj_missile.png',
+      proj_shotgun: 'assets/sprites/proj_shotgun.png',
+      proj_windarrow: 'assets/sprites/proj_windarrow.png',
+      proj_holyarrow: 'assets/sprites/proj_holyarrow.png',
+      proj_frostshard: 'assets/sprites/proj_frostshard.png',
+      proj_axe: 'assets/sprites/proj_axe.png',
+      proj_sword: 'assets/sprites/proj_sword.png',
+      proj_chakram: 'assets/sprites/proj_chakram.png',
+      proj_holycross: 'assets/sprites/proj_holycross.png',
+      proj_frostorb: 'assets/sprites/proj_frostorb.png',
+      proj_shadoworb: 'assets/sprites/proj_shadoworb.png',
+      proj_fireball: 'assets/sprites/proj_fireball.png',
+      proj_teslapellet: 'assets/sprites/proj_teslapellet.png',
+      effect_sanctuary: 'assets/sprites/effect_sanctuary.png',
+      effect_holywater: 'assets/sprites/effect_holywater.png',
+      effect_flamepillar: 'assets/sprites/effect_flamepillar.png',
+      effect_comet: 'assets/sprites/effect_comet.png',
+      effect_cyclone: 'assets/sprites/effect_cyclone.png',
+      effect_divine: 'assets/sprites/effect_divine.png'
     };
   }
 
@@ -221,8 +242,8 @@ class AssetManager {
       ctx.scale(-1, 1);
     }
 
-    // 영웅(128x128), 일반 몬스터 30종(32x32) 및 보스 13종(64x64)은 먹선 부드러움 보간 처리
-    const isSumie = key.startsWith('player') || this.sumieEnemyKeys.has(key) || this.sumieBossKeys.has(key);
+    // 영웅(128x128), 일반 몬스터 30종(32x32), 보스 13종(64x64) 및 수묵 투사체/이펙트는 먹선 부드러움 보간 처리
+    const isSumie = key.startsWith('player') || key.startsWith('proj_') || key.startsWith('effect_') || this.sumieEnemyKeys.has(key) || this.sumieBossKeys.has(key);
     ctx.imageSmoothingEnabled = isSumie;
     if (isSumie) {
       ctx.imageSmoothingQuality = 'high';

@@ -1,6 +1,6 @@
 {
-  "totalCalls": 22,
-  "lastUpdated": "2026-09-25T01:16:21.801Z",
+  "totalCalls": 23,
+  "lastUpdated": "2026-09-25T01:25:26.983Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 10,
+      "callCount": 11,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T01:16:21.800Z",
+      "lastUsedAt": "2026-09-25T01:25:26.983Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T01:25:26.983Z",
+          "reason": "무기 투사체 수묵화 리메이크 정적 점검"
+        },
         {
           "timestamp": "2026-09-25T01:16:21.801Z",
           "reason": "보스 13종 수묵화 리메이크 정적 점검"
