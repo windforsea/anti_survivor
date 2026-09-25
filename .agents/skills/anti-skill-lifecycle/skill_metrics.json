@@ -1,6 +1,6 @@
 {
-  "totalCalls": 35,
-  "lastUpdated": "2026-09-25T02:53:10.893Z",
+  "totalCalls": 38,
+  "lastUpdated": "2026-09-25T03:01:43.574Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 16,
+      "callCount": 17,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T02:53:10.892Z",
+      "lastUsedAt": "2026-09-25T03:01:43.573Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T03:01:43.574Z",
+          "reason": "Step 4 진화무기 및 보스 리워크 후 정합성 감사"
+        },
         {
           "timestamp": "2026-09-25T02:53:10.893Z",
           "reason": "Step 3 아이콘 리워크 적용 후 정합성 감사"
@@ -95,10 +99,6 @@
         {
           "timestamp": "2026-09-24T02:47:21.759Z",
           "reason": "스킬 업데이트 필요 여부 점검"
-        },
-        {
-          "timestamp": "2026-09-24T02:45:31.990Z",
-          "reason": "무기 분리 후 무결성 감사"
         }
       ]
     },
@@ -168,10 +168,14 @@
     },
     "to-web": {
       "name": "to-web",
-      "callCount": 4,
+      "callCount": 5,
       "createdAt": "2026-09-25T02:31:46.134Z",
-      "lastUsedAt": "2026-09-25T02:48:47.925Z",
+      "lastUsedAt": "2026-09-25T02:53:58.557Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T02:53:58.558Z",
+          "reason": "Step 4 진화무기 및 보스 128x128 번들링"
+        },
         {
           "timestamp": "2026-09-25T02:48:47.925Z",
           "reason": "Step 3 아이콘 리워크 1차 번들링"
@@ -192,10 +196,14 @@
     },
     "to-com": {
       "name": "to-com",
-      "callCount": 3,
+      "callCount": 4,
       "createdAt": "2026-09-25T02:40:19.670Z",
-      "lastUsedAt": "2026-09-25T02:52:37.272Z",
+      "lastUsedAt": "2026-09-25T03:01:16.184Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T03:01:16.185Z",
+          "reason": "웹 제미나이 Step 4 결과 로컬 반영"
+        },
         {
           "timestamp": "2026-09-25T02:52:37.273Z",
           "reason": "웹 제미나이 Step 3 결과 로컬 반영"

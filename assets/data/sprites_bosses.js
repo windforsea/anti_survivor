@@ -1,62 +1,70 @@
 module.exports = {
-// [보스 9종]
+  // [월드 1 핵심 보스 7종 (128x128 고해상도 리워크)]
+
+  // 1. 흉포한 멧돼지 로드 (boss_boar) : 가시 돋친 흑철 흉갑과 거대한 상아 엄니, 붉게 충혈된 눈
   boss_boar: [
-    "................",
     "..KK........KK..",
-    ".KOOK......KOOK.",
+    ".KOOK..KK..KOOK.",
     ".KOEEOKKKKOEEOK.",
     "KOEEEEEEEEEEEEOK",
-    "KOEYYWEEEEEWYYOK",
-    "KOEYCWEEEEWCYYOK",
+    "KOEYYWEEEEWYYEOK",
+    "KOEYCWWEEWWCYEOK",
     "KOECCCCCCCCCCEOK",
-    ".KOEWWCCCCWWEOK.",
-    "..KOEEEEEEEEOK..",
-    "...KOEEEEEEEOK..",
-    "..KDDDDDDDDDDK..",
-    ".KDDDKKKKKKDDDK.",
-    ".KDDK......KDDK.",
-    ".KKK........KKK.",
-    "................"
+    "KDDWWCCCCCCWWDDD",
+    "KDDKKWWWWWWKKDDK",
+    "KOEEEEEEEEEEEEOK",
+    ".KOEEOKDDDDKOEEO",
+    ".KOEOKDDDDDDKOEK",
+    ".KDDDKKKKKKKDDDK",
+    ".KDDK.......KDDK",
+    ".KDDK.......KDDK",
+    "..KK.........KK."
   ],
+
+  // 2. 공허의 지배자 (boss_void) : 아케인 에너지가 요동치는 보이드 촉수와 심연의 크림슨 블랙홀
   boss_void: [
-    "....KKKKKKKK....",
+    "...KKKKKKKKKK...",
     "..KKPPVVVVPPKK..",
-    ".KPVVVYYYYVVVPK.",
-    ".KPVVYYYYYYVVPK.",
+    ".KPPVVVYYVVVPPK.",
+    "KPPVVYYYYYYVVPKK",
     "KPVVYYCCCCYYVVPK",
     "KPVVYCCCCCCYVVPK",
     "KPVVYYCCCCYYVVPK",
-    "KPVVYYYYYYYYVVPK",
-    ".KPVVVYYYYVVVPK.",
-    "..KKPVVVVVVPKK..",
-    "...KKPVVVVPKK...",
-    "....KPVVVVPK....",
-    "...KPPVVVVPKK...",
-    "..KPP.KPPK.PPK..",
-    ".KK....KK...KKK.",
+    "KPPVVYYYYYYVVPPK",
+    ".KPPVVVYYVVVPPK.",
+    "..KKPPVVVVPPKK..",
+    ".KPP.KKPPKK.PPK.",
+    "KPP...KPPK...PPK",
+    "KPVV.KPVVPK.VVPK",
+    ".KPVVPK..KPVVPK.",
+    "..KKKK....KKKK..",
     "................"
   ],
+
+  // 3. 혼돈의 주시자 (boss_eye) : 핏줄이 선 붉은 결막과 거대한 황금 동공, 기괴한 촉수 림
   boss_eye: [
     "....KKKKKKKK....",
-    "..KKCCCCCCCCKK..",
-    ".KCCCCCCCCCCCCK.",
-    ".KCCCCWWWWCCCCK.",
-    "KCCCCWYYYYWCCCCK",
-    "KCCCWYKKKKYWCCCK",
-    "KCCCWYKKKKYWCCCK",
-    "KCCCCWYYYYWCCCCK",
-    "KCCCCWYYYYWCCCCK",
-    "KCCCWYKKKKYWCCCK",
-    "KCCCWYKKKKYWCCCK",
-    ".KCCCCWWWWCCCCK.",
-    ".KCCCCCCCCCCCCK.",
-    "..KKCCCCCCCCKK..",
+    "..KKRRCCCCRRKK..",
+    ".KRRCCCCCCCCRRK.",
+    ".KRCCCCWWCCCCRK.",
+    "KRCCCWYYYYWCCCRK",
+    "KRCCWYKKKKYWCCRK",
+    "KRCCWYKKKKYWCCRK",
+    "KRCCCWYYYYWCCCRK",
+    "KRCCCWYYYYWCCCRK",
+    "KRCCWYKKKKYWCCRK",
+    "KRCCWYKKKKYWCCRK",
+    ".KRCCCCWWCCCCRK.",
+    ".KRRCCCCCCCCRRK.",
+    "..KKRRCCCCRRKK..",
     "....KKKKKKKK....",
     "................"
   ],
+
+  // 4. 고대 흑철 콜로서스 (boss_colossus) : 룬 문양이 새겨진 암석 흉갑과 가슴팍에서 박동하는 마그마 코어
   boss_colossus: [
     "..KKKKKKKKKKKK..",
-    ".KDDDDDDDDDDDDK.",
+    ".KDDLLDDDDLLDDK.",
     "KDDLLDDDDDDLLDDK",
     "KDDLLDDDDDDLLDDK",
     "KDDLLDDDDDDLLDDK",
@@ -65,16 +73,17 @@ module.exports = {
     ".KDDDDDDDDDDDDK.",
     "..KDDDRRRRDDDK..",
     ".KDDDDRRRRDDDDK.",
-    ".KDDDDRRRRDDDDK.",
-    "KDDDDDRRRRDDDDDK",
+    ".KDDDDRYYRDDDDK.",
+    "KDDDDDRCCRDDDDDK",
     "KDDDDDKKKKDDDDDK",
     ".KDDDK....KDDDK.",
     "..KDDK....KDDK..",
     "...KK......KK..."
   ],
+
+  // 5. 파멸의 기사 (boss_doom) : 뿔 달린 흑기사 투구와 핏빛 안광, 피로 물든 다크 크림슨 망토
   boss_doom: [
-    "C..............C",
-    "KC............CK",
+    "CK............KC",
     "KCK..KKKKKK..KCK",
     "KCCKKGGYYGGKKCCK",
     "KCCKGGYYYYGGKCCK",
@@ -88,13 +97,16 @@ module.exports = {
     ".KRRRRRRRRRRRRK.",
     "..KRRRKKKKRRRK..",
     "..KRRKK..KKRRK..",
-    "...KK......KK..."
+    ".KRRK......KRRK.",
+    ".KK..........KK."
   ],
+
+  // 6. 망자의 군주 리치 (boss_lich) : 황금 네크로맨서 왕관, 영혼불이 타오르는 해골 안광과 아케인 로브
   boss_lich: [
     "....KGGYYGGK....",
     "...KGGYYYYGGK...",
     "...KWWKWWKWWK...",
-    "...KWCKWCKWWK...",
+    "...KWTTKWTTWWK..",
     "...KWWKWWKWWK...",
     "....KWWWWWWK....",
     "Y..KPVVVVVVPK..Y",
@@ -108,24 +120,28 @@ module.exports = {
     "..KPK....KPK....",
     "...KK....KK....."
   ],
+
+  // 7. 영혼 수확자 (boss_reaper) : 대낫의 서슬 퍼런 날과 칠흑의 후드 속 섬뜩한 영혼 안광
   boss_reaper: [
-    "..KKLLMMDDDKK...",
-    ".KLLMMDDDKK..KK.",
-    "KLLMMDDDKK.KKDDK",
-    "KLMDDDKK..KDDDDD",
-    ".KMDDK...KDDWWDD",
-    "..KKK...KDDWYYWD",
-    "...K....KDDWWWD.",
-    "..KKK...KDDDDDD.",
-    ".KDKDK...KDDDD..",
-    "KDK.KDK.KDDDD...",
-    "KK...KK.KDDDD...",
+    "..KKWWLLMMDDK...",
+    ".KWWLLMMDDDKKKK.",
+    "KWWLLMMDDKK..KDK",
+    "KWLMMDDKK...KDDD",
+    ".KMDDKK....KDDKD",
+    "..KKK.....KDDTTD",
+    "...K......KDDTTD",
+    "..KKK.....KDDDDD",
+    ".KDKDK....KDDDD.",
+    "KDK.KDK..KDDDD..",
+    "KK...KK..KDDDD..",
     "........KDDDD...",
     "........KDDDD...",
-    "........KDDDD...",
-    ".........KDD....",
-    "..........KK...."
+    ".......KDDDD....",
+    ".......KDDDK....",
+    "........KKK....."
   ],
+
+  // [월드 1 추가 보스 2종]
   boss_wyrm: [
     "....KKKKKKKK....",
     "...KPVVYYVVPK...",

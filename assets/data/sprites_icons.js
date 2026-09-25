@@ -1,5 +1,5 @@
 module.exports = {
-// ================= 기본 무기 아이콘 14종 (128x128 고해상도 리워크) =================
+// ================= 기본 무기 아이콘 15종 (128x128 고해상도 렌더링) =================
 
   // 1. 철검 (sword - 방랑기사 시그니처) : 웅장한 십자 가드와 넓은 강철 대검
   icon_sword: [
@@ -301,211 +301,211 @@ module.exports = {
     "................"
   ],
 
-  // ================= 14대 2단계 진화 무기 아이콘 =================
+  // ================= 14대 2단계 진화 무기 아이콘 (128x128 고해상도 엠블럼 리워크) =================
 
-  // [진화 1] 천상의 성역 (heavenlySanctuary)
+  // [진화 1] 천상의 성역 (heavenlySanctuary) : 찬란한 황금 룬 링과 삼중 수호 십자 결계
   icon_heavenlysanctuary: [
-    "......KYYK......",
-    ".....KYWWYK.....",
-    "....KYWTTWYK....",
-    "...KYWTKKTWYK...",
-    "..KYWTKWWKTWYK..",
-    ".KYYTTKWWKTTYYK.",
-    ".KYWWKKWWKKWWYK.",
-    "KYWTWWWWWWWWTTYK",
-    "KYWTWWWWWWWWTTYK",
-    ".KYWWKKWWKKWWYK.",
-    ".KYYTTKWWKTTYYK.",
-    "..KYWTKWWKTWYK..",
-    "...KYWTKKTWYK...",
-    "....KYWTTWYK....",
-    ".....KYWWYK.....",
-    "......KYYK......"
+    "..KKKKYYYYKKKK..",
+    ".KYYWWTTTTWWYYK.",
+    "KYWWTTWWWWTTWWYK",
+    "KYWTWKKYYKKWTWYK",
+    "KYTWKYYYYYYKWTKY",
+    "YTWKYYWWWWYYKTTY",
+    "YTTKYWWTTWWYKKTY",
+    "YTTKYWTWWTTWKTTY",
+    "YTTKYWTWWTTWKTTY",
+    "YTTKYWWTTWWYKKTY",
+    "YTWKYYWWWWYYKTTY",
+    "KYTWKYYYYYYKWTKY",
+    "KYWTWKKYYKKWTWYK",
+    "KYWWTTWWWWTTWWYK",
+    ".KYYWWTTTTWWYYK.",
+    "..KKKKYYYYKKKK.."
   ],
 
-  // [진화 2] 모닝스타 선풍 (morningstarTempest)
+  // [진화 2] 모닝스타 선풍 (morningstarTempest) : 회전하는 4두 강철 가시철퇴와 황금 폭풍 칼날
   icon_morningstartempest: [
-    "...KK......KK...",
-    "..KLLK....KLLK..",
-    "..KLMMKKKKMMLK..",
-    "...KMMMDDMMMK...",
-    "..KMMMWWWWMMMK..",
-    ".KLMDWWKKWWDMMLK",
-    "KKMDWWKKKKWWDMKK",
-    "KLMDWKK..KKWDMML",
-    "KLMDWKK..KKWDMML",
-    "KKMDWWKKKKWWDMKK",
-    ".KLMDWWKKWWDMMLK",
-    "..KMMMWWWWMMMK..",
-    "...KMMMDDMMMK...",
-    "..KLMMKKKKMMLK..",
-    "..KLLK....KLLK..",
-    "...KK......KK..."
+    "...KKKWWWWKKK...",
+    "..KLLMWWWWMLLK..",
+    ".KLMDDWKKWDDMLK.",
+    ".KLMDWKKKKWDMML.",
+    "KMDKWKKYYKKWKDMM",
+    "KLWKKKYWWYKKKLWK",
+    "LWWKYWWYYWWYKLWL",
+    "WWWWKYYYYYYKWWWW",
+    "WWWWKYYYYYYKWWWW",
+    "LWWKYWWYYWWYKLWL",
+    "KLWKKKYWWYKKKLWK",
+    "KMDKWKKYYKKWKDMM",
+    ".KLMDWKKKKWDMML.",
+    ".KLMDDWKKWDDMLK.",
+    "..KLLMWWWWMLLK..",
+    "...KKKWWWWKKK..."
   ],
 
-  // [진화 3] 멸망의 혜성 (apocalypseComet)
+  // [진화 3] 멸망의 혜성 (apocalypseComet) : 심연의 흑염을 뚫고 낙하하는 백열/크림슨 종말의 유성
   icon_apocalypsecomet: [
-    "......KCCK......",
-    "....KKCCCCKK....",
-    "...KCYYYYYYCK...",
-    "..KCYWWWWWWYCK..",
-    ".KCYWVVVVWWYCK.",
-    ".KCYWVVVVWWYCK.",
-    "KCCWVVRRVVWWCCK",
-    "KCCWVRRRRVWWCCK",
-    "KCCWVRRRRVWWCCK",
-    "KCCWVVRRVVWWCCK",
-    ".KCYWVVVVWWYCK.",
-    ".KCYWVVVVWWYCK.",
-    "..KCYWWWWWWYCK..",
-    "...KCYYYYYYCK...",
-    "....KKCCCCKK....",
-    "......KCCK......"
+    "......KKYYKK....",
+    "....KKYCCCCYKK..",
+    "...KYCCWWWWCCYK.",
+    "..KYCWWYYYYWWCK.",
+    ".KYCWWYRRRRYWCKK",
+    ".KCCWYRRCCRRWCCK",
+    "KCCWYRCKKCCRWCCK",
+    "KYCWYRCCCCRWYCKK",
+    "KYCWYRCCCCRWYCKK",
+    "KCCWYRCKKCCRWCCK",
+    ".KCCWYRRCCRRWCCK",
+    ".KYCWWYRRRRYWCKK",
+    "..KYCWWYYYYWWCK.",
+    "...KYCCWWWWCCYK.",
+    "....KKYCCCCYKK..",
+    "......KKYYKK...."
   ],
 
-  // [진화 4] 학살자의 폭풍검 (slayerBladeStorm)
+  // [진화 4] 학살자의 폭풍검 (slayerBladeStorm) : 교차된 양대 명검과 대각선으로 분출되는 시안 참격풍
   icon_slayerbladestorm: [
-    "KLLK........KLLK",
-    "KMLLK......KLLMK",
-    "KKMLLK....KLLMKK",
-    ".KKMLLK..KLLMKK.",
-    "..KKMDDKKDDMKK..",
-    "...KMDDYYDDMK...",
-    "...KMDYYYYDMK...",
-    "..KKDYYYYYYDKK..",
-    "..KKDYYYYYYDKK..",
-    "...KMDYYYYDMK...",
-    "...KMDDYYDDMK...",
-    "..KKMDDKKDDMKK..",
-    ".KKMLLK..KLLMKK.",
-    "KKMLLK....KLLMKK",
-    "KMLLK......KLLMK",
-    "KLLK........KLLK"
+    "KWWKK......KKWWK",
+    "KLLWWK....KWWLLK",
+    ".KLLWWK..KWWLLK.",
+    "..KMMWWKKWWMMK..",
+    "...KMMWDDWMMK...",
+    "....KMDTTDMK....",
+    "...KTWWTTWWTK...",
+    "..KTWWYYYYWWTT..",
+    "..KTWWYYYYWWTT..",
+    "...KTWWTTWWTK...",
+    "....KMDTTDMK....",
+    "...KMMWDDWMMK...",
+    "..KMMWWKKWWMMK..",
+    ".KLLWWK..KWWLLK.",
+    "KLLWWK....KWWLLK",
+    "KWWKK......KKWWK"
   ],
 
-  // [진화 5] 테슬라 뇌전포 (teslaShotgun)
+  // [진화 5] 테슬라 뇌전포 (teslaShotgun) : 황금 코일 전극과 총구에서 작열하는 고출력 플라즈마 아크
   icon_teslashotgun: [
-    "....KK....KK....",
-    "...KTTK..KTTK...",
-    "..KTTWWKKTWWK...",
-    "..KTWWYYKYYWWK..",
-    ".KTWWYYKKYYWWK.",
-    ".KTTYYKKKKYTTK.",
-    "KKTTYYYYYYTTKKKK",
-    "KTTTTTTTTTTTTTTK",
-    "KTTTTTTTTTTTTTTK",
-    "KKTTYYYYYYTTKKKK",
-    ".KTTYYKKKKYTTK.",
-    ".KTWWYYKKYYWWK.",
-    "..KTWWYYKYYWWK..",
-    "..KTTWWKKTWWK...",
-    "...KTTK..KTTK...",
-    "....KK....KK...."
+    "....KKWWTTWWKK..",
+    "...KTTWWYYWWTTK.",
+    "..KTWWTTKKTTWWTT",
+    ".KTWWTTKKKKTTWWT",
+    ".KTWTKKMMMMKKTWT",
+    "KTWKKLLWWWWLLKWT",
+    "KTTKLLMMMMMMLLKT",
+    "KYYKMMDDYYDDMMKY",
+    "KYYKMMDDYYDDMMKY",
+    "KTTKLLMMMMMMLLKT",
+    "KTWKKLLWWWWLLKWT",
+    ".KTWTKKMMMMKKTWT",
+    ".KTWWTTKKKKTTWWT",
+    "..KTWWTTKKTTWWTT",
+    "...KTTWWYYWWTTK.",
+    "....KKWWTTWWKK.."
   ],
 
-  // [진화 6] 베놈 블리자드 (venomBlizzard)
+  // [진화 6] 베놈 블리자드 (venomBlizzard) : 극저온의 빙결 결정과 치명적인 맹독 가시의 융합 엠블럼
   icon_venomblizzard: [
-    ".....KKKKKK.....",
-    "...KKSATTTASKK..",
-    "..KSAWWWWWWASK..",
-    ".KSAWTTAATTWASK.",
-    ".KSAWTAASATWASK.",
-    "KSAWTTAASATTWASK",
-    "KSATTSSAASSTTTAK",
-    "KSAWTTAASATTWASK",
-    "KSAWTTAASATTWASK",
-    "KSATTSSAASSTTTAK",
-    "KSAWTTAASATTWASK",
-    ".KSAWTAASATWASK.",
-    ".KSAWTTAATTWASK.",
-    "..KSAWWWWWWASK..",
-    "...KKSATTTASKK..",
-    ".....KKKKKK....."
+    "......KKWWKK....",
+    ".....KSAWWASK...",
+    "....KSAAWTWWAASK",
+    "...KSAWTTKTTWASK",
+    "..KSAWTTKWKTWASK",
+    ".KSAWTKWWKWWKTAS",
+    "KSAWTKWSAASWKTAS",
+    "WWTTKWWASSAWWKWW",
+    "WWTTKWWASSAWWKWW",
+    "KSAWTKWSAASWKTAS",
+    ".KSAWTKWWKWWKTAS",
+    "..KSAWTTKWKTWASK",
+    "...KSAWTTKTTWASK",
+    "....KSAAWTWWAASK",
+    ".....KSAWWASK...",
+    "......KKWWKK...."
   ],
 
-  // [진화 7] 벼락검 (thunderBlade) : 지그재그 번개 검신과 뇌전 스파크
+  // [진화 7] 벼락검 (thunderBlade) : 지그재그 뇌전 도신과 시안 스파크가 튀는 전설의 벼락 대검
   icon_thunderblade: [
-    "..............YY",
-    ".............YWK",
-    "...........KTTWK",
-    "..........KTTWKY",
-    "........KKTTWK..",
-    ".......KTTWWK...",
-    "......KTTWK.....",
-    "....KKTTWWK.....",
-    "...KTTWWK...YY..",
-    "..KTTWWK...KYYK.",
-    ".KTTWK......KK..",
-    ".KWWKGGKK.......",
-    "..KKGYYGGK......",
-    "...KGGKK........",
-    "....KMMK........",
+    "..............WW",
+    ".............WTT",
+    "...........KTTTT",
+    "..........KTTWWK",
+    "........KKTTWWK.",
+    ".......KTTWWTTK.",
+    "......KTTWWTTK..",
+    "....KKTTWWYYK...",
+    "...KTTWWYYYYK...",
+    "..KTWWYYWWKK....",
+    ".KTWWYYKKTTWK...",
+    ".KWWKGGK.KTTWK..",
+    "..KKGYYGK.KTTWK.",
+    "...KGGYYK..KWTTW",
+    "....KMMKK...KKWW",
     ".....KK........."
   ],
 
-  // [진화 8] 화염 도끼 (fireAxe) : 작열하는 불꽃의 버닝 배틀액스
+  // [진화 8] 화염 도끼 (fireAxe) : 마그마가 분출되는 버닝 양날 칼날과 타오르는 배틀액스 엠블럼
   icon_fireaxe: [
-    "...YY......YY...",
-    "..YCCY....YCCY..",
-    ".YCWWCY..YCWWCY.",
-    "KCCYYCK..KCYYCCK",
-    "KCRRCK....KCRRCC",
-    ".KKRKK....KKRKK.",
-    "...KKOOOOOOKK...",
-    "....KOOEEEOK....",
-    "....KOOEEEOK....",
-    "....KOOEEEOK....",
-    "...KKOOOOOOKK...",
-    ".KCRRCK....KCRRC",
-    "KCCYYCK..KCYYCCK",
-    ".YCWWCY..YCWWCY.",
-    "..YCCY....YCCY..",
-    "...YY......YY..."
+    "..KYYK....KYYK..",
+    ".KYCCYK..KYCCYK.",
+    "KYCWWCYKKYCWWCYK",
+    "KYCWWCCKKYCCWWCK",
+    "KCCRRCCKKYCCRRCC",
+    ".KCRRRKKKKRRRCK.",
+    "..KKRKOEEEEOKRK.",
+    "...KKOOEEEEEOKK.",
+    "...KKOOEEEEEOKK.",
+    "..KKRKOEEEEOKRK.",
+    ".KCRRRKKKKRRRCK.",
+    "KCCRRCCKKYCCRRCC",
+    "KYCWWCCKKYCCWWCK",
+    "KYCWWCYKKYCWWCYK",
+    ".KYCCYK..KYCCYK.",
+    "..KYYK....KYYK.."
   ],
 
-  // [진화 9] 얼음 채찍 (frostWhip) : 고드름 얼음 가시가 돋친 프로스트 휩
+  // [진화 9] 얼음 채찍 (frostWhip) : 날카로운 고드름 가시와 냉기 오라가 똬리를 튼 프로스트 휩
   icon_frostwhip: [
+    "...KKTTWWTTKK...",
+    "..KTWWTTTTWWTTK.",
+    ".KTWWTKTTTTKTWTK",
+    "KTWWTKTTWWTTKTWT",
+    "KTWTKTTWWWWTTKWT",
+    "KTWTKTWWKKWWTTKT",
+    "KTWTKTWKKKKWTTKT",
+    "KTWTKTWKKKKWTTKT",
+    "KTWTKTWWKKWWTTKT",
+    "KTWTKTTWWWWTTKWT",
+    "KTWWTKTTWWTTKTWT",
+    ".KTWWTKTTTTKTWTK",
+    "..KTWWTTTTWWTTK.",
+    "...KTTWWWWTTK...",
     "....KKTTTTKK....",
-    "..KKTTWWWWTTKK..",
-    ".KTTWWTTTTWWTTK.",
-    "KTTWWTKKKKTTWWTK",
-    "KTWWTKTTTTKTTWTK",
-    "KTWWTKTTTWTK.KWT",
-    "KTWWTKTTKKTT.KWT",
-    "KTWWTKTT.KTT.KWT",
-    "KTWWTKTT.KTTKTWK",
-    "KTWWTKTT.KKTWWTT",
-    "KTWWTKTT..KTTTKK",
-    "KTWWTKTT...KKKK.",
-    ".KTWTKTT........",
-    "..KKKTTT........",
-    "....KTTWK.......",
-    ".....KKKK......."
+    "......KKKK......"
   ],
 
-  // [진화 10] 산탄 표창 (scatterShuriken) : 8방향 기계식 강철 산탄 수리검
+  // [진화 10] 산탄 표창 (scatterShuriken) : 팔방으로 전개된 예리한 강철 암기와 기계식 회전 코어
   icon_scattershuriken: [
     ".......KK.......",
-    "...KK.KLLK.KK...",
-    "..KLLKMMMMKLLK..",
-    "...KMMWDDWMMK...",
-    ".KK.MWDKKDW.M.KK",
-    "KLLMWDKKKKDWMLLK",
-    "KMMMDDKKKKDDMMMK",
-    ".KWDDKKKKKKDDWK.",
-    ".KWDDKKKKKKDDWK.",
-    "KMMMDDKKKKDDMMMK",
-    "KLLMWDKKKKDWMLLK",
-    ".KK.MWDKKDW.M.KK",
-    "...KMMWDDWMMK...",
-    "..KLLKMMMMKLLK..",
-    "...KK.KLLK.KK...",
+    "..KK..KLLK..KK..",
+    ".KLLKKMMMMKKLLK.",
+    ".KLMMMDDDMMMLK..",
+    "..KMDDWWWDDMK...",
+    "KKMDDWKKKWDDMKKK",
+    "LLMDWKKKKKWDMLLL",
+    "MMMDWKKKKKWDDMMM",
+    "MMMDWKKKKKWDDMMM",
+    "LLMDWKKKKKWDMLLL",
+    "KKMDDWKKKWDDMKKK",
+    "..KMDDWWWDDMK...",
+    ".KLMMMDDDMMMLK..",
+    ".KLLKKMMMMKKLLK.",
+    "..KK..KLLK..KK..",
     ".......KK......."
   ],
 
-  // [진화 11] 신성 화살 (holyArrow) : 천사의 날개가 달린 빛의 화살
+  // [진화 11] 신성 화살 (holyArrow) : 대천사의 순백 날개깃과 황금빛 후광을 가르는 빛의 관통 화살
   icon_holyarrow: [
-    "..............YY",
+    "..............WW",
     ".............YYW",
     "............YYWW",
     "...........YYWWT",
@@ -514,36 +514,36 @@ module.exports = {
     "........YYWWTT..",
     ".......YYWWTT...",
     "......YYWWTT....",
-    ".....YYWWTT.....",
-    "...KKYYWWTT.....",
-    "..KWWYYWWTT.....",
-    ".KWWLKYTT.......",
-    "KWL...KTT.......",
-    "KL.....KT.......",
-    "K..............."
+    "...KK.YYWWTT....",
+    "..KWWK.YYTT.....",
+    ".KWWLLKYTT......",
+    ".KWLLMKTT.......",
+    "KWLMKKKTT.......",
+    "KLMKK..KKT......",
+    "KK.......KK....."
   ],
 
-  // [진화 12] 역병 (plague) : 독골 해골 문양과 보라색 역병 결계
+  // [진화 12] 역병 (plague) : 저주의 보라빛 오라와 부식성 독안개가 피어오르는 언데드 역병 해골 룬
   icon_plague: [
     ".....KKKKKK.....",
     "...KKSSSSSSKK...",
-    "..KSSAAPPPAASSK.",
+    "..KSSAAAAAASSK..",
+    ".KSAAVVPPVVAASK.",
     ".KSAAPWKKWPAASK.",
-    ".KSAAPWWWWPAASK.",
     "KSAAAPWKKWPAAASK",
     "KSAAAPWWWWPAAASK",
     "KSSAAAPPPPAAASSS",
     "KSSAAAPPPPAAASSS",
-    "KSAAAKPKPKPKAAASK",
-    "KSAAAKKKKKKKAAASK",
-    ".KSAAAAAAAAAAASK.",
-    ".KSSAAAAAAAAASSK.",
-    "..KKSSSSSSSSKK..",
-    "....KKKKKKKK....",
-    "................"
+    "KSAAAKPKPKPKAAAK",
+    "KSAAAKKKKKKKAAAK",
+    ".KSAAVVPPVVAASK.",
+    ".KSSAAKKKKAASSK.",
+    "..KKSSAAAAASSK..",
+    "...KKSSSSSSKK...",
+    ".....KKKKKK....."
   ],
 
-  // [진화 13] 태풍의 눈 (cycloneBow) : 거대한 태풍 룬이 깃든 사이클론 보우
+  // [진화 13] 태풍의 눈 (cycloneBow) : 휘몰아치는 돌풍 룬과 에메랄드 정령의 기운이 깃든 사이클론 보우
   icon_cyclonebow: [
     "..............TT",
     "............TTAA",
@@ -563,9 +563,9 @@ module.exports = {
     "................"
   ],
 
-  // [진화 14] 황혼의 나선 (eclipseSpiral) : 태양과 달이 교차하는 일식 은하 나선
+  // [진화 14] 황혼의 나선 (eclipseSpiral) : 태양의 황금빛과 심연의 보랏빛 은하가 맞물린 일식 나선
   icon_eclipsespiral: [
-    ".......KK.......",
+    "......KKKK......",
     "....KKYYYYKK....",
     "..KKYYWWWWYYKK..",
     ".KYYYYPPPPYYYYK.",
@@ -580,7 +580,7 @@ module.exports = {
     ".KYYYYPPPPYYYYK.",
     "..KKYYWWWWYYKK..",
     "....KKYYYYKK....",
-    ".......KK......."
+    "......KKKK......"
   ],
 
   // ================= 레거시 / 대체 아이콘 4종 =================
@@ -928,7 +928,7 @@ module.exports = {
     "KK....KKKK....KK",
     "K..............K"
   ],
-  // 16. 확장의 룬 (area - 패시브) : 대각선 4방향(↖ ↗ ↙ ↘) 네온 화살표 룬 엠블럼
+  // 16. 확장의 룬 (area - 패시브) : 대각선 4방향 네온 화살표 룬 엠블럼
   icon_area: [
     "KWWKK......KKWWK",
     "WQQQWK....KWQQQW",
