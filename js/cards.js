@@ -83,66 +83,6 @@ class CardManager {
   generateCards() {
     const cardPool = [];
 
-    // 진화 링크 힌트 헬퍼: 14대 진화 조합 안내 (각 무기당 2개 진화 루트 지원)
-    const getEvolutionHint = (weaponKey) => {
-      const evoList = [
-        // 루트 1
-        { w1: 'sanctuary', w2: 'holyWater', evoId: 'heavenlySanctuary', evoName: '생츄어리', evoIcon: '⛪✨', evoIconKey: 'icon_heavenlysanctuary' },
-        { w1: 'whip', w2: 'shuriken', evoId: 'morningstarTempest', evoName: '모닝스타', evoIcon: '⛓️🌪️', evoIconKey: 'icon_morningstartempest' },
-        { w1: 'fireWand', w2: 'magicMissile', evoId: 'apocalypseComet', evoName: '메테오', evoIcon: '☄️🔥', evoIconKey: 'icon_apocalypsecomet' },
-        { w1: 'sword', w2: 'axe', evoId: 'bladeStorm', evoName: '폭풍칼날', evoIcon: '⚔️🌪️', evoIconKey: 'icon_bladestorm' },
-        { w1: 'shotgun', w2: 'lightningRing', evoId: 'teslaShotgun', evoName: '뇌전포', evoIcon: '⚡💥', evoIconKey: 'icon_teslashotgun' },
-        { w1: 'poisonDagger', w2: 'frostOrb', evoId: 'venomBlizzard', evoName: '블리자드', evoIcon: '❄️🧪', evoIconKey: 'icon_venomblizzard' },
-        // 루트 2
-        { w1: 'sword', w2: 'lightningRing', evoId: 'thunderBlade', evoName: '벼락검', evoIcon: '⚡🗡️', evoIconKey: 'icon_thunderblade' },
-        { w1: 'axe', w2: 'fireWand', evoId: 'fireAxe', evoName: '화염도끼', evoIcon: '🪓🔥', evoIconKey: 'icon_fireaxe' },
-        { w1: 'whip', w2: 'frostOrb', evoId: 'frostWhip', evoName: '얼음채찍', evoIcon: '🪢❄️', evoIconKey: 'icon_frostwhip' },
-        { w1: 'shuriken', w2: 'shotgun', evoId: 'scatterShuriken', evoName: '산탄표창', evoIcon: '🥷💥', evoIconKey: 'icon_scattershuriken' },
-        { w1: 'magicMissile', w2: 'holyWater', evoId: 'holyArrow', evoName: '신성화살', evoIcon: '🏹✨', evoIconKey: 'icon_holyarrow' },
-        { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪', evoIconKey: 'icon_plague' },
-        // 루트 3 (신규 2종)
-        { w1: 'windBow', w2: 'shuriken', evoId: 'cycloneBow', evoName: '태풍의 눈', evoIcon: '🌀🏹', evoIconKey: 'icon_cyclonebow' },
-        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨', evoIconKey: 'icon_eclipsespiral' },
-        // 루트 4 (신규 3종 시그니처 진화)
-        { w1: 'flamePillar', w2: 'fireWand', evoId: 'infernoCataclysm', evoName: '인페르노', evoIcon: '🌋☄️', evoIconKey: 'icon_infernocataclysm' },
-        { w1: 'chakram', w2: 'poisonDagger', evoId: 'shadowVortex', evoName: '섀도우 차크람', evoIcon: '🌀🗡️', evoIconKey: 'icon_shadowvortex' },
-        { w1: 'holyCross', w2: 'holyWater', evoId: 'divineJudgement', evoName: '저지먼트', evoIcon: '✝️⚡', evoIconKey: 'icon_divinejudgement' }
-      ];
-
-      for (const evo of evoList) {
-        if (this.weaponManager.weapons[evo.evoId]) continue;
-        let partnerKey = null;
-        if (evo.w1 === weaponKey) partnerKey = evo.w2;
-        else if (evo.w2 === weaponKey) partnerKey = evo.w1;
-
-        if (partnerKey && this.weaponManager.weapons[partnerKey]) {
-          const partnerName = weaponMeta[partnerKey]?.name || partnerKey;
-          const currentWeapon = this.weaponManager.weapons[weaponKey];
-          const partnerWeapon = this.weaponManager.weapons[partnerKey];
-          const currentLv = currentWeapon ? this.weaponManager.getLevel(currentWeapon) : 0;
-          const partnerLv = partnerWeapon ? this.weaponManager.getLevel(partnerWeapon) : 0;
-
-          if (currentLv >= 5 && partnerLv >= 5) {
-            return {
-              status: 'ready',
-              evoName: evo.evoName,
-              evoIcon: evo.evoIcon,
-              evoIconKey: evo.evoIconKey,
-              text: `✨ ${evo.evoName} (진화 가능)`
-            };
-          }
-          return {
-            status: 'linked',
-            evoName: evo.evoName,
-            evoIcon: evo.evoIcon,
-            evoIconKey: evo.evoIconKey,
-            text: evo.evoName
-          };
-        }
-      }
-      return null;
-    };
-
     // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한, 타 직업 시그니처 5종 차단, 공용 8종 허용)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
     const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb', 'flamePillar', 'chakram', 'holyCross'];
@@ -226,10 +166,69 @@ class CardManager {
       divineJudgement: { name: '저지먼트', type: '성광', icon: '✝️⚡', iconKey: 'icon_divinejudgement', desc: '거대 대천사 십자가 착탄 시 심판 낙뢰 및 30% 확률 0.5초 기절' }
     };
 
+    // 진화 링크 힌트 헬퍼: 현재 인벤토리에 보유 중인 파트너 무기 기준 모든 진화 루트 반환
+    const getEvolutionHints = (weaponKey) => {
+      const evoList = [
+        // 루트 1
+        { w1: 'sanctuary', w2: 'holyWater', evoId: 'heavenlySanctuary', evoName: '생츄어리', evoIcon: '⛪✨', evoIconKey: 'icon_heavenlysanctuary' },
+        { w1: 'whip', w2: 'shuriken', evoId: 'morningstarTempest', evoName: '모닝스타', evoIcon: '⛓️🌪️', evoIconKey: 'icon_morningstartempest' },
+        { w1: 'fireWand', w2: 'magicMissile', evoId: 'apocalypseComet', evoName: '메테오', evoIcon: '☄️🔥', evoIconKey: 'icon_apocalypsecomet' },
+        { w1: 'sword', w2: 'axe', evoId: 'bladeStorm', evoName: '폭풍칼날', evoIcon: '⚔️🌪️', evoIconKey: 'icon_bladestorm' },
+        { w1: 'shotgun', w2: 'lightningRing', evoId: 'teslaShotgun', evoName: '뇌전포', evoIcon: '⚡💥', evoIconKey: 'icon_teslashotgun' },
+        { w1: 'poisonDagger', w2: 'frostOrb', evoId: 'venomBlizzard', evoName: '블리자드', evoIcon: '❄️🧪', evoIconKey: 'icon_venomblizzard' },
+        // 루트 2
+        { w1: 'sword', w2: 'lightningRing', evoId: 'thunderBlade', evoName: '벼락검', evoIcon: '⚡🗡️', evoIconKey: 'icon_thunderblade' },
+        { w1: 'axe', w2: 'fireWand', evoId: 'fireAxe', evoName: '화염도끼', evoIcon: '🪓🔥', evoIconKey: 'icon_fireaxe' },
+        { w1: 'whip', w2: 'frostOrb', evoId: 'frostWhip', evoName: '얼음채찍', evoIcon: '🪢❄️', evoIconKey: 'icon_frostwhip' },
+        { w1: 'shuriken', w2: 'shotgun', evoId: 'scatterShuriken', evoName: '산탄표창', evoIcon: '🥷💥', evoIconKey: 'icon_scattershuriken' },
+        { w1: 'magicMissile', w2: 'holyWater', evoId: 'holyArrow', evoName: '신성화살', evoIcon: '🏹✨', evoIconKey: 'icon_holyarrow' },
+        { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪', evoIconKey: 'icon_plague' },
+        // 루트 3 (신규 2종)
+        { w1: 'windBow', w2: 'shuriken', evoId: 'cycloneBow', evoName: '태풍의 눈', evoIcon: '🌀🏹', evoIconKey: 'icon_cyclonebow' },
+        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨', evoIconKey: 'icon_eclipsespiral' },
+        // 루트 4 (신규 3종 시그니처 진화)
+        { w1: 'flamePillar', w2: 'fireWand', evoId: 'infernoCataclysm', evoName: '인페르노', evoIcon: '🌋☄️', evoIconKey: 'icon_infernocataclysm' },
+        { w1: 'chakram', w2: 'poisonDagger', evoId: 'shadowVortex', evoName: '섀도우 차크람', evoIcon: '🌀🗡️', evoIconKey: 'icon_shadowvortex' },
+        { w1: 'holyCross', w2: 'holyWater', evoId: 'divineJudgement', evoName: '저지먼트', evoIcon: '✝️⚡', evoIconKey: 'icon_divinejudgement' }
+      ];
+
+      const hints = [];
+      for (const evo of evoList) {
+        if (this.weaponManager.weapons[evo.evoId]) continue;
+        let partnerKey = null;
+        if (evo.w1 === weaponKey) partnerKey = evo.w2;
+        else if (evo.w2 === weaponKey) partnerKey = evo.w1;
+
+        if (partnerKey && this.weaponManager.weapons[partnerKey]) {
+          const partnerMeta = weaponMeta[partnerKey] || {};
+          const currentWeapon = this.weaponManager.weapons[weaponKey];
+          const partnerWeapon = this.weaponManager.weapons[partnerKey];
+          const currentLv = currentWeapon ? this.weaponManager.getLevel(currentWeapon) : 0;
+          const partnerLv = partnerWeapon ? this.weaponManager.getLevel(partnerWeapon) : 0;
+          const isPartnerMax = partnerLv >= 5;
+          const isReady = currentLv >= 5 && isPartnerMax;
+
+          hints.push({
+            status: isReady ? 'ready' : 'linked',
+            isReady,
+            partnerKey,
+            partnerIcon: partnerMeta.icon || '🗡️',
+            partnerIconKey: partnerMeta.iconKey || ('icon_' + partnerKey.toLowerCase()),
+            partnerLevel: partnerLv,
+            levelText: isPartnerMax ? 'M' : String(partnerLv),
+            evoId: evo.evoId,
+            evoName: evo.evoName,
+            text: isReady ? ('✨ ' + evo.evoName) : evo.evoName
+          });
+        }
+      }
+      return hints;
+    };
+
     if (ownedWeaponsCount < 6) {
       unownedWeapons.forEach(key => {
         const meta = weaponMeta[key];
-        const evoHint = getEvolutionHint(key);
+        const evoHints = getEvolutionHints(key);
         cardPool.push({
           id: `unlock_${key}`,
           type: 'weapon_new',
@@ -241,7 +240,8 @@ class CardManager {
           effectText: '신규 무기 획득',
           badge: meta.type ? `${meta.type} 무기` : 'NEW WEAPON',
           stars: '',
-          evolutionHint: evoHint,
+          evolutionHints: evoHints,
+          evolutionHint: evoHints[0] || null,
           apply: () => {
             this.weaponManager.unlockWeapon(key);
           }
@@ -887,7 +887,7 @@ class CardManager {
 
       const nextLv = currentLv + 1;
       const meta = weaponMeta[key] || { icon: '⚔️', iconKey: 'icon_atk', name: w.name };
-      const evoHint = getEvolutionHint(key);
+      const evoHints = getEvolutionHints(key);
 
       // 1) [무기 쿨타임 감소 강화]
       let cdDesc = `재사용 대기시간을 단축합니다. (Lv.${nextLv}/5)`;
@@ -905,7 +905,8 @@ class CardManager {
         effectText: '쿨타임 -15%',
         badge: `Lv.${nextLv}/5`,
         stars: formatStars(nextLv, 5),
-        evolutionHint: evoHint,
+        evolutionHints: evoHints,
+        evolutionHint: evoHints[0] || null,
         apply: () => {
           this.weaponManager.upgradeWeapon(key, 'cooldown');
         }
@@ -923,7 +924,8 @@ class CardManager {
         effectText: '공격력 +30%',
         badge: `Lv.${nextLv}/5`,
         stars: formatStars(nextLv, 5),
-        evolutionHint: evoHint,
+        evolutionHints: evoHints,
+        evolutionHint: evoHints[0] || null,
         apply: () => {
           this.weaponManager.upgradeWeapon(key, 'damage');
         }
@@ -941,7 +943,8 @@ class CardManager {
         effectText: '공격 범위 +20%',
         badge: `Lv.${nextLv}/5`,
         stars: formatStars(nextLv, 5),
-        evolutionHint: evoHint,
+        evolutionHints: evoHints,
+        evolutionHint: evoHints[0] || null,
         apply: () => {
           this.weaponManager.upgradeWeapon(key, 'area');
         }
@@ -1044,7 +1047,8 @@ class CardManager {
           effectText: countEffect,
           badge: `Lv.${nextLv}/5`,
           stars: formatStars(nextLv, 5),
-          evolutionHint: evoHint,
+          evolutionHints: evoHints,
+        evolutionHint: evoHints[0] || null,
           apply: () => {
             this.weaponManager.upgradeWeapon(key, 'count');
           }

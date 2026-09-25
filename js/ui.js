@@ -606,22 +606,28 @@ class UIManager {
       }
 
       let evoHintHtml = '';
-      if (card.evolutionHint) {
-        const hintClass = card.evolutionHint.status === 'ready'
-          ? 'hint-ready'
-          : (card.evolutionHint.status === 'linked' ? 'hint-linked' : 'hint-tree');
-        let evoIconEl = `<span class="evo-icon">${card.evolutionHint.evoIcon}</span>`;
-        if (card.evolutionHint.evoIconKey && assets.manifest[card.evolutionHint.evoIconKey]) {
-          evoIconEl = `<img src="${assets.manifest[card.evolutionHint.evoIconKey]}" class="evo-pixel-icon" alt="${card.evolutionHint.evoName}">`;
-        }
-        evoHintHtml = `
-          <div class="card-evo-hint ${hintClass}">
-            ${evoIconEl}
-            <span class="evo-text">${card.evolutionHint.text}</span>
-          </div>
-        `;
+      const hints = card.evolutionHints || (card.evolutionHint ? [card.evolutionHint] : []);
+      if (hints.length > 0) {
+        const hintItemsHtml = hints.map(h => {
+          const hintClass = h.status === 'ready' ? 'hint-ready' : 'hint-linked';
+          let partnerIconEl = '<span class="evo-icon">' + (h.partnerIcon || '🗡️') + '</span>';
+          if (h.partnerIconKey && assets.manifest[h.partnerIconKey]) {
+            partnerIconEl = '<img src="' + assets.manifest[h.partnerIconKey] + '" class="evo-pixel-icon" alt="' + h.partnerKey + '">';
+          }
+          const maxClass = h.levelText === 'M' ? ' lv-max' : '';
+          const lvBadge = '<span class="evo-partner-lv' + maxClass + '">[' + h.levelText + ']</span>';
+          return `
+            <div class="card-evo-hint ${hintClass}">
+              <div class="evo-partner-box">
+                ${partnerIconEl}
+                ${lvBadge}
+              </div>
+              <span class="evo-text">${h.text}</span>
+            </div>
+          `;
+        }).join('');
+        evoHintHtml = `<div class="card-evo-hints-wrap">${hintItemsHtml}</div>`;
       }
-
       const keyNum = index + 1;
       el.innerHTML = `
         <span class="card-num-badge">${keyNum}</span>
