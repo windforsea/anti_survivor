@@ -1206,7 +1206,7 @@ WeaponManager.prototype.draw = function(ctx) {
   }
 
   // ==========================================
-  // 6. [진화 14] 황혼의 나선 (eclipseSpiral) 대형 사역마 3체
+  // 6. [진화 14] 사역마 (eclipseSpiral)
   // ==========================================
   const eclipseSpiral = this.weapons['eclipseSpiral'];
   if (eclipseSpiral && eclipseSpiral.familiars) {

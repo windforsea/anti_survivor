@@ -158,10 +158,10 @@ class CardManager {
       fireAxe: { name: '화염도끼', type: '근접', icon: '🪓🔥', iconKey: 'icon_fireaxe', desc: '도끼 베기 직후, 화염구를 방출합니다.' },
       frostWhip: { name: '얼음채찍', type: '근접', icon: '❄️⛓️', iconKey: 'icon_frostwhip', desc: '낮은 확률로 빙결시킵니다.' },
       scatterShuriken: { name: '산탄표창', type: '원거리', icon: '🎯💥', iconKey: 'icon_scattershuriken', desc: '회전 관통 표창을 일제히 발사 적들을 밀쳐냅니다.' },
-      holyArrow: { name: '신성화살', type: '원거리', icon: '🏹✨', iconKey: 'icon_holyarrow', desc: '빛의 화살 2발을 발사하며, 착탄 위치에 성역을 생성합니다.' },
+      holyArrow: { name: '신성화살', type: '원거리', icon: '🏹✨', iconKey: 'icon_holyarrow', desc: '빛의 화살을 발사하며, 착탄 위치에 성역을 생성합니다.' },
       plague: { name: '역병', type: '도트', icon: '☣️💀', iconKey: 'icon_plague', desc: '일정 시간마다 화면 전체에 역병 폭발을 일으킵니다.' },
       cycloneBow: { name: '태풍의 눈', type: '원거리', icon: '🌀🏹', iconKey: 'icon_cyclonebow', desc: '블랙홀 관통 화살을 발사합니다.' },
-      eclipseSpiral: { name: '황혼의 나선', type: '소환', icon: '🔮✨', iconKey: 'icon_eclipsespiral', desc: '사역마가 마법 화살을 난사합니다.' },
+      eclipseSpiral: { name: '사역마', type: '소환', icon: '🔮✨', iconKey: 'icon_eclipsespiral', desc: '사역마가 마법 화살을 난사합니다.' },
       infernoCataclysm: { name: '인페르노', type: '광역', icon: '🌋☄️', iconKey: 'icon_infernocataclysm', desc: '화염 분화구와 화염지대를 남깁니다.' },
       shadowVortex: { name: '섀도우 차크람', type: '복합', icon: '🌀🗡️', iconKey: 'icon_shadowvortex', desc: '적중 시 6방향 맹독 파편을 뿌립니다.' },
       divineJudgement: { name: '저지먼트', type: '성광', icon: '✝️⚡', iconKey: 'icon_divinejudgement', desc: '십자가를 투척하고, 낙뢰로 기절시킵니다.' }
@@ -183,7 +183,7 @@ class CardManager {
         { w1: 'magicMissile', w2: 'holyWater', evoId: 'holyArrow', evoName: '신성화살', evoIcon: '🏹✨', evoIconKey: 'icon_holyarrow' },
         { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪', evoIconKey: 'icon_plague' },
         { w1: 'windBow', w2: 'shuriken', evoId: 'cycloneBow', evoName: '태풍의 눈', evoIcon: '🌀🏹', evoIconKey: 'icon_cyclonebow' },
-        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨', evoIconKey: 'icon_eclipsespiral' },
+        { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '사역마', evoIcon: '🔮✨', evoIconKey: 'icon_eclipsespiral' },
         { w1: 'flamePillar', w2: 'fireWand', evoId: 'infernoCataclysm', evoName: '인페르노', evoIcon: '🌋☄️', evoIconKey: 'icon_infernocataclysm' },
         { w1: 'chakram', w2: 'poisonDagger', evoId: 'shadowVortex', evoName: '섀도우 차크람', evoIcon: '🌀🗡️', evoIconKey: 'icon_shadowvortex' },
         { w1: 'holyCross', w2: 'holyWater', evoId: 'divineJudgement', evoName: '저지먼트', evoIcon: '✝️⚡', evoIconKey: 'icon_divinejudgement' }
@@ -602,7 +602,7 @@ class CardManager {
           title: '[진화] 신성화살',
           icon: '🏹✨',
           iconKey: 'icon_holyarrow',
-          desc: '마법 화살과 성수를 합성 진화합니다! 빛의 화살 2발을 발사하며, 착탄 위치에 성역을 생성합니다.',
+          desc: '마법 화살과 성수를 합성 진화합니다! 빛의 화살을 발사하며, 착탄 위치에 성역을 생성합니다.',
           effectText: '마법 화살(5Lv) + 성수(5Lv) 합성 -> [신성화살 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
@@ -691,7 +691,7 @@ class CardManager {
       }
     }
 
-    // [진화 14] 황혼의 나선 = 어둠의 보주(5Lv) + 마법 화살(5Lv)
+    // [진화 14] 사역마 = 어둠의 보주(5Lv) + 마법 화살(5Lv)
     const wShadowOrb = this.weaponManager.weapons['shadowOrb'];
     const hasEclipseSpiral = !!this.weaponManager.weapons['eclipseSpiral'];
     if (wShadowOrb && wMissile && !hasEclipseSpiral) {
@@ -700,11 +700,11 @@ class CardManager {
           id: 'evolve_eclipse_spiral',
           type: 'weapon_evolution',
           category: 'evolution',
-          title: '[진화] 황혼의 나선',
+          title: '[진화] 사역마',
           icon: '🔮✨',
           iconKey: 'icon_eclipsespiral',
           desc: '어둠의 보주와 마법 화살을 합성 진화합니다! 사역마가 마법 화살을 난사합니다.',
-          effectText: '어둠의 보주(5Lv) + 마법 화살(5Lv) 합성 -> [황혼의 나선 1Lv]',
+          effectText: '어둠의 보주(5Lv) + 마법 화살(5Lv) 합성 -> [사역마 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',
           apply: () => {
@@ -771,7 +771,7 @@ class CardManager {
           title: '[진화] 섀도우 차크람',
           icon: '💫☠️',
           iconKey: 'icon_shadowvortex',
-          desc: '차크람과 독비수를 합성 진화합니다! 적중 시 6방향 맹독 파편을 뿌립니다.',
+          desc: '차크람과 독비수를 합성 진화합니다! 적중 시 맹독 파편을 뿌립니다.',
           effectText: '차크람(5Lv) + 독비수(5Lv) 합성 -> [섀도우 차크람 1Lv]',
           badge: 'EVOLUTION',
           stars: '★★★★★',

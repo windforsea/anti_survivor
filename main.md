@@ -79,7 +79,7 @@ anti_survivor/
 
 1. **무기 유효 사거리 체크 및 스마트 홀드 파이어 (`js/weapons.js`)**:
    - 발사체/휘두르기 무기는 유효 사거리 내에 적이 감지되지 않으면 허공에 난사하지 않고 쿨타임을 0으로 대기(Hold Fire)합니다.
-   - 사거리 무제한 무기 10종(`lightningRing`, `holyWater`, `sanctuary`, `heavenlySanctuary`, `plague`, `bladeStorm`, `shadowOrb`, `eclipseSpiral` 등)은 상시 작동합니다.
+   - 사거리 무제한 무기 10종(`lightningRing`, `holyWater`, `sanctuary`, `heavenlySanctuary`, `plague`, `bladeStorm`, `shadowOrb`, `eclipseSpiral(사역마)` 등)은 상시 작동합니다.
    - 도끼 계열(`axe`, `fireAxe`)은 보스 투사체 패링 가능 범위까지 사거리 체크에 포함됩니다.
 2. **근접 무기 궤적 반경 정밀 동기화 (`js/player.js`)**:
    - 철검, 도끼, 벼락검 등 휘두르는 무기의 수묵 궤적 반경을 무기 끝(Tip) 위치에 1:1로 일치시키고, 범위(`area`) 스탯 증가 시 비례 확대되도록 정밀 보정되었습니다.
@@ -88,6 +88,10 @@ anti_survivor/
 4. **후반부 60fps 무렉(Zero-Lag) 방어 및 상태이상 분리 (`js/main.js`, `js/enemies.js`)**:
    - 글로벌 파티클 하드캡(최대 120개 상한, 80개 초과 시 50% 감쇠 LOD) 및 동시 크리티컬 이펙트 상한(최대 30개)으로 프레임 드랍을 원천 차단했습니다.
    - 번개/낙뢰의 '기절(Stun: 황금 스파크)'과 냉기 무기의 '빙결(Freeze: 육각 서리 결정)' 상태이상을 완전히 독립 분리하고 초경량 패스 렌더링을 적용했습니다.
+5. **진화 무기 밸런스 및 발사 메커니즘 최적화**:
+   - **사역마(`eclipseSpiral`)**: 1마리 시작 체계에 맞춰 마법화살 발사 주기를 3.0초로 밸런싱(과도한 탄막 난사 방지).
+   - **산탄표창(`scatterShuriken`)**: 투사체 레벨업 시 2발씩 정상 확장되도록 `getCount` 공식 및 실행기 동적 연동.
+   - **신성화살(`holyArrow`)**: 1발 시작 및 레벨업 시 동적 증가식(`getCount`) 연동 완료.
 
 ---
 

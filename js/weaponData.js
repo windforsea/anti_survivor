@@ -222,7 +222,7 @@ const WEAPON_CONFIGS = {
         desc: '자율 추적하여 플레이어를 호위합니다.',
         baseCooldown: 1.45, // 기존 1.10초 -> 1.45초 (32% 증가)
         baseDamage: 50,     // 기존 34 -> 50 (47% 상향)
-        baseCount: 2,
+        baseCount: 1,
         baseArea: 1.0,
         orbitAngle: 0,
         cooldownLevel: 0,
@@ -307,7 +307,7 @@ const WEAPON_CONFIGS = {
         desc: '타겟 적중 시 관통 표창을 발사합니다.',
         baseCooldown: 1.25, // 기존 0.95초 -> 1.25초 (32% 증가)
         baseDamage: 75,     // 기존 52 -> 75 (44% 상향)
-        baseCount: 2,
+        baseCount: 1,
         baseArea: 1.25,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -325,7 +325,7 @@ const WEAPON_CONFIGS = {
         desc: '화염 혜성을 발사하며, 연쇄 폭발을 일으킵니다.',
         baseCooldown: 1.18, // 기존 0.85초 -> 1.18초 (39% 증가)
         baseDamage: 90,     // 기존 62 -> 90 (45% 상향)
-        baseCount: 2,
+        baseCount: 1,
         baseArea: 1.25,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -362,7 +362,7 @@ const WEAPON_CONFIGS = {
         desc: '산탄 사격하며, 적중 시 낙뢰가 폭격됩니다.',
         baseCooldown: 1.65, // 기존 1.25초 -> 1.65초 (32% 증가)
         baseDamage: 65,     // 기존 45 -> 65 (44% 상향)
-        baseCount: 6,
+        baseCount: 3,
         baseArea: 1.20,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -432,7 +432,7 @@ const WEAPON_CONFIGS = {
         desc: '낮은 확률로 빙결시킵니다.',
         baseCooldown: 1.20, // 기존 0.90초 -> 1.20초 (33% 증가)
         baseDamage: 75,     // 기존 52 -> 75 (44% 상향)
-        baseCount: 2,
+        baseCount: 1,
         baseArea: 1.25,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -449,7 +449,7 @@ const WEAPON_CONFIGS = {
         desc: '회전 관통 표창을 일제히 발사 적들을 밀쳐냅니다.',
         baseCooldown: 0.95, // 기존 0.70초 -> 0.95초 (36% 증가)
         baseDamage: 55,     // 기존 38 -> 55 (45% 상향)
-        baseCount: 5,
+        baseCount: 3,
         baseArea: 1.20,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -463,10 +463,10 @@ const WEAPON_CONFIGS = {
         name: '신성화살',
         icon: '🏹✨',
         iconSprite: 'icon_holyarrow',
-        desc: '빛의 화살 2발을 발사하며, 착탄 위치에 성역을 생성합니다.',
+        desc: '빛의 화살을 발사하며, 착탄 위치에 성역을 생성합니다.',
         baseCooldown: 0.88, // 기존 0.65초 -> 0.88초 (35% 증가)
         baseDamage: 60,     // 기존 42 -> 60 (43% 상향)
-        baseCount: 2,
+        baseCount: 1,
         baseArea: 1.15,
         cooldownLevel: 0,
         damageLevel: 0,
@@ -482,7 +482,7 @@ const WEAPON_CONFIGS = {
         iconSprite: 'icon_plague',
         desc: '일정 시간마다 화면 전체에 역병 폭발을 일으킵니다.',
         baseCooldown: 1.05, // 기존 0.80초 -> 1.05초 (31% 증가)
-        baseDamage: 52,     // 기존 36 -> 52 (44% 상향)
+        baseDamage: 60,     // 기존 36 -> 60 (67% 상향)
         baseCount: 1,
         baseArea: 1.40,
         burstTimer: 30.0,
@@ -509,16 +509,16 @@ const WEAPON_CONFIGS = {
         areaLevel: 0,
         cooldownTimer: 0
       },
-      // [진화 14] 황혼의 나선 = 어둠의 보주(5렙) + 마법 화살(5렙)
+      // [진화 14] 사역마 = 어둠의 보주(5렙) + 마법 화살(5렙)
       eclipseSpiral: {
         id: 'eclipseSpiral',
-        name: '황혼의 나선',
+        name: '사역마',
         icon: '🌌🔮',
         iconSprite: 'icon_eclipsespiral',
         desc: '사역마가 마법 화살을 난사합니다.',
-        baseCooldown: 1.15, // 기존 0.85초 -> 1.15초 (35% 증가)
+        baseCooldown: 1.3, // 기존 0.85초 -> 1.3초 (53% 증가)
         baseDamage: 80,     // 기존 55 -> 80 (45% 상향)
-        baseCount: 3,
+        baseCount: 1,
         baseArea: 1.30,
         orbitAngle: 0,
         cooldownLevel: 0,
@@ -536,7 +536,7 @@ const WEAPON_CONFIGS = {
         desc: '화염 분화구와 화염지대를 남깁니다.',
         baseCooldown: 1.40, // 기존 1.05초 -> 1.40초 (33% 증가)
         baseDamage: 95,     // 기존 65 -> 95 (46% 상향)
-        baseCount: 4,
+        baseCount: 1,
         baseArea: 1.30,
         cooldownLevel: 0,
         damageLevel: 0,

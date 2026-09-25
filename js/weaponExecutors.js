@@ -921,7 +921,7 @@ WeaponManager.prototype.executeHolyArrow = function(w, enemies) {
   sounds.playMagic();
   const dmg = this.getDamage(w);
   const area = this.getArea(w);
-  const count = 2;
+  const count = this.getCount(w);
   const closest = this.getClosestEnemy(enemies);
   const baseAngle = closest ? Math.atan2(closest.y - this.player.y, closest.x - this.player.x) : Math.atan2(this.player.facing.y, this.player.facing.x);
   const speed = 460;

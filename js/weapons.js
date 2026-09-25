@@ -1,6 +1,6 @@
 // 14종 기본 무기(5강 MAX) 및 14대 2단계 특수 진화 무기 통합 매니저 (WeaponManager)
 // - 기본 무기 14종: 철검, 도끼, 채찍, 표창, 마법화살, 산탄총, 성수, 성역, 번개반지, 불지팡이, 독비수, 빙결보주, 바람활, 어둠의보주
-// - 진화 무기 14대: 생츄어리, 모닝스타, 메테오, 폭풍칼날, 뇌전포, 블리자드, 벼락검, 화염도끼, 얼음채찍, 산탄표창, 신성화살, 역병, 태풍의눈, 황혼의나선
+// - 진화 무기 14대: 생츄어리, 모닝스타, 메테오, 폭풍칼날, 뇌전포, 블리자드, 벼락검, 화염도끼, 얼음채찍, 산탄표창, 신성화살, 역병, 태풍의눈, 사역마
 
 class WeaponManager {
   constructor(player, game) {
@@ -353,7 +353,7 @@ class WeaponManager {
       }
     }
 
-    // [진화 14] 황혼의 나선 (eclipseSpiral) 자율 추적 사역마
+    // [진화 14] 사역마 (eclipseSpiral) 자율 추적 사역마
     const eclipseSpiral = this.weapons['eclipseSpiral'];
     if (eclipseSpiral) {
       const projSpeedMult = (1 + (eclipseSpiral.speedProjLevel || 0) * 0.18) * (this.player.bonusProjSpeedMult || 1.0);
@@ -371,7 +371,7 @@ class WeaponManager {
           y: this.player.y + (Math.random() - 0.5) * 40,
           target: null,
           hitTimer: 0,
-          missileTimer: (1.8 / Math.max(1, count)) * idx,
+          missileTimer: (3.0 / Math.max(1, count)) * idx,
           hoverAngle: (idx * Math.PI * 2) / Math.max(1, count),
           trail: []
         });
@@ -454,9 +454,9 @@ class WeaponManager {
           }
         }
 
-        fam.missileTimer = (fam.missileTimer !== undefined ? fam.missileTimer : (0.6 * i)) - dt;
+        fam.missileTimer = (fam.missileTimer !== undefined ? fam.missileTimer : (1.0 * i)) - dt;
         if (fam.missileTimer <= 0) {
-          fam.missileTimer = 1.8;
+          fam.missileTimer = 3.0;
 
           if (currentGhostCount < 32) {
             sounds.playMagic();
