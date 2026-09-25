@@ -523,8 +523,12 @@ class WeaponManager {
       w.cooldownTimer -= dt;
 
       if (w.cooldownTimer <= 0) {
-        this.fireWeapon(w, enemies);
-        w.cooldownTimer = this.getCooldown(w);
+        if (this.hasTargetInRange(w, enemies)) {
+          this.fireWeapon(w, enemies);
+          w.cooldownTimer = this.getCooldown(w);
+        } else {
+          w.cooldownTimer = 0; // 타겟이 범위에 진입할 때까지 즉발 준비 상태 유지
+        }
       }
     }
 
@@ -889,6 +893,79 @@ class WeaponManager {
         this.damagePools.splice(i, 1);
       }
     }
+  }
+
+  hasTargetInRange(w, enemies) {
+    const px = this.player.x;
+    const py = this.player.y;
+    const area = this.getArea(w);
+
+    let checkRadius = 580; // 원거리 무기 기본 가시 사거리
+    let checkBossProjectiles = false;
+
+    if (w.id === 'axe') {
+      checkRadius = 95 * area + 25;
+      checkBossProjectiles = true;
+    } else if (w.id === 'fireAxe') {
+      checkRadius = 115 * area + 30;
+      checkBossProjectiles = true;
+    } else if (w.id === 'sword') {
+      checkRadius = 80 * area + 20;
+    } else if (w.id === 'thunderBlade') {
+      checkRadius = 95 * area + 25;
+    } else if (w.id === 'whip') {
+      checkRadius = 165 * area + 20;
+    } else if (w.id === 'morningstarTempest' || w.id === 'bladeWhip') {
+      checkRadius = 175 * area + 25;
+    } else if (w.id === 'frostWhip') {
+      checkRadius = 170 * area + 25;
+    } else if (w.id === 'sanctuary') {
+      checkRadius = 90 * area + 25;
+    }
+
+    const checkRadiusSq = checkRadius * checkRadius;
+
+    // 1. 도끼류 특수 조건: 보스 원거리 투사체 요격 판정
+    if (checkBossProjectiles && this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
+      const bpList = this.game.bossProjectiles;
+      for (let i = 0; i < bpList.length; i++) {
+        const bp = bpList[i];
+        const dx = bp.x - px;
+        const dy = bp.y - py;
+        if (dx * dx + dy * dy <= checkRadiusSq) {
+          return true;
+        }
+      }
+    }
+
+    // 2. 살아있는 적 검사
+    if (enemies && enemies.length > 0) {
+      for (let i = 0; i < enemies.length; i++) {
+        const e = enemies[i];
+        if (e.isDead) continue;
+        const dx = e.x - px;
+        const dy = e.y - py;
+        if (dx * dx + dy * dy <= checkRadiusSq) {
+          return true;
+        }
+      }
+    }
+
+    // 3. 파괴 가능 장애물 검사 (상자/기암괴석 타격 허용)
+    const obstacles = this.game && this.game.obstacleManager ? this.game.obstacleManager.obstacles : null;
+    if (obstacles && obstacles.length > 0) {
+      for (let i = 0; i < obstacles.length; i++) {
+        const obs = obstacles[i];
+        if (obs.isDead || !obs.isDestructible) continue;
+        const dx = obs.x - px;
+        const dy = obs.y - py;
+        if (dx * dx + dy * dy <= checkRadiusSq) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   fireWeapon(w, enemies) {
