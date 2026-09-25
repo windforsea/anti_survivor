@@ -1,6 +1,6 @@
 {
-  "totalCalls": 38,
-  "lastUpdated": "2026-09-25T03:01:43.574Z",
+  "totalCalls": 41,
+  "lastUpdated": "2026-09-25T03:20:01.340Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 17,
+      "callCount": 18,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T03:01:43.573Z",
+      "lastUsedAt": "2026-09-25T03:20:01.339Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T03:20:01.340Z",
+          "reason": "128x128 수묵 엠블럼 래스터라이저 정합성 감사"
+        },
         {
           "timestamp": "2026-09-25T03:01:43.574Z",
           "reason": "Step 4 진화무기 및 보스 리워크 후 정합성 감사"
@@ -95,10 +99,6 @@
         {
           "timestamp": "2026-09-24T11:09:17.871Z",
           "reason": "어둠의 보주 및 태풍의 눈 무기 로직 수정 후 정적 감사"
-        },
-        {
-          "timestamp": "2026-09-24T02:47:21.759Z",
-          "reason": "스킬 업데이트 필요 여부 점검"
         }
       ]
     },
@@ -168,10 +168,14 @@
     },
     "to-web": {
       "name": "to-web",
-      "callCount": 5,
+      "callCount": 6,
       "createdAt": "2026-09-25T02:31:46.134Z",
-      "lastUsedAt": "2026-09-25T02:53:58.557Z",
+      "lastUsedAt": "2026-09-25T03:13:12.772Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T03:13:12.772Z",
+          "reason": "방안 A Part 1 128x128 엠블럼 생성 위임"
+        },
         {
           "timestamp": "2026-09-25T02:53:58.558Z",
           "reason": "Step 4 진화무기 및 보스 128x128 번들링"
@@ -196,10 +200,14 @@
     },
     "to-com": {
       "name": "to-com",
-      "callCount": 4,
+      "callCount": 5,
       "createdAt": "2026-09-25T02:40:19.670Z",
-      "lastUsedAt": "2026-09-25T03:01:16.184Z",
+      "lastUsedAt": "2026-09-25T03:19:31.879Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T03:19:31.879Z",
+          "reason": "방안 A Part 1 128x128 엠블럼 코드 로컬 반영"
+        },
         {
           "timestamp": "2026-09-25T03:01:16.185Z",
           "reason": "웹 제미나이 Step 4 결과 로컬 반영"

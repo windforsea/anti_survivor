@@ -1,5 +1,5 @@
-// Anti Survivors - 113종 다크 판타지 도트 픽셀 아트 PNG 빌더 (generate_assets.js)
-// Node.js 내장 zlib 및 fs 모듈만 사용하여 순수 JS로 픽셀아트 PNG를 생성 (Zero-dependency)
+// Anti Survivors - 113종 다크 판타지 도트 픽셀 아트 및 128x128 수묵화풍 고화질 엠블럼 PNG 빌더 (generate_assets.js)
+// Node.js 내장 zlib 및 fs 모듈만 사용하여 순수 JS로 고품질 스프라이트 PNG를 생성 (Zero-dependency)
 
 const fs = require('fs');
 const path = require('path');
@@ -9,6 +9,9 @@ const ASSETS_DIR = path.join(__dirname, 'assets', 'sprites');
 if (!fs.existsSync(ASSETS_DIR)) {
   fs.mkdirSync(ASSETS_DIR, { recursive: true });
 }
+
+// ================= 128x128 수묵화풍 고화질 엠블럼 렌더러 모듈 로드 =================
+const { renderInkEmblem, hasInkEmblem } = require('./assets/data/ink_emblems');
 
 // 순수 JS 기반 초경량 PNG 인코더
 function createPNG(width, height, rgbaBuffer) {
@@ -135,7 +138,7 @@ const PALETTE = {
   'X': '#1e293b'  // 암청색 심해 갑각 (삼엽충/게 껍질)
 };
 
-// ================= 도메인별 픽셀아트 데이터 로드 (모듈화) =================
+// ================= 도메인별 픽셀아트 데이터 로드 =================
 const HEROES = require('./assets/data/sprites_heroes');
 const ENEMIES_W1 = require('./assets/data/sprites_enemies_w1');
 const ENEMIES_W2 = require('./assets/data/sprites_enemies_w2');
@@ -152,18 +155,30 @@ const SPRITES = {
   ...MISC
 };
 
-// 모든 스프라이트 파일 저장 (아이콘 및 보스 몬스터는 128x128 해상도로 렌더링, 일반 캐릭터/몬스터는 32x32로 저장)
-console.log('🖌️ 다크 판타지 픽셀 아트 스프라이트 생성 시작...');
+console.log('🖌️ Anti Survivors [방안 A] 고화질 수묵 엠블럼 및 다크 판타지 스프라이트 생성 시작...');
 let count = 0;
+let inkCount = 0;
 
 for (const key in SPRITES) {
+  const isIcon = key.startsWith('icon_') || (key in ICONS);
+
+  // [방안 A Part 1]: 16x16 깍두기 확대를 완전히 폐기하고 128x128 수묵 엠블럼 생성기로 직접 렌더링
+  if (isIcon && hasInkEmblem(key)) {
+    const rgbaBuffer = renderInkEmblem(key);
+    const pngData = createPNG(128, 128, rgbaBuffer);
+    const filePath = path.join(ASSETS_DIR, `${key}.png`);
+    fs.writeFileSync(filePath, pngData);
+    count++;
+    inkCount++;
+    continue;
+  }
+
+  // 캐릭터/몬스터(32x32) 및 보스(128x128 스케일링) 레거시 스프라이트 렌더링 파이프라인
   const matrix = SPRITES[key];
   const origW = matrix[0].length;
-  const isIcon = key.startsWith('icon_') || (key in ICONS);
   const isBoss = key.startsWith('boss_') || (key in BOSSES);
   
-  // 아이콘 및 보스는 128x128 해상도로 스케일링, 일반 스프라이트는 기본 2배(32x32) 유지
-  const scale = (isIcon || isBoss) ? Math.max(1, Math.round(128 / origW)) : 2;
+  const scale = isBoss ? Math.max(1, Math.round(128 / origW)) : 2;
   const { width, height, buf } = renderMatrix(matrix, PALETTE, scale);
   const pngData = createPNG(width, height, buf);
   const filePath = path.join(ASSETS_DIR, `${key}.png`);
@@ -171,5 +186,6 @@ for (const key in SPRITES) {
   count++;
 }
 
-console.log(`✅ 총 ${count}개의 다크 판타지 스프라이트 PNG가 성공적으로 생성되었습니다! (아이콘 & 보스 128x128 렌더링 적용)`);
+console.log(`✅ 총 ${count}개의 스프라이트 PNG가 성공적으로 빌드되었습니다!`);
+console.log(`🎨 128x128 수묵화풍 고화질 엠블럼(서예 붓터치·단청 오방색·비백 림): ${inkCount}종 적용 완료`);
 console.log(`📂 저장 위치: ${ASSETS_DIR}`);
