@@ -1,4 +1,4 @@
-// Anti Survivors - 128x128 수묵화풍 고해상도 보스 7종 래스터라이저 (ink_bosses.js)
+// Anti Survivors - 128x128 수묵화풍 고해상도 보스 11종 래스터라이저 (ink_bosses.js)
 // 순수 JS 기반 Zero-dependency: 16x16 깍두기 확대를 전면 폐기하고 128x128 캔버스에 직접 수묵화풍 필선과 단청 채색 구현
 
 const WIDTH = 128;
@@ -271,7 +271,7 @@ class BossInkCanvas {
   }
 }
 
-// ================= 보스 7종 128x128 수묵화풍 고해상도 렌더러 =================
+// ================= 보스 11종 128x128 수묵화풍 고해상도 렌더러 =================
 
 const BOSS_RENDERERS = {
   // 1. 흉포한 멧돼지 로드 (boss_boar)
@@ -695,10 +695,319 @@ const BOSS_RENDERERS = {
       canvas.drawGlow(w[0], w[1], 10, INK_COLORS.BLUE_CYAN, 0.7);
       canvas.stampDisc(w[0], w[1], 2.2, INK_COLORS.WHITE_JADE, 0.95);
     });
+  },
+
+  // 8. 심해 대왕 문어 (boss_kraken)
+  // 거대한 심해 유선형 두부, 똬리 튼 8가닥 묵직한 촉수, 발광 흡반과 가로 악마 동공
+  boss_kraken: (canvas) => {
+    const prng = createPRNG(1015);
+
+    // [배경] 심해 암청과 감청의 심해 수묵 워시 및 먹물 폭풍
+    canvas.drawRadialWash(CX, CY, 58, INK_COLORS.BLUE_AZURE, INK_COLORS.BLUE_MIDNIGHT, 0.45, 0.0);
+    canvas.drawSplatter(CX, CY, 22, 50, INK_COLORS.INK_DEEP, 1016);
+
+    // [배후 외곽 촉수 4가닥 (좌우 대칭)]
+    const outerTentacle1 = [[CX - 18, 52], [CX - 38, 42], [CX - 54, 28], [CX - 58, 14]];
+    const outerTentacle2 = [[CX - 22, 58], [CX - 46, 56], [CX - 58, 70], [CX - 54, 88], [CX - 42, 98]];
+    [outerTentacle1, outerTentacle2].forEach(ot => {
+      canvas.drawSymmetricStroke(ot, INK_COLORS.INK_DEEP, 7.0, 1.8, { alpha: 0.98, feiBai: 0.25, prng });
+      canvas.drawSymmetricStroke(ot, INK_COLORS.BLUE_AZURE, 3.2, 0.8, { alpha: 0.85, isAdditive: true, prng });
+    });
+
+    // 외곽 촉수 발광 흡반 스탬프 (대칭)
+    const outerSuckers = [
+      [CX - 36, 43], [CX - 50, 31],
+      [CX - 44, 57], [CX - 55, 72], [CX - 50, 87]
+    ];
+    outerSuckers.forEach(([sx, sy]) => {
+      canvas.stampDisc(sx, sy, 2.8, INK_COLORS.BLUE_CYAN, 0.95);
+      canvas.stampDisc(sx, sy, 1.4, INK_COLORS.WHITE_JADE, 0.98);
+      canvas.stampDisc(WIDTH - sx, sy, 2.8, INK_COLORS.BLUE_CYAN, 0.95);
+      canvas.stampDisc(WIDTH - sx, sy, 1.4, INK_COLORS.WHITE_JADE, 0.98);
+    });
+
+    // [문어 외투막 두부 (Mantle)]
+    canvas.stampEllipse(CX, 36, 26, 22, 0, INK_COLORS.INK_DEEP, 0.98);
+    canvas.drawRadialWash(CX, 34, 24, INK_COLORS.BLUE_AZURE, INK_COLORS.BLUE_MIDNIGHT, 0.98, 0.4);
+
+    // 두부 비백 하이라이트 및 이마 주름 먹선
+    canvas.drawCalligraphyStroke([[CX - 14, 22], [CX, 18], [CX + 14, 22]], INK_COLORS.BLUE_CYAN, 3.0, 3.0, { alpha: 0.65, isAdditive: true, prng });
+    canvas.drawCalligraphyStroke([[CX, 20], [CX, 44]], INK_COLORS.INK_DEEP, 3.5, 2.0, { alpha: 0.9, prng });
+
+    // [크라켄 안구 및 가로 악마 동공 (Slit Pupil)]
+    canvas.drawGlow(CX - 20, 50, 14, INK_COLORS.GOLD_BRIGHT, 0.85);
+    canvas.drawGlow(CX + 20, 50, 14, INK_COLORS.GOLD_BRIGHT, 0.85);
+    canvas.stampEllipse(CX - 20, 50, 5.5, 4.2, -0.15, INK_COLORS.GOLD_ROYAL, 0.98);
+    canvas.stampEllipse(CX + 20, 50, 5.5, 4.2, 0.15, INK_COLORS.GOLD_ROYAL, 0.98);
+
+    // 수평 악마 동공
+    canvas.stampEllipse(CX - 20, 50, 4.0, 1.6, -0.15, INK_COLORS.INK_DEEP, 1.0);
+    canvas.stampEllipse(CX + 20, 50, 4.0, 1.6, 0.15, INK_COLORS.INK_DEEP, 1.0);
+    canvas.stampDisc(CX - 21, 49, 1.6, INK_COLORS.WHITE_JADE, 0.98);
+    canvas.stampDisc(CX + 19, 49, 1.6, INK_COLORS.WHITE_JADE, 0.98);
+
+    // [전면 거대 포획 촉수군 (Tentacles)]
+    const innerTentacle1 = [[CX - 8, 56], [CX - 14, 76], [CX - 8, 98], [CX - 18, 118]];
+    const innerTentacle2 = [[CX - 16, 56], [CX - 32, 78], [CX - 36, 102], [CX - 24, 120]];
+    [innerTentacle1, innerTentacle2].forEach(it => {
+      canvas.drawSymmetricStroke(it, INK_COLORS.INK_DEEP, 8.5, 2.2, { alpha: 0.98, feiBai: 0.2, prng });
+      canvas.drawSymmetricStroke(it, INK_COLORS.BLUE_CYAN, 2.5, 0.8, { alpha: 0.85, isAdditive: true, prng });
+    });
+
+    // 전면 포획 촉수 발광 흡반들 (좌우 대칭 스탬핑)
+    const innerSuckers = [
+      [CX - 12, 72], [CX - 11, 88], [CX - 15, 106],
+      [CX - 26, 74], [CX - 34, 92], [CX - 30, 110]
+    ];
+    innerSuckers.forEach(([ix, iy]) => {
+      canvas.stampDisc(ix, iy, 3.2, INK_COLORS.BLUE_CYAN, 0.95);
+      canvas.stampDisc(ix, iy, 1.6, INK_COLORS.WHITE_JADE, 0.98);
+      canvas.stampDisc(WIDTH - ix, iy, 3.2, INK_COLORS.BLUE_CYAN, 0.95);
+      canvas.stampDisc(WIDTH - ix, iy, 1.6, INK_COLORS.WHITE_JADE, 0.98);
+    });
+
+    // [하단 먹물 분출구 및 수묵 제트]
+    canvas.stampEllipse(CX, 62, 6.0, 4.5, 0, INK_COLORS.INK_DEEP, 1.0);
+    canvas.drawCalligraphyStroke([[CX, 64], [CX, 92]], INK_COLORS.INK_DEEP, 6.0, 1.5, { alpha: 0.9, feiBai: 0.4, prng });
+  },
+
+  // 9. 강철 집게 타이탄 크랩 (boss_titancrab)
+  // 난공불락의 흑철 갑각, 위압적인 거대 타이탄 집게발, 날카로운 백은 치열과 솟구친 눈자루
+  boss_titancrab: (canvas) => {
+    const prng = createPRNG(1017);
+
+    // [배경] 단청 다홍과 석간주 초열 살기 워시 및 갑각 파편
+    canvas.drawRadialWash(CX, 68, 56, INK_COLORS.RED_DEEP, INK_COLORS.INK_DEEP, 0.45, 0.0);
+    canvas.drawSplatter(CX, 72, 18, 46, INK_COLORS.RED_DEEP, 1018);
+
+    // [보행각 (Walking Legs) 4쌍 (좌우 대칭)]
+    const legs = [
+      [[CX - 30, 62], [CX - 48, 58], [CX - 58, 48]],
+      [[CX - 34, 70], [CX - 54, 72], [CX - 62, 66]],
+      [[CX - 32, 78], [CX - 52, 86], [CX - 58, 96]],
+      [[CX - 26, 86], [CX - 42, 100], [CX - 48, 116]]
+    ];
+    legs.forEach(l => {
+      canvas.drawSymmetricStroke(l, INK_COLORS.INK_DEEP, 5.5, 1.5, { alpha: 0.98, feiBai: 0.2, prng });
+      canvas.drawSymmetricStroke(l, INK_COLORS.RED_CRIMSON, 2.0, 0.6, { alpha: 0.8, isAdditive: true, prng });
+    });
+
+    // [등딱지 갑각 본체 (Carapace)]
+    canvas.stampEllipse(CX, 72, 34, 24, 0, INK_COLORS.INK_DEEP, 0.99);
+    canvas.drawRadialWash(CX, 70, 32, INK_COLORS.GOLD_AMBER, INK_COLORS.RED_DEEP, 0.98, 0.4);
+
+    // 갑각 상하 테두리 흑철 능선
+    canvas.drawCalligraphyStroke([[CX - 32, 60], [CX, 56], [CX + 32, 60]], INK_COLORS.INK_DEEP, 6.0, 6.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke([[CX - 30, 76], [CX, 94], [CX + 30, 76]], INK_COLORS.INK_DEEP, 5.0, 5.0, { alpha: 0.98, prng });
+
+    // 갑각 중앙 단청 심장부 및 갈필 균열
+    canvas.stampEllipse(CX, 72, 18, 12, 0, INK_COLORS.RED_CRIMSON, 0.95);
+    canvas.stampEllipse(CX, 72, 10, 6, 0, INK_COLORS.GOLD_ROYAL, 0.95);
+    canvas.drawSymmetricStroke([[CX, 64], [CX - 12, 72], [CX - 6, 82]], INK_COLORS.WHITE_SILVER, 2.2, 0.8, { isAdditive: true, prng });
+
+    // [돌출된 눈자루 및 황금 안광 (Eyestalks)]
+    canvas.drawCalligraphyStroke([[CX - 12, 58], [CX - 14, 46]], INK_COLORS.INK_DEEP, 4.0, 3.5, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke([[CX + 12, 58], [CX + 14, 46]], INK_COLORS.INK_DEEP, 4.0, 3.5, { alpha: 0.98, prng });
+
+    canvas.drawGlow(CX - 14, 44, 12, INK_COLORS.GOLD_BRIGHT, 0.85);
+    canvas.drawGlow(CX + 14, 44, 12, INK_COLORS.GOLD_BRIGHT, 0.85);
+    canvas.stampDisc(CX - 14, 44, 4.2, INK_COLORS.GOLD_ROYAL, 0.98);
+    canvas.stampDisc(CX + 14, 44, 4.2, INK_COLORS.GOLD_ROYAL, 0.98);
+    canvas.stampDisc(CX - 14, 44, 1.8, INK_COLORS.WHITE_JADE, 1.0);
+    canvas.stampDisc(CX + 14, 44, 1.8, INK_COLORS.WHITE_JADE, 1.0);
+
+    // [압도적인 대형 타이탄 집게발 (Titan Claws - 좌우 대칭)]
+    const clawArm = [[CX - 26, 62], [CX - 40, 52], [CX - 44, 38]];
+    canvas.drawSymmetricStroke(clawArm, INK_COLORS.INK_DEEP, 8.0, 7.0, { alpha: 0.98, prng });
+
+    // 집게 손목/구(Bulb)
+    canvas.stampEllipse(CX - 44, 34, 14, 11, 0.25, INK_COLORS.RED_DEEP, 0.98);
+    canvas.stampEllipse(CX + 44, 34, 14, 11, -0.25, INK_COLORS.RED_DEEP, 0.98);
+
+    // 집게발 갈고리 턱 (Dactyl & Pollex)
+    const outerClaw = [[CX - 46, 38], [CX - 56, 26], [CX - 52, 10], [CX - 38, 8]];
+    const innerClaw = [[CX - 40, 36], [CX - 34, 24], [CX - 32, 14], [CX - 36, 8]];
+    canvas.drawSymmetricStroke(outerClaw, INK_COLORS.INK_DEEP, 7.5, 2.2, { alpha: 0.98, prng });
+    canvas.drawSymmetricStroke(innerClaw, INK_COLORS.INK_DEEP, 6.5, 2.0, { alpha: 0.98, prng });
+
+    canvas.drawSymmetricStroke(outerClaw, INK_COLORS.RED_CRIMSON, 3.5, 1.0, { alpha: 0.9, isAdditive: true, prng });
+    canvas.drawSymmetricStroke(innerClaw, INK_COLORS.GOLD_AMBER, 2.8, 0.8, { alpha: 0.85, isAdditive: true, prng });
+
+    // 집게 안쪽의 예리한 백은 이빨 (Teeth)
+    const teeth = [
+      [CX - 48, 18], [CX - 44, 14], [CX - 40, 11],
+      [CX + 48, 18], [CX + 44, 14], [CX + 40, 11]
+    ];
+    teeth.forEach(([tx, ty]) => {
+      canvas.stampDisc(tx, ty, 2.2, INK_COLORS.WHITE_JADE, 0.98);
+    });
+
+    // 주위 분쇄 기포 (Bubbles)
+    canvas.stampDisc(CX - 52, 28, 2.5, INK_COLORS.WHITE_SILVER, 0.85);
+    canvas.stampDisc(CX + 52, 28, 2.5, INK_COLORS.WHITE_SILVER, 0.85);
+    canvas.stampDisc(CX - 32, 8, 2.0, INK_COLORS.BLUE_CYAN, 0.9, true);
+    canvas.stampDisc(CX + 32, 8, 2.0, INK_COLORS.BLUE_CYAN, 0.9, true);
+  },
+
+  // 10. 심해의 지배자 레비아탄 (boss_leviathan)
+  // 바다를 가르는 고대 해룡, 역동적 S자 똬리 척추, 비백 파도 지느러미 날개, 날카로운 백은 치열
+  boss_leviathan: (canvas) => {
+    const prng = createPRNG(1019);
+
+    // [배경] 소용돌이치는 감청/비취 시안 해류 워시 및 비묵
+    canvas.drawRadialWash(CX, CY, 58, INK_COLORS.BLUE_AZURE, INK_COLORS.BLUE_MIDNIGHT, 0.45, 0.0);
+    canvas.drawSplatter(CX, CY, 20, 48, INK_COLORS.BLUE_AZURE, 1020);
+
+    // 배경을 휘감는 갈필 해류 소용돌이
+    const whirlpoolPts = [[18, 92], [36, 112], [76, 116], [108, 96], [116, 68], [98, 42]];
+    canvas.drawCalligraphyStroke(whirlpoolPts, INK_COLORS.BLUE_AZURE, 4.0, 1.0, { alpha: 0.5, isAdditive: true, feiBai: 0.35, prng });
+
+    // [해룡의 S자 똬리 몸체 (Serpentine Spine)]
+    const spinePts = [[24, 108], [42, 116], [74, 108], [88, 88], [82, 66], [62, 54], [52, 40], [58, 26]];
+    canvas.drawCalligraphyStroke(spinePts, INK_COLORS.INK_DEEP, 16.0, 10.0, { alpha: 0.99, prng });
+    canvas.drawCalligraphyStroke(spinePts, INK_COLORS.BLUE_MIDNIGHT, 12.0, 7.5, { alpha: 0.95, prng });
+    canvas.drawCalligraphyStroke(spinePts, INK_COLORS.WHITE_SILVER, 4.5, 2.2, { alpha: 0.7, isAdditive: true, feiBai: 0.25, prng });
+
+    // [등줄기 가시 볏 (Dorsal Spines)]
+    const dorsalSpines = [
+      [[42, 116], [42, 126]],
+      [[62, 114], [68, 125]],
+      [[84, 98], [100, 106]],
+      [[88, 80], [104, 82]],
+      [[78, 62], [94, 58]],
+      [[60, 48], [74, 42]]
+    ];
+    dorsalSpines.forEach(s => {
+      canvas.drawCalligraphyStroke(s, INK_COLORS.WHITE_JADE, 3.5, 0.8, { alpha: 0.98, prng });
+    });
+
+    // [갈필 파도 지느러미 날개 (Fin-Wings)]
+    const leftFin = [[62, 54], [38, 48], [16, 56], [8, 70]];
+    const rightFin = [[82, 66], [104, 60], [120, 68]];
+    [leftFin, rightFin].forEach(f => {
+      canvas.drawCalligraphyStroke(f, INK_COLORS.INK_DEEP, 6.5, 1.2, { alpha: 0.98, feiBai: 0.4, prng });
+      canvas.drawCalligraphyStroke(f, INK_COLORS.BLUE_CYAN, 2.5, 0.5, { alpha: 0.85, isAdditive: true, prng });
+    });
+
+    // [해룡의 두부 및 포효하는 턱 (Dragon Jaws)]
+    const upperJaw = [[52, 32], [58, 22], [76, 16], [90, 18], [94, 24]];
+    const lowerJaw = [[54, 34], [68, 32], [84, 30], [88, 36]];
+    canvas.drawCalligraphyStroke(upperJaw, INK_COLORS.INK_DEEP, 6.0, 3.5, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(lowerJaw, INK_COLORS.INK_DEEP, 5.0, 3.0, { alpha: 0.98, prng });
+
+    // 날카로운 백은 송곳니
+    const fangs = [
+      [70, 20], [78, 20], [86, 22],
+      [66, 30], [74, 30], [82, 28]
+    ];
+    fangs.forEach(([fx, fy]) => {
+      canvas.stampDisc(fx, fy, 2.0, INK_COLORS.WHITE_JADE, 1.0);
+    });
+
+    // [고대 산호형 해룡 뿔 및 수염]
+    const horn = [[54, 22], [42, 14], [28, 12], [16, 16]];
+    canvas.drawCalligraphyStroke(horn, INK_COLORS.INK_DEEP, 5.5, 1.5, { alpha: 0.98, feiBai: 0.2, prng });
+    canvas.drawCalligraphyStroke(horn, INK_COLORS.WHITE_SILVER, 2.2, 0.6, { alpha: 0.8, isAdditive: true, prng });
+
+    const whisker = [[62, 34], [52, 44], [36, 48]];
+    canvas.drawCalligraphyStroke(whisker, INK_COLORS.BLUE_CYAN, 2.5, 0.5, { alpha: 0.85, isAdditive: true, feiBai: 0.3, prng });
+
+    // [비취 용안 (Dragon Eye)]
+    canvas.drawGlow(64, 22, 14, INK_COLORS.BLUE_CYAN, 0.95);
+    canvas.stampEllipse(64, 22, 4.5, 3.2, 0.2, INK_COLORS.BLUE_CYAN, 0.98);
+    canvas.stampDisc(64, 22, 2.0, INK_COLORS.GOLD_BRIGHT, 0.98);
+    canvas.stampDisc(63, 21, 1.2, INK_COLORS.WHITE_JADE, 1.0);
+  },
+
+  // 11. 심연의 고대신 다곤 (boss_dagon)
+  // 반인반어 심연 신격, 위엄 있는 황금 삼지창과 심연 보주, 고대 왕관과 촉수 수염
+  boss_dagon: (canvas) => {
+    const prng = createPRNG(1021);
+
+    // [배경] 벽옥 에메랄드와 심연 흑자색의 고대 신격 오라 워시
+    canvas.drawRadialWash(CX, CY, 58, INK_COLORS.GREEN_JADE, INK_COLORS.PURPLE_SHADOW, 0.42, 0.0);
+    canvas.drawSplatter(CX, CY, 18, 48, INK_COLORS.GREEN_DARK, 1022);
+
+    // [하반신 로브 및 심연 지느러미 (Lower Robe)]
+    const robePts = [
+      [CX - 28, 64], [CX - 38, 92], [CX - 24, 116],
+      [CX, 110], [CX + 24, 116], [CX + 38, 92], [CX + 28, 64]
+    ];
+    canvas.drawCalligraphyStroke(robePts, INK_COLORS.INK_DEEP, 8.5, 6.5, { alpha: 0.98, feiBai: 0.25, prng });
+    canvas.drawRadialWash(CX, 92, 30, INK_COLORS.GREEN_DARK, INK_COLORS.BLUE_MIDNIGHT, 0.95, 0.4);
+    canvas.drawCalligraphyStroke([[CX, 64], [CX, 108]], INK_COLORS.GREEN_JADE, 3.5, 1.5, { alpha: 0.85, isAdditive: true, prng });
+
+    // [우측 거대한 황금 삼지창 (Trident of the Abyss)]
+    const tridentShaft = [[CX + 36, 122], [CX + 36, 22]];
+    canvas.drawCalligraphyStroke(tridentShaft, INK_COLORS.INK_DEEP, 5.5, 4.5, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(tridentShaft, INK_COLORS.GOLD_ROYAL, 2.5, 2.0, { alpha: 0.95, isAdditive: true, prng });
+
+    const tridentCrossbar = [[CX + 26, 26], [CX + 46, 26]];
+    canvas.drawCalligraphyStroke(tridentCrossbar, INK_COLORS.GOLD_ROYAL, 4.0, 4.0, { alpha: 0.95, isAdditive: true, prng });
+
+    const centerProng = [[CX + 36, 26], [CX + 36, 6]];
+    const leftProng = [[CX + 28, 26], [CX + 24, 14], [CX + 28, 8]];
+    const rightProng = [[CX + 44, 26], [CX + 48, 14], [CX + 44, 8]];
+    [centerProng, leftProng, rightProng].forEach(p => {
+      canvas.drawCalligraphyStroke(p, INK_COLORS.INK_DEEP, 4.5, 1.2, { alpha: 0.98, prng });
+      canvas.drawCalligraphyStroke(p, INK_COLORS.WHITE_JADE, 2.2, 0.6, { alpha: 0.95, isAdditive: true, prng });
+    });
+
+    // 삼지창 중앙의 심연 보주 (Abyss Orb)
+    canvas.drawGlow(CX + 36, 26, 16, INK_COLORS.BLUE_CYAN, 0.95);
+    canvas.stampDisc(CX + 36, 26, 5.5, INK_COLORS.BLUE_CYAN, 0.98);
+    canvas.stampDisc(CX + 36, 26, 2.8, INK_COLORS.GOLD_BRIGHT, 0.98);
+    canvas.stampDisc(CX + 36, 26, 1.2, INK_COLORS.WHITE_JADE, 1.0);
+
+    // [흉부 및 견갑 (Torso & Shoulders)]
+    const leftShoulder = [[CX - 16, 52], [CX - 36, 48], [CX - 44, 62], [CX - 24, 68]];
+    const rightShoulder = [[CX + 16, 52], [CX + 32, 48], [CX + 38, 62], [CX + 20, 68]];
+    canvas.drawCalligraphyStroke(leftShoulder, INK_COLORS.INK_DEEP, 7.0, 5.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(rightShoulder, INK_COLORS.INK_DEEP, 7.0, 5.0, { alpha: 0.98, prng });
+    canvas.stampEllipse(CX - 2, 62, 16, 14, 0, INK_COLORS.GREEN_DARK, 0.98);
+    canvas.drawCalligraphyStroke([[CX - 8, 62], [CX + 4, 62]], INK_COLORS.BLUE_CYAN, 2.2, 2.2, { isAdditive: true, prng });
+
+    // [두부, 부채꼴 지느러미 귀 및 촉수 수염]
+    canvas.stampEllipse(CX - 4, 42, 14, 15, 0, INK_COLORS.INK_DEEP, 0.98);
+    canvas.drawRadialWash(CX - 4, 40, 13, INK_COLORS.GREEN_JADE, INK_COLORS.GREEN_DARK, 0.98, 0.5);
+
+    const leftFrill = [[CX - 16, 38], [CX - 30, 32], [CX - 32, 44], [CX - 18, 48]];
+    const rightFrill = [[CX + 8, 38], [CX + 22, 32], [CX + 24, 44], [CX + 10, 48]];
+    canvas.drawCalligraphyStroke(leftFrill, INK_COLORS.GREEN_JADE, 4.5, 1.5, { alpha: 0.95, feiBai: 0.2, prng });
+    canvas.drawCalligraphyStroke(rightFrill, INK_COLORS.GREEN_JADE, 4.5, 1.5, { alpha: 0.95, feiBai: 0.2, prng });
+
+    // 턱 아래 촉수 수염 4가닥 (Tentacle Beard)
+    const beard = [
+      [[CX - 10, 52], [CX - 16, 64], [CX - 12, 74]],
+      [[CX - 5, 54], [CX - 8, 68], [CX - 4, 80]],
+      [[CX, 54], [CX + 2, 68], [CX + 6, 78]],
+      [[CX + 5, 52], [CX + 10, 64], [CX + 8, 74]]
+    ];
+    beard.forEach(b => {
+      canvas.drawCalligraphyStroke(b, INK_COLORS.INK_DEEP, 3.5, 1.0, { alpha: 0.95, feiBai: 0.2, prng });
+      canvas.drawCalligraphyStroke(b, INK_COLORS.GREEN_JADE, 1.5, 0.4, { alpha: 0.8, isAdditive: true, prng });
+    });
+
+    // [고대 심해 왕관 (Deep Crown)]
+    const crownPts = [
+      [CX - 16, 32], [CX - 18, 16], [CX - 9, 24],
+      [CX - 4, 12], [CX + 2, 24], [CX + 10, 16], [CX + 8, 32]
+    ];
+    canvas.drawCalligraphyStroke(crownPts, INK_COLORS.INK_DEEP, 5.0, 3.5, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(crownPts, INK_COLORS.GOLD_ROYAL, 2.5, 1.8, { alpha: 0.95, isAdditive: true, prng });
+    canvas.stampDisc(CX - 4, 18, 3.0, INK_COLORS.BLUE_CYAN, 0.98);
+
+    // [빛나는 황금 안광 (Dagon Eyes)]
+    canvas.drawGlow(CX - 9, 40, 12, INK_COLORS.GOLD_BRIGHT, 0.85);
+    canvas.drawGlow(CX + 1, 40, 12, INK_COLORS.GOLD_BRIGHT, 0.85);
+    canvas.stampDisc(CX - 9, 40, 2.5, INK_COLORS.GOLD_ROYAL, 0.98);
+    canvas.stampDisc(CX + 1, 40, 2.5, INK_COLORS.GOLD_ROYAL, 0.98);
+    canvas.stampDisc(CX - 9, 40, 1.2, INK_COLORS.WHITE_JADE, 1.0);
+    canvas.stampDisc(CX + 1, 40, 1.2, INK_COLORS.WHITE_JADE, 1.0);
   }
 };
 
-// ================= 보스 7종 식별자 목록 =================
+// ================= 보스 11종 식별자 목록 =================
 const BOSS_KEYS = [
   'boss_boar',
   'boss_void',
@@ -706,7 +1015,11 @@ const BOSS_KEYS = [
   'boss_colossus',
   'boss_doom',
   'boss_lich',
-  'boss_reaper'
+  'boss_reaper',
+  'boss_kraken',
+  'boss_titancrab',
+  'boss_leviathan',
+  'boss_dagon'
 ];
 
 /**
