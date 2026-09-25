@@ -47,7 +47,7 @@ UIManager.prototype.renderLobbyUpgrades = function() {
     const upgrades = saveData.upgrades || {};
 
     if (this.lobbyGoldText) {
-      this.lobbyGoldText.textContent = `🪙 보유 금화: ${gold.toLocaleString()} G`;
+      this.lobbyGoldText.innerHTML = `<img src="assets/sprites/item_gold.png" class="coin-icon-lg" alt="상평통보"> 보유 엽전: ${gold.toLocaleString()} G`;
     }
 
     const configs = [
@@ -58,7 +58,7 @@ UIManager.prototype.renderLobbyUpgrades = function() {
       { id: 'speed', name: '이동 속도 증가', icon: '👟', desc: '이동 속도 +3%', maxLevel: 5, baseCost: 100, costInc: 50 },
       { id: 'regen', name: '체력 재생', icon: '💍', desc: '초당 체력 회복 +0.3 HP/s', maxLevel: 3, baseCost: 200, costInc: 100 },
       { id: 'magnet', name: '자석 반경 증가', icon: '🧲', desc: '보석/금화 흡수 반경 +20px', maxLevel: 5, baseCost: 70, costInc: 35 },
-      { id: 'greed', name: '금화 획득량 증가', icon: '🪙', desc: '금화 획득량 +10%', maxLevel: 5, baseCost: 120, costInc: 60 },
+      { id: 'greed', name: '엽전 획득량 증가', icon: '<img src="assets/sprites/item_gold.png" class="coin-icon" alt="엽전">', desc: '엽전 획득량 +10%', maxLevel: 5, baseCost: 120, costInc: 60 },
       { id: 'revive', name: '부활', icon: '👼', desc: '사망 시 1회 체력 50% 부활', maxLevel: 1, baseCost: 1000, costInc: 0 }
     ];
 
@@ -91,7 +91,7 @@ UIManager.prototype.renderLobbyUpgrades = function() {
           ${pipsHtml}
         </div>
         <button class="lobby-buy-btn" ${isMax || !canAfford ? 'disabled' : ''}>
-          ${isMax ? 'MAX 달성' : `${cost} G 강화`}
+          ${isMax ? 'MAX 달성' : `<img src="assets/sprites/item_gold.png" class="coin-icon" alt="엽전"> ${cost} G 강화`}
         </button>
       `;
 

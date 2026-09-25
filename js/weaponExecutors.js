@@ -336,54 +336,17 @@ WeaponManager.prototype.executeLightningStrike = function(w, enemies) {
       ty = this.player.y + Math.sin(angle) * dist;
     }
 
-    const segments = [{ x: tx, y: ty - 450 }];
-    const steps = 7;
-    for (let s = 1; s < steps; s++) {
-      const frac = s / steps;
-      segments.push({
-        x: tx + (Math.random() - 0.5) * 45,
-        y: (ty - 450) + 450 * frac
-      });
-    }
-    segments.push({ x: tx, y: ty });
-
-    this.lightningStrikes.push({
+    if (!this.lightningIndicators) this.lightningIndicators = [];
+    this.lightningIndicators.push({
       x: tx,
       y: ty,
-      segments: segments,
       radius: radius,
-      life: 0.18,
-      maxLife: 0.18
+      timer: 0.20 + i * 0.04,
+      maxTimer: 0.20 + i * 0.04,
+      rotAngle: Math.random() * Math.PI * 2,
+      damage: dmg
     });
-
-    for (const e of enemies) {
-      if (e.isDead) continue;
-      const d = Math.hypot(e.x - tx, e.y - ty);
-      if (d <= radius + e.radius) {
-        const kbDir = {
-          x: (e.x - tx) / (d || 1),
-          y: (e.y - ty) / (d || 1)
-        };
-        e.takeDamage(dmg, kbDir, 160);
-        if (Math.random() < 0.25) e.freeze(0.4);
-      }
-    }
-
-    for (const obs of obstacles) {
-      if (obs.isDead || !obs.isDestructible) continue;
-      const d = Math.hypot(obs.x - tx, obs.y - ty);
-      if (d <= radius + obs.radius) {
-        obs.takeDamage(dmg, this.game);
-      }
-    }
-
-    if (this.game) {
-      this.game.addParticles(tx, ty, '#38bdf8', 8);
-      this.game.addParticles(tx, ty, '#fef08a', 8);
-    }
   }
-
-  sounds.playLightning();
 };
 
 WeaponManager.prototype.executeFireWand = function(w, enemies) {
@@ -807,7 +770,24 @@ WeaponManager.prototype.executeFireAxe = function(w, enemies) {
   const dmg = this.getDamage(w);
   const area = this.getArea(w);
   const radius = 115 * area;
-  this.player.triggerAttackAnim('circle', 0, 0.18, { area: area * 1.3, color: '#f97316' });
+
+  // 1. 화염도끼 회전 베기 애니메이션 트리거 (도끼 스프라이트 + 화염 수묵 궤적)
+  this.player.triggerAttackAnim('fireAxe', 0, 0.22, { area, color: '#f97316' });
+
+  // 2. 근접 원형 슬래시 판정 및 적 타격
+  this.slashes.push({
+    type: 'circle',
+    x: this.player.x,
+    y: this.player.y,
+    radius: radius,
+    damage: dmg,
+    knockbackDir: null,
+    knockbackForce: 180,
+    life: 0.22,
+    maxLife: 0.22,
+    hitEnemies: new Set(),
+    hitObstacles: new Set()
+  });
 
   for (const enemy of enemies) {
     if (enemy.isDead) continue;
@@ -821,6 +801,7 @@ WeaponManager.prototype.executeFireAxe = function(w, enemies) {
     }
   }
 
+  // 3. 근접 범위 내 보스 투사체 패링(삭제)
   if (this.game && this.game.bossProjectiles && this.game.bossProjectiles.length > 0) {
     for (let pIdx = this.game.bossProjectiles.length - 1; pIdx >= 0; pIdx--) {
       const bp = this.game.bossProjectiles[pIdx];
@@ -831,9 +812,10 @@ WeaponManager.prototype.executeFireAxe = function(w, enemies) {
     }
   }
 
-  if (this.game && this.game.obstacles && this.game.obstacles.obstacles) {
-    for (const obs of this.game.obstacles.obstacles) {
-      if (obs.isDestroyed) continue;
+  // 4. 장애물 타격
+  if (this.game && this.game.obstacleManager && this.game.obstacleManager.obstacles) {
+    for (const obs of this.game.obstacleManager.obstacles) {
+      if (obs.isDead || !obs.isDestructible) continue;
       const dist = Math.hypot(obs.x - this.player.x, obs.y - this.player.y);
       if (dist <= radius + obs.radius) {
         obs.takeDamage(dmg, this.game);
@@ -841,10 +823,15 @@ WeaponManager.prototype.executeFireAxe = function(w, enemies) {
     }
   }
 
+  // 5. 파이어볼 발사: 연타 횟수에 따라 십자가(+)와 대각선(X) 교차 발사
   sounds.playFire();
+  w.fireCycle = (w.fireCycle || 0) + 1;
+  const isDiagonal = (w.fireCycle % 2 === 0);
+  const baseOffset = isDiagonal ? (Math.PI / 4) : 0;
   const speed = 400;
+
   for (let i = 0; i < 4; i++) {
-    const angle = (i / 4) * Math.PI * 2;
+    const angle = (i / 4) * Math.PI * 2 + baseOffset;
     this.projectiles.push({
       type: 'fireball',
       x: this.player.x,

@@ -1,6 +1,6 @@
 {
-  "totalCalls": 62,
-  "lastUpdated": "2026-09-25T05:10:01.429Z",
+  "totalCalls": 65,
+  "lastUpdated": "2026-09-25T05:40:30.774Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -168,10 +168,14 @@
     },
     "to-web": {
       "name": "to-web",
-      "callCount": 14,
+      "callCount": 15,
       "createdAt": "2026-09-25T02:31:46.134Z",
-      "lastUsedAt": "2026-09-25T04:46:17.880Z",
+      "lastUsedAt": "2026-09-25T05:15:57.492Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T05:15:57.493Z",
+          "reason": "해골 성직자 부활 버그 및 성수/번개 이펙트 개편"
+        },
         {
           "timestamp": "2026-09-25T04:46:17.880Z",
           "reason": "월드 2 장애물 3종(산호 암초, 거대 해초, 침몰선 보물상자) 수묵 리워크 to-web 번들링"
@@ -232,10 +236,18 @@
     },
     "to-com": {
       "name": "to-com",
-      "callCount": 14,
+      "callCount": 16,
       "createdAt": "2026-09-25T02:40:19.670Z",
-      "lastUsedAt": "2026-09-25T04:56:47.118Z",
+      "lastUsedAt": "2026-09-25T05:40:30.773Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T05:40:30.774Z",
+          "reason": "Web Gemini 클립보드 결과 로컬 반영"
+        },
+        {
+          "timestamp": "2026-09-25T05:27:50.965Z",
+          "reason": "Web Gemini 결과 로컬 코드에 자동 패치"
+        },
         {
           "timestamp": "2026-09-25T04:56:47.119Z",
           "reason": "월드 2 장애물 3종 클립보드 패치 반영"
@@ -287,10 +299,6 @@
         {
           "timestamp": "2026-09-25T02:46:40.168Z",
           "reason": "웹 제미나이 Step 2 결과 로컬 반영"
-        },
-        {
-          "timestamp": "2026-09-25T02:40:19.670Z",
-          "reason": "웹 제미나이 Step 1 결과 로컬 반영"
         }
       ]
     }

@@ -6,6 +6,21 @@ class Player {
     this.radius = 16;
     this.characterType = characterType;
     
+    this.thornsPercent = 0.0;
+    this.hpRegen = 0.0;
+    this.baseMagnetRadius = characterType === 'assassin' ? 155 : 130;
+    this.magnetRadius = this.baseMagnetRadius;
+    this.bonusProjectiles = 0;
+    this.bonusAreaMult = 1.0;
+    this.critChance = characterType === 'assassin' ? 0.20 : 0.05;
+    this.critDamageMult = 2.0;
+    this.expMult = 1.0;
+    this.dropRateBonus = 0.0;
+    this.ownedPassives = {};
+    this.vampireChance = 0.0;
+    this.hasRevive = false;
+    this.reviveCount = 0;
+
     // 캐릭터별 기본 베이스 스탯 및 스프라이트
     if (characterType === 'mage') {
       this.spriteKey = 'player_mage';
@@ -81,19 +96,6 @@ class Player {
       this.bonusProjSpeedMult = 1.0;
     }
 
-    this.thornsPercent = 0.0;
-    this.hpRegen = 0.0;
-    this.baseMagnetRadius = characterType === 'assassin' ? 155 : 130;
-    this.magnetRadius = this.baseMagnetRadius;
-    this.bonusProjectiles = 0;
-    this.bonusAreaMult = 1.0;
-    this.critChance = characterType === 'assassin' ? 0.20 : 0.05;
-    this.critDamageMult = 2.0;
-    this.expMult = 1.0;
-    this.dropRateBonus = 0.0;
-    this.ownedPassives = {};
-
-    this.vampireChance = 0.0;
     this.maxShieldStacks = 0;
     this.currentShieldStacks = 0;
     this.shieldCooldown = 18.0;
@@ -118,8 +120,6 @@ class Player {
 
     this.gold = 0;
     this.goldMult = 1.0;
-    this.hasRevive = false;
-    this.reviveCount = 0;
 
     this.attackAnims = [];
     this.bobTimer = 0;
@@ -543,33 +543,44 @@ class Player {
           ctx.fillRect(-size / 2, -size / 2, size, size);
         }
         ctx.restore();
-      } else if (anim.type === 'axe') {
+      } else if (anim.type === 'axe' || anim.type === 'fireAxe') {
+        const isFire = anim.type === 'fireAxe';
         const orbitAngle = anim.startAngle + progress * Math.PI * 2.2;
-        const orbitDist = 44 * area;
-        const size = Math.round(36 * area);
+        const orbitDist = (isFire ? 48 : 44) * area;
+        const size = Math.round((isFire ? 42 : 36) * area);
         const px = this.x + Math.cos(orbitAngle) * orbitDist;
         const py = this.y + Math.sin(orbitAngle) * orbitDist;
-        const img = assets.images['anim_axe'];
+        const img = isFire ? (assets.images['anim_fire_axe'] || assets.images['proj_fire_axe'] || assets.images['anim_axe']) : assets.images['anim_axe'];
 
-        // 🪓 도끼날 끝단(Tip)을 따르는 수묵 회전 바람 궤적
+        // 🪓 도끼날 끝단(Tip)을 따르는 수묵 회전 바람/불꽃 궤적
         const tipDist = orbitDist + size * 0.55;
-        const tailArc = Math.min(progress * Math.PI * 2, 1.25);
+        const tailArc = Math.min(progress * Math.PI * 2, 1.35);
         const tailStart = orbitAngle - tailArc;
         if (tailArc > 0.05) {
           ctx.save();
-          ctx.strokeStyle = anim.color || 'rgba(12, 14, 20, 0.75)';
-          ctx.lineWidth = Math.max(2, Math.round(4.5 * Math.sqrt(area)));
+          // 농묵/진사 화염 베이스 궤적
+          ctx.strokeStyle = isFire ? 'rgba(234, 88, 12, 0.85)' : (anim.color || 'rgba(12, 14, 20, 0.75)');
+          ctx.lineWidth = Math.max(2, Math.round((isFire ? 6.0 : 4.5) * Math.sqrt(area)));
           ctx.lineCap = 'round';
           ctx.beginPath();
           ctx.arc(this.x, this.y, tipDist, tailStart, orbitAngle, false);
           ctx.stroke();
 
-          // 날카로운 은백색/주홍 비백 림
-          ctx.strokeStyle = anim.color === '#f97316' ? '#fdba74' : 'rgba(255, 255, 255, 0.85)';
-          ctx.lineWidth = Math.max(1, Math.round(2 * Math.sqrt(area)));
+          // 날카로운 은백색/황금 비백 림
+          ctx.strokeStyle = isFire ? '#fde047' : (anim.color === '#f97316' ? '#fdba74' : 'rgba(255, 255, 255, 0.85)');
+          ctx.lineWidth = Math.max(1, Math.round((isFire ? 2.5 : 2.0) * Math.sqrt(area)));
           ctx.beginPath();
           ctx.arc(this.x, this.y, tipDist, tailStart, orbitAngle, false);
           ctx.stroke();
+
+          if (isFire) {
+            // 화염도끼 중심 백색 불꽃심
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = Math.max(1, Math.round(1.2 * Math.sqrt(area)));
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, tipDist - 2, tailStart + 0.1, orbitAngle, false);
+            ctx.stroke();
+          }
           ctx.restore();
         }
 
@@ -579,6 +590,14 @@ class Player {
           ctx.rotate(orbitAngle + Math.PI / 2);
           ctx.imageSmoothingEnabled = false;
           ctx.drawImage(img, -size / 2, -size / 2, size, size);
+          ctx.restore();
+        } else {
+          // 폴백: 수묵 도끼 렌더링
+          ctx.save();
+          ctx.translate(px, py);
+          ctx.rotate(orbitAngle + Math.PI / 2);
+          ctx.fillStyle = isFire ? '#ea580c' : '#52525b';
+          ctx.fillRect(-size * 0.4, -size * 0.4, size * 0.8, size * 0.8);
           ctx.restore();
         }
       } else if (anim.type === 'whip' || anim.type === 'morningstar' || anim.type === 'morningstartempest') {

@@ -12,6 +12,7 @@ class WeaponManager {
     this.slashes = [];
     this.damagePools = [];
     this.lightningStrikes = [];
+    this.lightningIndicators = [];
     this.plasmaStrikes = [];
 
     // 콤보 큐
@@ -705,12 +706,13 @@ class WeaponManager {
         const maxLife = p.maxLife || 0.95;
         const elapsed = Math.max(0, maxLife - p.life);
         const safeDelay = 0.10;
-        const growthDuration = 0.35;
+        const growthDuration = 0.25;
         let growthProg = 0;
         if (elapsed > safeDelay) {
           growthProg = Math.min(1.0, (elapsed - safeDelay) / growthDuration);
         }
-        const maxPullRadius = 225 * (p.area || 1.0);
+        // 태풍의 눈: 블랙홀 범위 1/3로 축소 (225 -> 75), 흡인력 1/4로 하향 (320 -> 80)
+        const maxPullRadius = 75 * (p.area || 1.0);
         const pullRadius = maxPullRadius * growthProg;
         p.currentPullRadius = pullRadius;
         p.growthProg = growthProg;
@@ -719,12 +721,12 @@ class WeaponManager {
             if (e.isDead) continue;
             const ed = Math.hypot(p.x - e.x, p.y - e.y);
             if (ed < pullRadius && ed > 10) {
-              const pullForce = (1 - ed / pullRadius) * 320 * dt;
+              const pullForce = (1 - ed / pullRadius) * 80 * dt;
               e.x += ((p.x - e.x) / ed) * pullForce;
               e.y += ((p.y - e.y) / ed) * pullForce;
             }
           }
-          if (window.game && Math.random() < (0.2 + growthProg * 0.3)) {
+          if (window.game && Math.random() < 0.25) {
             window.game.addParticles(p.x, p.y, '#6ee7b7', 2);
           }
         }
@@ -882,6 +884,81 @@ class WeaponManager {
       if (pool.life <= 0) {
         this.damagePools.splice(i, 1);
       }
+    }
+
+    // 4. 번개 사전 인디케이터 업데이트 (점선 회전 링 대기 후 번개 발동)
+    if (this.lightningIndicators) {
+      for (let i = this.lightningIndicators.length - 1; i >= 0; i--) {
+        const ind = this.lightningIndicators[i];
+        ind.timer -= dt;
+        ind.rotAngle = (ind.rotAngle || 0) + dt * 14;
+        if (ind.timer <= 0) {
+          this.triggerLightningStrikeAt(ind.x, ind.y, ind.radius, ind.damage, enemies, obstacles);
+          this.lightningIndicators.splice(i, 1);
+        }
+      }
+    }
+
+    // 5. 번개 낙뢰 이펙트 수명 업데이트
+    if (this.lightningStrikes) {
+      for (let i = this.lightningStrikes.length - 1; i >= 0; i--) {
+        const ls = this.lightningStrikes[i];
+        ls.life -= dt;
+        if (ls.life <= 0) {
+          this.lightningStrikes.splice(i, 1);
+        }
+      }
+    }
+  }
+
+  triggerLightningStrikeAt(tx, ty, radius, dmg, enemies, obstacles) {
+    sounds.playLightning();
+
+    const segments = [{ x: tx, y: ty - 450 }];
+    const steps = 7;
+    for (let s = 1; s < steps; s++) {
+      const frac = s / steps;
+      segments.push({
+        x: tx + (Math.random() - 0.5) * 45,
+        y: (ty - 450) + 450 * frac
+      });
+    }
+    segments.push({ x: tx, y: ty });
+
+    this.lightningStrikes.push({
+      x: tx,
+      y: ty,
+      segments: segments,
+      radius: radius,
+      life: 0.14,
+      maxLife: 0.14
+    });
+
+    for (const e of enemies) {
+      if (e.isDead) continue;
+      const d = Math.hypot(e.x - tx, e.y - ty);
+      if (d <= radius + e.radius) {
+        const kbDir = {
+          x: (e.x - tx) / (d || 1),
+          y: (e.y - ty) / (d || 1)
+        };
+        e.takeDamage(dmg, kbDir, 160);
+        if (Math.random() < 0.25) e.freeze(0.4);
+      }
+    }
+
+    for (const obs of obstacles) {
+      if (obs.isDead || !obs.isDestructible) continue;
+      const d = Math.hypot(obs.x - tx, obs.y - ty);
+      if (d <= radius + obs.radius) {
+        obs.takeDamage(dmg, this.game);
+      }
+    }
+
+    if (this.game) {
+      this.game.addParticles(tx, ty, '#38bdf8', 10);
+      this.game.addParticles(tx, ty, '#fef08a', 10);
+      this.game.addParticles(tx, ty, '#ffffff', 6);
     }
   }
 

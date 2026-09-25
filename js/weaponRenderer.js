@@ -193,26 +193,101 @@ WeaponManager.prototype.draw = function(ctx) {
     ctx.lineWidth = 2.0;
     ctx.stroke();
 
-    // 튀는 수묵 방울 (Ink Droplets)
-    const bubbleTime = Date.now() * 0.003;
-    for (let b = 0; b < 4; b++) {
-      const bx = pool.x + Math.sin(bubbleTime + b * 1.57) * (pool.radius * 0.65);
-      const by = pool.y + Math.cos(bubbleTime + b * 1.57) * (pool.radius * 0.65);
-      ctx.fillStyle = '#09090b';
-      ctx.beginPath();
-      ctx.arc(bx, by, 3.2, 0, Math.PI * 2);
-      ctx.fill();
+    // 🌟 [성수]: 원 안에 십자가 실루엣이 나타났다 사라지는 연출
+    if (isHoly) {
+      const maxLife = 4.5;
+      const elapsed = Math.max(0, maxLife - pool.life);
+      const fadeIn = Math.min(1.0, elapsed / 0.4);
+      const fadeOut = Math.min(1.0, pool.life / 0.8);
+      const crossAlpha = fadeIn * fadeOut;
 
-      ctx.fillStyle = isPlasma ? '#0284c7' : (isHoly ? '#fde047' : '#10b981');
-      ctx.beginPath();
-      ctx.arc(bx, by, 1.8, 0, Math.PI * 2);
-      ctx.fill();
+      if (crossAlpha > 0.01) {
+        const crossH = pool.radius * 0.72;
+        const crossW = pool.radius * 0.48;
+        const barThick = Math.max(3, pool.radius * 0.16);
+
+        ctx.save();
+        ctx.translate(pool.x, pool.y);
+
+        // 십자가 농묵 실루엣 그림자
+        ctx.fillStyle = `rgba(9, 9, 11, ${0.75 * crossAlpha})`;
+        ctx.fillRect(-barThick / 2 - 1, -crossH - 1, barThick + 2, crossH * 2 + 2);
+        ctx.fillRect(-crossW - 1, -crossH * 0.35 - 1, crossW * 2 + 2, barThick + 2);
+
+        // 단청 황금/청화 십자가 코어
+        ctx.fillStyle = `rgba(253, 224, 71, ${0.9 * crossAlpha})`;
+        ctx.fillRect(-barThick / 2, -crossH, barThick, crossH * 2);
+        ctx.fillRect(-crossW, -crossH * 0.35, crossW * 2, barThick);
+
+        // 중심 백색 비백 묵핵
+        ctx.fillStyle = `rgba(250, 250, 249, ${crossAlpha})`;
+        ctx.fillRect(-barThick * 0.3, -crossH * 0.8, barThick * 0.6, crossH * 1.6);
+        ctx.fillRect(-crossW * 0.8, -crossH * 0.35 + barThick * 0.2, crossW * 1.6, barThick * 0.6);
+
+        ctx.restore();
+      }
+    } else {
+      // 일반/플라즈마 장판: 튀는 수묵 방울 (Ink Droplets)
+      const bubbleTime = Date.now() * 0.003;
+      for (let b = 0; b < 4; b++) {
+        const bx = pool.x + Math.sin(bubbleTime + b * 1.57) * (pool.radius * 0.65);
+        const by = pool.y + Math.cos(bubbleTime + b * 1.57) * (pool.radius * 0.65);
+        ctx.fillStyle = '#09090b';
+        ctx.beginPath();
+        ctx.arc(bx, by, 3.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = isPlasma ? '#0284c7' : '#10b981';
+        ctx.beginPath();
+        ctx.arc(bx, by, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
     ctx.restore();
   }
 
   // ==========================================
-  // 1.5 번개 낙뢰 이펙트 (서예 갈필 비백 벼락)
+  // 1.4 번개 사전 회전 점선 인디케이터 렌더링
+  // ==========================================
+  if (this.lightningIndicators && this.lightningIndicators.length > 0) {
+    for (const ind of this.lightningIndicators) {
+      const prog = 1 - Math.max(0, ind.timer / (ind.maxTimer || 0.20));
+      const indAlpha = Math.min(1.0, prog * 2.2);
+
+      ctx.save();
+      ctx.translate(ind.x, ind.y);
+
+      // (1) 외곽 회전 점선 링 (단청 군청 뇌전 기운)
+      ctx.setLineDash([8, 6]);
+      ctx.lineDashOffset = -(ind.rotAngle || 0) * 8;
+      ctx.strokeStyle = `rgba(2, 132, 199, ${0.9 * indAlpha})`;
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.arc(0, 0, ind.radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // (2) 내부 역회전 황금 점선 링
+      ctx.setLineDash([5, 5]);
+      ctx.lineDashOffset = (ind.rotAngle || 0) * 12;
+      ctx.strokeStyle = `rgba(253, 224, 71, ${0.95 * indAlpha})`;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(0, 0, ind.radius * 0.65, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // (3) 중심 충전 비백 묵점
+      ctx.setLineDash([]);
+      ctx.fillStyle = `rgba(250, 250, 249, ${0.95 * indAlpha})`;
+      ctx.beginPath();
+      ctx.arc(0, 0, Math.max(2, 3.5 * prog), 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+  }
+
+  // ==========================================
+  // 1.5 번개 낙뢰 이펙트 (서예 갈필 비백 벼락 - 후속 잔상 제거됨)
   // ==========================================
   for (const ls of this.lightningStrikes) {
     const alpha = Math.min(1.0, ls.life / (ls.maxLife * 0.7));
@@ -242,17 +317,6 @@ WeaponManager.prototype.draw = function(ctx) {
       ctx.stroke();
     }
 
-    // 지면 수묵 스플래시 (Ink Burst)
-    const prog = 1 - ls.life / ls.maxLife;
-    ctx.fillStyle = `rgba(9, 9, 11, ${alpha * 0.7})`;
-    ctx.beginPath();
-    ctx.arc(ls.x, ls.y, ls.radius * prog, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = `rgba(253, 224, 71, ${alpha * 0.85})`;
-    ctx.beginPath();
-    ctx.arc(ls.x, ls.y, ls.radius * prog * 0.45, 0, Math.PI * 2);
-    ctx.fill();
     ctx.restore();
   }
 
