@@ -1065,7 +1065,7 @@ WeaponManager.prototype.executeFlamePillar = function(w, enemies) {
   const dmg = this.getDamage(w);
   const area = this.getArea(w);
   const count = this.getCount(w);
-  const radius = 75 * area;
+  const radius = 25 * area;
 
   const validEnemies = enemies.filter(e => !e.isDead && Math.hypot(e.x - this.player.x, e.y - this.player.y) <= 450);
   validEnemies.sort((a, b) => Math.hypot(a.x - this.player.x, a.y - this.player.y) - Math.hypot(b.x - this.player.x, b.y - this.player.y));
@@ -1082,13 +1082,13 @@ WeaponManager.prototype.executeFlamePillar = function(w, enemies) {
       targetY = this.player.y + Math.sin(ang) * dist;
     }
 
-    // 수직 화염기둥 슬래시 (패링 없음, 위치 고정, 수직 상승 넉백)
+    // 수직 화염기둥 슬래시 (패링 없음, 위치 고정, 수직 상승 넉백, 1/3 슬림 사이즈)
     this.slashes.push({
       type: 'circle',
       x: targetX,
       y: targetY,
       radius: radius,
-      height: 230 * area, // 렌더러가 참조할 수직 기둥 높이
+      height: 80 * area, // 렌더러가 참조할 수직 기둥 높이 (1/3 축소)
       damage: dmg,
       knockbackDir: { x: (Math.random() - 0.5) * 0.3, y: -1.0 }, // 수직 띄우기 넉백
       knockbackForce: 160,
@@ -1101,9 +1101,9 @@ WeaponManager.prototype.executeFlamePillar = function(w, enemies) {
     });
 
     if (window.game && window.game.addParticles) {
-      window.game.addParticles(targetX, targetY, '#f97316', 16);
-      window.game.addParticles(targetX, targetY, '#ef4444', 10);
-      window.game.addParticles(targetX, targetY, '#fde047', 8);
+      window.game.addParticles(targetX, targetY, '#f97316', 5);
+      window.game.addParticles(targetX, targetY, '#ef4444', 3);
+      window.game.addParticles(targetX, targetY, '#fde047', 2);
     }
   }
 };
@@ -1184,7 +1184,7 @@ WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
   const dmg = this.getDamage(w);
   const area = this.getArea(w);
   const count = 4 + (this.getCount(w) - 1);
-  const radius = 95 * area;
+  const radius = 32 * area;
 
   const validEnemies = enemies.filter(e => !e.isDead && Math.hypot(e.x - this.player.x, e.y - this.player.y) <= 550);
   validEnemies.sort(() => 0.5 - Math.random());
@@ -1206,7 +1206,7 @@ WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
       x: targetX,
       y: targetY,
       radius: radius,
-      height: 300 * area,
+      height: 100 * area,
       damage: dmg,
       knockbackDir: { x: (Math.random() - 0.5) * 0.4, y: -1.0 },
       knockbackForce: 200,
@@ -1232,9 +1232,9 @@ WeaponManager.prototype.executeInfernoCataclysm = function(w, enemies) {
     });
 
     if (window.game && window.game.addParticles) {
-      window.game.addParticles(targetX, targetY, '#ef4444', 20);
-      window.game.addParticles(targetX, targetY, '#facc15', 14);
-      window.game.addParticles(targetX, targetY, '#f97316', 10);
+      window.game.addParticles(targetX, targetY, '#ef4444', 6);
+      window.game.addParticles(targetX, targetY, '#facc15', 4);
+      window.game.addParticles(targetX, targetY, '#f97316', 3);
     }
   }
 };

@@ -367,8 +367,8 @@ WeaponManager.prototype.draw = function(ctx) {
       const fadeAlpha = prog < 0.65 ? 1.0 : (1.0 - (prog - 0.65) / 0.35);
       const alpha = Math.min(1.0, s.life / (maxLife * 0.35)) * fadeAlpha;
 
-      const baseRadius = s.radius || 75;
-      const pillarHeight = (s.height || (s.isInferno ? 300 : 230)) * riseProg;
+      const baseRadius = s.radius || 25;
+      const pillarHeight = (s.height || (s.isInferno ? 100 : 80)) * riseProg;
       const topRadius = baseRadius * (s.isInferno ? 0.72 : 0.60);
 
       ctx.save();
@@ -387,7 +387,7 @@ WeaponManager.prototype.draw = function(ctx) {
 
       // 지면 외곽 송연먹 테두리
       ctx.strokeStyle = `rgba(9, 9, 11, ${0.60 * alpha})`;
-      ctx.lineWidth = 2.2;
+      ctx.lineWidth = 1.4;
       ctx.stroke();
       ctx.restore();
 
@@ -416,7 +416,7 @@ WeaponManager.prototype.draw = function(ctx) {
 
       // 외곽 해서체 갈필 붓선 테두리
       ctx.strokeStyle = `rgba(9, 9, 11, ${0.65 * alpha})`;
-      ctx.lineWidth = Math.max(2, Math.round(3.5 * Math.sqrt(baseRadius / 75)));
+      ctx.lineWidth = Math.max(1.4, Math.round(2.0 * Math.sqrt(baseRadius / 25)));
       ctx.stroke();
 
       // (3) 내부 백열 코어 기둥 (비백 묵선 심재)
@@ -438,7 +438,7 @@ WeaponManager.prototype.draw = function(ctx) {
 
       // (4) 중심 일필휘지 백색 비백(飛白) 관통 심선
       ctx.strokeStyle = `rgba(250, 250, 249, ${0.90 * alpha})`;
-      ctx.lineWidth = Math.max(1.8, Math.round(2.5 * Math.sqrt(baseRadius / 75)));
+      ctx.lineWidth = Math.max(1.0, Math.round(1.5 * Math.sqrt(baseRadius / 25)));
       ctx.beginPath();
       ctx.moveTo(s.x, s.y);
       ctx.lineTo(s.x, s.y - pillarHeight * 0.9);
