@@ -1,7 +1,8 @@
-// 레벨업 카드 시스템: 무기 강화, 신규 무기 해금, 14대 진화 무기 합성, 16종 캐릭터 패시브 강화
-// 1. 캐릭터 패시브 스탯은 최대 6종만 인벤토리에 장착 가능 (각 5강 제한)
-// 2. 무기 슬롯 최대 6개 제한 (각 무기 총 5레벨 MAX 제한)
-// 3. 14대 정통 진화 무기 체계: 성역+성수, 채찍+표창, 불지팡이+마법화살, 검+도끼, 산탄총+번개반지, 독비수+빙결보주 등 14종
+// 레벨업 카드 시스템: 무기 강화, 신규 무기 해금, 17대 진화 무기 합성, 16종 캐릭터 패시브 강화
+// [밸런스 패치]
+// 1. stat_global_speed(황혼의 시계) 쿨타임 감소량 완화 (레벨당 -4%, 5레벨 최대 -20% 제한)
+// 2. 무기 개별 쿨타임 카드 완화 (-15% -> -8%) 및 공격력 카드 강화 (+30% -> +35%)
+// 3. 패시브 stat_speed(장화) 무빙 회피 보조 상향 (+12% -> +15%)
 
 function formatStars(currentLevel, maxLevel) {
   const filled = Math.min(currentLevel, maxLevel);
@@ -83,7 +84,7 @@ class CardManager {
   generateCards() {
     const cardPool = [];
 
-    // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한, 타 직업 시그니처 5종 차단, 공용 8종 허용)
+    // 1. 미보유 무기 해금 카드 (최대 6개 무기 슬롯 제한, 타 직업 시그니처 5종 차단, 공용 12종 허용)
     const ownedWeaponsCount = Object.keys(this.weaponManager.weapons).length;
     const allWeaponKeys = ['sword', 'axe', 'whip', 'shuriken', 'magicMissile', 'shotgun', 'holyWater', 'sanctuary', 'lightningRing', 'fireWand', 'poisonDagger', 'frostOrb', 'windBow', 'shadowOrb', 'flamePillar', 'chakram', 'holyCross'];
     const charType = this.player.characterType || 'knight';
@@ -123,7 +124,7 @@ class CardManager {
     };
 
     const unownedWeapons = allWeaponKeys.filter(k => {
-      if (forbiddenWeapons.includes(k)) return false; // 타 직업 시그니처 무기 차단
+      if (forbiddenWeapons.includes(k)) return false;
       return !this.weaponManager.weapons[k] && !isConsumedWeapon(k);
     });
 
@@ -146,7 +147,7 @@ class CardManager {
       chakram: { name: '차크람', type: '원거리', icon: '💫🗡️', iconKey: 'icon_chakram', desc: '날카로운 톱날 원반을 던져 적들을 관통한 뒤 되돌아오며 2중 피해를 입힘' },
       holyCross: { name: '십자가', type: '원거리', icon: '✝️✨', iconKey: 'icon_holycross', desc: '신성한 빛의 십자가를 투척하여 상하좌우 4방향으로 십자 성광을 발산하며 폭발' },
 
-      // 14대 진화 무기 메타
+      // 17대 진화 무기 메타
       heavenlySanctuary: { name: '생츄어리', type: '도트', icon: '⛪✨', iconKey: 'icon_heavenlysanctuary', desc: '초대형 룬 결계와 적 빙결(동결) 효과' },
       morningstarTempest: { name: '모닝스타', type: '원거리', icon: '⛓️🌪️', iconKey: 'icon_morningstartempest', desc: '채찍 전후방 교차 타격 및 첫 적중 시 4방향 관통 표창 방출' },
       apocalypseComet: { name: '메테오', type: '원거리', icon: '☄️🔥', iconKey: 'icon_apocalypsecomet', desc: '유도 화염 혜성 연사 및 헬파이어 연쇄 폭발' },
@@ -166,27 +167,23 @@ class CardManager {
       divineJudgement: { name: '저지먼트', type: '성광', icon: '✝️⚡', iconKey: 'icon_divinejudgement', desc: '거대 대천사 십자가 착탄 시 심판 낙뢰 및 30% 확률 0.5초 기절' }
     };
 
-    // 진화 링크 힌트 헬퍼: 현재 인벤토리에 보유 중인 파트너 무기 기준 모든 진화 루트 반환
+    // 진화 링크 힌트 헬퍼
     const getEvolutionHints = (weaponKey) => {
       const evoList = [
-        // 루트 1
         { w1: 'sanctuary', w2: 'holyWater', evoId: 'heavenlySanctuary', evoName: '생츄어리', evoIcon: '⛪✨', evoIconKey: 'icon_heavenlysanctuary' },
         { w1: 'whip', w2: 'shuriken', evoId: 'morningstarTempest', evoName: '모닝스타', evoIcon: '⛓️🌪️', evoIconKey: 'icon_morningstartempest' },
         { w1: 'fireWand', w2: 'magicMissile', evoId: 'apocalypseComet', evoName: '메테오', evoIcon: '☄️🔥', evoIconKey: 'icon_apocalypsecomet' },
         { w1: 'sword', w2: 'axe', evoId: 'bladeStorm', evoName: '폭풍칼날', evoIcon: '⚔️🌪️', evoIconKey: 'icon_bladestorm' },
         { w1: 'shotgun', w2: 'lightningRing', evoId: 'teslaShotgun', evoName: '뇌전포', evoIcon: '⚡💥', evoIconKey: 'icon_teslashotgun' },
         { w1: 'poisonDagger', w2: 'frostOrb', evoId: 'venomBlizzard', evoName: '블리자드', evoIcon: '❄️🧪', evoIconKey: 'icon_venomblizzard' },
-        // 루트 2
         { w1: 'sword', w2: 'lightningRing', evoId: 'thunderBlade', evoName: '벼락검', evoIcon: '⚡🗡️', evoIconKey: 'icon_thunderblade' },
         { w1: 'axe', w2: 'fireWand', evoId: 'fireAxe', evoName: '화염도끼', evoIcon: '🪓🔥', evoIconKey: 'icon_fireaxe' },
         { w1: 'whip', w2: 'frostOrb', evoId: 'frostWhip', evoName: '얼음채찍', evoIcon: '🪢❄️', evoIconKey: 'icon_frostwhip' },
         { w1: 'shuriken', w2: 'shotgun', evoId: 'scatterShuriken', evoName: '산탄표창', evoIcon: '🥷💥', evoIconKey: 'icon_scattershuriken' },
         { w1: 'magicMissile', w2: 'holyWater', evoId: 'holyArrow', evoName: '신성화살', evoIcon: '🏹✨', evoIconKey: 'icon_holyarrow' },
         { w1: 'poisonDagger', w2: 'sanctuary', evoId: 'plague', evoName: '역병', evoIcon: '☠️⛪', evoIconKey: 'icon_plague' },
-        // 루트 3 (신규 2종)
         { w1: 'windBow', w2: 'shuriken', evoId: 'cycloneBow', evoName: '태풍의 눈', evoIcon: '🌀🏹', evoIconKey: 'icon_cyclonebow' },
         { w1: 'shadowOrb', w2: 'magicMissile', evoId: 'eclipseSpiral', evoName: '황혼의 나선', evoIcon: '🔮✨', evoIconKey: 'icon_eclipsespiral' },
-        // 루트 4 (신규 3종 시그니처 진화)
         { w1: 'flamePillar', w2: 'fireWand', evoId: 'infernoCataclysm', evoName: '인페르노', evoIcon: '🌋☄️', evoIconKey: 'icon_infernocataclysm' },
         { w1: 'chakram', w2: 'poisonDagger', evoId: 'shadowVortex', evoName: '섀도우 차크람', evoIcon: '🌀🗡️', evoIconKey: 'icon_shadowvortex' },
         { w1: 'holyCross', w2: 'holyWater', evoId: 'divineJudgement', evoName: '저지먼트', evoIcon: '✝️⚡', evoIconKey: 'icon_divinejudgement' }
@@ -256,12 +253,8 @@ class CardManager {
     const wSanctuary = this.weaponManager.weapons['sanctuary'];
     const wHolyWater = this.weaponManager.weapons['holyWater'];
     const hasHeavenlySanctuary = !!this.weaponManager.weapons['heavenlySanctuary'];
-
     if (wSanctuary && wHolyWater && !hasHeavenlySanctuary) {
-      const sanctuaryLv = this.weaponManager.getLevel(wSanctuary);
-      const holyWaterLv = this.weaponManager.getLevel(wHolyWater);
-
-      if (sanctuaryLv >= 5 && holyWaterLv >= 5) {
+      if (this.weaponManager.getLevel(wSanctuary) >= 5 && this.weaponManager.getLevel(wHolyWater) >= 5) {
         evolutionCards.push({
           id: 'evolve_heavenly_sanctuary',
           type: 'weapon_evolution',
@@ -295,12 +288,8 @@ class CardManager {
     const wWhip = this.weaponManager.weapons['whip'];
     const wShuriken = this.weaponManager.weapons['shuriken'];
     const hasMorningstarTempest = !!this.weaponManager.weapons['morningstarTempest'];
-
     if (wWhip && wShuriken && !hasMorningstarTempest) {
-      const whipLv = this.weaponManager.getLevel(wWhip);
-      const shurikenLv = this.weaponManager.getLevel(wShuriken);
-
-      if (whipLv >= 5 && shurikenLv >= 5) {
+      if (this.weaponManager.getLevel(wWhip) >= 5 && this.weaponManager.getLevel(wShuriken) >= 5) {
         evolutionCards.push({
           id: 'evolve_morningstar_tempest',
           type: 'weapon_evolution',
@@ -334,12 +323,8 @@ class CardManager {
     const wFire = this.weaponManager.weapons['fireWand'];
     const wMissile = this.weaponManager.weapons['magicMissile'];
     const hasApocalypseComet = !!this.weaponManager.weapons['apocalypseComet'];
-
     if (wFire && wMissile && !hasApocalypseComet) {
-      const fireLv = this.weaponManager.getLevel(wFire);
-      const missileLv = this.weaponManager.getLevel(wMissile);
-
-      if (fireLv >= 5 && missileLv >= 5) {
+      if (this.weaponManager.getLevel(wFire) >= 5 && this.weaponManager.getLevel(wMissile) >= 5) {
         evolutionCards.push({
           id: 'evolve_apocalypse_comet',
           type: 'weapon_evolution',
@@ -373,12 +358,8 @@ class CardManager {
     const wSword = this.weaponManager.weapons['sword'];
     const wAxe = this.weaponManager.weapons['axe'];
     const hasBladeStorm = !!this.weaponManager.weapons['bladeStorm'];
-
     if (wSword && wAxe && !hasBladeStorm) {
-      const swordLv = this.weaponManager.getLevel(wSword);
-      const axeLv = this.weaponManager.getLevel(wAxe);
-
-      if (swordLv >= 5 && axeLv >= 5) {
+      if (this.weaponManager.getLevel(wSword) >= 5 && this.weaponManager.getLevel(wAxe) >= 5) {
         evolutionCards.push({
           id: 'evolve_slayer_blade_storm',
           type: 'weapon_evolution',
@@ -412,12 +393,8 @@ class CardManager {
     const wShotgun = this.weaponManager.weapons['shotgun'];
     const wLightning = this.weaponManager.weapons['lightningRing'];
     const hasTeslaShotgun = !!this.weaponManager.weapons['teslaShotgun'];
-
     if (wShotgun && wLightning && !hasTeslaShotgun) {
-      const shotgunLv = this.weaponManager.getLevel(wShotgun);
-      const lightningLv = this.weaponManager.getLevel(wLightning);
-
-      if (shotgunLv >= 5 && lightningLv >= 5) {
+      if (this.weaponManager.getLevel(wShotgun) >= 5 && this.weaponManager.getLevel(wLightning) >= 5) {
         evolutionCards.push({
           id: 'evolve_tesla_shotgun',
           type: 'weapon_evolution',
@@ -451,12 +428,8 @@ class CardManager {
     const wDagger = this.weaponManager.weapons['poisonDagger'];
     const wFrost = this.weaponManager.weapons['frostOrb'];
     const hasVenomBlizzard = !!this.weaponManager.weapons['venomBlizzard'];
-
     if (wDagger && wFrost && !hasVenomBlizzard) {
-      const daggerLv = this.weaponManager.getLevel(wDagger);
-      const frostLv = this.weaponManager.getLevel(wFrost);
-
-      if (daggerLv >= 5 && frostLv >= 5) {
+      if (this.weaponManager.getLevel(wDagger) >= 5 && this.weaponManager.getLevel(wFrost) >= 5) {
         evolutionCards.push({
           id: 'evolve_venom_blizzard',
           type: 'weapon_evolution',
@@ -489,9 +462,7 @@ class CardManager {
     // [진화 7] 벼락검 = 철검(5Lv) + 번개 반지(5Lv)
     const hasThunderBlade = !!this.weaponManager.weapons['thunderBlade'];
     if (wSword && wLightning && !hasThunderBlade) {
-      const swordLv = this.weaponManager.getLevel(wSword);
-      const lightningLv = this.weaponManager.getLevel(wLightning);
-      if (swordLv >= 5 && lightningLv >= 5) {
+      if (this.weaponManager.getLevel(wSword) >= 5 && this.weaponManager.getLevel(wLightning) >= 5) {
         evolutionCards.push({
           id: 'evolve_thunder_blade',
           type: 'weapon_evolution',
@@ -524,9 +495,7 @@ class CardManager {
     // [진화 8] 화염도끼 = 도끼(5Lv) + 불 지팡이(5Lv)
     const hasFireAxe = !!this.weaponManager.weapons['fireAxe'];
     if (wAxe && wFire && !hasFireAxe) {
-      const axeLv = this.weaponManager.getLevel(wAxe);
-      const fireLv = this.weaponManager.getLevel(wFire);
-      if (axeLv >= 5 && fireLv >= 5) {
+      if (this.weaponManager.getLevel(wAxe) >= 5 && this.weaponManager.getLevel(wFire) >= 5) {
         evolutionCards.push({
           id: 'evolve_fire_axe',
           type: 'weapon_evolution',
@@ -559,9 +528,7 @@ class CardManager {
     // [진화 9] 얼음채찍 = 채찍(5Lv) + 빙결 보주(5Lv)
     const hasFrostWhip = !!this.weaponManager.weapons['frostWhip'];
     if (wWhip && wFrost && !hasFrostWhip) {
-      const whipLv = this.weaponManager.getLevel(wWhip);
-      const frostLv = this.weaponManager.getLevel(wFrost);
-      if (whipLv >= 5 && frostLv >= 5) {
+      if (this.weaponManager.getLevel(wWhip) >= 5 && this.weaponManager.getLevel(wFrost) >= 5) {
         evolutionCards.push({
           id: 'evolve_frost_whip',
           type: 'weapon_evolution',
@@ -594,9 +561,7 @@ class CardManager {
     // [진화 10] 산탄표창 = 표창(5Lv) + 산탄총(5Lv)
     const hasScatterShuriken = !!this.weaponManager.weapons['scatterShuriken'];
     if (wShuriken && wShotgun && !hasScatterShuriken) {
-      const shurikenLv = this.weaponManager.getLevel(wShuriken);
-      const shotgunLv = this.weaponManager.getLevel(wShotgun);
-      if (shurikenLv >= 5 && shotgunLv >= 5) {
+      if (this.weaponManager.getLevel(wShuriken) >= 5 && this.weaponManager.getLevel(wShotgun) >= 5) {
         evolutionCards.push({
           id: 'evolve_scatter_shuriken',
           type: 'weapon_evolution',
@@ -629,9 +594,7 @@ class CardManager {
     // [진화 11] 신성화살 = 마법 화살(5Lv) + 성수(5Lv)
     const hasHolyArrow = !!this.weaponManager.weapons['holyArrow'];
     if (wMissile && wHolyWater && !hasHolyArrow) {
-      const missileLv = this.weaponManager.getLevel(wMissile);
-      const holyWaterLv = this.weaponManager.getLevel(wHolyWater);
-      if (missileLv >= 5 && holyWaterLv >= 5) {
+      if (this.weaponManager.getLevel(wMissile) >= 5 && this.weaponManager.getLevel(wHolyWater) >= 5) {
         evolutionCards.push({
           id: 'evolve_holy_arrow',
           type: 'weapon_evolution',
@@ -664,9 +627,7 @@ class CardManager {
     // [진화 12] 역병 = 독비수(5Lv) + 성역(5Lv)
     const hasPlague = !!this.weaponManager.weapons['plague'];
     if (wDagger && wSanctuary && !hasPlague) {
-      const daggerLv = this.weaponManager.getLevel(wDagger);
-      const sanctuaryLv = this.weaponManager.getLevel(wSanctuary);
-      if (daggerLv >= 5 && sanctuaryLv >= 5) {
+      if (this.weaponManager.getLevel(wDagger) >= 5 && this.weaponManager.getLevel(wSanctuary) >= 5) {
         evolutionCards.push({
           id: 'evolve_plague',
           type: 'weapon_evolution',
@@ -700,9 +661,7 @@ class CardManager {
     const wWindBow = this.weaponManager.weapons['windBow'];
     const hasCycloneBow = !!this.weaponManager.weapons['cycloneBow'];
     if (wWindBow && wShuriken && !hasCycloneBow) {
-      const windLv = this.weaponManager.getLevel(wWindBow);
-      const shurikenLv = this.weaponManager.getLevel(wShuriken);
-      if (windLv >= 5 && shurikenLv >= 5) {
+      if (this.weaponManager.getLevel(wWindBow) >= 5 && this.weaponManager.getLevel(wShuriken) >= 5) {
         evolutionCards.push({
           id: 'evolve_cyclone_bow',
           type: 'weapon_evolution',
@@ -736,9 +695,7 @@ class CardManager {
     const wShadowOrb = this.weaponManager.weapons['shadowOrb'];
     const hasEclipseSpiral = !!this.weaponManager.weapons['eclipseSpiral'];
     if (wShadowOrb && wMissile && !hasEclipseSpiral) {
-      const shadowLv = this.weaponManager.getLevel(wShadowOrb);
-      const missileLv = this.weaponManager.getLevel(wMissile);
-      if (shadowLv >= 5 && missileLv >= 5) {
+      if (this.weaponManager.getLevel(wShadowOrb) >= 5 && this.weaponManager.getLevel(wMissile) >= 5) {
         evolutionCards.push({
           id: 'evolve_eclipse_spiral',
           type: 'weapon_evolution',
@@ -770,12 +727,9 @@ class CardManager {
 
     // [진화 15] 인페르노 = 화염 기둥(5Lv) + 불 지팡이(5Lv)
     const wFlamePillar = this.weaponManager.weapons['flamePillar'];
-    const wFireWand = this.weaponManager.weapons['fireWand'];
     const hasInferno = !!this.weaponManager.weapons['infernoCataclysm'];
-    if (wFlamePillar && wFireWand && !hasInferno) {
-      const flameLv = this.weaponManager.getLevel(wFlamePillar);
-      const fireWandLv = this.weaponManager.getLevel(wFireWand);
-      if (flameLv >= 5 && fireWandLv >= 5) {
+    if (wFlamePillar && wFire && !hasInferno) {
+      if (this.weaponManager.getLevel(wFlamePillar) >= 5 && this.weaponManager.getLevel(wFire) >= 5) {
         evolutionCards.push({
           id: 'evolve_inferno_cataclysm',
           type: 'weapon_evolution',
@@ -807,12 +761,9 @@ class CardManager {
 
     // [진화 16] 섀도우 차크람 = 차크람(5Lv) + 독비수(5Lv)
     const wChakram = this.weaponManager.weapons['chakram'];
-    const wPoisonDagger = this.weaponManager.weapons['poisonDagger'];
     const hasShadowVortex = !!this.weaponManager.weapons['shadowVortex'];
-    if (wChakram && wPoisonDagger && !hasShadowVortex) {
-      const chakramLv = this.weaponManager.getLevel(wChakram);
-      const poisonLv = this.weaponManager.getLevel(wPoisonDagger);
-      if (chakramLv >= 5 && poisonLv >= 5) {
+    if (wChakram && wDagger && !hasShadowVortex) {
+      if (this.weaponManager.getLevel(wChakram) >= 5 && this.weaponManager.getLevel(wDagger) >= 5) {
         evolutionCards.push({
           id: 'evolve_shadow_vortex',
           type: 'weapon_evolution',
@@ -846,9 +797,7 @@ class CardManager {
     const wHolyCross = this.weaponManager.weapons['holyCross'];
     const hasDivineJudgement = !!this.weaponManager.weapons['divineJudgement'];
     if (wHolyCross && wHolyWater && !hasDivineJudgement) {
-      const crossLv = this.weaponManager.getLevel(wHolyCross);
-      const waterLv = this.weaponManager.getLevel(wHolyWater);
-      if (crossLv >= 5 && waterLv >= 5) {
+      if (this.weaponManager.getLevel(wHolyCross) >= 5 && this.weaponManager.getLevel(wHolyWater) >= 5) {
         evolutionCards.push({
           id: 'evolve_divine_judgement',
           type: 'weapon_evolution',
@@ -878,7 +827,7 @@ class CardManager {
       }
     }
 
-    // 3. 보유 중인 무기별 강화 카드 (기본 무기 및 진화 무기 모두 1~5레벨 업그레이드 지원)
+    // 3. 보유 중인 무기별 강화 카드
     for (const key in this.weaponManager.weapons) {
       const w = this.weaponManager.weapons[key];
       const currentLv = this.weaponManager.getLevel(w);
@@ -889,7 +838,7 @@ class CardManager {
       const meta = weaponMeta[key] || { icon: '⚔️', iconKey: 'icon_atk', name: w.name };
       const evoHints = getEvolutionHints(key);
 
-      // 1) [무기 쿨타임 감소 강화]
+      // 1) [무기 쿨타임 감소 강화] - 말뚝딜 억제를 위해 -15% -> -8%로 밸런싱
       let cdDesc = `재사용 대기시간을 단축합니다. (Lv.${nextLv}/5)`;
       if (key === 'sanctuary' || key === 'heavenlySanctuary') {
         cdDesc = `결계의 피해 적용 주기를 단축합니다. (Lv.${nextLv}/5)`;
@@ -902,7 +851,7 @@ class CardManager {
         icon: '⏳',
         iconKey: meta.iconKey,
         desc: cdDesc,
-        effectText: '쿨타임 -15%',
+        effectText: '쿨타임 -8%',
         badge: `Lv.${nextLv}/5`,
         stars: formatStars(nextLv, 5),
         evolutionHints: evoHints,
@@ -912,7 +861,7 @@ class CardManager {
         }
       });
 
-      // 2) [무기 데미지 증가 강화]
+      // 2) [무기 데미지 증가 강화] - 한방 묵직함을 위해 +30% -> +35%로 상향
       cardPool.push({
         id: `${key}_damage`,
         type: 'weapon_upgrade',
@@ -921,7 +870,7 @@ class CardManager {
         icon: '💥',
         iconKey: meta.iconKey,
         desc: `공격력을 대폭 증가시킵니다. (Lv.${nextLv}/5)`,
-        effectText: '공격력 +30%',
+        effectText: '공격력 +35%',
         badge: `Lv.${nextLv}/5`,
         stars: formatStars(nextLv, 5),
         evolutionHints: evoHints,
@@ -1048,7 +997,7 @@ class CardManager {
           badge: `Lv.${nextLv}/5`,
           stars: formatStars(nextLv, 5),
           evolutionHints: evoHints,
-        evolutionHint: evoHints[0] || null,
+          evolutionHint: evoHints[0] || null,
           apply: () => {
             this.weaponManager.upgradeWeapon(key, 'count');
           }
@@ -1076,10 +1025,10 @@ class CardManager {
         title: '장화',
         icon: '👟',
         iconKey: 'icon_speed',
-        desc: '이동 속도를 증가시킵니다.',
-        effectText: '이동 속도 +12%',
+        desc: '이동 속도를 증가시켜 적들의 포위망을 돌파합니다.',
+        effectText: '이동 속도 +15%', // +12% -> +15% 상향 (무빙 회피 생존력 보장)
         maxLevel: 5,
-        apply: () => { this.player.speed += this.player.baseSpeed * 0.12; }
+        apply: () => { this.player.speed += this.player.baseSpeed * 0.15; }
       },
       {
         id: 'stat_atk',
@@ -1119,10 +1068,13 @@ class CardManager {
         title: '황혼의 시계',
         icon: '⏳',
         iconKey: 'icon_global_speed',
-        desc: '재사용 대기시간을 단축합니다.',
-        effectText: '쿨타임 감소 -20%',
+        desc: '모든 무기의 재사용 대기시간을 완만하게 단축합니다. (최대 -20%)',
+        effectText: '쿨타임 감소 -4% (최대 -20%)',
         maxLevel: 5,
-        apply: () => { this.player.globalCooldownMult *= 1.20; }
+        apply: () => {
+          // 레벨당 4.5% 가속 적용 (5레벨 달성 시 1.045^5 = 1.246배 가속, 실질 쿨타임 약 20% 감소로 말뚝딜 억제)
+          this.player.globalCooldownMult *= 1.045;
+        }
       },
       {
         id: 'stat_magnet',
