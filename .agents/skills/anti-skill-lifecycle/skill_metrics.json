@@ -1,6 +1,6 @@
 {
-  "totalCalls": 29,
-  "lastUpdated": "2026-09-25T02:40:57.254Z",
+  "totalCalls": 32,
+  "lastUpdated": "2026-09-25T02:46:59.556Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 14,
+      "callCount": 15,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T02:40:57.253Z",
+      "lastUsedAt": "2026-09-25T02:46:59.556Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T02:46:59.556Z",
+          "reason": "Step 2 투사체 최적화 적용 후 무결성 감사"
+        },
         {
           "timestamp": "2026-09-25T02:40:57.254Z",
           "reason": "Step 1 적용 후 무기 무결성 정적 감사"
@@ -164,10 +168,14 @@
     },
     "to-web": {
       "name": "to-web",
-      "callCount": 2,
+      "callCount": 3,
       "createdAt": "2026-09-25T02:31:46.134Z",
-      "lastUsedAt": "2026-09-25T02:35:18.051Z",
+      "lastUsedAt": "2026-09-25T02:42:31.832Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T02:42:31.832Z",
+          "reason": "Step 2 투사체 이펙트 최적화 번들링"
+        },
         {
           "timestamp": "2026-09-25T02:35:18.052Z",
           "reason": "Step 1 질문 포함 번들링 완료"
@@ -180,10 +188,14 @@
     },
     "to-com": {
       "name": "to-com",
-      "callCount": 1,
+      "callCount": 2,
       "createdAt": "2026-09-25T02:40:19.670Z",
-      "lastUsedAt": "2026-09-25T02:40:19.670Z",
+      "lastUsedAt": "2026-09-25T02:46:40.167Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T02:46:40.168Z",
+          "reason": "웹 제미나이 Step 2 결과 로컬 반영"
+        },
         {
           "timestamp": "2026-09-25T02:40:19.670Z",
           "reason": "웹 제미나이 Step 1 결과 로컬 반영"
