@@ -1,6 +1,6 @@
 {
-  "totalCalls": 65,
-  "lastUpdated": "2026-09-25T05:40:30.774Z",
+  "totalCalls": 66,
+  "lastUpdated": "2026-09-25T05:52:25.354Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 22,
+      "callCount": 23,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T05:10:01.429Z",
+      "lastUsedAt": "2026-09-25T05:52:25.354Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T05:52:25.354Z",
+          "reason": "무기 로직 및 밸런스 무결성 검증"
+        },
         {
           "timestamp": "2026-09-25T05:10:01.429Z",
           "reason": "폭풍칼날(bladeStorm) ID 및 명칭 단일화 검증"
@@ -95,10 +99,6 @@
         {
           "timestamp": "2026-09-25T01:03:07.213Z",
           "reason": "몬스터 30종 수묵화 리메이크 정적 점검"
-        },
-        {
-          "timestamp": "2026-09-24T14:32:50.108Z",
-          "reason": "영웅 6종 수묵화 리메이크 정적 감사"
         }
       ]
     },

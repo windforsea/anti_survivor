@@ -740,7 +740,7 @@ class UIManager {
       <div class="stat-row"><span>도달 스테이지</span><strong>Stage ${stats.stage}</strong></div>
       <div class="stat-row"><span>최종 레벨</span><strong>Lv. ${stats.level}</strong></div>
       <div class="stat-row"><span>처치한 마물</span><strong>${stats.kills} 마리</strong></div>
-      <div class="stat-row"><span>획득 엽전</span><strong style="color: #facc15;"><img src="assets/sprites/item_gold.png" class="coin-icon" alt="상평통보"> +${stats.gold || 0} G</strong></div>
+      <div class="stat-row"><span>획득 엽전</span><strong style="color: #facc15;"><img src="assets/sprites/item_gold.png" class="coin-icon" alt="상평통보"> +${stats.gold || 0}</strong></div>
     `;
     this.gameOverModal.classList.remove('hidden');
     sounds.playGameOver();
@@ -758,7 +758,7 @@ class UIManager {
       <div class="stat-row"><span>달성 스테이지</span><strong>Stage 25 (Abyss All Clear)</strong></div>
       <div class="stat-row"><span>최종 레벨</span><strong>Lv. ${stats.level}</strong></div>
       <div class="stat-row"><span>처치한 마물</span><strong>${stats.kills} 마리</strong></div>
-      <div class="stat-row"><span>획득 엽전</span><strong style="color: #facc15;"><img src="assets/sprites/item_gold.png" class="coin-icon" alt="상평통보"> +${stats.gold || 0} G</strong></div>
+      <div class="stat-row"><span>획득 엽전</span><strong style="color: #facc15;"><img src="assets/sprites/item_gold.png" class="coin-icon" alt="상평통보"> +${stats.gold || 0}</strong></div>
     `;
     if (this.championSubmitSuccess) this.championSubmitSuccess.classList.add('hidden');
     if (this.championNameInput) this.championNameInput.value = '';

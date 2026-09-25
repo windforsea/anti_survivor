@@ -47,7 +47,7 @@ UIManager.prototype.renderLobbyUpgrades = function() {
     const upgrades = saveData.upgrades || {};
 
     if (this.lobbyGoldText) {
-      this.lobbyGoldText.innerHTML = `<img src="assets/sprites/item_gold.png" class="coin-icon-lg" alt="상평통보"> 보유 엽전: ${gold.toLocaleString()} G`;
+      this.lobbyGoldText.innerHTML = `<img src="assets/sprites/item_gold.png" class="coin-icon-lg" alt="상평통보"> 보유: ${gold.toLocaleString()}`;
     }
 
     const configs = [
@@ -91,7 +91,7 @@ UIManager.prototype.renderLobbyUpgrades = function() {
           ${pipsHtml}
         </div>
         <button class="lobby-buy-btn" ${isMax || !canAfford ? 'disabled' : ''}>
-          ${isMax ? 'MAX 달성' : `<img src="assets/sprites/item_gold.png" class="coin-icon" alt="엽전"> ${cost} G 강화`}
+          ${isMax ? 'MAX 달성' : `<img src="assets/sprites/item_gold.png" class="coin-icon" alt="엽전"> ${cost} 강화`}
         </button>
       `;
 
