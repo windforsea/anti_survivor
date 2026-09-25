@@ -414,7 +414,7 @@ WeaponManager.prototype.triggerTeslaStrike = function(p, hitEnemy, enemies) {
     this.game.addParticles(tx, ty, '#ffffff', 8);
   }
 
-  if (Math.random() < 0.25) hitEnemy.freeze(0.4);
+  if (Math.random() < 0.25) (hitEnemy.stun ? hitEnemy.stun(0.4) : hitEnemy.freeze(0.4));
 
   let chained = 0;
   for (const other of enemies) {
@@ -422,7 +422,7 @@ WeaponManager.prototype.triggerTeslaStrike = function(p, hitEnemy, enemies) {
     const d = Math.hypot(other.x - tx, other.y - ty);
     if (d < 160) {
       other.takeDamage(Math.round(p.damage * 0.7), null, 80);
-      if (Math.random() < 0.25) other.freeze(0.4);
+      if (Math.random() < 0.25) (other.stun ? other.stun(0.4) : other.freeze(0.4));
       if (this.game && this.game.addParticles) {
         this.game.addParticles(other.x, other.y, '#38bdf8', 6);
         this.game.addParticles(other.x, other.y, '#ffffff', 4);
@@ -636,15 +636,15 @@ WeaponManager.prototype.triggerVenomBlizzardShards = function(x, y, area, damage
 WeaponManager.prototype.triggerShadowVortexShards = function(x, y, area, damage) {
   sounds.playSlash();
   if (window.game) {
-    window.game.addParticles(x, y, '#10b981', 25);
-    window.game.addParticles(x, y, '#6366f1', 25);
+    window.game.addParticles(x, y, '#10b981', 8);
+    window.game.addParticles(x, y, '#6366f1', 8);
   }
   const shardSpeed = 520;
   const shardDmg = Math.round(damage * 1.35);
   for (let i = 0; i < 8; i++) {
     const angle = (i / 8) * Math.PI * 2;
     this.projectiles.push({
-      type: 'poisonShard',
+      type: 'poisonDagger', // 기존 정규 독비수 수묵 서예 비수 렌더링 사용
       x: x,
       y: y,
       vx: Math.cos(angle) * shardSpeed,
@@ -654,7 +654,7 @@ WeaponManager.prototype.triggerShadowVortexShards = function(x, y, area, damage)
       damage: shardDmg,
       pierce: 3,
       knockbackForce: 130,
-      life: 0.70,
+      life: 0.35, // 기존 0.70s에서 50% 너프 (발사거리 절반 축소)
       color: '#22c55e',
       hitEnemies: new Set(),
       hitObstacles: new Set()
@@ -690,7 +690,7 @@ WeaponManager.prototype.executeThunderBlade = function(w, enemies) {
       if (diff <= halfArc) {
         const kbDir = { x: Math.cos(finalAngle), y: Math.sin(finalAngle) };
         enemy.takeDamage(dmg, kbDir, 170);
-        if (Math.random() < 0.30) enemy.freeze(0.5);
+        if (Math.random() < 0.30) (enemy.stun ? enemy.stun(0.5) : enemy.freeze(0.5));
         if (!hitTarget) hitTarget = enemy;
       }
     }
@@ -748,7 +748,7 @@ WeaponManager.prototype.executeThunderBlade = function(w, enemies) {
     if (e.isDead) continue;
     if (Math.hypot(e.x - lx, e.y - ly) <= strikeRadius + e.radius) {
       e.takeDamage(strikeDmg, null, 80);
-      if (Math.random() < 0.30) e.freeze(0.5);
+      if (Math.random() < 0.30) (e.stun ? e.stun(0.5) : e.freeze(0.5));
     }
   }
 

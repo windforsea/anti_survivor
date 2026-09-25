@@ -943,7 +943,7 @@ class WeaponManager {
           y: (e.y - ty) / (d || 1)
         };
         e.takeDamage(dmg, kbDir, 160);
-        if (Math.random() < 0.25) e.freeze(0.4);
+        if (Math.random() < 0.25) (e.stun ? e.stun(0.4) : e.freeze(0.4));
       }
     }
 
@@ -1454,7 +1454,7 @@ class WeaponManager {
       if (dist <= strikeRadius + enemy.radius) {
         enemy.takeDamage(strikeDmg, null, 140);
         if (Math.random() < 0.30) {
-          enemy.freeze(0.5);
+          (enemy.stun ? enemy.stun(0.5) : enemy.freeze(0.5));
         }
       }
     }

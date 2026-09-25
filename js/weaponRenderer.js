@@ -410,6 +410,42 @@ WeaponManager.prototype.draw = function(ctx) {
       ctx.lineWidth = 1.8;
       ctx.stroke();
       ctx.restore();
+    } else if (s.type === 'circle') {
+      // 도끼 (axe) / 화염도끼 (fireAxe): 360도 전방위 서예 원형 수묵 참격 궤적
+      const prog = 1 - (s.life / s.maxLife);
+      const alpha = Math.min(1.0, s.life / (s.maxLife * 0.7));
+      const isFire = !!s.isFireAxe;
+      ctx.save();
+
+      // (1) 한지 바탕 회전 수묵/화염 번짐
+      ctx.fillStyle = isFire ? `rgba(234, 88, 12, ${0.28 * alpha})` : `rgba(9, 9, 11, ${0.22 * alpha})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius * Math.min(1.0, 0.4 + prog * 0.7), 0, Math.PI * 2);
+      ctx.fill();
+
+      // (2) 360도 굵은 해서체 송연묵 외곽 회전 붓선
+      ctx.strokeStyle = '#09090b';
+      ctx.lineWidth = Math.max(2.5, Math.round((isFire ? 4.5 : 3.8) * Math.sqrt(s.radius / 95)));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // (3) 내부 날카로운 은백색/황금빛 비백(飛白) 참격 림
+      ctx.strokeStyle = isFire ? `rgba(253, 224, 71, ${0.85 * alpha})` : `rgba(255, 255, 255, ${0.75 * alpha})`;
+      ctx.lineWidth = isFire ? 2.2 : 1.8;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius - 2.5, 0, Math.PI * 2);
+      ctx.stroke();
+
+      if (isFire) {
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.9 * alpha})`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius - 5, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      ctx.restore();
     }
   }
 
@@ -418,10 +454,15 @@ WeaponManager.prototype.draw = function(ctx) {
   // - shadowBlur 및 과도한 파티클 배제, 순수 캔버스 2D 패스 기반 고속 렌더링
   // - 농묵(濃墨) 외곽선 + 고채도 단청 네온 코어 + 백색 비백(飛白) 심선 + 가벼운 붓선 잔상 꼬리
   // =========================================================================
+  const projCount = this.projectiles.length;
+  // 투사체 과다 시 시야 가림 방지: 30개 초과 시 알파를 점진적으로 낮추어 뒤편 적/플레이어 투과 (0.85 -> 0.55)
+  const globalProjAlpha = projCount > 30 ? Math.max(0.55, 0.85 - (projCount - 30) * 0.007) : 0.88;
+
   for (const p of this.projectiles) {
     ctx.save();
-    const projArea = p.area || 1.0;
-    const r = p.radius || (6 * projArea);
+    ctx.globalAlpha = globalProjAlpha;
+    const projArea = Math.min(2.2, p.area || 1.0); // 거대 투사체 시각적 비대화 상한선(Clamping)
+    const r = Math.min(48, p.radius || (6 * projArea));
 
     if (p.type === 'shuriken' || p.type === 'dagger' || p.type === 'scatterShuriken') {
       // [1] 표창 / 단검 / 산탄표창: 서예 십자 묵선 수리검 + 회전 잔상 림 + 네온 비백

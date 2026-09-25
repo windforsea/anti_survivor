@@ -1,6 +1,6 @@
 {
-  "totalCalls": 66,
-  "lastUpdated": "2026-09-25T05:52:25.354Z",
+  "totalCalls": 68,
+  "lastUpdated": "2026-09-25T07:32:49.924Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,18 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 23,
+      "callCount": 25,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T05:52:25.354Z",
+      "lastUsedAt": "2026-09-25T07:32:49.923Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-25T07:32:49.924Z",
+          "reason": "무기 및 전투 엔진 무결성 검사"
+        },
+        {
+          "timestamp": "2026-09-25T06:49:25.782Z",
+          "reason": "진화 힌트 다중 노출 및 파트너 아이콘/레벨 표기 검사"
+        },
         {
           "timestamp": "2026-09-25T05:52:25.354Z",
           "reason": "무기 로직 및 밸런스 무결성 검증"
@@ -91,14 +99,6 @@
         {
           "timestamp": "2026-09-25T01:25:26.983Z",
           "reason": "무기 투사체 수묵화 리메이크 정적 점검"
-        },
-        {
-          "timestamp": "2026-09-25T01:16:21.801Z",
-          "reason": "보스 13종 수묵화 리메이크 정적 점검"
-        },
-        {
-          "timestamp": "2026-09-25T01:03:07.213Z",
-          "reason": "몬스터 30종 수묵화 리메이크 정적 점검"
         }
       ]
     },

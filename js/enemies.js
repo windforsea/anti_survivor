@@ -25,6 +25,7 @@ class Enemy {
     // 빙결 및 슬로우 상태
     this.freezeTimer = 0;
     this.freezeCooldownTimer = 0;
+    this.stunTimer = 0;
     this.slowTimer = 0;
     this.slowMult = 1.0;
 
@@ -112,6 +113,21 @@ class Enemy {
     }
   }
 
+
+  // 기절(스턴) 부여 (번개 반지, 뇌전포, 벼락검, 저지먼트 등)
+  stun(duration = 0.5) {
+    if (this.isDead || this.isPhased || this.reviveState === 1) return;
+    if (this.isBoss) {
+      this.slowTimer = Math.max(this.slowTimer, 0.4);
+      this.slowMult = Math.min(this.slowMult, 0.50);
+    } else {
+      this.stunTimer = Math.max(this.stunTimer, duration);
+    }
+    if (window.game && window.game.addParticles) {
+      window.game.addParticles(this.x, this.y, '#facc15', 4);
+    }
+  }
+
   // 중독 효과 부여 (맹독 비수, 베놈 블리자드)
   poison(duration = 3.0, dps = 10) {
     if (this.isDead) return;
@@ -193,6 +209,12 @@ class Enemy {
       if (this.freezeTimer <= 0) {
         this.freezeCooldownTimer = 1.8; // 빙결 해제 후 1.8초간 재빙결 면역 쿨타임 부여!
       }
+      this.animTimer += dt * 2;
+      return;
+    }
+    // 기절(스턴) 상태 시 이동/공격 정지
+    if (this.stunTimer > 0) {
+      this.stunTimer -= dt;
       this.animTimer += dt * 2;
       return;
     }
@@ -519,15 +541,67 @@ class Enemy {
       ctx.restore();
     }
 
-    // 빙결 시 서리빛 얼음 결계 및 틴트 렌더링
+    // [상태이상 1] 빙결 시 서리빛 각진 육각 서리 결정 림 & 얼음 결계
     if (this.freezeTimer > 0) {
       ctx.save();
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
-      ctx.strokeStyle = '#bae6fd';
-      ctx.lineWidth = 2;
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.30)';
+      ctx.strokeStyle = '#e0f2fe';
+      ctx.lineWidth = 2.2;
+      const hexR = this.radius + 4;
       ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+      for (let i = 0; i < 6; i++) {
+        const hAngle = (i * Math.PI) / 3;
+        const hx = this.x + Math.cos(hAngle) * hexR;
+        const hy = this.y + Math.sin(hAngle) * hexR;
+        if (i === 0) ctx.moveTo(hx, hy);
+        else ctx.lineTo(hx, hy);
+      }
+      ctx.closePath();
       ctx.fill();
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(this.x - hexR * 0.55, this.y);
+      ctx.lineTo(this.x + hexR * 0.55, this.y);
+      ctx.moveTo(this.x, this.y - hexR * 0.55);
+      ctx.lineTo(this.x, this.y + hexR * 0.55);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // [상태이상 2] 기절 시 머리 위 황금 스파크 3점 회전 & 지직거리는 뇌전 아크 렌더링
+    if (this.stunTimer > 0) {
+      ctx.save();
+      const time = Date.now() * 0.009;
+      const headY = this.y - this.radius - 7;
+      const ringRx = Math.max(10, this.radius * 0.7);
+      const ringRy = 4.5;
+
+      for (let i = 0; i < 3; i++) {
+        const sAngle = time + (i * Math.PI * 2) / 3;
+        const sx = this.x + Math.cos(sAngle) * ringRx;
+        const sy = headY + Math.sin(sAngle) * ringRy;
+
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(sx, sy, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(sx, sy, 1.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const sparkSign = (Math.floor(Date.now() / 80) % 2 === 0) ? 1 : -1;
+      ctx.strokeStyle = '#fde047';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(this.x - this.radius * 0.5, this.y - this.radius * 0.4);
+      ctx.lineTo(this.x + sparkSign * 4, this.y);
+      ctx.lineTo(this.x + this.radius * 0.5, this.y + this.radius * 0.4);
       ctx.stroke();
       ctx.restore();
     }

@@ -515,7 +515,13 @@ class Game {
   }
 
   addParticles(x, y, color, count = 6) {
-    for (let i = 0; i < count; i++) {
+    // [무렉 아키텍처] 파티클 하드캡 및 동적 감쇠(LOD)
+    const curLen = this.particles.length;
+    if (curLen >= 120) return; // 120개 도달 시 신규 파티클 생성 완전 차단 (프레임 방어)
+    let effCount = count;
+    if (curLen >= 80) effCount = Math.max(1, Math.floor(count * 0.5)); // 80개 이상 시 50% 감쇠
+
+    for (let i = 0; i < effCount; i++) {
       const angle = Math.random() * Math.PI * 2;
       const spd = 60 + Math.random() * 120;
       this.particles.push({
@@ -681,6 +687,10 @@ class Game {
       }
     }
 
+    // [무렉 아키텍처] 크리티컬 이펙트 최대 30개 상한 제한
+    if (this.damageNumbers.length > 30) {
+      this.damageNumbers.splice(0, this.damageNumbers.length - 30);
+    }
     for (let i = this.damageNumbers.length - 1; i >= 0; i--) {
       const dn = this.damageNumbers[i];
       dn.update(dt);

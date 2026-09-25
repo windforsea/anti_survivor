@@ -31,62 +31,71 @@ class DamageNumber {
     ctx.globalAlpha = alpha;
 
     if (this.isSuperCrit) {
-      // 🔴 [슈퍼 치명타]: 강렬한 붉은 주사(朱砂) 먹물방울 폭발 스플래시 (크기 14px, 4방향 비말)
-      const baseR = 7.0 * (1 - prog * 0.35);
-      const spread = prog * 38;
-      
-      // 중심 핏빛 주사 먹물 방울
-      ctx.fillStyle = '#dc2626';
-      ctx.beginPath();
-      ctx.arc(this.x, this.y - prog * 12, baseR, 0, Math.PI * 2);
-      ctx.fill();
+      // 🔴 [슈퍼 치명타]: 강렬한 붉은 진사 십자 참격 섬광(Crimson Cross Slash Spark) & CRIT!!
+      const len = 22 * (1 - prog * 0.2);
+      const slashAngle = this.inkAngle || 0.78;
+      const cosA = Math.cos(slashAngle);
+      const sinA = Math.sin(slashAngle);
+      const cosB = Math.cos(slashAngle + Math.PI / 2);
+      const sinB = Math.sin(slashAngle + Math.PI / 2);
 
-      // 밝은 림 테두리 (시인성 극대화)
-      ctx.strokeStyle = '#fee2e2';
-      ctx.lineWidth = 1.5;
+      // (1) 십자 붉은 참격 궤적 1
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(this.x - cosA * len, this.y - sinA * len);
+      ctx.lineTo(this.x + cosA * len, this.y + sinA * len);
+      ctx.moveTo(this.x - cosB * (len * 0.7), this.y - sinB * (len * 0.7));
+      ctx.lineTo(this.x + cosB * (len * 0.7), this.y + sinB * (len * 0.7));
       ctx.stroke();
 
-      // 사방으로 튀어나가는 4개의 붉은 먹물 비말
-      const angles = [this.inkAngle, this.inkAngle + 1.57, this.inkAngle + 3.14, this.inkAngle + 4.71];
-      ctx.fillStyle = '#ef4444';
-      for (let i = 0; i < angles.length; i++) {
-        const a = angles[i];
-        const dist = spread * (0.85 + (i % 2) * 0.35);
-        const bx = this.x + Math.cos(a) * dist;
-        const by = this.y + Math.sin(a) * dist - (prog * 10);
-        ctx.beginPath();
-        ctx.arc(bx, by, Math.max(2, baseR * 0.6), 0, Math.PI * 2);
-        ctx.fill();
-      }
-    } else if (this.isCrit) {
-      // ⚫ [일반 치명타]: 짙은 까만 송연묵(松煙墨) 먹물방울 스플래시 (크기 10px + 백색 림)
-      const baseR = 5.5 * (1 - prog * 0.35);
-      const spread = prog * 30;
-
-      // 중심 흑묵 방울
-      ctx.fillStyle = '#050508';
-      ctx.beginPath();
-      ctx.arc(this.x, this.y - prog * 10, baseR, 0, Math.PI * 2);
-      ctx.fill();
-
-      // 선명한 화선지 백색 림 (어두운 배경 위 가독성 100% 확보)
-      ctx.strokeStyle = '#ffffff';
+      // (2) 내부 황금/백색 중심 심선
+      ctx.strokeStyle = '#fef08a';
       ctx.lineWidth = 1.8;
       ctx.stroke();
 
-      // 3방향 튀어나가는 까만 먹물 비말
-      const angles = [this.inkAngle, this.inkAngle + 2.1, this.inkAngle + 4.2];
-      ctx.fillStyle = '#0f172a';
-      for (const a of angles) {
-        const bx = this.x + Math.cos(a) * spread;
-        const by = this.y + Math.sin(a) * spread - (prog * 8);
-        ctx.beginPath();
-        ctx.arc(bx, by, Math.max(1.8, baseR * 0.55), 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
+      // (3) CRIT!! 텍스트 팝업
+      ctx.font = '900 14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.strokeStyle = '#09090b';
+      ctx.lineWidth = 3;
+      ctx.strokeText('CRIT!!', this.x, this.y - 14 - prog * 16);
+      ctx.fillStyle = '#f87171';
+      ctx.fillText('CRIT!!', this.x, this.y - 14 - prog * 16);
+
+    } else if (this.isCrit) {
+      // ⚡ [일반 치명타]: 날카로운 황금 비백 참격 섬광(Golden Slash Spark) & CRIT! (독 오인 원천 차단)
+      const len = 18 * (1 - prog * 0.2);
+      const slashAngle = this.inkAngle || 0.65;
+      const cosA = Math.cos(slashAngle);
+      const sinA = Math.sin(slashAngle);
+
+      // (1) 날카로운 사선 황금빛 검흔
+      ctx.strokeStyle = '#eab308';
+      ctx.lineWidth = 3.2;
+      ctx.beginPath();
+      ctx.moveTo(this.x - cosA * len, this.y - sinA * len);
+      ctx.lineTo(this.x + cosA * len, this.y + sinA * len);
+      ctx.stroke();
+
+      // (2) 중심 백색 비백(飛白) 섬광 심선
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(this.x - cosA * (len * 0.6), this.y - sinA * (len * 0.6));
+      ctx.lineTo(this.x + cosA * (len * 0.6), this.y + sinA * (len * 0.6));
+      ctx.stroke();
+
+      // (3) 황금빛 CRIT! 텍스트 팝업
+      ctx.font = '900 13px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.strokeStyle = '#09090b';
+      ctx.lineWidth = 2.8;
+      ctx.strokeText('CRIT!', this.x, this.y - 12 - prog * 14);
+      ctx.fillStyle = '#facc15';
+      ctx.fillText('CRIT!', this.x, this.y - 12 - prog * 14);
     } else {
       // 일반 데미지 숫자 표기
       ctx.font = 'bold 13px sans-serif';
