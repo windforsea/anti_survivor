@@ -31,71 +31,26 @@ class DamageNumber {
     ctx.globalAlpha = alpha;
 
     if (this.isSuperCrit) {
-      // 🔴 [슈퍼 치명타]: 강렬한 붉은 진사 십자 참격 섬광(Crimson Cross Slash Spark) & CRIT!!
-      const len = 22 * (1 - prog * 0.2);
-      const slashAngle = this.inkAngle || 0.78;
-      const cosA = Math.cos(slashAngle);
-      const sinA = Math.sin(slashAngle);
-      const cosB = Math.cos(slashAngle + Math.PI / 2);
-      const sinB = Math.sin(slashAngle + Math.PI / 2);
-
-      // (1) 십자 붉은 참격 궤적 1
-      ctx.strokeStyle = '#ef4444';
-      ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      ctx.moveTo(this.x - cosA * len, this.y - sinA * len);
-      ctx.lineTo(this.x + cosA * len, this.y + sinA * len);
-      ctx.moveTo(this.x - cosB * (len * 0.7), this.y - sinB * (len * 0.7));
-      ctx.lineTo(this.x + cosB * (len * 0.7), this.y + sinB * (len * 0.7));
-      ctx.stroke();
-
-      // (2) 내부 황금/백색 중심 심선
-      ctx.strokeStyle = '#fef08a';
-      ctx.lineWidth = 1.8;
-      ctx.stroke();
-
-      // (3) CRIT!! 텍스트 팝업
+      // 🔴 [슈퍼 치명타]: 사선(/) 참격선 없이 깔끔한 진홍빛 CRIT!! 텍스트 팝업
       ctx.font = '900 14px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.strokeStyle = '#09090b';
       ctx.lineWidth = 3;
-      ctx.strokeText('CRIT!!', this.x, this.y - 14 - prog * 16);
+      ctx.strokeText('CRIT!!', this.x, this.y - 12 - prog * 16);
       ctx.fillStyle = '#f87171';
-      ctx.fillText('CRIT!!', this.x, this.y - 14 - prog * 16);
+      ctx.fillText('CRIT!!', this.x, this.y - 12 - prog * 16);
 
     } else if (this.isCrit) {
-      // ⚡ [일반 치명타]: 날카로운 황금 비백 참격 섬광(Golden Slash Spark) & CRIT! (독 오인 원천 차단)
-      const len = 18 * (1 - prog * 0.2);
-      const slashAngle = this.inkAngle || 0.65;
-      const cosA = Math.cos(slashAngle);
-      const sinA = Math.sin(slashAngle);
-
-      // (1) 날카로운 사선 황금빛 검흔
-      ctx.strokeStyle = '#eab308';
-      ctx.lineWidth = 3.2;
-      ctx.beginPath();
-      ctx.moveTo(this.x - cosA * len, this.y - sinA * len);
-      ctx.lineTo(this.x + cosA * len, this.y + sinA * len);
-      ctx.stroke();
-
-      // (2) 중심 백색 비백(飛白) 섬광 심선
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      ctx.moveTo(this.x - cosA * (len * 0.6), this.y - sinA * (len * 0.6));
-      ctx.lineTo(this.x + cosA * (len * 0.6), this.y + sinA * (len * 0.6));
-      ctx.stroke();
-
-      // (3) 황금빛 CRIT! 텍스트 팝업
+      // ⚡ [일반 치명타]: 사선(/) 참격선 없이 깔끔한 황금빛 CRIT! 텍스트 팝업
       ctx.font = '900 13px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.strokeStyle = '#09090b';
       ctx.lineWidth = 2.8;
-      ctx.strokeText('CRIT!', this.x, this.y - 12 - prog * 14);
+      ctx.strokeText('CRIT!', this.x, this.y - 10 - prog * 14);
       ctx.fillStyle = '#facc15';
-      ctx.fillText('CRIT!', this.x, this.y - 12 - prog * 14);
+      ctx.fillText('CRIT!', this.x, this.y - 10 - prog * 14);
     } else {
       // 일반 데미지 숫자 표기
       ctx.font = 'bold 13px sans-serif';

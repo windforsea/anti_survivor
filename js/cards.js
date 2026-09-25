@@ -1132,7 +1132,7 @@ class CardManager {
         effectText: '치명타 확률 +10% & 드랍률 +15%',
         maxLevel: 5,
         apply: () => {
-          this.player.critChance = (this.player.critChance || 0.05) + 0.10;
+          this.player.critChance = (this.player.critChance || 0) + 0.10;
           this.player.dropRateBonus = (this.player.dropRateBonus || 0.0) + 0.15;
         }
       },
@@ -1182,12 +1182,13 @@ class CardManager {
         title: '사신의 낫',
         icon: '🗡️💀',
         iconKey: 'icon_crit_dmg',
-        desc: '치명타 적중 시 입히는 치명타 피해량을 대폭 증가시킵니다.',
-        effectText: '치명타 피해량 +30%',
+        desc: '치명타 확률이 소폭 상승하고, 치명타 적중 시 입히는 피해량이 대폭 증가합니다.',
+        effectText: '치명타 확률 +4% & 치명타 피해량 +35%',
         maxLevel: 5,
         apply: () => {
           const curLv = (this.player.ownedPassives['stat_crit_dmg']?.level || 0) + 1;
-          this.player.critDamageMult = 2.0 + curLv * 0.30;
+          this.player.critChance = (this.player.critChance || 0) + 0.04;
+          this.player.critDamageMult = 2.0 + curLv * 0.35;
         }
       },
       {

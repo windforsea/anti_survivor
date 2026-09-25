@@ -57,7 +57,7 @@ class Enemy {
     if (this.reviveState === 1) return; // 뼈무덤 상태 시 타격 불가
 
     if (isCrit === null && window.game && window.game.player) {
-      isCrit = Math.random() < (window.game.player.critChance || 0.05);
+      isCrit = Math.random() < (window.game.player.critChance || 0);
       if (isCrit) {
         amount = Math.round(amount * (window.game.player.critDamageMult || 2.0));
       }

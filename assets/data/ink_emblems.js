@@ -394,31 +394,62 @@ const WEAPONS_INK = {
     canvas.drawEnsoRim(CX, CY, 34, 2.8, INK_COLORS.BLUE_CYAN, 0.6, 104);
   },
 
-  // 5. 채찍 (whip) : 나선으로 똬리를 틀며 작열하는 흑사편
+  // 5. 채찍 (whip) : 허공을 찰싹 가르는 역동적인 대각선 S자 수묵 채찍과 비백 파열
   icon_whip: (canvas) => {
     canvas.drawBaseEmblem(INK_COLORS.RED_CRIMSON, 0.4, 105);
     const prng = createPRNG(105);
 
-    // 나선형 붓터치 점 계산
-    const spiralPts = [];
-    const coils = 2.4;
-    const steps = 90;
+    // (1) 좌하단 가죽 손잡이 자루와 황동 폼멜
+    const handlePts = [[20, 106], [32, 94]];
+    canvas.drawCalligraphyStroke(handlePts, INK_COLORS.INK_DEEP, 7.5, 6.0, { alpha: 0.98, prng });
+    canvas.drawCalligraphyStroke(handlePts, INK_COLORS.GOLD_ROYAL, 4.0, 3.2, { alpha: 0.95, prng });
+    canvas.stampDisc(20, 106, 5.0, INK_COLORS.GOLD_BRIGHT, 0.98); // 폼멜 구슬
+    canvas.stampDisc(32, 94, 4.0, INK_COLORS.GOLD_BRIGHT, 0.95);  // 가드 링
+
+    // (2) 역동적인 S자 가죽 채찍 궤적 (손잡이 끝 -> 상향 급상승 -> 완만한 굴곡 -> 우상단 스냅 타격)
+    const p0 = [32, 94];
+    const p1 = [16, 26];  // 좌상단으로 강렬하게 솟구침
+    const p2 = [114, 98]; // 우하단으로 크게 휘감김
+    const p3 = [104, 22]; // 우상단 끝단으로 찰싹 튀어오름
+    
+    const whipPts = [];
+    const steps = 70;
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
-      const angle = t * Math.PI * 2 * coils - Math.PI * 0.5;
-      const r = 10 + t * 38;
-      spiralPts.push([CX + Math.cos(angle) * r, CY + Math.sin(angle) * r]);
+      const u = 1 - t;
+      const tt = t * t;
+      const uu = u * u;
+      const uuu = uu * u;
+      const ttt = tt * t;
+
+      const x = uuu * p0[0] + 3 * uu * t * p1[0] + 3 * u * tt * p2[0] + ttt * p3[0];
+      const y = uuu * p0[1] + 3 * uu * t * p1[1] + 3 * u * tt * p2[1] + ttt * p3[1];
+      whipPts.push([x, y]);
     }
 
-    // 육중한 먹선 채찍 몸통
-    canvas.drawCalligraphyStroke(spiralPts, INK_COLORS.INK_DEEP, 6.0, 1.5, { alpha: 0.98, feiBai: 0.35, prng });
-    // 채찍을 타고 흐르는 핏빛 단청 전율
-    canvas.drawCalligraphyStroke(spiralPts, INK_COLORS.RED_CRIMSON, 2.2, 0.8, { alpha: 0.85, isAdditive: true, prng });
+    // 육중한 흑사편 먹선 몸통 (손잡이 쪽 5.5px -> 끝단 1.2px)
+    canvas.drawCalligraphyStroke(whipPts, INK_COLORS.INK_DEEP, 5.5, 1.2, { alpha: 0.98, feiBai: 0.35, prng });
+    // 채찍 심선을 타고 달리는 진홍빛 단청 혈류
+    canvas.drawCalligraphyStroke(whipPts, INK_COLORS.RED_CRIMSON, 2.2, 0.7, { alpha: 0.9, isAdditive: true, prng });
+    // 백색 비백 섬광 코어
+    canvas.drawCalligraphyStroke(whipPts, INK_COLORS.WHITE_JADE, 1.0, 0.4, { alpha: 0.75, isAdditive: true, prng });
 
-    // 끝단 파열 섬광
-    const lastPt = spiralPts[spiralPts.length - 1];
-    canvas.drawGlow(lastPt[0], lastPt[1], 16, INK_COLORS.RED_FIRE, 0.6);
-    canvas.stampDisc(lastPt[0], lastPt[1], 3.5, INK_COLORS.WHITE_JADE, 0.95);
+    // (3) 끝단 찰싹 터지는 파열 스파크 (Whip Crack Flash)
+    const tip = whipPts[whipPts.length - 1];
+    canvas.drawGlow(tip[0], tip[1], 18, INK_COLORS.RED_FIRE, 0.8);
+    canvas.stampDisc(tip[0], tip[1], 4.0, INK_COLORS.WHITE_JADE, 0.98);
+    canvas.stampDisc(tip[0], tip[1], 2.0, INK_COLORS.GOLD_BRIGHT, 0.95);
+
+    // 파열 비산 스파크 3선
+    const crackSparks = [
+      [[tip[0], tip[1]], [tip[0] + 12, tip[1] - 8]],
+      [[tip[0], tip[1]], [tip[0] + 10, tip[1] + 8]],
+      [[tip[0], tip[1]], [tip[0] - 8, tip[1] - 10]]
+    ];
+    crackSparks.forEach(spark => {
+      canvas.drawCalligraphyStroke(spark, INK_COLORS.RED_FIRE, 2.0, 0.6, { alpha: 0.85, isAdditive: true, prng });
+      canvas.drawCalligraphyStroke(spark, INK_COLORS.WHITE_JADE, 1.0, 0.3, { alpha: 0.9, isAdditive: true, prng });
+    });
   },
 
   // 6. 마법 화살 (missile) : 비천하는 푸른 비전 유성과 혜성 비백

@@ -12,7 +12,7 @@ class Player {
     this.magnetRadius = this.baseMagnetRadius;
     this.bonusProjectiles = 0;
     this.bonusAreaMult = 1.0;
-    this.critChance = characterType === 'assassin' ? 0.20 : 0.05;
+    this.critChance = characterType === 'assassin' ? 0.20 : 0.0;
     this.critDamageMult = 2.0;
     this.expMult = 1.0;
     this.dropRateBonus = 0.0;
