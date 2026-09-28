@@ -91,12 +91,12 @@ class BossEnemy extends Enemy {
       this.frostNovaTimer = 0.9;
     } else if (bossStage === 15) {
       this.name = '종말의 사신 (Grim Reaper)';
-      this.maxHp = 52000;
+      this.maxHp = 37000;
       this.hp = this.maxHp;
       this.radius = 44;
       this.color = '#18181b';
       this.speed = 135;
-      this.damage = 88;
+      this.damage = 70;
       this.exp = 3500;
       this.knockbackImmune = true;
 
