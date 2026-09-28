@@ -23,7 +23,7 @@ const WEAPON_CONFIGS = {
         icon: '🪓',
         iconSprite: 'icon_axe',
         desc: '원형으로 베어내며 적을 밀쳐냅니다.',
-        baseCooldown: 1.45, // 기존 1.10초 -> 1.45초 (32% 증가)
+        baseCooldown: 2.90, // 기존 1.45초 -> 2.90초 (2배 증가, 회전 공격 주기 2배 감속)
         baseDamage: 92,     // 기존 62 -> 92 (48% 상향, 강력한 광역 한방)
         baseCount: 1,
         baseArea: 1.0,
@@ -413,7 +413,7 @@ const WEAPON_CONFIGS = {
         icon: '🪓🔥',
         iconSprite: 'icon_fireaxe',
         desc: '도끼 베기 직후, 화염구를 방출합니다.',
-        baseCooldown: 1.40, // 기존 1.05초 -> 1.40초 (33% 증가)
+        baseCooldown: 2.80, // 기존 1.40초 -> 2.80초 (2배 증가, 회전 공격 주기 2배 감속)
         baseDamage: 90,     // 기존 62 -> 90 (45% 상향)
         baseCount: 1,
         baseArea: 1.30,

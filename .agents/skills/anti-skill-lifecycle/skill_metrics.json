@@ -1,6 +1,6 @@
 {
-  "totalCalls": 68,
-  "lastUpdated": "2026-09-25T07:32:49.924Z",
+  "totalCalls": 69,
+  "lastUpdated": "2026-09-28T08:38:00.261Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 25,
+      "callCount": 26,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-25T07:32:49.923Z",
+      "lastUsedAt": "2026-09-28T08:38:00.261Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-28T08:38:00.261Z",
+          "reason": "도끼 쿨타임 및 몬스터 젠 밸런스 변경 후 정적 검사"
+        },
         {
           "timestamp": "2026-09-25T07:32:49.924Z",
           "reason": "무기 및 전투 엔진 무결성 검사"
@@ -95,10 +99,6 @@
         {
           "timestamp": "2026-09-25T01:32:23.049Z",
           "reason": "아이템 및 장애물 수묵화 리메이크 정적 점검"
-        },
-        {
-          "timestamp": "2026-09-25T01:25:26.983Z",
-          "reason": "무기 투사체 수묵화 리메이크 정적 점검"
         }
       ]
     },

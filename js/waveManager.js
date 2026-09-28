@@ -166,10 +166,10 @@ class WaveManager {
       }
     }
 
-    // 일반 몬스터 스폰 루프
+    // 일반 몬스터 스폰 루프 (1.6배 빠른 젠으로 스폰량 1.6배 상향)
     this.spawnTimer -= dt;
     if (this.spawnTimer <= 0) {
-      this.spawnTimer = config.interval;
+      this.spawnTimer = config.interval / 1.6;
       this.spawnBatch(config.mobs, config.batch, config.hpScale);
     }
 
@@ -198,7 +198,7 @@ class WaveManager {
     if (this.game.ui && this.game.ui.showBossAlert) {
       this.game.ui.showBossAlert(title);
     }
-    this.spawnBatch([mobKey], count, hpScale * 1.1);
+    this.spawnBatch([mobKey], Math.round(count * 1.6), hpScale * 1.1);
   }
 
   spawnBatch(mobs, count, hpScale) {
