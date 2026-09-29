@@ -1,6 +1,6 @@
 {
-  "totalCalls": 70,
-  "lastUpdated": "2026-09-29T02:48:55.374Z",
+  "totalCalls": 71,
+  "lastUpdated": "2026-09-29T05:05:14.186Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 27,
+      "callCount": 28,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-29T02:48:55.374Z",
+      "lastUsedAt": "2026-09-29T05:05:14.186Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-29T05:05:14.186Z",
+          "reason": "도끼 무기카드 자체 2회 제한 및 패시브 타수 정상 적용 정적 검사"
+        },
         {
           "timestamp": "2026-09-29T02:48:55.374Z",
           "reason": "화염도끼 파이어볼 16방향 및 도끼 연속공격 카드 제한 정적 검사"
@@ -95,10 +99,6 @@
         {
           "timestamp": "2026-09-25T02:40:57.254Z",
           "reason": "Step 1 적용 후 무기 무결성 정적 감사"
-        },
-        {
-          "timestamp": "2026-09-25T01:41:52.815Z",
-          "reason": "전체 수묵화 리메이크 최종 무결성 점검"
         }
       ]
     },

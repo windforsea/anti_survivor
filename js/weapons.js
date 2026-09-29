@@ -87,10 +87,7 @@ class WeaponManager {
   }
 
   getCount(w) {
-    let extra = (w.countLevel || 0) + (this.player.bonusProjectiles || 0);
-    if (w.id === 'axe') {
-      extra = Math.min(2, extra); // 도끼 연속공격(추가 타수)은 패시브 포함 최대 2회로 하드캡 제한
-    }
+    const extra = (w.countLevel || 0) + (this.player.bonusProjectiles || 0);
     if (w.id === 'shotgun' || w.id === 'teslaShotgun' || w.id === 'scatterShuriken') {
       return w.baseCount + extra * 2; // 산탄총, 뇌전포, 산탄표창: 투사체 추가시마다 2발씩 추가
     }
