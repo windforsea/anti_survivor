@@ -900,7 +900,17 @@ class CardManager {
       });
 
       // 4) [무기 투사체 / 연속공격 증가 강화]
-      if (key !== 'sanctuary' && key !== 'heavenlySanctuary') {
+      let allowCountCard = (key !== 'sanctuary' && key !== 'heavenlySanctuary');
+      if (allowCountCard && key === 'axe') {
+        const currentAxeCount = (w.countLevel || 0);
+        const currentProjPassive = (this.player.bonusProjectiles || 0);
+        // 도끼 연속공격 카드는 도끼 자체 카운트 2회 이상이거나 패시브 + 도끼 합계가 2 이상이면 카드 등장 차단
+        if (currentAxeCount >= 2 || (currentAxeCount + currentProjPassive >= 2)) {
+          allowCountCard = false;
+        }
+      }
+
+      if (allowCountCard) {
         let countTitle = `${w.name} 투사체 증가`;
         let countDesc = `투사체 수를 늘립니다.`;
         let countEffect = '투사체 +1개';

@@ -823,15 +823,15 @@ WeaponManager.prototype.executeFireAxe = function(w, enemies) {
     }
   }
 
-  // 5. 파이어볼 발사: 연타 횟수에 따라 십자가(+)와 대각선(X) 교차 발사
+  // 5. 파이어볼 발사: 전방위 16방향 방사형 일제 발사 (연타 시 엇갈림 오프셋 적용)
   sounds.playFire();
   w.fireCycle = (w.fireCycle || 0) + 1;
-  const isDiagonal = (w.fireCycle % 2 === 0);
-  const baseOffset = isDiagonal ? (Math.PI / 4) : 0;
+  const isShifted = (w.fireCycle % 2 === 0);
+  const baseOffset = isShifted ? (Math.PI / 16) : 0;
   const speed = 400;
 
-  for (let i = 0; i < 4; i++) {
-    const angle = (i / 4) * Math.PI * 2 + baseOffset;
+  for (let i = 0; i < 16; i++) {
+    const angle = (i / 16) * Math.PI * 2 + baseOffset;
     this.projectiles.push({
       type: 'fireball',
       x: this.player.x,

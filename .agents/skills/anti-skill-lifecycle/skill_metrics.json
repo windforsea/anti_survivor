@@ -1,6 +1,6 @@
 {
-  "totalCalls": 69,
-  "lastUpdated": "2026-09-28T08:38:00.261Z",
+  "totalCalls": 70,
+  "lastUpdated": "2026-09-29T02:48:55.374Z",
   "skills": {
     "anti-balance-simulator": {
       "name": "anti-balance-simulator",
@@ -36,10 +36,14 @@
     },
     "anti-logic-auditor": {
       "name": "anti-logic-auditor",
-      "callCount": 26,
+      "callCount": 27,
       "createdAt": "2026-09-24T02:11:19.357Z",
-      "lastUsedAt": "2026-09-28T08:38:00.261Z",
+      "lastUsedAt": "2026-09-29T02:48:55.374Z",
       "callHistory": [
+        {
+          "timestamp": "2026-09-29T02:48:55.374Z",
+          "reason": "화염도끼 파이어볼 16방향 및 도끼 연속공격 카드 제한 정적 검사"
+        },
         {
           "timestamp": "2026-09-28T08:38:00.261Z",
           "reason": "도끼 쿨타임 및 몬스터 젠 밸런스 변경 후 정적 검사"
@@ -95,10 +99,6 @@
         {
           "timestamp": "2026-09-25T01:41:52.815Z",
           "reason": "전체 수묵화 리메이크 최종 무결성 점검"
-        },
-        {
-          "timestamp": "2026-09-25T01:32:23.049Z",
-          "reason": "아이템 및 장애물 수묵화 리메이크 정적 점검"
         }
       ]
     },
