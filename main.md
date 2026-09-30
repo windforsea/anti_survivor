@@ -15,7 +15,7 @@ anti_survivor/
 ├── generate_assets.js           # 🖌️ 통합 수묵화풍(Ink-Wash) 마스터 에셋 빌더 (Zero-dependency)
 ├── main.md                      # 프로젝트 아키텍처 및 빠른 참조 인덱스 (본 문서)
 ├── README.md                    # 프로젝트 공식 개요 및 릴리즈 노트
-├── AGENTS.md / GEMINI.md        # AI 에이전트 공통 표준 작업 규칙
+├── AGENTS.md                    # AI 에이전트 공통 표준 작업 규칙 (단일 통합 관리)
 │
 ├── js/                          # 핵심 게임 엔진 모듈 (순수 바닐라 ES6+)
 │   ├── main.js                  # 메인 게임 루프, 입력 처리, 씬 전환
